@@ -8,18 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
-		A9F072922CE75166005033F2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072912CE75166005033F2 /* ContentView.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
 		A9F072982CE75169005033F2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072972CE75169005033F2 /* Preview Assets.xcassets */; };
+		A9F0729F2CE75560005033F2 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0729E2CE75560005033F2 /* Character.swift */; };
+		A9F072A12CE75581005033F2 /* CharacterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072A02CE75581005033F2 /* CharacterStore.swift */; };
+		A9F072A32CE755A1005033F2 /* CharacterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072A22CE755A1005033F2 /* CharacterListView.swift */; };
+		A9F072A52CE755B8005033F2 /* CharacterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072A42CE755B8005033F2 /* CharacterDetailView.swift */; };
+		A9F072A72CE755E8005033F2 /* CharacterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072A62CE755E8005033F2 /* CharacterFormView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A9F0728C2CE75166005033F2 /* Whitehack Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Whitehack Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Whitehack_ToolsApp.swift; sourceTree = "<group>"; };
-		A9F072912CE75166005033F2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A9F072932CE75169005033F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A9F072952CE75169005033F2 /* Whitehack_Tools.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Whitehack_Tools.entitlements; sourceTree = "<group>"; };
 		A9F072972CE75169005033F2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A9F0729E2CE75560005033F2 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		A9F072A02CE75581005033F2 /* CharacterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterStore.swift; sourceTree = "<group>"; };
+		A9F072A22CE755A1005033F2 /* CharacterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterListView.swift; sourceTree = "<group>"; };
+		A9F072A42CE755B8005033F2 /* CharacterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailView.swift; sourceTree = "<group>"; };
+		A9F072A62CE755E8005033F2 /* CharacterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterFormView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,11 +60,15 @@
 		A9F0728E2CE75166005033F2 /* Whitehack Tools */ = {
 			isa = PBXGroup;
 			children = (
+				A9F072A42CE755B8005033F2 /* CharacterDetailView.swift */,
+				A9F072A22CE755A1005033F2 /* CharacterListView.swift */,
 				A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */,
-				A9F072912CE75166005033F2 /* ContentView.swift */,
 				A9F072932CE75169005033F2 /* Assets.xcassets */,
 				A9F072952CE75169005033F2 /* Whitehack_Tools.entitlements */,
 				A9F072962CE75169005033F2 /* Preview Content */,
+				A9F0729E2CE75560005033F2 /* Character.swift */,
+				A9F072A02CE75581005033F2 /* CharacterStore.swift */,
+				A9F072A62CE755E8005033F2 /* CharacterFormView.swift */,
 			);
 			path = "Whitehack Tools";
 			sourceTree = "<group>";
@@ -139,7 +151,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9F072922CE75166005033F2 /* ContentView.swift in Sources */,
+				A9F0729F2CE75560005033F2 /* Character.swift in Sources */,
+				A9F072A12CE75581005033F2 /* CharacterStore.swift in Sources */,
+				A9F072A72CE755E8005033F2 /* CharacterFormView.swift in Sources */,
+				A9F072A32CE755A1005033F2 /* CharacterListView.swift in Sources */,
+				A9F072A52CE755B8005033F2 /* CharacterDetailView.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
