@@ -28,19 +28,14 @@ struct CharacterListView: View {
 }
 
 struct CharacterRowView: View {
-    let character: Character
+    let character: PlayerCharacter
     
     var body: some View {
         VStack(alignment: .leading) {
             Text(character.name)
                 .font(.headline)
-            Text("\(character.characterClass) - Level \(character.level)")
+            Text("\(character.characterClass.rawValue) - Level \(character.level)")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
         }
     }
-}
-
-#Preview {
-    CharacterListView()
 }
