@@ -45,6 +45,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A99CAAB22CE8598A004163DA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
+				A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */,
+				A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A99CAAB32CE8599C004163DA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A9F072B42CE75A06005033F2 /* PlayerCharacter.swift */,
+				A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A99CAAB42CE859AA004163DA /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				A9F072B02CE75990005033F2 /* CharacterStore.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		A99CAAB52CE859B3004163DA /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		A9F072832CE75166005033F2 = {
 			isa = PBXGroup;
 			children = (
@@ -68,13 +103,10 @@
 				A9F072932CE75169005033F2 /* Assets.xcassets */,
 				A9F072952CE75169005033F2 /* Whitehack_Tools.entitlements */,
 				A9F072962CE75169005033F2 /* Preview Content */,
-				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
-				A9F072B02CE75990005033F2 /* CharacterStore.swift */,
-				A9F072B42CE75A06005033F2 /* PlayerCharacter.swift */,
-				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
-				A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */,
-				A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */,
-				A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */,
+				A99CAAB22CE8598A004163DA /* Views */,
+				A99CAAB42CE859AA004163DA /* Data */,
+				A99CAAB32CE8599C004163DA /* Models */,
+				A99CAAB52CE859B3004163DA /* Utilities */,
 			);
 			path = "Whitehack Tools";
 			sourceTree = "<group>";
