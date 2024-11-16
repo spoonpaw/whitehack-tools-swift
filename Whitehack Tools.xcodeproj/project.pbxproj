@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
 		A9F072982CE75169005033F2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072972CE75169005033F2 /* Preview Assets.xcassets */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeEditor.swift; sourceTree = "<group>"; };
 		A9F0728C2CE75166005033F2 /* Whitehack Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Whitehack Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Whitehack_ToolsApp.swift; sourceTree = "<group>"; };
 		A9F072932CE75169005033F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -48,9 +50,7 @@
 		A99CAAB22CE8598A004163DA /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
-				A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */,
-				A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */,
+				A99CAAB62CE85A65004163DA /* Character */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -78,6 +78,25 @@
 				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		A99CAAB62CE85A65004163DA /* Character */ = {
+			isa = PBXGroup;
+			children = (
+				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
+				A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */,
+				A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */,
+				A99CAAB92CE85A95004163DA /* Components */,
+			);
+			path = Character;
+			sourceTree = "<group>";
+		};
+		A99CAAB92CE85A95004163DA /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		A9F072832CE75166005033F2 = {
@@ -193,6 +212,7 @@
 				A9F072AF2CE7597B005033F2 /* CharacterListView.swift in Sources */,
 				A9F072B12CE75990005033F2 /* CharacterStore.swift in Sources */,
 				A9F072BB2CE75AFC005033F2 /* CharacterFormView.swift in Sources */,
+				A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
 				A9F072B92CE75AE4005033F2 /* CharacterDetailView.swift in Sources */,
 				A9F072B72CE75ABE005033F2 /* WhitehackTypes.swift in Sources */,
