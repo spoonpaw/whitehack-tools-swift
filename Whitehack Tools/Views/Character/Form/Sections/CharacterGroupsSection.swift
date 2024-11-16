@@ -12,217 +12,394 @@ struct CharacterGroupsSection: View {
     @Binding var isVocationGroupAdded: Bool
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
+    @State private var isAddingSpecies = false
+    @State private var isAddingVocation = false
+    @State private var isAddingAffiliation = false
+    @State private var isAddingAttributeGroup = false
+    
     var body: some View {
         Section(header: Text("Group Associations").font(.headline)) {
-            // Species Group
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Species Group")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Add Species Group", text: $speciesGroup)
-                        .textInputAutocapitalization(.words)
-                        .focused($focusedField, equals: .speciesGroup)
-                        .textFieldStyle(.roundedBorder)
+            VStack(spacing: 16) {
+                // Species Group
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Species Group")
+                            .font(.system(.subheadline, design: .rounded))
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        if !isSpeciesGroupAdded && !isAddingSpecies {
+                            Button {
+                                isAddingSpecies = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.blue)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
                     
-                    if !isSpeciesGroupAdded && !speciesGroup.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Button {
-                            withAnimation {
+                    if isAddingSpecies {
+                        HStack {
+                            TextField("Add Species Group", text: $speciesGroup)
+                                .textInputAutocapitalization(.words)
+                                .focused($focusedField, equals: .speciesGroup)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Button {
                                 addSpeciesGroup()
+                                isAddingSpecies = false
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
                             }
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
+                            .buttonStyle(BorderlessButtonStyle())
+                            
+                            Button {
+                                speciesGroup = ""
+                                isAddingSpecies = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
-                        .buttonStyle(.borderless)
+                    }
+                    
+                    if isSpeciesGroupAdded {
+                        HStack {
+                            Text(speciesGroup)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    isSpeciesGroupAdded = false
+                                    speciesGroup = ""
+                                }
+                            } label: {
+                                Image(systemName: "trash.circle.fill")
+                                    .imageScale(.medium)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                        .padding(10)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
                     }
                 }
                 
-                if isSpeciesGroupAdded {
-                    Text(speciesGroup)
-                        .foregroundColor(.gray)
-                        .padding(.vertical, 2)
-                }
-            }
-            
-            // Vocation Group
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Vocation Group")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Add Vocation Group", text: $vocationGroup)
-                        .textInputAutocapitalization(.words)
-                        .focused($focusedField, equals: .vocationGroup)
-                        .textFieldStyle(.roundedBorder)
+                // Vocation Group
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Vocation Group")
+                            .font(.system(.subheadline, design: .rounded))
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        if !isVocationGroupAdded && !isAddingVocation {
+                            Button {
+                                isAddingVocation = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.blue)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
                     
-                    if !isVocationGroupAdded && !vocationGroup.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Button {
-                            withAnimation {
+                    if isAddingVocation {
+                        HStack {
+                            TextField("Add Vocation Group", text: $vocationGroup)
+                                .textInputAutocapitalization(.words)
+                                .focused($focusedField, equals: .vocationGroup)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Button {
                                 addVocationGroup()
+                                isAddingVocation = false
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
                             }
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.blue)
+                            .buttonStyle(BorderlessButtonStyle())
+                            
+                            Button {
+                                vocationGroup = ""
+                                isAddingVocation = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
-                        .buttonStyle(.borderless)
                     }
-                }
-                
-                if isVocationGroupAdded {
-                    Text(vocationGroup)
-                        .foregroundColor(.gray)
-                        .padding(.vertical, 2)
-                }
-            }
-            
-            // Affiliation Groups
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Affiliation Groups")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Add Affiliation Group", text: $newAffiliationGroup)
-                        .textInputAutocapitalization(.words)
-                        .focused($focusedField, equals: .newAffiliationGroup)
-                        .textFieldStyle(.roundedBorder)
-                        .onSubmit {
-                            withAnimation {
-                                addAffiliationGroup()
-                            }
-                        }
                     
-                    Button {
-                        withAnimation {
-                            addAffiliationGroup()
+                    if isVocationGroupAdded {
+                        HStack {
+                            Text(vocationGroup)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    isVocationGroupAdded = false
+                                    vocationGroup = ""
+                                }
+                            } label: {
+                                Image(systemName: "trash.circle.fill")
+                                    .imageScale(.medium)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(newAffiliationGroup.trimmingCharacters(in: .whitespaces).isEmpty ? .gray : .blue)
+                        .padding(10)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
                     }
-                    .buttonStyle(.borderless)
-                    .disabled(newAffiliationGroup.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
                 
-                if !affiliationGroups.isEmpty {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 10) {
-                            ForEach(affiliationGroups, id: \.self) { group in
-                                HStack {
-                                    Text(group)
-                                    Spacer()
-                                    Button {
-                                        withAnimation {
-                                            removeAffiliationGroup(group)
+                // Affiliation Groups
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Affiliation Groups")
+                            .font(.system(.subheadline, design: .rounded))
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        if !isAddingAffiliation {
+                            Button {
+                                isAddingAffiliation = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.blue)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
+                    
+                    if isAddingAffiliation {
+                        HStack {
+                            TextField("Add Affiliation Group", text: $newAffiliationGroup)
+                                .textInputAutocapitalization(.words)
+                                .focused($focusedField, equals: .newAffiliationGroup)
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Button {
+                                addAffiliationGroup()
+                                isAddingAffiliation = false
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                            
+                            Button {
+                                newAffiliationGroup = ""
+                                isAddingAffiliation = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
+                    
+                    if !affiliationGroups.isEmpty {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ForEach(affiliationGroups, id: \.self) { group in
+                                    HStack {
+                                        Text(group)
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Button {
+                                            withAnimation {
+                                                removeAffiliationGroup(group)
+                                            }
+                                        } label: {
+                                            Image(systemName: "trash.circle.fill")
+                                                .imageScale(.medium)
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(.red)
                                         }
-                                    } label: {
-                                        Image(systemName: "trash")
-                                            .foregroundColor(.red)
+                                        .buttonStyle(BorderlessButtonStyle())
                                     }
-                                    .buttonStyle(.borderless)
+                                    .padding(10)
+                                    .background(Color(.systemGray6))
+                                    .cornerRadius(8)
                                 }
                             }
                         }
+                        .frame(maxHeight: 150)
                     }
-                    .frame(maxHeight: 150)
                 }
-            }
-            
-            // Attribute-Group Pairs
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Attribute-Group Pairs")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
                 
-                ForEach(attributeGroupPairs) { pair in
+                // Attribute-Group Pairs
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text(pair.attribute)
-                            .frame(width: 100, alignment: .leading)
-                        Text(pair.group)
+                        Text("Attribute-Group Pairs")
+                            .font(.system(.subheadline, design: .rounded))
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
                         Spacer()
-                        Button {
-                            withAnimation {
-                                attributeGroupPairs.removeAll { $0.id == pair.id }
+                        if !isAddingAttributeGroup {
+                            Button {
+                                isAddingAttributeGroup = true
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.blue)
                             }
-                        } label: {
-                            Image(systemName: "trash")
-                                .foregroundColor(.red)
+                            .buttonStyle(BorderlessButtonStyle())
                         }
-                        .buttonStyle(.borderless)
                     }
-                    .padding(.vertical, 2)
-                }
-                
-                Divider()
-                    .padding(.vertical, 5)
-                
-                HStack {
-                    Picker("Attribute", selection: $selectedAttribute) {
-                        Text("Strength").tag("Strength")
-                        Text("Agility").tag("Agility")
-                        Text("Toughness").tag("Toughness")
-                        Text("Intelligence").tag("Intelligence")
-                        Text("Willpower").tag("Willpower")
-                        Text("Charisma").tag("Charisma")
-                    }
-                    .pickerStyle(.menu)
-                    .frame(width: 120)
                     
-                    TextField("Group", text: $newAttributeGroup)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($focusedField, equals: .newAttributeGroup)
-                        .onSubmit {
-                            withAnimation {
-                                addAttributeGroupPair()
+                    ForEach(attributeGroupPairs) { pair in
+                        HStack {
+                            Text(pair.attribute)
+                                .font(.system(.body, design: .rounded))
+                                .frame(minWidth: 100, alignment: .leading)
+                            Text(pair.group)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    attributeGroupPairs.removeAll { $0.id == pair.id }
+                                }
+                            } label: {
+                                Image(systemName: "trash.circle.fill")
+                                    .imageScale(.medium)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                        .padding(10)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                    }
+                    
+                    if isAddingAttributeGroup {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Menu {
+                                ForEach(["Strength", "Agility", "Toughness", "Intelligence", "Willpower", "Charisma"], id: \.self) { attribute in
+                                    Button(attribute) {
+                                        selectedAttribute = attribute
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(selectedAttribute.isEmpty ? "Select Attribute" : selectedAttribute)
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Image(systemName: "chevron.up.chevron.down")
+                                        .imageScale(.small)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(10)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                            }
+                            
+                            HStack {
+                                TextField("Enter group name", text: $newAttributeGroup)
+                                    .textFieldStyle(.roundedBorder)
+                                    .focused($focusedField, equals: .newAttributeGroup)
+                                
+                                Button {
+                                    addAttributeGroupPair()
+                                    isAddingAttributeGroup = false
+                                } label: {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .imageScale(.large)
+                                        .symbolRenderingMode(.hierarchical)
+                                        .foregroundColor(.green)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                
+                                Button {
+                                    newAttributeGroup = ""
+                                    selectedAttribute = ""
+                                    isAddingAttributeGroup = false
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .imageScale(.large)
+                                        .symbolRenderingMode(.hierarchical)
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
                             }
                         }
-                    
-                    Button {
-                        withAnimation {
-                            addAttributeGroupPair()
-                        }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(newAttributeGroup.trimmingCharacters(in: .whitespaces).isEmpty ? .gray : .blue)
                     }
-                    .buttonStyle(.borderless)
-                    .disabled(newAttributeGroup.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
+            .padding(.vertical, 8)
         }
     }
     
     private func addSpeciesGroup() {
         let trimmed = speciesGroup.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        isSpeciesGroupAdded = true
-        focusedField = nil
+        withAnimation {
+            isSpeciesGroupAdded = true
+            focusedField = nil
+        }
     }
     
     private func addVocationGroup() {
         let trimmed = vocationGroup.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        isVocationGroupAdded = true
-        focusedField = nil
+        withAnimation {
+            isVocationGroupAdded = true
+            focusedField = nil
+        }
     }
     
     private func addAffiliationGroup() {
         let trimmed = newAffiliationGroup.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        affiliationGroups.append(trimmed)
-        newAffiliationGroup = ""
-        focusedField = nil
+        withAnimation {
+            affiliationGroups.append(trimmed)
+            newAffiliationGroup = ""
+            focusedField = nil
+        }
     }
     
     private func removeAffiliationGroup(_ group: String) {
-        affiliationGroups.removeAll { $0 == group }
+        withAnimation {
+            affiliationGroups.removeAll { $0 == group }
+        }
     }
     
     private func addAttributeGroupPair() {
         let trimmed = newAttributeGroup.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-        attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: trimmed))
-        newAttributeGroup = ""
-        focusedField = nil
+        guard !trimmed.isEmpty && !selectedAttribute.isEmpty else { return }
+        withAnimation {
+            attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: trimmed))
+            newAttributeGroup = ""
+            selectedAttribute = ""
+            focusedField = nil
+        }
     }
 }

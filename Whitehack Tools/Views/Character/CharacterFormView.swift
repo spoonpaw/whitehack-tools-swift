@@ -1,194 +1,69 @@
 import SwiftUI
 
 struct CharacterFormView: View {
+    init(characterStore: CharacterStore, character: PlayerCharacter? = nil) {
+        self.characterStore = characterStore
+        self.character = character
+    }
+    
     @Environment(\.dismiss) var dismiss
     @ObservedObject var characterStore: CharacterStore
-    var character: PlayerCharacter?
+    let character: PlayerCharacter?
     
-    // MARK: - Basic Info
-    @State private var name: String = ""
-    @State private var selectedClass: CharacterClass = .deft
-    @State private var level: String = "1"
-    
-    // MARK: - Attributes
-    @State private var strength: String = "10"
-    @State private var agility: String = "10"
-    @State private var toughness: String = "10"
-    @State private var intelligence: String = "10"
-    @State private var willpower: String = "10"
-    @State private var charisma: String = "10"
-    
-    // MARK: - Combat Stats
-    @State private var currentHP: String = "0"
-    @State private var maxHP: String = "0"
-    @State private var attackValue: String = "10"
-    @State private var defenseValue: String = "0"
-    @State private var movement: String = "30"
-    @State private var saveValue: String = "7"
-    
-    // MARK: - Groups
-    @State private var speciesGroup: String = ""
-    @State private var vocationGroup: String = ""
-    @State private var affiliationGroups: [String] = []
-    @State private var newAffiliationGroup: String = ""
-    @State private var attributeGroupPairs: [AttributeGroupPair] = []
-    @State private var selectedAttribute: String = "Strength"
-    @State private var newAttributeGroup: String = ""
-    
-    // MARK: - Other
-    @State private var languages: [String] = ["Common"]
-    @State private var newLanguage: String = ""
-    @State private var notes: String = ""
-    @State private var experience: String = "0"
-    @State private var corruption: String = "0"
-    
-    // MARK: - Equipment
-    @State private var inventory: [String] = []
-    @State private var newInventoryItem: String = ""
-    @State private var coins: String = "0"
-    
-    // MARK: - Encumbrance
-    @State private var currentEncumbrance: String = "0"
-    @State private var maxEncumbrance: String = "15"
-    
-    // Flags to determine read-only status
-    @State private var isSpeciesGroupAdded: Bool = false
-    @State private var isVocationGroupAdded: Bool = false
-    
-    // MARK: - Focus State for Keyboard Management
-    @FocusState private var focusedField: Field?
-    
-    enum Field: Hashable {
-            case name, level
-            case strength, agility, toughness, intelligence, willpower, charisma
-            case currentHP, maxHP, attackValue, defenseValue, movement, saveValue
-            case speciesGroup, vocationGroup, newAffiliationGroup
-            case newLanguage, newInventoryItem
-            case currentEncumbrance, maxEncumbrance, coins
-            case experience, corruption, notes
-            case selectedAttribute, newAttributeGroup
-        }
+    // MARK: - Form Data Model
+    // Holds all form state separate from the store
+    private class FormData: ObservableObject {
+        @Published var name: String = ""
+        @Published var selectedClass: CharacterClass = .deft
+        @Published var level: String = "1"
         
-        var body: some View {
-            NavigationStack {
-                Form {
-                    // MARK: Basic Info Section
-                    BasicInfoSection(
-                        name: $name,
-                        selectedClass: $selectedClass,
-                        level: $level,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Attributes Section
-                    Section(header: Text("Attributes").font(.headline)) {
-                        ForEach([
-                            ("Strength", $strength, Field.strength),
-                            ("Agility", $agility, Field.agility),
-                            ("Toughness", $toughness, Field.toughness),
-                            ("Intelligence", $intelligence, Field.intelligence),
-                            ("Willpower", $willpower, Field.willpower),
-                            ("Charisma", $charisma, Field.charisma)
-                        ], id: \.0) { label, binding, field in
-                            AttributeEditor(
-                                label: label,
-                                value: binding,
-                                range: 3...18,
-                                focusedField: focusedField,
-                                field: field,
-                                focusBinding: $focusedField
-                            )
-                        }
-                    }
-                    
-                    // MARK: Combat Stats Section
-                    CombatStatsSection(
-                        currentHP: $currentHP,
-                        maxHP: $maxHP,
-                        attackValue: $attackValue,
-                        defenseValue: $defenseValue,
-                        movement: $movement,
-                        saveValue: $saveValue,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Group Associations Section
-                    CharacterGroupsSection(
-                        speciesGroup: $speciesGroup,
-                        vocationGroup: $vocationGroup,
-                        affiliationGroups: $affiliationGroups,
-                        newAffiliationGroup: $newAffiliationGroup,
-                        attributeGroupPairs: $attributeGroupPairs,
-                        selectedAttribute: $selectedAttribute,
-                        newAttributeGroup: $newAttributeGroup,
-                        isSpeciesGroupAdded: $isSpeciesGroupAdded,
-                        isVocationGroupAdded: $isVocationGroupAdded,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Languages Section
-                    LanguagesSection(
-                        languages: $languages,
-                        newLanguage: $newLanguage,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Equipment Section
-                    EquipmentSection(
-                        inventory: $inventory,
-                        newInventoryItem: $newInventoryItem,
-                        coins: $coins,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Encumbrance Section
-                    EncumbranceSection(
-                        currentEncumbrance: $currentEncumbrance,
-                        maxEncumbrance: $maxEncumbrance,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Notes Section
-                    NotesSection(
-                        notes: $notes,
-                        focusedField: $focusedField
-                    )
-                    
-                    // MARK: Other Information Section
-                    OtherInformationSection(
-                        experience: $experience,
-                        corruption: $corruption,
-                        focusedField: $focusedField
-                    )
-                }
-                .navigationTitle(character == nil ? "New Character" : "Edit Character")
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Save") {
-                            saveCharacter()
-                        }
-                        .disabled(!isFormValid())
-                    }
-                }
-                .onAppear(perform: loadCharacterData)
-                .onTapGesture {
-                    focusedField = nil
-                }
-            }
-        }
-    }
-
-    // Keep the helper methods in the main CharacterFormView
-    extension CharacterFormView {
-        private func loadCharacterData() {
-            guard let character = character else { return }
-            
-            // Basic Info
+        // Attributes
+        @Published var strength: String = "10"
+        @Published var agility: String = "10"
+        @Published var toughness: String = "10"
+        @Published var intelligence: String = "10"
+        @Published var willpower: String = "10"
+        @Published var charisma: String = "10"
+        
+        // Combat Stats
+        @Published var currentHP: String = "0"
+        @Published var maxHP: String = "0"
+        @Published var attackValue: String = "10"
+        @Published var defenseValue: String = "0"
+        @Published var movement: String = "30"
+        @Published var saveValue: String = "7"
+        
+        // Groups
+        @Published var speciesGroup: String = ""
+        @Published var vocationGroup: String = ""
+        @Published var affiliationGroups: [String] = []
+        @Published var newAffiliationGroup: String = ""
+        @Published var attributeGroupPairs: [AttributeGroupPair] = []
+        @Published var selectedAttribute: String = "Strength"
+        @Published var newAttributeGroup: String = ""
+        
+        // Other
+        @Published var languages: [String] = ["Common"]
+        @Published var newLanguage: String = ""
+        @Published var notes: String = ""
+        @Published var experience: String = "0"
+        @Published var corruption: String = "0"
+        
+        // Equipment
+        @Published var inventory: [String] = []
+        @Published var newInventoryItem: String = ""
+        @Published var coins: String = "0"
+        
+        // Encumbrance
+        @Published var currentEncumbrance: String = "0"
+        @Published var maxEncumbrance: String = "15"
+        
+        // Flags
+        @Published var isSpeciesGroupAdded: Bool = false
+        @Published var isVocationGroupAdded: Bool = false
+        
+        // Initialize from character if editing
+        func loadFrom(_ character: PlayerCharacter) {
             name = character.name
             selectedClass = character.characterClass
             level = String(character.level)
@@ -229,67 +104,203 @@ struct CharacterFormView: View {
             isSpeciesGroupAdded = !speciesGroup.isEmpty
             isVocationGroupAdded = !vocationGroup.isEmpty
         }
-        
-        private func isFormValid() -> Bool {
-            guard !name.trimmingCharacters(in: .whitespaces).isEmpty,
-                  let levelInt = Int(level), levelInt > 0,
-                  let strengthInt = Int(strength), (3...18).contains(strengthInt),
-                  let agilityInt = Int(agility), (3...18).contains(agilityInt),
-                  let toughnessInt = Int(toughness), (3...18).contains(toughnessInt),
-                  let intelligenceInt = Int(intelligence), (3...18).contains(intelligenceInt),
-                  let willpowerInt = Int(willpower), (3...18).contains(willpowerInt),
-                  let charismaInt = Int(charisma), (3...18).contains(charismaInt),
-                  let currentHPInt = Int(currentHP), currentHPInt >= 0,
-                  let maxHPInt = Int(maxHP), maxHPInt >= 0,
-                  let attackValueInt = Int(attackValue), attackValueInt >= 0,
-                  let defenseValueInt = Int(defenseValue), defenseValueInt >= 0,
-                  let movementInt = Int(movement), movementInt >= 0,
-                  let saveValueInt = Int(saveValue), saveValueInt >= 0
-            else {
-                return false
+    }
+    
+    // State object to hold all form data
+    @StateObject private var formData = FormData()
+    
+    // MARK: - Focus State
+    @FocusState private var focusedField: Field?
+    
+    enum Field: Hashable {
+        case name, level
+        case strength, agility, toughness, intelligence, willpower, charisma
+        case currentHP, maxHP, attackValue, defenseValue, movement, saveValue
+        case speciesGroup, vocationGroup, newAffiliationGroup
+        case newLanguage, newInventoryItem
+        case currentEncumbrance, maxEncumbrance, coins
+        case experience, corruption, notes
+        case selectedAttribute, newAttributeGroup
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                // MARK: Basic Info Section
+                BasicInfoSection(
+                    name: $formData.name,
+                    selectedClass: $formData.selectedClass,
+                    level: $formData.level,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Attributes Section
+                Section(header: Text("Attributes").font(.headline)) {
+                    ForEach([
+                        ("Strength", $formData.strength, Field.strength),
+                        ("Agility", $formData.agility, Field.agility),
+                        ("Toughness", $formData.toughness, Field.toughness),
+                        ("Intelligence", $formData.intelligence, Field.intelligence),
+                        ("Willpower", $formData.willpower, Field.willpower),
+                        ("Charisma", $formData.charisma, Field.charisma)
+                    ], id: \.0) { label, binding, field in
+                        AttributeEditor(
+                            label: label,
+                            value: binding,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: field,
+                            focusBinding: $focusedField
+                        )
+                    }
+                }
+                
+                // MARK: Combat Stats Section
+                CombatStatsSection(
+                    currentHP: $formData.currentHP,
+                    maxHP: $formData.maxHP,
+                    attackValue: $formData.attackValue,
+                    defenseValue: $formData.defenseValue,
+                    movement: $formData.movement,
+                    saveValue: $formData.saveValue,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Group Associations Section
+                CharacterGroupsSection(
+                    speciesGroup: $formData.speciesGroup,
+                    vocationGroup: $formData.vocationGroup,
+                    affiliationGroups: $formData.affiliationGroups,
+                    newAffiliationGroup: $formData.newAffiliationGroup,
+                    attributeGroupPairs: $formData.attributeGroupPairs,
+                    selectedAttribute: $formData.selectedAttribute,
+                    newAttributeGroup: $formData.newAttributeGroup,
+                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                    isVocationGroupAdded: $formData.isVocationGroupAdded,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Languages Section
+                LanguagesSection(
+                    languages: $formData.languages,
+                    newLanguage: $formData.newLanguage,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Equipment Section
+                EquipmentSection(
+                    inventory: $formData.inventory,
+                    newInventoryItem: $formData.newInventoryItem,
+                    coins: $formData.coins,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Encumbrance Section
+                EncumbranceSection(
+                    currentEncumbrance: $formData.currentEncumbrance,
+                    maxEncumbrance: $formData.maxEncumbrance,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Notes Section
+                NotesSection(
+                    notes: $formData.notes,
+                    focusedField: $focusedField
+                )
+                
+                // MARK: Other Information Section
+                OtherInformationSection(
+                    experience: $formData.experience,
+                    corruption: $formData.corruption,
+                    focusedField: $focusedField
+                )
             }
-            return true
-        }
-        
-        private func saveCharacter() {
-            guard isFormValid() else { return }
-            
-            let newCharacter = PlayerCharacter(
-                id: character?.id ?? UUID(),
-                name: name.trimmingCharacters(in: .whitespaces),
-                characterClass: selectedClass,
-                level: Int(level) ?? 1,
-                strength: Int(strength) ?? 10,
-                agility: Int(agility) ?? 10,
-                toughness: Int(toughness) ?? 10,
-                intelligence: Int(intelligence) ?? 10,
-                willpower: Int(willpower) ?? 10,
-                charisma: Int(charisma) ?? 10,
-                currentHP: Int(currentHP) ?? 0,
-                maxHP: Int(maxHP) ?? 0,
-                attackValue: Int(attackValue) ?? 10,
-                defenseValue: Int(defenseValue) ?? 0,
-                movement: Int(movement) ?? 30,
-                saveValue: Int(saveValue) ?? 7,
-                speciesGroup: speciesGroup.isEmpty ? nil : speciesGroup.trimmingCharacters(in: .whitespaces),
-                vocationGroup: vocationGroup.isEmpty ? nil : vocationGroup.trimmingCharacters(in: .whitespaces),
-                affiliationGroups: affiliationGroups,
-                attributeGroupPairs: attributeGroupPairs,
-                languages: languages,
-                notes: notes.trimmingCharacters(in: .whitespacesAndNewlines),
-                experience: Int(experience) ?? 0,
-                corruption: Int(corruption) ?? 0,
-                inventory: inventory,
-                currentEncumbrance: Int(currentEncumbrance) ?? 0,
-                maxEncumbrance: Int(maxEncumbrance) ?? 15,
-                coins: Int(coins) ?? 0
-            )
-            
-            if character != nil {
-                characterStore.updateCharacter(newCharacter)
-            } else {
-                characterStore.addCharacter(newCharacter)
+            .navigationTitle(character == nil ? "New Character" : "Edit Character")
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveCharacter()
+                    }
+                    .disabled(!isFormValid())
+                }
             }
-            dismiss()
+            .onAppear {
+                if let character = character {
+                    formData.loadFrom(character)
+                }
+            }
+            .onTapGesture {
+                focusedField = nil
+            }
         }
     }
+    
+    private func isFormValid() -> Bool {
+        guard !formData.name.trimmingCharacters(in: .whitespaces).isEmpty,
+              let levelInt = Int(formData.level), levelInt > 0,
+              let strengthInt = Int(formData.strength), (3...18).contains(strengthInt),
+              let agilityInt = Int(formData.agility), (3...18).contains(agilityInt),
+              let toughnessInt = Int(formData.toughness), (3...18).contains(toughnessInt),
+              let intelligenceInt = Int(formData.intelligence), (3...18).contains(intelligenceInt),
+              let willpowerInt = Int(formData.willpower), (3...18).contains(willpowerInt),
+              let charismaInt = Int(formData.charisma), (3...18).contains(charismaInt),
+              let currentHPInt = Int(formData.currentHP), currentHPInt >= 0,
+              let maxHPInt = Int(formData.maxHP), maxHPInt >= 0,
+              let attackValueInt = Int(formData.attackValue), attackValueInt >= 0,
+              let defenseValueInt = Int(formData.defenseValue), defenseValueInt >= 0,
+              let movementInt = Int(formData.movement), movementInt >= 0,
+              let saveValueInt = Int(formData.saveValue), saveValueInt >= 0
+        else {
+            return false
+        }
+        return true
+    }
+    
+    private func saveCharacter() {
+        guard isFormValid() else { return }
+        
+        let newCharacter = PlayerCharacter(
+            id: character?.id ?? UUID(),
+            name: formData.name.trimmingCharacters(in: .whitespaces),
+            characterClass: formData.selectedClass,
+            level: Int(formData.level) ?? 1,
+            strength: Int(formData.strength) ?? 10,
+            agility: Int(formData.agility) ?? 10,
+            toughness: Int(formData.toughness) ?? 10,
+            intelligence: Int(formData.intelligence) ?? 10,
+            willpower: Int(formData.willpower) ?? 10,
+            charisma: Int(formData.charisma) ?? 10,
+            currentHP: Int(formData.currentHP) ?? 0,
+            maxHP: Int(formData.maxHP) ?? 0,
+            attackValue: Int(formData.attackValue) ?? 10,
+            defenseValue: Int(formData.defenseValue) ?? 0,
+            movement: Int(formData.movement) ?? 30,
+            saveValue: Int(formData.saveValue) ?? 7,
+            speciesGroup: formData.speciesGroup.isEmpty ? nil : formData.speciesGroup.trimmingCharacters(in: .whitespaces),
+            vocationGroup: formData.vocationGroup.isEmpty ? nil : formData.vocationGroup.trimmingCharacters(in: .whitespaces),
+            affiliationGroups: formData.affiliationGroups,
+            attributeGroupPairs: formData.attributeGroupPairs,
+            languages: formData.languages,
+            notes: formData.notes.trimmingCharacters(in: .whitespacesAndNewlines),
+            experience: Int(formData.experience) ?? 0,
+            corruption: Int(formData.corruption) ?? 0,
+            inventory: formData.inventory,
+            currentEncumbrance: Int(formData.currentEncumbrance) ?? 0,
+            maxEncumbrance: Int(formData.maxEncumbrance) ?? 15,
+            coins: Int(formData.coins) ?? 0
+        )
+        
+        // Only touch the store when saving
+        if character != nil {
+            characterStore.updateCharacter(newCharacter)
+        } else {
+            characterStore.addCharacter(newCharacter)
+        }
+        dismiss()
+    }
+}
