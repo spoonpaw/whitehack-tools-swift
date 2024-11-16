@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */; };
+		A99CAABD2CE85BB7004163DA /* CharacterGroupsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAABC2CE85BB7004163DA /* CharacterGroupsSection.swift */; };
+		A99CAABF2CE85E84004163DA /* BasicInfoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAABE2CE85E84004163DA /* BasicInfoSection.swift */; };
+		A99CAAC12CE85E99004163DA /* CombatStatsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC02CE85E99004163DA /* CombatStatsSection.swift */; };
+		A99CAAC32CE85EBE004163DA /* LanguagesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC22CE85EBE004163DA /* LanguagesSection.swift */; };
+		A99CAAC52CE85ED3004163DA /* EquipmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC42CE85ED3004163DA /* EquipmentSection.swift */; };
+		A99CAAC72CE85EEE004163DA /* EncumbranceSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC62CE85EEE004163DA /* EncumbranceSection.swift */; };
+		A99CAAC92CE85F02004163DA /* OtherInformationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC82CE85F02004163DA /* OtherInformationSection.swift */; };
+		A99CAACB2CE85F15004163DA /* NotesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAACA2CE85F15004163DA /* NotesSection.swift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
 		A9F072982CE75169005033F2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072972CE75169005033F2 /* Preview Assets.xcassets */; };
@@ -22,6 +30,14 @@
 
 /* Begin PBXFileReference section */
 		A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeEditor.swift; sourceTree = "<group>"; };
+		A99CAABC2CE85BB7004163DA /* CharacterGroupsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterGroupsSection.swift; sourceTree = "<group>"; };
+		A99CAABE2CE85E84004163DA /* BasicInfoSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoSection.swift; sourceTree = "<group>"; };
+		A99CAAC02CE85E99004163DA /* CombatStatsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatStatsSection.swift; sourceTree = "<group>"; };
+		A99CAAC22CE85EBE004163DA /* LanguagesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguagesSection.swift; sourceTree = "<group>"; };
+		A99CAAC42CE85ED3004163DA /* EquipmentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentSection.swift; sourceTree = "<group>"; };
+		A99CAAC62CE85EEE004163DA /* EncumbranceSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncumbranceSection.swift; sourceTree = "<group>"; };
+		A99CAAC82CE85F02004163DA /* OtherInformationSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherInformationSection.swift; sourceTree = "<group>"; };
+		A99CAACA2CE85F15004163DA /* NotesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesSection.swift; sourceTree = "<group>"; };
 		A9F0728C2CE75166005033F2 /* Whitehack Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Whitehack Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Whitehack_ToolsApp.swift; sourceTree = "<group>"; };
 		A9F072932CE75169005033F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -83,6 +99,7 @@
 		A99CAAB62CE85A65004163DA /* Character */ = {
 			isa = PBXGroup;
 			children = (
+				A99CAABA2CE85B9A004163DA /* Form */,
 				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
 				A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */,
 				A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */,
@@ -97,6 +114,29 @@
 				A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		A99CAABA2CE85B9A004163DA /* Form */ = {
+			isa = PBXGroup;
+			children = (
+				A99CAABB2CE85BAA004163DA /* Sections */,
+			);
+			path = Form;
+			sourceTree = "<group>";
+		};
+		A99CAABB2CE85BAA004163DA /* Sections */ = {
+			isa = PBXGroup;
+			children = (
+				A99CAABC2CE85BB7004163DA /* CharacterGroupsSection.swift */,
+				A99CAABE2CE85E84004163DA /* BasicInfoSection.swift */,
+				A99CAAC02CE85E99004163DA /* CombatStatsSection.swift */,
+				A99CAAC22CE85EBE004163DA /* LanguagesSection.swift */,
+				A99CAAC42CE85ED3004163DA /* EquipmentSection.swift */,
+				A99CAAC62CE85EEE004163DA /* EncumbranceSection.swift */,
+				A99CAAC82CE85F02004163DA /* OtherInformationSection.swift */,
+				A99CAACA2CE85F15004163DA /* NotesSection.swift */,
+			);
+			path = Sections;
 			sourceTree = "<group>";
 		};
 		A9F072832CE75166005033F2 = {
@@ -208,9 +248,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A99CAAC52CE85ED3004163DA /* EquipmentSection.swift in Sources */,
+				A99CAABF2CE85E84004163DA /* BasicInfoSection.swift in Sources */,
 				A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */,
+				A99CAACB2CE85F15004163DA /* NotesSection.swift in Sources */,
+				A99CAAC72CE85EEE004163DA /* EncumbranceSection.swift in Sources */,
+				A99CAAC32CE85EBE004163DA /* LanguagesSection.swift in Sources */,
+				A99CAAC92CE85F02004163DA /* OtherInformationSection.swift in Sources */,
 				A9F072AF2CE7597B005033F2 /* CharacterListView.swift in Sources */,
 				A9F072B12CE75990005033F2 /* CharacterStore.swift in Sources */,
+				A99CAABD2CE85BB7004163DA /* CharacterGroupsSection.swift in Sources */,
+				A99CAAC12CE85E99004163DA /* CombatStatsSection.swift in Sources */,
 				A9F072BB2CE75AFC005033F2 /* CharacterFormView.swift in Sources */,
 				A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
