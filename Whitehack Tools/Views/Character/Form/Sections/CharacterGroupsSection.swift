@@ -17,6 +17,19 @@ struct CharacterGroupsSection: View {
     @State private var isAddingAffiliation = false
     @State private var isAddingAttributeGroup = false
     
+    // Helper computed property to get all available groups
+    private var availableGroups: [String] {
+        var groups: [String] = []
+        if isSpeciesGroupAdded, !speciesGroup.isEmpty {
+            groups.append(speciesGroup)
+        }
+        if isVocationGroupAdded, !vocationGroup.isEmpty {
+            groups.append(vocationGroup)
+        }
+        groups.append(contentsOf: affiliationGroups)
+        return groups
+    }
+
     var body: some View {
         Section(header: Text("Group Associations").font(.headline)) {
             VStack(spacing: 16) {
@@ -262,9 +275,11 @@ struct CharacterGroupsSection: View {
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
                         Spacer()
-                        if !isAddingAttributeGroup {
+                        if !availableGroups.isEmpty && !isAddingAttributeGroup {
                             Button {
                                 isAddingAttributeGroup = true
+                                selectedAttribute = ""
+                                newAttributeGroup = ""
                             } label: {
                                 Image(systemName: "plus.circle.fill")
                                     .imageScale(.large)
@@ -322,11 +337,28 @@ struct CharacterGroupsSection: View {
                                 .cornerRadius(8)
                             }
                             
+                            Menu {
+                                ForEach(availableGroups, id: \.self) { group in
+                                    Button(group) {
+                                        newAttributeGroup = group
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(newAttributeGroup.isEmpty ? "Select Group" : newAttributeGroup)
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Image(systemName: "chevron.up.chevron.down")
+                                        .imageScale(.small)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(10)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
+                            }
+                            
                             HStack {
-                                TextField("Enter group name", text: $newAttributeGroup)
-                                    .textFieldStyle(.roundedBorder)
-                                    .focused($focusedField, equals: .newAttributeGroup)
-                                
+                                Spacer()
                                 Button {
                                     addAttributeGroupPair()
                                     isAddingAttributeGroup = false
@@ -337,6 +369,7 @@ struct CharacterGroupsSection: View {
                                         .foregroundColor(.green)
                                 }
                                 .buttonStyle(BorderlessButtonStyle())
+                                .disabled(selectedAttribute.isEmpty || newAttributeGroup.isEmpty)
                                 
                                 Button {
                                     newAttributeGroup = ""
@@ -393,10 +426,9 @@ struct CharacterGroupsSection: View {
     }
     
     private func addAttributeGroupPair() {
-        let trimmed = newAttributeGroup.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty && !selectedAttribute.isEmpty else { return }
+        guard !selectedAttribute.isEmpty && !newAttributeGroup.isEmpty else { return }
         withAnimation {
-            attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: trimmed))
+            attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: newAttributeGroup))
             newAttributeGroup = ""
             selectedAttribute = ""
             focusedField = nil
