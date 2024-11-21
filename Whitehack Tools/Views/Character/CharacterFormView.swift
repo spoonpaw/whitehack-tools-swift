@@ -136,23 +136,57 @@ struct CharacterFormView: View {
                 
                 // MARK: Attributes Section
                 Section(header: Text("Attributes").font(.headline)) {
-                    ForEach([
-                        ("Strength", $formData.strength, Field.strength),
-                        ("Agility", $formData.agility, Field.agility),
-                        ("Toughness", $formData.toughness, Field.toughness),
-                        ("Intelligence", $formData.intelligence, Field.intelligence),
-                        ("Willpower", $formData.willpower, Field.willpower),
-                        ("Charisma", $formData.charisma, Field.charisma)
-                    ], id: \.0) { label, binding, field in
+                    VStack(spacing: 16) {
                         AttributeEditor(
-                            label: label,
-                            value: binding,
+                            label: "Strength",
+                            value: $formData.strength,
                             range: 3...18,
                             focusedField: focusedField,
-                            field: field,
+                            field: .strength,
+                            focusBinding: $focusedField
+                        )
+                        AttributeEditor(
+                            label: "Agility",
+                            value: $formData.agility,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: .agility,
+                            focusBinding: $focusedField
+                        )
+                        AttributeEditor(
+                            label: "Toughness",
+                            value: $formData.toughness,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: .toughness,
+                            focusBinding: $focusedField
+                        )
+                        AttributeEditor(
+                            label: "Intelligence",
+                            value: $formData.intelligence,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: .intelligence,
+                            focusBinding: $focusedField
+                        )
+                        AttributeEditor(
+                            label: "Willpower",
+                            value: $formData.willpower,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: .willpower,
+                            focusBinding: $focusedField
+                        )
+                        AttributeEditor(
+                            label: "Charisma",
+                            value: $formData.charisma,
+                            range: 3...18,
+                            focusedField: focusedField,
+                            field: .charisma,
                             focusBinding: $focusedField
                         )
                     }
+                    .padding(.vertical, 8)
                 }
                 
                 // MARK: Combat Stats Section

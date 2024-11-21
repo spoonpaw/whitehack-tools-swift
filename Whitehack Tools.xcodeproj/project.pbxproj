@@ -16,6 +16,7 @@
 		A99CAAC72CE85EEE004163DA /* EncumbranceSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC62CE85EEE004163DA /* EncumbranceSection.swift */; };
 		A99CAAC92CE85F02004163DA /* OtherInformationSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAC82CE85F02004163DA /* OtherInformationSection.swift */; };
 		A99CAACB2CE85F15004163DA /* NotesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAACA2CE85F15004163DA /* NotesSection.swift */; };
+		A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A9B679C32CE8791E000ACE9E /* PhosphorSwift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
 		A9F072982CE75169005033F2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072972CE75169005033F2 /* Preview Assets.xcassets */; };
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,6 +196,9 @@
 			dependencies = (
 			);
 			name = "Whitehack Tools";
+			packageProductDependencies = (
+				A9B679C32CE8791E000ACE9E /* PhosphorSwift */,
+			);
 			productName = "Whitehack Tools";
 			productReference = A9F0728C2CE75166005033F2 /* Whitehack Tools.app */;
 			productType = "com.apple.product-type.application";
@@ -222,6 +227,9 @@
 				Base,
 			);
 			mainGroup = A9F072832CE75166005033F2;
+			packageReferences = (
+				A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */,
+			);
 			productRefGroup = A9F0728D2CE75166005033F2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -483,6 +491,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/phosphor-icons/swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A9B679C32CE8791E000ACE9E /* PhosphorSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */;
+			productName = PhosphorSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A9F072842CE75166005033F2 /* Project object */;
 }
