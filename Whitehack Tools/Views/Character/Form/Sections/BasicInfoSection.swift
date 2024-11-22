@@ -24,7 +24,14 @@ struct BasicInfoSection: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Picker("Class", selection: $selectedClass) {
-                    ForEach(CharacterClass.allCases, id: \.self) { characterClass in
+                    ForEach([
+                        CharacterClass.deft,
+                        CharacterClass.strong,
+                        CharacterClass.wise,
+                        CharacterClass.brave,
+                        CharacterClass.clever,
+                        CharacterClass.fortunate
+                    ], id: \.self) { characterClass in
                         Text(characterClass.rawValue).tag(characterClass)
                     }
                 }
