@@ -52,7 +52,7 @@ struct CharacterDetailView: View {
                     StatCard(label: "Attack", value: "\(character.attackValue)", icon: Ph.sword.bold)
                     StatCard(label: "Defense", value: "\(character.defenseValue)", icon: Ph.shield.bold)
                     StatCard(label: "Movement", value: "\(character.movement) ft", icon: Ph.personSimpleRun.bold)
-                    StatCard(label: "Save", value: "\(character.saveValue)", icon: Ph.diceFive.bold)
+                    StatCard(label: "Save", value: "\(character.saveValue)\(character.saveColor.isEmpty ? "" : " (\(character.saveColor))")", icon: Ph.diceFive.bold)
                 }
                 .padding(.vertical, 8)
             }
@@ -73,16 +73,16 @@ struct CharacterDetailView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
 
-                        FlowLayout(spacing: 8) {
-                            ForEach(character.affiliationGroups, id: \.self) { group in
+                        FlowLayout(spacing: 8, content: character.affiliationGroups.map { group in
+                            AnyView(
                                 Text(group)
                                     .font(.subheadline)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
                                     .background(Color.blue.opacity(0.1))
                                     .cornerRadius(12)
-                            }
-                        }
+                            )
+                        })
                     }
                     .padding(.vertical, 4)
                 }
@@ -115,16 +115,16 @@ struct CharacterDetailView: View {
 
             // MARK: - Languages Section
             Section(header: SectionHeader(title: "Languages", icon: Ph.chatText.bold)) {
-                FlowLayout(spacing: 8) {
-                    ForEach(character.languages, id: \.self) { language in
+                FlowLayout(spacing: 8, content: character.languages.map { language in
+                    AnyView(
                         Text(language)
                             .font(.subheadline)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(Color.green.opacity(0.1))
                             .cornerRadius(12)
-                    }
-                }
+                    )
+                })
                 .padding(.vertical, 4)
             }
 
@@ -366,52 +366,52 @@ struct EncumbranceBar: View {
     }
 }
 
-struct FlowLayout: Layout {
+struct FlowLayout: View {
     let spacing: CGFloat
+    let content: [AnyView]
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = FlowResult(in: proposal.width ?? 0, subviews: subviews, spacing: spacing)
-        return result.size
+    init(spacing: CGFloat, content: [AnyView]) {
+        self.spacing = spacing
+        self.content = content
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = FlowResult(in: bounds.width, subviews: subviews, spacing: spacing)
-        for (index, subview) in subviews.enumerated() {
-            subview.place(at: CGPoint(x: bounds.minX + result.positions[index].x,
-                                      y: bounds.minY + result.positions[index].y),
-                          proposal: ProposedViewSize(result.sizes[index]))
+    var body: some View {
+        GeometryReader { geometry in
+            self.generateContent(in: geometry)
         }
     }
 
-    struct FlowResult {
-        var positions: [CGPoint]
-        var sizes: [CGSize]
-        var size: CGSize
+    private func generateContent(in geometry: GeometryProxy) -> some View {
+        var width = CGFloat.zero
+        var height = CGFloat.zero
+        var lastHeight = CGFloat.zero
 
-        init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
-            positions = []
-            sizes = []
-
-            var currentX: CGFloat = 0
-            var currentY: CGFloat = 0
-            var lineHeight: CGFloat = 0
-
-            for subview in subviews {
-                let size = subview.sizeThatFits(.unspecified)
-                sizes.append(size)
-
-                if currentX + size.width > maxWidth {
-                    currentX = 0
-                    currentY += lineHeight + spacing
-                    lineHeight = 0
-                }
-
-                positions.append(CGPoint(x: currentX, y: currentY))
-                currentX += size.width + spacing
-                lineHeight = max(lineHeight, size.height)
+        return ZStack(alignment: .topLeading) {
+            ForEach(Array(content.enumerated()), id: \.offset) { index, item in
+                item
+                    .alignmentGuide(.leading) { dimension in
+                        if abs(width - dimension.width) > geometry.size.width {
+                            width = 0
+                            height -= lastHeight
+                            lastHeight = 0
+                        }
+                        let result = width
+                        if index == content.count - 1 {
+                            width = 0
+                        } else {
+                            width -= dimension.width + spacing
+                        }
+                        return result
+                    }
+                    .alignmentGuide(.top) { dimension in
+                        let result = height
+                        if index == content.count - 1 {
+                            height = 0
+                        }
+                        lastHeight = dimension.height
+                        return result
+                    }
             }
-
-            size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
     }
 }

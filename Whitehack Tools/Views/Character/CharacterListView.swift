@@ -5,7 +5,7 @@ struct CharacterListView: View {
     @State private var showingAddSheet = false
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             List {
                 ForEach(characterStore.characters) { character in
                     NavigationLink(destination: CharacterDetailView(character: character, characterStore: characterStore)) {

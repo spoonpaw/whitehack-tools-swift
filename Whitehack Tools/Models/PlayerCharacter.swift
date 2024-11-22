@@ -22,6 +22,7 @@ class PlayerCharacter: Identifiable, Codable {
     var defenseValue: Int
     var movement: Int
     var saveValue: Int
+    var saveColor: String
     
     // Groups
     var speciesGroup: String? // "Human" or custom
@@ -60,6 +61,7 @@ class PlayerCharacter: Identifiable, Codable {
          defenseValue: Int = 0,
          movement: Int = 30,
          saveValue: Int = 7,
+         saveColor: String = "",
          speciesGroup: String? = nil,
          vocationGroup: String? = nil,
          affiliationGroups: [String] = [],
@@ -88,6 +90,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.defenseValue = defenseValue
         self.movement = movement
         self.saveValue = saveValue
+        self.saveColor = saveColor
         self.speciesGroup = speciesGroup
         self.vocationGroup = vocationGroup
         self.affiliationGroups = affiliationGroups

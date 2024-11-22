@@ -32,6 +32,7 @@ struct CharacterFormView: View {
         @Published var defenseValue: String = "0"
         @Published var movement: String = "30"
         @Published var saveValue: String = "7"
+        @Published var saveColor: String = ""
         
         // Groups
         @Published var speciesGroup: String = ""
@@ -83,6 +84,7 @@ struct CharacterFormView: View {
             defenseValue = String(character.defenseValue)
             movement = String(character.movement)
             saveValue = String(character.saveValue)
+            saveColor = character.saveColor
             
             // Groups
             speciesGroup = character.speciesGroup ?? ""
@@ -115,7 +117,7 @@ struct CharacterFormView: View {
     enum Field: Hashable {
         case name, level
         case strength, agility, toughness, intelligence, willpower, charisma
-        case currentHP, maxHP, attackValue, defenseValue, movement, saveValue
+        case currentHP, maxHP, attackValue, defenseValue, movement, saveValue, saveColor
         case speciesGroup, vocationGroup, newAffiliationGroup
         case newLanguage, newInventoryItem
         case currentEncumbrance, maxEncumbrance, coins
@@ -124,7 +126,7 @@ struct CharacterFormView: View {
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             Form {
                 // MARK: Basic Info Section
                 BasicInfoSection(
@@ -197,6 +199,7 @@ struct CharacterFormView: View {
                     defenseValue: $formData.defenseValue,
                     movement: $formData.movement,
                     saveValue: $formData.saveValue,
+                    saveColor: $formData.saveColor,
                     focusedField: $focusedField
                 )
                 
@@ -315,6 +318,7 @@ struct CharacterFormView: View {
             defenseValue: Int(formData.defenseValue) ?? 0,
             movement: Int(formData.movement) ?? 30,
             saveValue: Int(formData.saveValue) ?? 7,
+            saveColor: formData.saveColor,
             speciesGroup: formData.speciesGroup.isEmpty ? nil : formData.speciesGroup.trimmingCharacters(in: .whitespaces),
             vocationGroup: formData.vocationGroup.isEmpty ? nil : formData.vocationGroup.trimmingCharacters(in: .whitespaces),
             affiliationGroups: formData.affiliationGroups,

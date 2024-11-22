@@ -8,6 +8,7 @@ struct CombatStatsSection: View {
     @Binding var defenseValue: String
     @Binding var movement: String
     @Binding var saveValue: String
+    @Binding var saveColor: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     var body: some View {
@@ -69,6 +70,15 @@ struct CombatStatsSection: View {
                 TextField("Enter save value", text: $saveValue)
                     .keyboardType(.numberPad)
                     .focused($focusedField, equals: .saveValue)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Save Color")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Enter save color", text: $saveColor)
+                    .focused($focusedField, equals: .saveColor)
                     .textFieldStyle(.roundedBorder)
             }
         }
