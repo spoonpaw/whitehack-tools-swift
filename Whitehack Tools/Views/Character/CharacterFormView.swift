@@ -106,6 +106,13 @@ struct CharacterFormView: View {
                 willpower: Int(formData.willpower) ?? 10,
                 miracleSlots: $formData.wiseMiracleSlots
             )
+            FormBraveQuirksSection(
+                characterClass: formData.selectedClass,
+                level: Int(formData.level) ?? 1,
+                braveQuirkOptions: $formData.braveQuirkOptions,
+                comebackDice: $formData.comebackDice,
+                hasUsedSayNo: $formData.hasUsedSayNo
+            )
             FormNotesSection(
                 notes: $formData.notes,
                 focusedField: $focusedField
@@ -176,6 +183,9 @@ struct CharacterFormView: View {
         formData.currentConflictLoot = character.currentConflictLoot
         formData.strongCombatOptions = character.strongCombatOptions
         formData.wiseMiracleSlots = character.wiseMiracleSlots
+        formData.braveQuirkOptions = character.braveQuirkOptions
+        formData.comebackDice = character.comebackDice
+        formData.hasUsedSayNo = character.hasUsedSayNo
     }
     
     private func saveCharacter() {
@@ -229,6 +239,9 @@ struct CharacterFormView: View {
         newCharacter.currentConflictLoot = formData.currentConflictLoot
         newCharacter.strongCombatOptions = formData.strongCombatOptions
         newCharacter.wiseMiracleSlots = formData.wiseMiracleSlots
+        newCharacter.braveQuirkOptions = formData.braveQuirkOptions
+        newCharacter.comebackDice = formData.comebackDice
+        newCharacter.hasUsedSayNo = formData.hasUsedSayNo
         
         if character != nil {
             characterStore.updateCharacter(newCharacter)
@@ -293,6 +306,11 @@ private class FormData: ObservableObject {
     
     // Wise Class Specific Properties
     @Published var wiseMiracleSlots: [WiseMiracleSlot] = []
+    
+    // Brave Class Specific Properties
+    @Published var braveQuirkOptions = BraveQuirkOptions()
+    @Published var comebackDice: Int = 0
+    @Published var hasUsedSayNo: Bool = false
     
     init() {
         // Initialize slots based on class

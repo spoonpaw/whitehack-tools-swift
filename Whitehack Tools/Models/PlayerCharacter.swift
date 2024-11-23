@@ -175,6 +175,112 @@ struct WiseMiracleSlot: Codable, Identifiable {
     }
 }
 
+// MARK: - Brave Class Specific Types
+enum BraveQuirk: Int, Codable, CaseIterable, Identifiable {
+    case doubleStrainRolls = 0
+    case improvedHealing
+    case protectAlly
+    case resistCurses
+    case drawAttention
+    case fulfillRequirements
+    case divineInvocation
+    case improvisedWeapons
+    
+    var id: Int { rawValue }
+    
+    var name: String {
+        switch self {
+        case .doubleStrainRolls: return "Double Strain Rolls"
+        case .improvedHealing: return "Improved Healing"
+        case .protectAlly: return "Protect Ally"
+        case .resistCurses: return "Resist Curses"
+        case .drawAttention: return "Draw Attention"
+        case .fulfillRequirements: return "Fulfill Requirements"
+        case .divineInvocation: return "Divine Invocation"
+        case .improvisedWeapons: return "Improvised Weapons"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .doubleStrainRolls:
+            return "Always make double positive strain rolls to move faster when encumbered."
+        case .improvedHealing:
+            return "Require no treatment to heal beyond 1 HP from negative value. Can use comeback dice for damage shrugged off on successful save."
+        case .protectAlly:
+            return "Choose a party member at session start. When protecting them, use one free comeback die for the roll."
+        case .resistCurses:
+            return "+4 saving throw vs. cursed objects and may use comeback dice to reduce cursed HP costs."
+        case .drawAttention:
+            return "Enemies choose to attack someone other than you first at the start of battle (if possible). Can be inverted when desired."
+        case .fulfillRequirements:
+            return "Once per session, your courage fulfills user requirements that an item, place, or passage may have in the form of class or groups."
+        case .divineInvocation:
+            return "Once per session, use a god's name to halt, scare, convince, bless, or curse your level number of listeners (none higher level than you, +1 for holy symbol/affiliation). Each target may save to avoid."
+        case .improvisedWeapons:
+            return "Improvised weapons do at least 1d6 damage, and actual weapons ignore target resistances (but not immunities)."
+        }
+    }
+}
+
+struct BraveQuirkSlot: Codable, Identifiable {
+    let id: UUID
+    var quirk: BraveQuirk?
+    var protectedAllyName: String // Only used if quirk is .protectAlly
+    
+    init(id: UUID = UUID(), quirk: BraveQuirk? = nil, protectedAllyName: String = "") {
+        self.id = id
+        self.quirk = quirk
+        self.protectedAllyName = protectedAllyName
+    }
+}
+
+struct BraveQuirkOptions: Codable {
+    private var slots: [BraveQuirkSlot]
+    
+    init() {
+        self.slots = Array(repeating: BraveQuirkSlot(), count: 10) // Max level is 10
+    }
+    
+    mutating func setQuirk(_ quirk: BraveQuirk?, at slot: Int) {
+        guard slot >= 0 && slot < slots.count else { return }
+        slots[slot].quirk = quirk
+    }
+    
+    func getQuirk(at slot: Int) -> BraveQuirk? {
+        guard slot >= 0 && slot < slots.count else { return nil }
+        return slots[slot].quirk
+    }
+    
+    func isActive(_ quirk: BraveQuirk) -> Bool {
+        slots.contains { $0.quirk == quirk }
+    }
+    
+    func isSlotFilled(at index: Int) -> Bool {
+        guard index >= 0 && index < slots.count else { return false }
+        return slots[index].quirk != nil
+    }
+    
+    var activeQuirks: [BraveQuirk] {
+        slots.compactMap { $0.quirk }
+    }
+    
+    var count: Int {
+        slots.compactMap { $0.quirk }.count
+    }
+    
+    // Special handling for the Protect Ally quirk
+    mutating func setProtectedAlly(_ name: String, at slot: Int) {
+        guard slot >= 0 && slot < slots.count else { return }
+        slots[slot].protectedAllyName = name
+    }
+    
+    func getProtectedAlly(at slot: Int) -> String {
+        guard slot >= 0 && slot < slots.count else { return "" }
+        return slots[slot].protectedAllyName
+    }
+}
+
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -243,6 +349,11 @@ class PlayerCharacter: Identifiable, Codable {
     
     // Wise Class Specific Properties
     var wiseMiracleSlots: [WiseMiracleSlot]
+    
+    // Brave Class Specific Properties
+    var braveQuirkOptions: BraveQuirkOptions
+    var comebackDice: Int
+    var hasUsedSayNo: Bool
     
     // Other
     var languages: [String]
@@ -324,6 +435,24 @@ class PlayerCharacter: Identifiable, Codable {
         StrongCombatOption.allCases.filter { $0.rawValue <= level }
     }
 
+    // MARK: - Brave Class Specific Methods
+    var availableQuirkSlots: Int {
+        guard characterClass == .brave else { return 0 }
+        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+        return stats.slots
+    }
+
+    var hasArmorPenalty: Bool {
+        // TODO: Add armor check logic when equipment system is implemented
+        // Returns true if wearing armor heavier than cloth
+        return false
+    }
+
+    var attributePenalty: Int {
+        guard characterClass == .brave && hasArmorPenalty else { return 0 }
+        return 2
+    }
+    
     // MARK: - Initializer
     init(id: UUID = UUID(),
          name: String = "",
@@ -350,6 +479,9 @@ class PlayerCharacter: Identifiable, Codable {
          currentConflictLoot: ConflictLoot? = nil,
          strongCombatOptions: StrongCombatOptions = StrongCombatOptions(), // Initialize as empty
          wiseMiracleSlots: [WiseMiracleSlot] = [], // Initialize as empty
+         braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions(), // Initialize as empty
+         comebackDice: Int = 0,
+         hasUsedSayNo: Bool = false,
          languages: [String] = ["Common"],
          notes: String = "",
          experience: Int = 0,
@@ -384,6 +516,9 @@ class PlayerCharacter: Identifiable, Codable {
         self.currentConflictLoot = currentConflictLoot
         self.strongCombatOptions = strongCombatOptions
         self.wiseMiracleSlots = wiseMiracleSlots
+        self.braveQuirkOptions = braveQuirkOptions
+        self.comebackDice = comebackDice
+        self.hasUsedSayNo = hasUsedSayNo
         self.languages = languages
         self.notes = notes
         self.experience = experience

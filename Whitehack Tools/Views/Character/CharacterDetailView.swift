@@ -17,6 +17,11 @@ struct CharacterDetailView: View {
             DetailDeftAttunementSection(character: character)
             DetailStrongCombatSection(character: character)
             DetailWiseMiracleSection(character: character)
+            DetailBraveQuirksSection(characterClass: character.characterClass,
+                                    level: character.level,
+                                    braveQuirkOptions: character.braveQuirkOptions,
+                                    comebackDice: character.comebackDice,
+                                    hasUsedSayNo: character.hasUsedSayNo)
             DetailAdditionalInfoSection(character: character)
             DetailNotesSection(character: character)
         }
