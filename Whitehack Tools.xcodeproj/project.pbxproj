@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A959EC782CF1A99E0051DCEC /* PhosphorSwift */; };
 		A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */; };
 		A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E52CF157E500A7CD7B /* ProgressBar.swift */; };
 		A98489102CF1671F00A7CD7B /* FormBasicInfoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98489082CF1671D00A7CD7B /* FormBasicInfoSection.swift */; };
@@ -31,6 +32,10 @@
 		A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A984892D2CF174F200A7CD7B /* FormAttributeGroupPairsView.swift */; };
 		A98489322CF174F200A7CD7B /* FormSpeciesGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A984892E2CF174F200A7CD7B /* FormSpeciesGroupView.swift */; };
 		A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */; };
+		A99E17292CF18BE500B69E26 /* FormDeftAttunementSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E17282CF18BE500B69E26 /* FormDeftAttunementSection.swift */; };
+		A99E172B2CF1982D00B69E26 /* DetailDeftAttunementSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */; };
+		A99E172D2CF19A6600B69E26 /* FormStrongCombatSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172C2CF19A6600B69E26 /* FormStrongCombatSection.swift */; };
+		A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172E2CF19A8600B69E26 /* DetailStrongCombatSection.swift */; };
 		A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A9B679C32CE8791E000ACE9E /* PhosphorSwift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
@@ -69,6 +74,10 @@
 		A984892D2CF174F200A7CD7B /* FormAttributeGroupPairsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormAttributeGroupPairsView.swift; sourceTree = "<group>"; };
 		A984892E2CF174F200A7CD7B /* FormSpeciesGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormSpeciesGroupView.swift; sourceTree = "<group>"; };
 		A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeEditor.swift; sourceTree = "<group>"; };
+		A99E17282CF18BE500B69E26 /* FormDeftAttunementSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormDeftAttunementSection.swift; sourceTree = "<group>"; };
+		A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailDeftAttunementSection.swift; sourceTree = "<group>"; };
+		A99E172C2CF19A6600B69E26 /* FormStrongCombatSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormStrongCombatSection.swift; sourceTree = "<group>"; };
+		A99E172E2CF19A8600B69E26 /* DetailStrongCombatSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailStrongCombatSection.swift; sourceTree = "<group>"; };
 		A9F0728C2CE75166005033F2 /* Whitehack Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Whitehack Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Whitehack_ToolsApp.swift; sourceTree = "<group>"; };
 		A9F072932CE75169005033F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -89,6 +98,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */,
+				A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +116,8 @@
 		A98488F52CF160D000A7CD7B /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A99E172E2CF19A8600B69E26 /* DetailStrongCombatSection.swift */,
+				A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */,
 				A984891E2CF1672F00A7CD7B /* DetailAdditionalInfoSection.swift */,
 				A984891D2CF1672F00A7CD7B /* DetailCombatSection.swift */,
 				A98489192CF1672E00A7CD7B /* DetailEquipmentSection.swift */,
@@ -198,6 +210,8 @@
 		A99CAABB2CE85BAA004163DA /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A99E172C2CF19A6600B69E26 /* FormStrongCombatSection.swift */,
+				A99E17282CF18BE500B69E26 /* FormDeftAttunementSection.swift */,
 				A98489082CF1671D00A7CD7B /* FormBasicInfoSection.swift */,
 				A984890B2CF1671E00A7CD7B /* FormCharacterGroupsSection.swift */,
 				A984890F2CF1671E00A7CD7B /* FormCombatStatsSection.swift */,
@@ -267,6 +281,7 @@
 			name = "Whitehack Tools";
 			packageProductDependencies = (
 				A9B679C32CE8791E000ACE9E /* PhosphorSwift */,
+				A959EC782CF1A99E0051DCEC /* PhosphorSwift */,
 			);
 			productName = "Whitehack Tools";
 			productReference = A9F0728C2CE75166005033F2 /* Whitehack Tools.app */;
@@ -329,6 +344,7 @@
 				A98489232CF1673000A7CD7B /* DetailProgressSection.swift in Sources */,
 				A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */,
 				A98489162CF1671F00A7CD7B /* FormEquipmentSection.swift in Sources */,
+				A99E172B2CF1982D00B69E26 /* DetailDeftAttunementSection.swift in Sources */,
 				A98489152CF1671F00A7CD7B /* FormOtherInformationSection.swift in Sources */,
 				A98489112CF1671F00A7CD7B /* FormEncumbranceSection.swift in Sources */,
 				A98489262CF1673000A7CD7B /* DetailCombatSection.swift in Sources */,
@@ -338,6 +354,8 @@
 				A98489172CF1671F00A7CD7B /* FormCombatStatsSection.swift in Sources */,
 				A9F072AF2CE7597B005033F2 /* CharacterListView.swift in Sources */,
 				A98489272CF1673000A7CD7B /* DetailAdditionalInfoSection.swift in Sources */,
+				A99E172D2CF19A6600B69E26 /* FormStrongCombatSection.swift in Sources */,
+				A99E17292CF18BE500B69E26 /* FormDeftAttunementSection.swift in Sources */,
 				A984892F2CF174F200A7CD7B /* FormAffiliationGroupsView.swift in Sources */,
 				A9F072B12CE75990005033F2 /* CharacterStore.swift in Sources */,
 				A98489102CF1671F00A7CD7B /* FormBasicInfoSection.swift in Sources */,
@@ -347,6 +365,7 @@
 				A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */,
 				A98489122CF1671F00A7CD7B /* FormLanguagesSection.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
+				A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */,
 				A98489212CF1673000A7CD7B /* DetailNotesSection.swift in Sources */,
 				A98489242CF1673000A7CD7B /* DetailGroupsSection.swift in Sources */,
 				A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */,
@@ -588,6 +607,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A959EC782CF1A99E0051DCEC /* PhosphorSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */;
+			productName = PhosphorSwift;
+		};
 		A9B679C32CE8791E000ACE9E /* PhosphorSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */;

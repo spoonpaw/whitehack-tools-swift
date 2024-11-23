@@ -27,6 +27,7 @@ struct CharacterFormView: View {
         case notes
         case experience, corruption
         case selectedAttribute, newAttributeGroup
+        case attunementName
     }
     
     var body: some View {
@@ -77,6 +78,18 @@ struct CharacterFormView: View {
                 experience: $formData.experience,
                 corruption: $formData.corruption,
                 focusedField: $focusedField
+            )
+            FormDeftAttunementSection(
+                characterClass: formData.selectedClass,
+                level: Int(formData.level) ?? 1,
+                attunementSlots: $formData.attunementSlots,
+                hasUsedAttunementToday: $formData.hasUsedAttunementToday
+            )
+            FormStrongCombatSection(
+                characterClass: formData.selectedClass,
+                level: Int(formData.level) ?? 1,
+                currentConflictLoot: $formData.currentConflictLoot,
+                strongCombatOptions: $formData.strongCombatOptions
             )
             FormNotesSection(
                 notes: $formData.notes,
@@ -141,6 +154,12 @@ struct CharacterFormView: View {
         
         formData.experience = String(character.experience)
         formData.corruption = String(character.corruption)
+        
+        formData.attunementSlots = character.attunementSlots
+        formData.hasUsedAttunementToday = character.hasUsedAttunementToday
+        
+        formData.currentConflictLoot = character.currentConflictLoot
+        formData.strongCombatOptions = character.strongCombatOptions
     }
     
     private func saveCharacter() {
@@ -188,6 +207,12 @@ struct CharacterFormView: View {
         newCharacter.experience = Int(formData.experience) ?? 0
         newCharacter.corruption = Int(formData.corruption) ?? 0
         
+        newCharacter.attunementSlots = formData.attunementSlots
+        newCharacter.hasUsedAttunementToday = formData.hasUsedAttunementToday
+        
+        newCharacter.currentConflictLoot = formData.currentConflictLoot
+        newCharacter.strongCombatOptions = formData.strongCombatOptions
+        
         if character != nil {
             characterStore.updateCharacter(newCharacter)
         } else {
@@ -200,7 +225,7 @@ struct CharacterFormView: View {
 // MARK: - Form Data Model
 private class FormData: ObservableObject {
     @Published var name = ""
-    @Published var selectedClass: CharacterClass = .strong
+    @Published var selectedClass: CharacterClass = .deft
     @Published var level = "1"
     
     @Published var strength = "10"
@@ -226,7 +251,7 @@ private class FormData: ObservableObject {
     @Published var isSpeciesGroupAdded = false
     @Published var isVocationGroupAdded = false
     
-    @Published var languages: [String] = []
+    @Published var languages: [String] = ["Common"]
     @Published var newLanguage = ""
     
     @Published var inventory: [String] = []
@@ -234,10 +259,26 @@ private class FormData: ObservableObject {
     @Published var coins = "0"
     
     @Published var currentEncumbrance = "0"
-    @Published var maxEncumbrance = "0"
+    @Published var maxEncumbrance = "15"
     
     @Published var notes = ""
     
     @Published var experience = "0"
     @Published var corruption = "0"
+    
+    // Initialize with empty attunement slots based on level and class
+    @Published var attunementSlots: [AttunementSlot] = []
+    @Published var hasUsedAttunementToday: Bool = false
+    
+    // Strong Class Specific Properties
+    @Published var currentConflictLoot: ConflictLoot?
+    @Published var strongCombatOptions = StrongCombatOptions()
+    
+    init() {
+        // Initialize attunement slots for new characters
+        if selectedClass == .deft {
+            let availableSlots = AdvancementTables.shared.stats(for: selectedClass, at: Int(level) ?? 1).slots
+            attunementSlots = Array(repeating: AttunementSlot(), count: availableSlots)
+        }
+    }
 }

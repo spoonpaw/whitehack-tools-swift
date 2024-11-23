@@ -14,6 +14,8 @@ struct CharacterDetailView: View {
             DetailGroupsSection(character: character)
             DetailLanguagesSection(character: character)
             DetailEquipmentSection(character: character)
+            DetailDeftAttunementSection(character: character)
+            DetailStrongCombatSection(character: character)
             DetailAdditionalInfoSection(character: character)
             DetailNotesSection(character: character)
         }
