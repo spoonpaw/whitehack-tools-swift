@@ -22,6 +22,9 @@ struct CharacterDetailView: View {
                                     braveQuirkOptions: character.braveQuirkOptions,
                                     comebackDice: character.comebackDice,
                                     hasUsedSayNo: character.hasUsedSayNo)
+            DetailCleverKnacksSection(characterClass: character.characterClass,
+                                    level: character.level,
+                                    cleverKnackOptions: character.cleverKnackOptions)
             DetailAdditionalInfoSection(character: character)
             DetailNotesSection(character: character)
         }

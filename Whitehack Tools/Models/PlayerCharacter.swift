@@ -281,6 +281,108 @@ struct BraveQuirkOptions: Codable {
     }
 }
 
+// MARK: - Clever Class Specific Types
+enum CleverKnack: Int, Codable, CaseIterable, Identifiable {
+    case combatExploiter = 0
+    case efficientCrafter
+    case weakenedSaves
+    case navigationMaster
+    case convincingNegotiator
+    case escapeArtist
+    case substanceExpert
+    case machineMaster
+    case trackingExpert
+    
+    var id: Int { rawValue }
+    
+    var name: String {
+        switch self {
+        case .combatExploiter: return "Combat Exploiter"
+        case .efficientCrafter: return "Efficient Crafter"
+        case .weakenedSaves: return "Weakened Saves"
+        case .navigationMaster: return "Navigation Master"
+        case .convincingNegotiator: return "Convincing Negotiator"
+        case .escapeArtist: return "Escape Artist"
+        case .substanceExpert: return "Substance Expert"
+        case .machineMaster: return "Machine Master"
+        case .trackingExpert: return "Tracking Expert"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .combatExploiter:
+            return "Base bonus for combat advantage is +3 instead of +2, and once per battle may switch d6 for d10 as damage die"
+        case .efficientCrafter:
+            return "+4 to crafting, mending, or assembly. Takes half the time and can skip one non-essential part"
+        case .weakenedSaves:
+            return "Targets of special attacks get -3 to their saves"
+        case .navigationMaster:
+            return "Can always figure out location roughly. Never gets lost"
+        case .convincingNegotiator:
+            return "+2 to task rolls and saves in conviction attempts, including trade"
+        case .escapeArtist:
+            return "+4 to any task roll related to escaping confinement or bypassing barriers"
+        case .substanceExpert:
+            return "+4 to substance identification and saves, +1 to quantified effects in character's favor"
+        case .machineMaster:
+            return "+4 to task rolls with or concerning machines"
+        case .trackingExpert:
+            return "+4 to tracking and covering own tracks"
+        }
+    }
+}
+
+struct CleverKnackSlot: Codable, Identifiable {
+    let id: UUID
+    var knack: CleverKnack?
+    var hasUsedCombatDie: Bool // Only used if knack is .combatExploiter
+    
+    init(id: UUID = UUID(), knack: CleverKnack? = nil, hasUsedCombatDie: Bool = false) {
+        self.id = id
+        self.knack = knack
+        self.hasUsedCombatDie = hasUsedCombatDie
+    }
+}
+
+struct CleverKnackOptions: Codable {
+    private(set) var slots: [CleverKnackSlot]
+    var hasUsedUnorthodoxBonus: Bool
+    
+    init() {
+        self.slots = []
+        self.hasUsedUnorthodoxBonus = false
+    }
+    
+    var activeKnacks: [CleverKnack] {
+        slots.compactMap { $0.knack }
+    }
+    
+    mutating func setKnack(_ knack: CleverKnack?, at index: Int) {
+        while slots.count <= index {
+            slots.append(CleverKnackSlot())
+        }
+        slots[index].knack = knack
+    }
+    
+    func getKnack(at index: Int) -> CleverKnack? {
+        guard index < slots.count else { return nil }
+        return slots[index].knack
+    }
+    
+    mutating func resetDailyPowers() {
+        hasUsedUnorthodoxBonus = false
+        for i in 0..<slots.count {
+            slots[i].hasUsedCombatDie = false
+        }
+    }
+    
+    mutating func setHasUsedCombatDie(_ value: Bool, at index: Int) {
+        guard index < slots.count else { return }
+        slots[index].hasUsedCombatDie = value
+    }
+}
+
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -354,6 +456,9 @@ class PlayerCharacter: Identifiable, Codable {
     var braveQuirkOptions: BraveQuirkOptions
     var comebackDice: Int
     var hasUsedSayNo: Bool
+    
+    // Clever Class Specific Properties
+    var cleverKnackOptions: CleverKnackOptions
     
     // Other
     var languages: [String]
@@ -480,6 +585,7 @@ class PlayerCharacter: Identifiable, Codable {
          strongCombatOptions: StrongCombatOptions = StrongCombatOptions(), // Initialize as empty
          wiseMiracleSlots: [WiseMiracleSlot] = [], // Initialize as empty
          braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions(), // Initialize as empty
+         cleverKnackOptions: CleverKnackOptions = CleverKnackOptions(), // Initialize as empty
          comebackDice: Int = 0,
          hasUsedSayNo: Bool = false,
          languages: [String] = ["Common"],
@@ -517,6 +623,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.strongCombatOptions = strongCombatOptions
         self.wiseMiracleSlots = wiseMiracleSlots
         self.braveQuirkOptions = braveQuirkOptions
+        self.cleverKnackOptions = cleverKnackOptions
         self.comebackDice = comebackDice
         self.hasUsedSayNo = hasUsedSayNo
         self.languages = languages

@@ -113,6 +113,11 @@ struct CharacterFormView: View {
                 comebackDice: $formData.comebackDice,
                 hasUsedSayNo: $formData.hasUsedSayNo
             )
+            FormCleverKnacksSection(
+                characterClass: formData.selectedClass,
+                level: Int(formData.level) ?? 1,
+                cleverKnackOptions: $formData.cleverKnackOptions
+            )
             FormNotesSection(
                 notes: $formData.notes,
                 focusedField: $focusedField
@@ -186,6 +191,7 @@ struct CharacterFormView: View {
         formData.braveQuirkOptions = character.braveQuirkOptions
         formData.comebackDice = character.comebackDice
         formData.hasUsedSayNo = character.hasUsedSayNo
+        formData.cleverKnackOptions = character.cleverKnackOptions
     }
     
     private func saveCharacter() {
@@ -242,6 +248,7 @@ struct CharacterFormView: View {
         newCharacter.braveQuirkOptions = formData.braveQuirkOptions
         newCharacter.comebackDice = formData.comebackDice
         newCharacter.hasUsedSayNo = formData.hasUsedSayNo
+        newCharacter.cleverKnackOptions = formData.cleverKnackOptions
         
         if character != nil {
             characterStore.updateCharacter(newCharacter)
@@ -301,7 +308,7 @@ private class FormData: ObservableObject {
     @Published var hasUsedAttunementToday: Bool = false
     
     // Strong Class Specific Properties
-    @Published var currentConflictLoot: ConflictLoot?
+    @Published var currentConflictLoot: ConflictLoot? = nil
     @Published var strongCombatOptions = StrongCombatOptions()
     
     // Wise Class Specific Properties
@@ -309,8 +316,11 @@ private class FormData: ObservableObject {
     
     // Brave Class Specific Properties
     @Published var braveQuirkOptions = BraveQuirkOptions()
-    @Published var comebackDice: Int = 0
-    @Published var hasUsedSayNo: Bool = false
+    @Published var comebackDice = 0
+    @Published var hasUsedSayNo = false
+    
+    // Clever Class Specific Properties
+    @Published var cleverKnackOptions = CleverKnackOptions()
     
     init() {
         // Initialize slots based on class

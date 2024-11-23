@@ -12,6 +12,8 @@
 		A93E17222CF1F068007114C7 /* FormWiseMiracleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E17212CF1F068007114C7 /* FormWiseMiracleSection.swift */; };
 		A93E17242CF1FA29007114C7 /* DetailBraveQuirksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E17232CF1FA29007114C7 /* DetailBraveQuirksSection.swift */; };
 		A93E17262CF1FA31007114C7 /* FormBraveQuirksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E17252CF1FA31007114C7 /* FormBraveQuirksSection.swift */; };
+		A93E172C2CF2027C007114C7 /* DetailCleverKnacksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E172B2CF2027C007114C7 /* DetailCleverKnacksSection.swift */; };
+		A93E172E2CF20285007114C7 /* FormCleverKnacksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */; };
 		A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A959EC782CF1A99E0051DCEC /* PhosphorSwift */; };
 		A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */; };
 		A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E52CF157E500A7CD7B /* ProgressBar.swift */; };
@@ -60,6 +62,8 @@
 		A93E17212CF1F068007114C7 /* FormWiseMiracleSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormWiseMiracleSection.swift; sourceTree = "<group>"; };
 		A93E17232CF1FA29007114C7 /* DetailBraveQuirksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailBraveQuirksSection.swift; sourceTree = "<group>"; };
 		A93E17252CF1FA31007114C7 /* FormBraveQuirksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBraveQuirksSection.swift; sourceTree = "<group>"; };
+		A93E172B2CF2027C007114C7 /* DetailCleverKnacksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailCleverKnacksSection.swift; sourceTree = "<group>"; };
+		A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormCleverKnacksSection.swift; sourceTree = "<group>"; };
 		A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancementTables.swift; sourceTree = "<group>"; };
 		A98488E52CF157E500A7CD7B /* ProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		A98489082CF1671D00A7CD7B /* FormBasicInfoSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBasicInfoSection.swift; sourceTree = "<group>"; };
@@ -126,6 +130,7 @@
 		A98488F52CF160D000A7CD7B /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A93E172B2CF2027C007114C7 /* DetailCleverKnacksSection.swift */,
 				A93E17232CF1FA29007114C7 /* DetailBraveQuirksSection.swift */,
 				A93E171F2CF1F05C007114C7 /* DetailWiseMiracleSection.swift */,
 				A99E172E2CF19A8600B69E26 /* DetailStrongCombatSection.swift */,
@@ -222,6 +227,7 @@
 		A99CAABB2CE85BAA004163DA /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */,
 				A93E17252CF1FA31007114C7 /* FormBraveQuirksSection.swift */,
 				A93E17212CF1F068007114C7 /* FormWiseMiracleSection.swift */,
 				A93E17192CF1E73B007114C7 /* FormAttributesSection.swift */,
@@ -357,6 +363,7 @@
 			files = (
 				A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */,
 				A98489232CF1673000A7CD7B /* DetailProgressSection.swift in Sources */,
+				A93E172C2CF2027C007114C7 /* DetailCleverKnacksSection.swift in Sources */,
 				A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */,
 				A93E171A2CF1E73B007114C7 /* FormAttributesSection.swift in Sources */,
 				A98489162CF1671F00A7CD7B /* FormEquipmentSection.swift in Sources */,
@@ -386,6 +393,7 @@
 				A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */,
 				A98489212CF1673000A7CD7B /* DetailNotesSection.swift in Sources */,
 				A98489242CF1673000A7CD7B /* DetailGroupsSection.swift in Sources */,
+				A93E172E2CF20285007114C7 /* FormCleverKnacksSection.swift in Sources */,
 				A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */,
 				A93E17222CF1F068007114C7 /* FormWiseMiracleSection.swift in Sources */,
 				A93E17242CF1FA29007114C7 /* DetailBraveQuirksSection.swift in Sources */,
