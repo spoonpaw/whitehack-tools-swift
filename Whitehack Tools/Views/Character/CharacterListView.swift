@@ -21,7 +21,9 @@ struct CharacterListView: View {
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
-                CharacterFormView(characterStore: characterStore)
+                NavigationView {
+                    CharacterFormView(characterStore: characterStore)
+                }
             }
         }
     }

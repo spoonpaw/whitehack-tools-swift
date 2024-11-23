@@ -1,7 +1,7 @@
-// NotesSection.swift
+// FormNotesSection.swift
 import SwiftUI
 
-struct NotesSection: View {
+struct FormNotesSection: View {
     @Binding var notes: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     

@@ -1,7 +1,7 @@
 // EncumbranceSection.swift
 import SwiftUI
 
-struct EncumbranceSection: View {
+struct FormEncumbranceSection: View {
     @Binding var currentEncumbrance: String
     @Binding var maxEncumbrance: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?

@@ -1,7 +1,7 @@
 // CombatStatsSection.swift
 import SwiftUI
 
-struct CombatStatsSection: View {
+struct FormCombatStatsSection: View {
     @Binding var currentHP: String
     @Binding var maxHP: String
     @Binding var defenseValue: String
@@ -33,7 +33,7 @@ struct CombatStatsSection: View {
                         .focused($focusedField, equals: .currentHP)
                         .textFieldStyle(.roundedBorder)
                         .multilineTextAlignment(.center)
-                        .frame(maxWidth: 80)
+                        .frame(maxWidth: .infinity)
                         .onChange(of: currentHP) { newValue in
                             let filtered = newValue.filter { "-0123456789".contains($0) }
                             // Only allow one minus sign at the start

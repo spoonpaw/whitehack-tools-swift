@@ -1,7 +1,7 @@
-// BasicInfoSection.swift
+// FormBasicInfoSection.swift
 import SwiftUI
 
-struct BasicInfoSection: View {
+struct FormBasicInfoSection: View {
     @Binding var name: String
     @Binding var selectedClass: CharacterClass
     @Binding var level: String
@@ -23,19 +23,42 @@ struct BasicInfoSection: View {
                 Text("Class")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Picker("Class", selection: $selectedClass) {
-                    ForEach([
-                        CharacterClass.deft,
-                        CharacterClass.strong,
-                        CharacterClass.wise,
-                        CharacterClass.brave,
-                        CharacterClass.clever,
-                        CharacterClass.fortunate
-                    ], id: \.self) { characterClass in
-                        Text(characterClass.rawValue).tag(characterClass)
+                HStack {
+                    Menu {
+                        Picker("", selection: $selectedClass) {
+                            ForEach([
+                                CharacterClass.deft,
+                                CharacterClass.strong,
+                                CharacterClass.wise,
+                                CharacterClass.brave,
+                                CharacterClass.clever,
+                                CharacterClass.fortunate
+                            ], id: \.self) { characterClass in
+                                Text(characterClass.rawValue).tag(characterClass)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    } label: {
+                        HStack {
+                            Text(selectedClass.rawValue)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.up.chevron.down")
+                                .foregroundColor(.secondary)
+                                .imageScale(.small)
+                        }
                     }
                 }
-                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Color(.systemBackground))
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color(.systemGray4), lineWidth: 1)
+                )
             }
             
             VStack(alignment: .leading, spacing: 5) {

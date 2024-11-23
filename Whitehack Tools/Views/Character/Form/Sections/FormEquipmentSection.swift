@@ -1,12 +1,14 @@
 import SwiftUI
 
-struct EquipmentSection: View {
+struct FormEquipmentSection: View {
     @Binding var inventory: [String]
     @Binding var newInventoryItem: String
     @Binding var coins: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     @State private var isAddingItem = false
+    @State private var editingItemIndex: Int? = nil
+    @State private var tempItemText = ""
     
     var body: some View {
         Section(header: Text("Equipment").font(.headline)) {
@@ -40,17 +42,6 @@ struct EquipmentSection: View {
                                 .textFieldStyle(.roundedBorder)
                             
                             Button {
-                                addInventoryItem()
-                                isAddingItem = false
-                            } label: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.green)
-                            }
-                            .buttonStyle(BorderlessButtonStyle())
-                            
-                            Button {
                                 newInventoryItem = ""
                                 isAddingItem = false
                             } label: {
@@ -60,17 +51,69 @@ struct EquipmentSection: View {
                                     .foregroundColor(.red)
                             }
                             .buttonStyle(BorderlessButtonStyle())
+                            
+                            Button {
+                                addInventoryItem()
+                                isAddingItem = false
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
                     }
                     
                     if !inventory.isEmpty {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 8) {
-                                ForEach(inventory, id: \.self) { item in
-                                    HStack {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(Array(inventory.enumerated()), id: \.element) { index, item in
+                                HStack {
+                                    if editingItemIndex == index {
+                                        TextField("Edit Item", text: $tempItemText)
+                                            .textFieldStyle(.roundedBorder)
+                                            .onAppear { tempItemText = item }
+                                        Button {
+                                            withAnimation {
+                                                editingItemIndex = nil
+                                            }
+                                        } label: {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .imageScale(.medium)
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(.red)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                        Button {
+                                            withAnimation {
+                                                let trimmed = tempItemText.trimmingCharacters(in: .whitespaces)
+                                                if !trimmed.isEmpty {
+                                                    inventory[index] = trimmed
+                                                }
+                                                editingItemIndex = nil
+                                            }
+                                        } label: {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .imageScale(.medium)
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(.green)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
+                                    } else {
                                         Text(item)
                                             .foregroundColor(.primary)
                                         Spacer()
+                                        Button {
+                                            withAnimation {
+                                                editingItemIndex = index
+                                            }
+                                        } label: {
+                                            Image(systemName: "pencil.circle.fill")
+                                                .imageScale(.medium)
+                                                .symbolRenderingMode(.hierarchical)
+                                                .foregroundColor(.blue)
+                                        }
+                                        .buttonStyle(BorderlessButtonStyle())
                                         Button {
                                             withAnimation {
                                                 removeInventoryItem(item)
@@ -83,13 +126,13 @@ struct EquipmentSection: View {
                                         }
                                         .buttonStyle(BorderlessButtonStyle())
                                     }
-                                    .padding(10)
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(8)
                                 }
+                                .padding(10)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
                             }
                         }
-                        .frame(maxHeight: 150)
+                        .frame(maxHeight: inventory.count > 3 ? 150 : nil)
                     }
                 }
                 

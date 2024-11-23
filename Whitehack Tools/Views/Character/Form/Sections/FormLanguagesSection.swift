@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LanguagesSection: View {
+struct FormLanguagesSection: View {
     @Binding var languages: [String]
     @Binding var newLanguage: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
@@ -38,17 +38,6 @@ struct LanguagesSection: View {
                                 .textFieldStyle(.roundedBorder)
                             
                             Button {
-                                addLanguage()
-                                isAddingLanguage = false
-                            } label: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.green)
-                            }
-                            .buttonStyle(BorderlessButtonStyle())
-                            
-                            Button {
                                 newLanguage = ""
                                 isAddingLanguage = false
                             } label: {
@@ -56,6 +45,17 @@ struct LanguagesSection: View {
                                     .imageScale(.large)
                                     .symbolRenderingMode(.hierarchical)
                                     .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                            
+                            Button {
+                                addLanguage()
+                                isAddingLanguage = false
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
                             }
                             .buttonStyle(BorderlessButtonStyle())
                         }

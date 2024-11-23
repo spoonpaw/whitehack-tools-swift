@@ -1,7 +1,6 @@
-
 import Foundation
 
-struct AttributeGroupPair: Identifiable, Codable {
+struct AttributeGroupPair: Identifiable, Codable, Equatable {
     let id: UUID
     var attribute: String
     var group: String

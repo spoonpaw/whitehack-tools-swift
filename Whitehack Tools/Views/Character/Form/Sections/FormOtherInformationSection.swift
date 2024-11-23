@@ -1,7 +1,7 @@
-// OtherInformationSection.swift
+// FormOtherInformationSection.swift
 import SwiftUI
 
-struct OtherInformationSection: View {
+struct FormOtherInformationSection: View {
     @Binding var experience: String
     @Binding var corruption: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
