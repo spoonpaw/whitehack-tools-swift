@@ -7,12 +7,13 @@ struct CharacterFormView: View {
     
     // MARK: - Form Data Model
     // Holds all form state separate from the store
-    @StateObject private var formData = FormData()
+    @StateObject private var formData: FormData
     @FocusState private var focusedField: Field?
     
     init(characterStore: CharacterStore, character: PlayerCharacter? = nil) {
         self.characterStore = characterStore
         self.character = character
+        _formData = StateObject(wrappedValue: FormData(character: character))
     }
     
     // MARK: - Form Fields
@@ -118,6 +119,13 @@ struct CharacterFormView: View {
                 level: Int(formData.level) ?? 1,
                 cleverKnackOptions: $formData.cleverKnackOptions
             )
+            if formData.selectedClass == .fortunate {
+                FormFortunateSection(
+                    characterClass: formData.selectedClass,
+                    level: Int(formData.level) ?? 1,
+                    fortunateOptions: $formData.fortunateOptions
+                )
+            }
             FormNotesSection(
                 notes: $formData.notes,
                 focusedField: $focusedField
@@ -192,10 +200,11 @@ struct CharacterFormView: View {
         formData.comebackDice = character.comebackDice
         formData.hasUsedSayNo = character.hasUsedSayNo
         formData.cleverKnackOptions = character.cleverKnackOptions
+        formData.fortunateOptions = character.fortunateOptions
     }
     
     private func saveCharacter() {
-        var newCharacter = PlayerCharacter(id: character?.id ?? UUID())
+        let newCharacter = PlayerCharacter(id: character?.id ?? UUID())
         newCharacter.name = formData.name
         newCharacter.characterClass = formData.selectedClass
         newCharacter.level = Int(formData.level) ?? 1
@@ -249,6 +258,7 @@ struct CharacterFormView: View {
         newCharacter.comebackDice = formData.comebackDice
         newCharacter.hasUsedSayNo = formData.hasUsedSayNo
         newCharacter.cleverKnackOptions = formData.cleverKnackOptions
+        newCharacter.fortunateOptions = formData.fortunateOptions
         
         if character != nil {
             characterStore.updateCharacter(newCharacter)
@@ -261,7 +271,7 @@ struct CharacterFormView: View {
 
 // MARK: - Form Data Model
 private class FormData: ObservableObject {
-    @Published var name = ""
+    @Published private var _name = ""
     @Published var selectedClass: CharacterClass = .deft
     @Published var level = "1"
     
@@ -278,7 +288,7 @@ private class FormData: ObservableObject {
     @Published var movement = "30"
     @Published var saveColor = ""
     
-    @Published var speciesGroup = ""
+    @Published private var _speciesGroup = ""
     @Published var vocationGroup = ""
     @Published var affiliationGroups: [String] = []
     @Published var newAffiliationGroup = ""
@@ -322,7 +332,24 @@ private class FormData: ObservableObject {
     // Clever Class Specific Properties
     @Published var cleverKnackOptions = CleverKnackOptions()
     
-    init() {
+    // Fortunate Class Specific Properties
+    @Published var fortunateOptions = FortunateOptions()
+    
+    var name: String {
+        get { _name }
+        set { _name = trimWhitespace(newValue) }
+    }
+    
+    var speciesGroup: String {
+        get { _speciesGroup }
+        set { _speciesGroup = trimWhitespace(newValue) }
+    }
+    
+    private func trimWhitespace(_ string: String) -> String {
+        return string.trimmingCharacters(in: .whitespaces)
+    }
+    
+    init(character: PlayerCharacter? = nil) {
         // Initialize slots based on class
         if selectedClass == .deft {
             let availableSlots = AdvancementTables.shared.stats(for: selectedClass, at: Int(level) ?? 1).slots
@@ -330,6 +357,10 @@ private class FormData: ObservableObject {
         } else if selectedClass == .wise {
             let availableSlots = AdvancementTables.shared.stats(for: selectedClass, at: Int(level) ?? 1).slots
             wiseMiracleSlots = Array(repeating: WiseMiracleSlot(), count: availableSlots)
+        }
+        
+        if let character = character {
+            self.fortunateOptions = character.fortunateOptions
         }
     }
 }

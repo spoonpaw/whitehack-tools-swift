@@ -25,6 +25,9 @@ struct CharacterDetailView: View {
             DetailCleverKnacksSection(characterClass: character.characterClass,
                                     level: character.level,
                                     cleverKnackOptions: character.cleverKnackOptions)
+            if character.characterClass == .fortunate {
+                DetailFortunateSection(character: character)
+            }
             DetailAdditionalInfoSection(character: character)
             DetailNotesSection(character: character)
         }

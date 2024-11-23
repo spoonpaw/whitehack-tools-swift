@@ -383,6 +383,49 @@ struct CleverKnackOptions: Codable {
     }
 }
 
+// MARK: - Fortunate Class Specific Types
+struct SignatureObject: Codable {
+    var name: String
+}
+
+struct Retainer: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var type: String
+    var hitDice: Int
+    var defenseFactor: Int
+    var movement: Int
+    var keywords: [String]
+    var attitude: String
+    
+    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 12, keywords: [String] = [], attitude: String = "") {
+        self.id = id
+        self.name = name
+        self.type = type
+        self.hitDice = hitDice
+        self.defenseFactor = defenseFactor
+        self.movement = movement
+        self.keywords = keywords
+        self.attitude = attitude
+    }
+}
+
+struct FortunateOptions: Codable {
+    var standing: String  // The defining standing (e.g., "Reincarnated Master")
+    var hasUsedFortune: Bool  // Once per game session fortune usage
+    var retainers: [Retainer]
+    var signatureObject: SignatureObject
+    var newKeyword: String  // For temporary storage during keyword input
+    
+    init() {
+        self.standing = ""
+        self.hasUsedFortune = false
+        self.retainers = []
+        self.signatureObject = SignatureObject(name: "")
+        self.newKeyword = ""
+    }
+}
+
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -459,6 +502,9 @@ class PlayerCharacter: Identifiable, Codable {
     
     // Clever Class Specific Properties
     var cleverKnackOptions: CleverKnackOptions
+    
+    // Fortunate Class Specific Properties
+    var fortunateOptions: FortunateOptions
     
     // Other
     var languages: [String]
@@ -586,6 +632,7 @@ class PlayerCharacter: Identifiable, Codable {
          wiseMiracleSlots: [WiseMiracleSlot] = [], // Initialize as empty
          braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions(), // Initialize as empty
          cleverKnackOptions: CleverKnackOptions = CleverKnackOptions(), // Initialize as empty
+         fortunateOptions: FortunateOptions = FortunateOptions(), // Initialize as empty
          comebackDice: Int = 0,
          hasUsedSayNo: Bool = false,
          languages: [String] = ["Common"],
@@ -624,6 +671,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.wiseMiracleSlots = wiseMiracleSlots
         self.braveQuirkOptions = braveQuirkOptions
         self.cleverKnackOptions = cleverKnackOptions
+        self.fortunateOptions = fortunateOptions
         self.comebackDice = comebackDice
         self.hasUsedSayNo = hasUsedSayNo
         self.languages = languages
