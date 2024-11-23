@@ -38,6 +38,15 @@ struct CharacterFormView: View {
                 level: $formData.level,
                 focusedField: $focusedField
             )
+            FormAttributesSection(
+                strength: $formData.strength,
+                agility: $formData.agility,
+                toughness: $formData.toughness,
+                intelligence: $formData.intelligence,
+                willpower: $formData.willpower,
+                charisma: $formData.charisma,
+                focusedField: $focusedField
+            )
             FormCharacterGroupsSection(
                 speciesGroup: $formData.speciesGroup,
                 vocationGroup: $formData.vocationGroup,
