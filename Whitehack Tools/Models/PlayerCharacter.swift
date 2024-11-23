@@ -5,7 +5,16 @@ class PlayerCharacter: Identifiable, Codable {
     let id: UUID
     var name: String
     var characterClass: CharacterClass
-    var level: Int
+    var level: Int {
+        didSet {
+            // Ensure level is always between 1 and 10
+            if level < 1 {
+                level = 1
+            } else if level > 10 {
+                level = 10
+            }
+        }
+    }
     
     // Attributes
     var strength: Int
@@ -18,10 +27,28 @@ class PlayerCharacter: Identifiable, Codable {
     // Combat Stats
     var currentHP: Int
     var maxHP: Int
-    var attackValue: Int
+    private(set) var _attackValue: Int // Stored property for backward compatibility
+    var attackValue: Int { // Computed property
+        get {
+            let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+            return stats.attackValue
+        }
+        set {
+            _attackValue = newValue // For backward compatibility
+        }
+    }
     var defenseValue: Int
     var movement: Int
-    var saveValue: Int
+    private(set) var _saveValue: Int // Stored property for backward compatibility
+    var saveValue: Int { // Computed property
+        get {
+            let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+            return stats.savingValue
+        }
+        set {
+            _saveValue = newValue // For backward compatibility
+        }
+    }
     var saveColor: String
     
     // Groups
@@ -36,6 +63,31 @@ class PlayerCharacter: Identifiable, Codable {
     var languages: [String]
     var notes: String
     var experience: Int
+    
+    // Computed XP properties
+    var xpForNextLevel: Int {
+        // If at max level, return 0
+        guard level < 10 else { return 0 }
+        return AdvancementTables.shared.xpRequirement(for: characterClass, at: level + 1)
+    }
+    
+    var xpProgress: Double {
+        guard xpForNextLevel > 0 else { return 1.0 } // At max level
+        
+        // Get XP required for current level
+        let currentLevelXP = level > 1 ? AdvancementTables.shared.xpRequirement(for: characterClass, at: level) : 0
+        
+        // Calculate progress between current level and next level
+        let progressXP = Double(experience - currentLevelXP)
+        let neededXP = Double(xpForNextLevel - currentLevelXP)
+        return min(progressXP / neededXP, 1.0)
+    }
+    
+    var canLevelUp: Bool {
+        guard level < 10 else { return false }
+        return experience >= xpForNextLevel
+    }
+    
     var corruption: Int
     
     // Equipment Tracking
@@ -57,10 +109,10 @@ class PlayerCharacter: Identifiable, Codable {
          charisma: Int = 10,
          currentHP: Int = 0,
          maxHP: Int = 0,
-         attackValue: Int = 10,
+         _attackValue: Int = 10, // Initialize with default value for backward compatibility
          defenseValue: Int = 0,
          movement: Int = 30,
-         saveValue: Int = 7,
+         _saveValue: Int = 7, // Initialize with default value for backward compatibility
          saveColor: String = "",
          speciesGroup: String? = nil,
          vocationGroup: String? = nil,
@@ -86,10 +138,10 @@ class PlayerCharacter: Identifiable, Codable {
         self.charisma = charisma
         self.currentHP = currentHP
         self.maxHP = maxHP
-        self.attackValue = attackValue
+        self._attackValue = _attackValue
         self.defenseValue = defenseValue
         self.movement = movement
-        self.saveValue = saveValue
+        self._saveValue = _saveValue
         self.saveColor = saveColor
         self.speciesGroup = speciesGroup
         self.vocationGroup = vocationGroup

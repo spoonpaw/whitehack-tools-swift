@@ -39,14 +39,50 @@ struct BasicInfoSection: View {
             }
             
             VStack(alignment: .leading, spacing: 5) {
-                Text("Level")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Enter level", text: $level)
+                HStack {
+                    Text("Level")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Text("(1-10)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                TextField("Level", text: $level)
                     .keyboardType(.numberPad)
                     .focused($focusedField, equals: .level)
                     .textFieldStyle(.roundedBorder)
+                    .onChange(of: level) { newValue in
+                        // Only allow numbers
+                        let filtered = newValue.filter { "0123456789".contains($0) }
+                        if filtered != newValue {
+                            level = filtered
+                        }
+                        
+                        // Don't allow more than 2 digits
+                        if filtered.count > 2 {
+                            level = String(filtered.prefix(2))
+                        }
+                    }
+                    .onSubmit {
+                        validateAndCorrectLevel()
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
+                        validateAndCorrectLevel()
+                    }
             }
+        }
+    }
+    
+    private func validateAndCorrectLevel() {
+        if let intValue = Int(level) {
+            if intValue < 1 {
+                level = "1"
+            } else if intValue > 10 {
+                level = "10"
+            }
+        } else if level.isEmpty {
+            level = "1"
         }
     }
 }

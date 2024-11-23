@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */; };
+		A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E52CF157E500A7CD7B /* ProgressBar.swift */; };
 		A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */; };
 		A99CAABD2CE85BB7004163DA /* CharacterGroupsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAABC2CE85BB7004163DA /* CharacterGroupsSection.swift */; };
 		A99CAABF2CE85E84004163DA /* BasicInfoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAABE2CE85E84004163DA /* BasicInfoSection.swift */; };
@@ -30,6 +32,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancementTables.swift; sourceTree = "<group>"; };
+		A98488E52CF157E500A7CD7B /* ProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeEditor.swift; sourceTree = "<group>"; };
 		A99CAABC2CE85BB7004163DA /* CharacterGroupsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterGroupsSection.swift; sourceTree = "<group>"; };
 		A99CAABE2CE85E84004163DA /* BasicInfoSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicInfoSection.swift; sourceTree = "<group>"; };
@@ -94,6 +98,7 @@
 			isa = PBXGroup;
 			children = (
 				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
+				A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -113,6 +118,7 @@
 		A99CAAB92CE85A95004163DA /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				A98488E52CF157E500A7CD7B /* ProgressBar.swift */,
 				A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */,
 			);
 			path = Components;
@@ -257,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A99CAAC52CE85ED3004163DA /* EquipmentSection.swift in Sources */,
+				A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */,
 				A99CAABF2CE85E84004163DA /* BasicInfoSection.swift in Sources */,
 				A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */,
 				A99CAACB2CE85F15004163DA /* NotesSection.swift in Sources */,
@@ -269,6 +276,7 @@
 				A99CAAC12CE85E99004163DA /* CombatStatsSection.swift in Sources */,
 				A9F072BB2CE75AFC005033F2 /* CharacterFormView.swift in Sources */,
 				A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */,
+				A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
 				A9F072B92CE75AE4005033F2 /* CharacterDetailView.swift in Sources */,
 				A9F072B72CE75ABE005033F2 /* WhitehackTypes.swift in Sources */,

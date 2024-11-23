@@ -28,10 +28,8 @@ struct CharacterFormView: View {
         // Combat Stats
         @Published var currentHP: String = "0"
         @Published var maxHP: String = "0"
-        @Published var attackValue: String = "10"
         @Published var defenseValue: String = "0"
         @Published var movement: String = "30"
-        @Published var saveValue: String = "7"
         @Published var saveColor: String = ""
         
         // Groups
@@ -80,10 +78,8 @@ struct CharacterFormView: View {
             // Combat Stats
             currentHP = String(character.currentHP)
             maxHP = String(character.maxHP)
-            attackValue = String(character.attackValue)
             defenseValue = String(character.defenseValue)
             movement = String(character.movement)
-            saveValue = String(character.saveValue)
             saveColor = character.saveColor
             
             // Groups
@@ -117,7 +113,7 @@ struct CharacterFormView: View {
     enum Field: Hashable {
         case name, level
         case strength, agility, toughness, intelligence, willpower, charisma
-        case currentHP, maxHP, attackValue, defenseValue, movement, saveValue, saveColor
+        case currentHP, maxHP, defenseValue, movement, saveColor
         case speciesGroup, vocationGroup, newAffiliationGroup
         case newLanguage, newInventoryItem
         case currentEncumbrance, maxEncumbrance, coins
@@ -195,10 +191,8 @@ struct CharacterFormView: View {
                 CombatStatsSection(
                     currentHP: $formData.currentHP,
                     maxHP: $formData.maxHP,
-                    attackValue: $formData.attackValue,
                     defenseValue: $formData.defenseValue,
                     movement: $formData.movement,
-                    saveValue: $formData.saveValue,
                     saveColor: $formData.saveColor,
                     focusedField: $focusedField
                 )
@@ -286,12 +280,10 @@ struct CharacterFormView: View {
               let intelligenceInt = Int(formData.intelligence), (3...18).contains(intelligenceInt),
               let willpowerInt = Int(formData.willpower), (3...18).contains(willpowerInt),
               let charismaInt = Int(formData.charisma), (3...18).contains(charismaInt),
-              let currentHPInt = Int(formData.currentHP), currentHPInt >= 0,
-              let maxHPInt = Int(formData.maxHP), maxHPInt >= 0,
-              let attackValueInt = Int(formData.attackValue), attackValueInt >= 0,
+              let currentHPInt = Int(formData.currentHP),
+              let maxHPInt = Int(formData.maxHP), maxHPInt > 0,
               let defenseValueInt = Int(formData.defenseValue), defenseValueInt >= 0,
-              let movementInt = Int(formData.movement), movementInt >= 0,
-              let saveValueInt = Int(formData.saveValue), saveValueInt >= 0
+              let movementInt = Int(formData.movement), movementInt >= 0
         else {
             return false
         }
@@ -314,10 +306,8 @@ struct CharacterFormView: View {
             charisma: Int(formData.charisma) ?? 10,
             currentHP: Int(formData.currentHP) ?? 0,
             maxHP: Int(formData.maxHP) ?? 0,
-            attackValue: Int(formData.attackValue) ?? 10,
             defenseValue: Int(formData.defenseValue) ?? 0,
             movement: Int(formData.movement) ?? 30,
-            saveValue: Int(formData.saveValue) ?? 7,
             saveColor: formData.saveColor,
             speciesGroup: formData.speciesGroup.isEmpty ? nil : formData.speciesGroup.trimmingCharacters(in: .whitespaces),
             vocationGroup: formData.vocationGroup.isEmpty ? nil : formData.vocationGroup.trimmingCharacters(in: .whitespaces),
