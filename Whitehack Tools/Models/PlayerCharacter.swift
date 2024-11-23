@@ -148,6 +148,33 @@ struct ConflictLoot: Codable {
     }
 }
 
+// MARK: - Wise Class Specific Types
+struct WiseMiracle: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var isActive: Bool
+    
+    init(id: UUID = UUID(), name: String = "", isActive: Bool = false) {
+        self.id = id
+        self.name = name
+        self.isActive = isActive
+    }
+}
+
+struct WiseMiracleSlot: Codable, Identifiable {
+    let id: UUID
+    var miracles: [WiseMiracle] // Array of miracles in this slot
+    var isMagicItem: Bool // If true, this slot holds a magic item instead of miracles
+    var magicItemName: String // Name of the magic item if isMagicItem is true
+    
+    init(id: UUID = UUID(), miracles: [WiseMiracle] = [], isMagicItem: Bool = false, magicItemName: String = "") {
+        self.id = id
+        self.miracles = miracles
+        self.isMagicItem = isMagicItem
+        self.magicItemName = magicItemName
+    }
+}
+
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -213,6 +240,9 @@ class PlayerCharacter: Identifiable, Codable {
     // Strong Class Specific Properties
     var currentConflictLoot: ConflictLoot?
     var strongCombatOptions: StrongCombatOptions
+    
+    // Wise Class Specific Properties
+    var wiseMiracleSlots: [WiseMiracleSlot]
     
     // Other
     var languages: [String]
@@ -319,6 +349,7 @@ class PlayerCharacter: Identifiable, Codable {
          attunementSlots: [AttunementSlot] = [], // Initialize as empty
          currentConflictLoot: ConflictLoot? = nil,
          strongCombatOptions: StrongCombatOptions = StrongCombatOptions(), // Initialize as empty
+         wiseMiracleSlots: [WiseMiracleSlot] = [], // Initialize as empty
          languages: [String] = ["Common"],
          notes: String = "",
          experience: Int = 0,
@@ -352,6 +383,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.attunementSlots = attunementSlots
         self.currentConflictLoot = currentConflictLoot
         self.strongCombatOptions = strongCombatOptions
+        self.wiseMiracleSlots = wiseMiracleSlots
         self.languages = languages
         self.notes = notes
         self.experience = experience

@@ -100,6 +100,12 @@ struct CharacterFormView: View {
                 currentConflictLoot: $formData.currentConflictLoot,
                 strongCombatOptions: $formData.strongCombatOptions
             )
+            FormWiseMiracleSection(
+                characterClass: formData.selectedClass,
+                level: Int(formData.level) ?? 1,
+                willpower: Int(formData.willpower) ?? 10,
+                miracleSlots: $formData.wiseMiracleSlots
+            )
             FormNotesSection(
                 notes: $formData.notes,
                 focusedField: $focusedField
@@ -169,6 +175,7 @@ struct CharacterFormView: View {
         
         formData.currentConflictLoot = character.currentConflictLoot
         formData.strongCombatOptions = character.strongCombatOptions
+        formData.wiseMiracleSlots = character.wiseMiracleSlots
     }
     
     private func saveCharacter() {
@@ -221,6 +228,7 @@ struct CharacterFormView: View {
         
         newCharacter.currentConflictLoot = formData.currentConflictLoot
         newCharacter.strongCombatOptions = formData.strongCombatOptions
+        newCharacter.wiseMiracleSlots = formData.wiseMiracleSlots
         
         if character != nil {
             characterStore.updateCharacter(newCharacter)
@@ -283,11 +291,17 @@ private class FormData: ObservableObject {
     @Published var currentConflictLoot: ConflictLoot?
     @Published var strongCombatOptions = StrongCombatOptions()
     
+    // Wise Class Specific Properties
+    @Published var wiseMiracleSlots: [WiseMiracleSlot] = []
+    
     init() {
-        // Initialize attunement slots for new characters
+        // Initialize slots based on class
         if selectedClass == .deft {
             let availableSlots = AdvancementTables.shared.stats(for: selectedClass, at: Int(level) ?? 1).slots
             attunementSlots = Array(repeating: AttunementSlot(), count: availableSlots)
+        } else if selectedClass == .wise {
+            let availableSlots = AdvancementTables.shared.stats(for: selectedClass, at: Int(level) ?? 1).slots
+            wiseMiracleSlots = Array(repeating: WiseMiracleSlot(), count: availableSlots)
         }
     }
 }

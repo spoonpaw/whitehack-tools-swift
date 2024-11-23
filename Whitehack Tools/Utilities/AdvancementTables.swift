@@ -45,22 +45,22 @@ class AdvancementTables {
             4: CharacterStats(hitDice: "4", attackValue: 13, savingValue: 8, slots: 2, groups: 3, raises: "2"),
             5: CharacterStats(hitDice: "5", attackValue: 13, savingValue: 9, slots: 2, groups: 3, raises: "2"),
             6: CharacterStats(hitDice: "6", attackValue: 14, savingValue: 10, slots: 2, groups: 3, raises: "3"),
-            7: CharacterStats(hitDice: "7", attackValue: 15, savingValue: 11, slots: 3, groups: 4, raises: "3"),
+            7: CharacterStats(hitDice: "7", attackValue: 14, savingValue: 11, slots: 3, groups: 4, raises: "3"),
             8: CharacterStats(hitDice: "8", attackValue: 15, savingValue: 12, slots: 3, groups: 4, raises: "4"),
-            9: CharacterStats(hitDice: "9", attackValue: 16, savingValue: 13, slots: 3, groups: 4, raises: "4"),
-            10: CharacterStats(hitDice: "10", attackValue: 17, savingValue: 14, slots: 4, groups: 5, raises: "5")
+            9: CharacterStats(hitDice: "9", attackValue: 15, savingValue: 13, slots: 3, groups: 4, raises: "4"),
+            10: CharacterStats(hitDice: "10", attackValue: 16, savingValue: 14, slots: 4, groups: 5, raises: "5")
         ],
         .wise: [
-            1: CharacterStats(hitDice: "1+1", attackValue: 10, savingValue: 6, slots: 1, groups: 2, raises: "-"),
-            2: CharacterStats(hitDice: "2", attackValue: 11, savingValue: 7, slots: 1, groups: 2, raises: "1"),
-            3: CharacterStats(hitDice: "2+1", attackValue: 11, savingValue: 8, slots: 2, groups: 2, raises: "1"),
-            4: CharacterStats(hitDice: "3", attackValue: 11, savingValue: 9, slots: 2, groups: 3, raises: "2"),
-            5: CharacterStats(hitDice: "4", attackValue: 12, savingValue: 10, slots: 3, groups: 3, raises: "2"),
-            6: CharacterStats(hitDice: "4+1", attackValue: 12, savingValue: 11, slots: 3, groups: 3, raises: "3"),
-            7: CharacterStats(hitDice: "5", attackValue: 12, savingValue: 12, slots: 4, groups: 4, raises: "3"),
-            8: CharacterStats(hitDice: "6", attackValue: 13, savingValue: 13, slots: 4, groups: 4, raises: "4"),
-            9: CharacterStats(hitDice: "6+1", attackValue: 13, savingValue: 14, slots: 5, groups: 4, raises: "4"),
-            10: CharacterStats(hitDice: "7", attackValue: 13, savingValue: 15, slots: 5, groups: 5, raises: "5")
+            1: CharacterStats(hitDice: "1", attackValue: 10, savingValue: 6, slots: 1, groups: 2, raises: "-"),
+            2: CharacterStats(hitDice: "1+1", attackValue: 10, savingValue: 7, slots: 1, groups: 2, raises: "1"),
+            3: CharacterStats(hitDice: "2", attackValue: 11, savingValue: 8, slots: 2, groups: 2, raises: "1"),
+            4: CharacterStats(hitDice: "2+1", attackValue: 11, savingValue: 9, slots: 2, groups: 3, raises: "2"),
+            5: CharacterStats(hitDice: "3", attackValue: 12, savingValue: 10, slots: 2, groups: 3, raises: "2"),
+            6: CharacterStats(hitDice: "3+1", attackValue: 12, savingValue: 11, slots: 3, groups: 3, raises: "3"),
+            7: CharacterStats(hitDice: "4", attackValue: 13, savingValue: 12, slots: 3, groups: 4, raises: "3"),
+            8: CharacterStats(hitDice: "4+1", attackValue: 13, savingValue: 13, slots: 3, groups: 4, raises: "4"),
+            9: CharacterStats(hitDice: "5", attackValue: 14, savingValue: 14, slots: 4, groups: 4, raises: "4"),
+            10: CharacterStats(hitDice: "5+1", attackValue: 14, savingValue: 15, slots: 4, groups: 5, raises: "5")
         ],
         .brave: [
             1: CharacterStats(hitDice: "1*", attackValue: 10, savingValue: 9, slots: 1, groups: 2, raises: "-"),
