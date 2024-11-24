@@ -21,9 +21,10 @@ struct FormCleverKnacksSection: View {
     
     var body: some View {
         if characterClass == .clever {
-            VStack(spacing: 16) {
+            Section {
                 // Daily Power Card
                 VStack(alignment: .leading, spacing: 20) {
+                    // Header
                     HStack {
                         Text("Daily Power")
                             .font(.title3)
@@ -206,9 +207,20 @@ struct FormCleverKnacksSection: View {
                     )
                     .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
                 }
+            } header: {
+                Label {
+                    Text("Clever Features")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                } icon: {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundColor(.yellow)
+                }
+            } footer: {
+                Text("The Clever get +2 to saves vs. illusions and vocation-related appraisal attempts. They get -2 AV with heavy weapons.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 8)
         }
     }
 }
