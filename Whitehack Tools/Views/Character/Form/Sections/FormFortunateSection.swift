@@ -25,75 +25,136 @@ struct FormFortunateSection: View {
 
     var body: some View {
         if characterClass == .fortunate {
-            // MARK: - Standing & Fortune
-            Section {
-                VStack(alignment: .leading, spacing: 16) {
-                    // Standing
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Noble Standing", systemImage: "crown.fill")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        
-                        TextField("e.g., Reincarnated Master, Royal Heir", text: $fortunateOptions.standing)
-                            .textFieldStyle(FormFortunateCustomTextFieldStyle())
-                            .padding(.horizontal, 4)
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-                    
-                    // Fortune Usage
-                    VStack(alignment: .leading, spacing: 8) {
-                        Toggle(isOn: $fortunateOptions.hasUsedFortune) {
-                            Label("Good Fortune", systemImage: "sparkles")
-                                .font(.headline)
-                        }
-                        .tint(.purple)
-                        
-                        HStack {
-                            Image(systemName: fortunateOptions.hasUsedFortune ? "xmark.circle.fill" : "checkmark.circle.fill")
-                                .foregroundColor(fortunateOptions.hasUsedFortune ? .red : .green)
-                                .imageScale(.large)
-                            Text(fortunateOptions.hasUsedFortune ? "Fortune has been used this session" : "Fortune is available")
-                                .foregroundColor(fortunateOptions.hasUsedFortune ? .red : .green)
-                        }
-                        .font(.subheadline)
-                    }
-                    .padding()
-                    .background(Color(.systemBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-                }
-            }
-            
-            // MARK: - Signature Object
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    FormFortunateSectionHeader(title: "Signature Object", icon: Image(systemName: "sparkles"))
-                    
-                    TextField("Enter signature object name", text: $fortunateOptions.signatureObject.name)
-                        .textFieldStyle(FormFortunateCustomTextFieldStyle())
-                        .padding(.horizontal, 4)
-                    
-                    Text("Your signature object has plot immunity and cannot be lost or destroyed without your consent.")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.top, 4)
-                }
-                .padding()
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-            }
-            
-            // MARK: - Retainers
             Section {
                 VStack(spacing: 16) {
+                    // MARK: - Standing & Fortune
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Header
+                        HStack {
+                            Text("Daily Power")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                            Spacer()
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple.opacity(0.2))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.purple)
+                                    .font(.system(size: 20))
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        
+                        Toggle(isOn: $fortunateOptions.hasUsedFortune) {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Good Fortune")
+                                    .fontWeight(.medium)
+                                Text("Daily power to reroll any roll")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .tint(.purple)
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
+                    )
+                    .padding(.horizontal, 4)
+                    
+                    // MARK: - Standing
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            Text("Noble Standing")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                            Spacer()
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple.opacity(0.2))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "crown.fill")
+                                    .foregroundColor(.purple)
+                                    .font(.system(size: 20))
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            TextField("e.g., Reincarnated Master, Royal Heir", text: $fortunateOptions.standing)
+                                .textFieldStyle(FormFortunateCustomTextFieldStyle())
+                                .padding(.horizontal, 4)
+                            Text("Your noble standing grants you special privileges and responsibilities")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
+                    )
+                    .padding(.horizontal, 4)
+                    
+                    // MARK: - Signature Object
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            Text("Signature Object")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                            Spacer()
+                            ZStack {
+                                Circle()
+                                    .fill(Color.purple.opacity(0.2))
+                                    .frame(width: 44, height: 44)
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.purple)
+                                    .font(.system(size: 20))
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            TextField("Enter signature object name", text: $fortunateOptions.signatureObject.name)
+                                .textFieldStyle(FormFortunateCustomTextFieldStyle())
+                                .padding(.horizontal, 4)
+                            Text("Your signature object has plot immunity and cannot be lost or destroyed without your consent")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                    }
+                    .padding(.vertical, 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
+                    )
+                    .padding(.horizontal, 4)
+                    
+                    // MARK: - Retainers
                     ForEach(0..<fortunateOptions.retainers.count, id: \.self) { index in
                         FormFortunateRetainerFormView(retainer: binding(for: index))
                             .transition(.scale.combined(with: .opacity))
                     }
+                }
+            } header: {
+                Label {
+                    Text("Fortunate Features")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                } icon: {
+                    Image(systemName: "crown.fill")
+                        .foregroundStyle(.purple)
                 }
             }
             .onAppear {
