@@ -398,7 +398,7 @@ struct Retainer: Codable, Identifiable {
     var keywords: [String]
     var attitude: String
     
-    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 12, keywords: [String] = [], attitude: String = "") {
+    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 30, keywords: [String] = [], attitude: String = "") {
         self.id = id
         self.name = name
         self.type = type
