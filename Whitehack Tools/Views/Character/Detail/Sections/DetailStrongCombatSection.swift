@@ -174,6 +174,7 @@ private struct SpecialAbilitiesCard: View {
                                 .padding(.leading, 32)
                         }
                         .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .background(specialAbilities[option.rawValue].color.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
