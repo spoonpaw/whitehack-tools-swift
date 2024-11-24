@@ -120,10 +120,12 @@ struct FormCleverKnacksSection: View {
                                     ))
                                     .toggleStyle(SwitchToggleStyle(tint: .red))
                                     
-                                    HStack {
+                                    HStack(alignment: .top, spacing: 8) {
                                         Image(systemName: cleverKnackOptions.slots[index].hasUsedCombatDie ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                                            .padding(.top, 2)
                                         Text(cleverKnackOptions.slots[index].hasUsedCombatDie ? "D10 damage die has been used this battle" : "D10 damage die is available this battle")
                                             .font(.caption)
+                                            .fixedSize(horizontal: false, vertical: true)
                                     }
                                     .foregroundColor(cleverKnackOptions.slots[index].hasUsedCombatDie ? .red : .green)
                                 }
