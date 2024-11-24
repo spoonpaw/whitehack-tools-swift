@@ -72,6 +72,11 @@ struct FormCleverKnacksSection: View {
                         .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                 )
                 .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
                 
                 // Knack Slots
                 ForEach(0..<availableSlots, id: \.self) { index in
@@ -206,6 +211,11 @@ struct FormCleverKnacksSection: View {
                             .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                     )
                     .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
             } header: {
                 Label {
@@ -216,11 +226,9 @@ struct FormCleverKnacksSection: View {
                     Image(systemName: "lightbulb.fill")
                         .foregroundColor(.yellow)
                 }
-            } footer: {
-                Text("The Clever get +2 to saves vs. illusions and vocation-related appraisal attempts. They get -2 AV with heavy weapons.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
+            .listStyle(PlainListStyle())
+            .listSectionSeparator(.hidden)
         }
     }
 }
