@@ -139,6 +139,19 @@ struct FormFortunateSection: View {
                     .padding(.horizontal, 4)
                     
                     // MARK: - Retainers
+                    if availableRetainers > 0 {
+                        Label {
+                            Text("Retainers")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                        } icon: {
+                            Image(systemName: "person.2.fill")
+                                .foregroundStyle(.purple)
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    }
+                    
                     ForEach(0..<fortunateOptions.retainers.count, id: \.self) { index in
                         FormFortunateRetainerFormView(retainer: binding(for: index))
                             .transition(.scale.combined(with: .opacity))
