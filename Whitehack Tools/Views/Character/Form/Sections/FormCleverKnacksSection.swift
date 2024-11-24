@@ -71,35 +71,28 @@ struct FormCleverKnacksSection: View {
                 
                 // Knack Slots
                 ForEach(0..<availableSlots, id: \.self) { index in
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 20) {
                         // Header
-                        HStack(alignment: .center) {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Knack Slot \(index + 1)")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                if cleverKnackOptions.getKnack(at: index) == nil {
-                                    Text("Select a knack for this slot")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                            Spacer()
+                        HStack(alignment: .center, spacing: 16) {
                             ZStack {
                                 Circle()
                                     .fill(Color.yellow.opacity(0.2))
-                                    .frame(width: 32, height: 32)
+                                    .frame(width: 44, height: 44)
                                 Image(systemName: "lightbulb.fill")
                                     .foregroundColor(.yellow)
-                                    .font(.system(size: 16))
+                                    .font(.system(size: 20))
                             }
+                            
+                            Text("Knack Slot \(index + 1)")
+                                .font(.title3)
+                                .fontWeight(.medium)
                         }
                         .padding(.horizontal)
-                        .padding(.top, 8)
+                        .padding(.top, 4)
                         
-                        // Knack Selection
+                        // Knack Selection or Display
                         if let selectedKnack = cleverKnackOptions.getKnack(at: index) {
-                            VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 16) {
                                 // Selected Knack Header
                                 HStack {
                                     Text(selectedKnack.name)
@@ -108,49 +101,38 @@ struct FormCleverKnacksSection: View {
                                     
                                     Spacer()
                                     
-                                    Menu {
-                                        Button(role: .destructive, action: {
-                                            cleverKnackOptions.setKnack(nil, at: index)
-                                        }) {
-                                            Label("Remove Knack", systemImage: "trash")
-                                        }
-                                        
-                                        Divider()
-                                        
-                                        ForEach(availableKnacks(for: index), id: \.self) { knack in
-                                            Button(action: {
-                                                cleverKnackOptions.setKnack(knack, at: index)
-                                            }) {
-                                                Text(knack.name)
-                                            }
-                                        }
-                                    } label: {
-                                        Image(systemName: "ellipsis.circle.fill")
+                                    Button(action: {
+                                        cleverKnackOptions.setKnack(nil, at: index)
+                                    }) {
+                                        Text("Change")
                                             .foregroundColor(.secondary)
-                                            .font(.system(size: 20))
                                     }
                                 }
                                 
                                 // Description
                                 Text(selectedKnack.description)
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .foregroundColor(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                                 
                                 // Combat Exploiter Special Case
                                 if selectedKnack == .combatExploiter {
-                                    VStack(spacing: 16) {
-                                        Divider()
-                                            .padding(.horizontal, -16)
+                                    Divider()
+                                        .padding(.vertical, 8)
+                                    
+                                    VStack(alignment: .leading, spacing: 16) {
+                                        Text("Combat Die")
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
                                         
                                         HStack {
                                             VStack(alignment: .leading, spacing: 4) {
-                                                Text("Combat Die")
+                                                Text("D10 Damage Die")
                                                     .font(.subheadline)
                                                     .fontWeight(.medium)
-                                                Text("D10 damage die for this battle")
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
+                                                Text(cleverKnackOptions.slots[index].hasUsedCombatDie ? "Used this battle" : "Available this battle")
+                                                    .font(.subheadline)
+                                                    .foregroundColor(cleverKnackOptions.slots[index].hasUsedCombatDie ? .red : .green)
                                             }
                                             
                                             Spacer()
@@ -165,20 +147,12 @@ struct FormCleverKnacksSection: View {
                                             ))
                                             .toggleStyle(SwitchToggleStyle(tint: .red))
                                         }
-                                        
-                                        HStack(alignment: .center, spacing: 8) {
-                                            Image(systemName: cleverKnackOptions.slots[index].hasUsedCombatDie ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                                            Text(cleverKnackOptions.slots[index].hasUsedCombatDie ? "D10 damage die has been used this battle" : "D10 damage die is available this battle")
-                                                .font(.caption)
-                                                .fixedSize(horizontal: false, vertical: true)
-                                        }
-                                        .foregroundColor(cleverKnackOptions.slots[index].hasUsedCombatDie ? .red : .green)
                                     }
                                 }
                             }
-                            .padding(16)
+                            .padding(20)
                             .background(Color(.systemGray6))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                             .padding(.horizontal)
                         } else {
                             // Empty Slot
@@ -187,33 +161,32 @@ struct FormCleverKnacksSection: View {
                                     Button(action: {
                                         cleverKnackOptions.setKnack(knack, at: index)
                                     }) {
-                                        Label(knack.name, systemImage: "plus.circle.fill")
+                                        Text(knack.name)
                                     }
                                 }
                             } label: {
                                 HStack {
-                                    Text("Choose a Knack")
-                                        .font(.subheadline)
-                                        .foregroundColor(.yellow)
+                                    Text("Select a Knack")
+                                        .font(.headline)
                                     Spacer()
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundColor(.yellow)
                                 }
-                                .padding()
                                 .frame(maxWidth: .infinity)
+                                .padding(.vertical, 20)
+                                .padding(.horizontal)
                                 .background(Color.yellow.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .foregroundColor(.yellow)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
                             }
                             .padding(.horizontal)
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, 20)
                     .background(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 20)
                             .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                     )
                     .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
