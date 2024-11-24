@@ -59,48 +59,69 @@ private struct AttunementSlotView: View {
                     ))
                     .textFieldStyle(.roundedBorder)
                     
-                    Picker("Type", selection: Binding(
-                        get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.type : .item },
-                        set: { 
-                            if index >= attunementSlots.count {
-                                attunementSlots.append(AttunementSlot())
+                    HStack(spacing: 8) {
+                        Text("Type")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Picker("", selection: Binding(
+                            get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.type : .item },
+                            set: { 
+                                if index >= attunementSlots.count {
+                                    attunementSlots.append(AttunementSlot())
+                                }
+                                attunementSlots[index].primaryAttunement.type = $0
                             }
-                            attunementSlots[index].primaryAttunement.type = $0
+                        )) {
+                            ForEach(AttunementType.allCases, id: \.self) { type in
+                                Label(
+                                    type.rawValue.capitalized,
+                                    systemImage: typeIcon(for: type)
+                                ).tag(type)
+                            }
                         }
-                    )) {
-                        ForEach(AttunementType.allCases, id: \.self) { type in
-                            Label(
-                                type.rawValue.capitalized,
-                                systemImage: typeIcon(for: type)
-                            ).tag(type)
-                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        Spacer()
                     }
-                    .pickerStyle(.menu)
                     
-                    HStack(spacing: 20) {
-                        Toggle("Active", isOn: Binding(
-                            get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.isActive : false },
-                            set: { 
-                                if index >= attunementSlots.count {
-                                    attunementSlots.append(AttunementSlot())
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Active")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Toggle("", isOn: Binding(
+                                get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.isActive : false },
+                                set: { 
+                                    if index >= attunementSlots.count {
+                                        attunementSlots.append(AttunementSlot())
+                                    }
+                                    attunementSlots[index].primaryAttunement.isActive = $0
+                                    // Ensure only one attunement is active
+                                    if $0 {
+                                        attunementSlots[index].secondaryAttunement.isActive = false
+                                    }
                                 }
-                                attunementSlots[index].primaryAttunement.isActive = $0
-                                // Ensure only one attunement is active
-                                if $0 {
-                                    attunementSlots[index].secondaryAttunement.isActive = false
-                                }
-                            }
-                        ))
+                            ))
+                            .labelsHidden()
+                        }
+                        .frame(maxWidth: .infinity)
                         
-                        Toggle("Lost", isOn: Binding(
-                            get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.isLost : false },
-                            set: { 
-                                if index >= attunementSlots.count {
-                                    attunementSlots.append(AttunementSlot())
+                        VStack(alignment: .leading) {
+                            Text("Lost")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Toggle("", isOn: Binding(
+                                get: { index < attunementSlots.count ? attunementSlots[index].primaryAttunement.isLost : false },
+                                set: { 
+                                    if index >= attunementSlots.count {
+                                        attunementSlots.append(AttunementSlot())
+                                    }
+                                    attunementSlots[index].primaryAttunement.isLost = $0
                                 }
-                                attunementSlots[index].primaryAttunement.isLost = $0
-                            }
-                        ))
+                            ))
+                            .labelsHidden()
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(12)
@@ -126,44 +147,65 @@ private struct AttunementSlotView: View {
                     ))
                     .textFieldStyle(.roundedBorder)
                     
-                    Picker("Type", selection: Binding(
-                        get: { index < attunementSlots.count ? attunementSlots[index].secondaryAttunement.type : .item },
-                        set: { 
-                            if index >= attunementSlots.count {
-                                attunementSlots.append(AttunementSlot())
+                    HStack(spacing: 8) {
+                        Text("Type")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Picker("", selection: Binding(
+                            get: { index < attunementSlots.count ? attunementSlots[index].secondaryAttunement.type : .item },
+                            set: { 
+                                if index >= attunementSlots.count {
+                                    attunementSlots.append(AttunementSlot())
+                                }
+                                attunementSlots[index].secondaryAttunement.type = $0
                             }
-                            attunementSlots[index].secondaryAttunement.type = $0
+                        )) {
+                            ForEach(AttunementType.allCases, id: \.self) { type in
+                                Label(
+                                    type.rawValue.capitalized,
+                                    systemImage: typeIcon(for: type)
+                                ).tag(type)
+                            }
                         }
-                    )) {
-                        ForEach(AttunementType.allCases, id: \.self) { type in
-                            Label(
-                                type.rawValue.capitalized,
-                                systemImage: typeIcon(for: type)
-                            ).tag(type)
-                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        Spacer()
                     }
-                    .pickerStyle(.menu)
                     
-                    HStack(spacing: 20) {
-                        Toggle("Active", isOn: Binding(
-                            get: { index < attunementSlots.count ? !attunementSlots[index].primaryAttunement.isActive : false },
-                            set: { 
-                                if index >= attunementSlots.count {
-                                    attunementSlots.append(AttunementSlot())
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Active")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Toggle("", isOn: Binding(
+                                get: { index < attunementSlots.count ? !attunementSlots[index].primaryAttunement.isActive : false },
+                                set: { 
+                                    if index >= attunementSlots.count {
+                                        attunementSlots.append(AttunementSlot())
+                                    }
+                                    attunementSlots[index].primaryAttunement.isActive = !$0
                                 }
-                                attunementSlots[index].primaryAttunement.isActive = !$0
-                            }
-                        ))
+                            ))
+                            .labelsHidden()
+                        }
+                        .frame(maxWidth: .infinity)
                         
-                        Toggle("Lost", isOn: Binding(
-                            get: { index < attunementSlots.count ? attunementSlots[index].secondaryAttunement.isLost : false },
-                            set: { 
-                                if index >= attunementSlots.count {
-                                    attunementSlots.append(AttunementSlot())
+                        VStack(alignment: .leading) {
+                            Text("Lost")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Toggle("", isOn: Binding(
+                                get: { index < attunementSlots.count ? attunementSlots[index].secondaryAttunement.isLost : false },
+                                set: { 
+                                    if index >= attunementSlots.count {
+                                        attunementSlots.append(AttunementSlot())
+                                    }
+                                    attunementSlots[index].secondaryAttunement.isLost = $0
                                 }
-                                attunementSlots[index].secondaryAttunement.isLost = $0
-                            }
-                        ))
+                            ))
+                            .labelsHidden()
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(12)
@@ -172,16 +214,22 @@ private struct AttunementSlotView: View {
             }
             
             // Daily Power Usage
-            Toggle("Daily Power Used", isOn: Binding(
-                get: { index < attunementSlots.count ? attunementSlots[index].hasUsedDailyPower : false },
-                set: { 
-                    if index >= attunementSlots.count {
-                        attunementSlots.append(AttunementSlot())
+            HStack {
+                Text("Daily Power Used")
+                    .font(.subheadline)
+                    .foregroundColor(.orange)
+                Spacer()
+                Toggle("", isOn: Binding(
+                    get: { index < attunementSlots.count ? attunementSlots[index].hasUsedDailyPower : false },
+                    set: { 
+                        if index >= attunementSlots.count {
+                            attunementSlots.append(AttunementSlot())
+                        }
+                        attunementSlots[index].hasUsedDailyPower = $0
                     }
-                    attunementSlots[index].hasUsedDailyPower = $0
-                }
-            ))
-            .foregroundColor(.orange)
+                ))
+                .labelsHidden()
+            }
         }
         .padding(16)
         .background(Color(.systemBackground))
