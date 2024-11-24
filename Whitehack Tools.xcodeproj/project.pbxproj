@@ -45,6 +45,7 @@
 		A99E172B2CF1982D00B69E26 /* DetailDeftAttunementSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */; };
 		A99E172D2CF19A6600B69E26 /* FormStrongCombatSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172C2CF19A6600B69E26 /* FormStrongCombatSection.swift */; };
 		A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172E2CF19A8600B69E26 /* DetailStrongCombatSection.swift */; };
+		A9A5FEE32CF2AF7500747C93 /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A9A5FEE22CF2AF7500747C93 /* PhosphorSwift */; };
 		A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A9B679C32CE8791E000ACE9E /* PhosphorSwift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
@@ -117,6 +118,7 @@
 			files = (
 				A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */,
 				A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */,
+				A9A5FEE32CF2AF7500747C93 /* PhosphorSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +311,7 @@
 			packageProductDependencies = (
 				A9B679C32CE8791E000ACE9E /* PhosphorSwift */,
 				A959EC782CF1A99E0051DCEC /* PhosphorSwift */,
+				A9A5FEE22CF2AF7500747C93 /* PhosphorSwift */,
 			);
 			productName = "Whitehack Tools";
 			productReference = A9F0728C2CE75166005033F2 /* Whitehack Tools.app */;
@@ -644,6 +647,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		A959EC782CF1A99E0051DCEC /* PhosphorSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */;
+			productName = PhosphorSwift;
+		};
+		A9A5FEE22CF2AF7500747C93 /* PhosphorSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A9B679C22CE8791E000ACE9E /* XCRemoteSwiftPackageReference "swift" */;
 			productName = PhosphorSwift;
