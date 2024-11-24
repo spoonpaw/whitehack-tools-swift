@@ -8,35 +8,83 @@ struct DetailFortunateSection: View {
     var body: some View {
         Section {
             VStack(alignment: .leading, spacing: 16) {
-                // Standing & Fortune Status
+                // Class Info Card
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("Noble Status", systemImage: "crown.fill")
+                    Label("The Fortunate", systemImage: "crown.fill")
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    if !character.fortunateOptions.standing.isEmpty {
-                        Text(character.fortunateOptions.standing)
-                            .font(.body)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color.purple.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    Text("Born to privilege, you gain unique advantages through nobility, fame, destiny, or wealth. Once per session, you may leverage your fortune for a major benefit.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.blue.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                
+                Divider()
+                    .background(Color.purple.opacity(0.3))
+                
+                // Standing & Fortune Status
+                VStack(alignment: .leading, spacing: 16) {
+                    // Noble Status
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Noble Status", systemImage: "crown.fill")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        
+                        if !character.fortunateOptions.standing.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(character.fortunateOptions.standing)
+                                    .font(.body)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 8)
+                                    .background(Color.purple.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                
+                                Text("Your standing grants group benefits when relevant: affiliated factions are more helpful, species benefits apply regardless of attributes, and aligned vocations may grant +6 bonus.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 4)
+                            }
+                        }
                     }
                     
-                    HStack(spacing: 12) {
-                        Image(systemName: character.fortunateOptions.hasUsedFortune ? "xmark.circle.fill" : "sparkles.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .yellow)
+                    Divider()
+                        .background(Color.purple.opacity(0.3))
+                    
+                    // Fortune
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Fortune", systemImage: "star.circle.fill")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
                         
-                        Text(character.fortunateOptions.hasUsedFortune ? "Fortune has been used" : "Fortune is available")
-                            .font(.subheadline)
-                            .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .green)
+                        Text("Once per session, you may use your fortune in a major way - like hiring a large ship, getting an audience with royalty, or being welcomed by a hostile tribe.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                        
+                        HStack(spacing: 12) {
+                            Image(systemName: character.fortunateOptions.hasUsedFortune ? "xmark.circle.fill" : "sparkles")
+                                .font(.title2)
+                                .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .yellow)
+                            
+                            VStack(alignment: .leading) {
+                                Text(character.fortunateOptions.hasUsedFortune ? "Fortune has been used" : "Fortune is available")
+                                    .font(.subheadline)
+                                    .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .green)
+                                Text(character.fortunateOptions.hasUsedFortune ? "Will reset next session" : "Available for a major advantage")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(character.fortunateOptions.hasUsedFortune ? 
+                            Color.red.opacity(0.1) : Color.green.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(character.fortunateOptions.hasUsedFortune ? 
-                        Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
                 .padding(.bottom, 8)
                 
@@ -50,12 +98,19 @@ struct DetailFortunateSection: View {
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
-                        Text(character.fortunateOptions.signatureObject.name)
-                            .font(.body)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color.blue.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(character.fortunateOptions.signatureObject.name)
+                                .font(.body)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.blue.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            
+                            Text("Your signature object has plot immunity - it can never be lost or destroyed unless you choose.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
+                        }
                     }
                     .padding(.vertical, 8)
                     
@@ -65,9 +120,16 @@ struct DetailFortunateSection: View {
                 
                 // Retainers
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Retainers", systemImage: "person.2.fill")
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Retainers", systemImage: "person.2.fill")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        
+                        Text("Your retainers can grow in strength as you level. They have their own HD, DF, MV, and keywords, acting as unique allies with personalities and attitudes.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                    }
                     
                     ForEach(character.fortunateOptions.retainers) { retainer in
                         RetainerDetailView(retainer: retainer)
