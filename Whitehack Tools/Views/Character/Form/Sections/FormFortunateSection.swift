@@ -1,161 +1,181 @@
 import SwiftUI
 import PhosphorSwift
 
+// MARK: - Standing & Fortune Card
+struct FormFortunateStandingCard: View {
+    @Binding var standing: String
+    @Binding var hasUsedFortune: Bool
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Header
+            HStack {
+                Text("Standing & Fortune")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                Spacer()
+                ZStack {
+                    Circle()
+                        .fill(Color.blue.opacity(0.2))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "star.fill")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 20))
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 20)
+            
+            // Standing
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Standing")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Enter standing", text: $standing)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding(.horizontal)
+            
+            // Fortune Usage
+            VStack(alignment: .leading, spacing: 12) {
+                Toggle(isOn: $hasUsedFortune) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Good Fortune")
+                            .fontWeight(.medium)
+                        Text("Daily power to reroll any roll")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .tint(.blue)
+                
+                HStack {
+                    Image(systemName: hasUsedFortune ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                    Text(hasUsedFortune ? "Power has been used today" : "Power is available to use")
+                        .font(.caption)
+                }
+                .foregroundColor(hasUsedFortune ? .red : .green)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 20)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Signature Object Card
+struct FormFortunateSignatureObjectCard: View {
+    @Binding var signatureObject: SignatureObject
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Header
+            HStack {
+                Text("Signature Object")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                Spacer()
+                ZStack {
+                    Circle()
+                        .fill(Color.orange.opacity(0.2))
+                        .frame(width: 44, height: 44)
+                    Image(systemName: "crown.fill")
+                        .foregroundColor(.orange)
+                        .font(.system(size: 20))
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 20)
+            
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Description")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Enter signature object name", text: $signatureObject.name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 20)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+        .listRowSeparator(.hidden)
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Main Form Section
 struct FormFortunateSection: View {
     let characterClass: CharacterClass
     let level: Int
     @Binding var fortunateOptions: FortunateOptions
-    @Environment(\.colorScheme) var colorScheme
     
-    private var availableRetainers: Int {
+    private var stats: CharacterStats {
+        AdvancementTables.shared.stats(for: characterClass, at: level)
+    }
+    
+    private var availableSlots: Int {
         guard characterClass == .fortunate else { return 0 }
-        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
         return stats.slots
     }
     
-    private func initializeRetainersIfNeeded() {
-        // Ensure we have the correct number of retainers
-        while fortunateOptions.retainers.count < availableRetainers {
-            fortunateOptions.retainers.append(Retainer())
-        }
-        while fortunateOptions.retainers.count > availableRetainers {
-            fortunateOptions.retainers.removeLast()
+    private var displayedRetainers: [Retainer] {
+        if fortunateOptions.retainers.count < availableSlots {
+            var retainers = fortunateOptions.retainers
+            retainers.append(contentsOf: (retainers.count..<availableSlots).map { _ in Retainer() })
+            return retainers
+        } else {
+            return Array(fortunateOptions.retainers.prefix(availableSlots))
         }
     }
-
+    
     var body: some View {
         if characterClass == .fortunate {
             Section {
-                VStack(spacing: 16) {
-                    // MARK: - Standing & Fortune
-                    VStack(alignment: .leading, spacing: 20) {
-                        // Header
-                        HStack {
-                            Text("Daily Power")
-                                .font(.title3)
-                                .fontWeight(.medium)
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple.opacity(0.2))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: "sparkles")
-                                    .foregroundColor(.purple)
-                                    .font(.system(size: 20))
-                            }
-                        }
+                // Standing & Fortune Card
+                FormFortunateStandingCard(
+                    standing: $fortunateOptions.standing,
+                    hasUsedFortune: $fortunateOptions.hasUsedFortune
+                )
+                
+                // Signature Object Card
+                FormFortunateSignatureObjectCard(
+                    signatureObject: $fortunateOptions.signatureObject
+                )
+                
+                // Show retainer forms
+                ForEach(Array(displayedRetainers.enumerated()), id: \.element.id) { index, retainer in
+                    FormFortunateRetainerFormView(retainer: binding(for: index))
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                         .padding(.horizontal)
-                        
-                        Toggle(isOn: $fortunateOptions.hasUsedFortune) {
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text("Good Fortune")
-                                    .fontWeight(.medium)
-                                Text("Daily power to reroll any roll")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .tint(.purple)
-                        .padding(.horizontal)
-                    }
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-                    )
-                    .padding(.horizontal, 4)
-                    
-                    // MARK: - Standing
-                    VStack(alignment: .leading, spacing: 20) {
-                        HStack {
-                            Text("Noble Standing")
-                                .font(.title3)
-                                .fontWeight(.medium)
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple.opacity(0.2))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: "crown.fill")
-                                    .foregroundColor(.purple)
-                                    .font(.system(size: 20))
-                            }
-                        }
-                        .padding(.horizontal)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            TextField("e.g., Reincarnated Master, Royal Heir", text: $fortunateOptions.standing)
-                                .textFieldStyle(FormFortunateCustomTextFieldStyle())
-                                .padding(.horizontal, 4)
-                            Text("Your noble standing grants you special privileges and responsibilities")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.horizontal)
-                    }
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-                    )
-                    .padding(.horizontal, 4)
-                    
-                    // MARK: - Signature Object
-                    VStack(alignment: .leading, spacing: 20) {
-                        HStack {
-                            Text("Signature Object")
-                                .font(.title3)
-                                .fontWeight(.medium)
-                            Spacer()
-                            ZStack {
-                                Circle()
-                                    .fill(Color.purple.opacity(0.2))
-                                    .frame(width: 44, height: 44)
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.purple)
-                                    .font(.system(size: 20))
-                            }
-                        }
-                        .padding(.horizontal)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            TextField("Enter signature object name", text: $fortunateOptions.signatureObject.name)
-                                .textFieldStyle(FormFortunateCustomTextFieldStyle())
-                                .padding(.horizontal, 4)
-                            Text("Your signature object has plot immunity and cannot be lost or destroyed without your consent")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.horizontal)
-                    }
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-                            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 8, x: 0, y: 2)
-                    )
-                    .padding(.horizontal, 4)
-                    
-                    // MARK: - Retainers
-                    if availableRetainers > 0 {
-                        Label {
-                            Text("Retainers")
-                                .font(.title3)
-                                .fontWeight(.medium)
-                        } icon: {
-                            Image(systemName: "person.2.fill")
-                                .foregroundStyle(.purple)
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                    }
-                    
-                    ForEach(0..<fortunateOptions.retainers.count, id: \.self) { index in
-                        FormFortunateRetainerFormView(retainer: binding(for: index))
-                            .transition(.scale.combined(with: .opacity))
-                    }
+                        .padding(.vertical, 8)
                 }
             } header: {
                 Label {
@@ -163,24 +183,33 @@ struct FormFortunateSection: View {
                         .font(.headline)
                         .foregroundColor(.primary)
                 } icon: {
-                    Image(systemName: "crown.fill")
-                        .foregroundStyle(.purple)
+                    Image(systemName: "person.3.fill")
+                        .foregroundColor(.purple)
                 }
             }
-            .onAppear {
-                initializeRetainersIfNeeded()
+            .onChange(of: level) { _ in
+                // Update the actual retainers array when level changes
+                fortunateOptions.retainers = displayedRetainers
             }
         }
     }
     
     private func binding(for index: Int) -> Binding<Retainer> {
         Binding(
-            get: { fortunateOptions.retainers[index] },
-            set: { fortunateOptions.retainers[index] = $0 }
+            get: { 
+                // Always use displayedRetainers to ensure we have the right number
+                displayedRetainers[index]
+            },
+            set: { newValue in
+                var updated = displayedRetainers
+                updated[index] = newValue
+                fortunateOptions.retainers = updated
+            }
         )
     }
 }
 
+// MARK: - Retainer Form View
 struct FormFortunateRetainerFormView: View {
     @Binding var retainer: Retainer
     @State private var isAddingKeyword = false
@@ -207,7 +236,6 @@ struct FormFortunateRetainerFormView: View {
                     .foregroundColor(.purple)
             }
             .padding()
-            .background(Color(.systemBackground))
             
             Divider()
             
@@ -223,9 +251,82 @@ struct FormFortunateRetainerFormView: View {
                     }
                 }
                 
-                // Stats
+                // Combat Stats
                 VStack(alignment: .leading, spacing: 12) {
                     FormFortunateSectionHeader(title: "Combat Stats", icon: Image(systemName: "shield.lefthalf.filled"))
+                    
+                    // HP Controls
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Hit Points")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 8) {
+                            // Current HP
+                            HStack(spacing: 8) {
+                                Button(action: {
+                                    retainer.currentHP = max(-999, retainer.currentHP - 1)
+                                }) {
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                
+                                Text("\(retainer.currentHP)")
+                                    .frame(width: 40)
+                                    .multilineTextAlignment(.center)
+                                
+                                Button(action: {
+                                    if retainer.currentHP < retainer.maxHP {
+                                        retainer.currentHP += 1
+                                    }
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.green)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                            }
+                            .padding(8)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                            
+                            Text("/")
+                                .foregroundColor(.secondary)
+                            
+                            // Max HP
+                            HStack(spacing: 8) {
+                                Button(action: {
+                                    if retainer.maxHP > 1 {
+                                        retainer.maxHP -= 1
+                                        retainer.currentHP = min(retainer.currentHP, retainer.maxHP)
+                                    }
+                                }) {
+                                    Image(systemName: "minus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                                
+                                Text("\(retainer.maxHP)")
+                                    .frame(width: 40)
+                                    .multilineTextAlignment(.center)
+                                
+                                Button(action: {
+                                    retainer.maxHP += 1
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .font(.title2)
+                                        .foregroundColor(.green)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                            }
+                            .padding(8)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+                        }
+                    }
                     
                     HStack(spacing: 16) {
                         FormFortunateStatField(label: "HD", value: $retainer.hitDice, systemImage: "heart.fill", color: .red)
@@ -293,12 +394,14 @@ struct FormFortunateRetainerFormView: View {
                 }
             }
             .padding()
-            .background(Color(.systemBackground))
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+            )
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                    .stroke(Color(.systemGray4), lineWidth: 1)
             )
         }
     }
@@ -462,30 +565,46 @@ struct FormFortunateAddButton: View {
     }
 }
 
-struct FormFortunateEmptyRetainerSlot: View {
-    let index: Int
-    let onTap: () -> Void
+struct KeywordTag: View {
+    let keyword: String
+    let onDelete: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 12) {
-                Image(systemName: "person.badge.plus")
-                    .font(.title)
+        HStack(spacing: 6) {
+            Text(keyword)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            
+            Button(action: onDelete) {
+                Image(systemName: "xmark.circle.fill")
                     .foregroundColor(.secondary)
-                Text("Add Retainer")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .imageScale(.small)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
         }
-        .buttonStyle(.plain)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color(.systemGray6))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+        )
     }
 }
 
-// MARK: - Layout Components
+extension View {
+    func cardStyle() -> some View {
+        self
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+            )
+    }
+}
+
 struct TagSizePreferenceKey: PreferenceKey {
     static var defaultValue: CGSize = .zero
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
@@ -567,45 +686,5 @@ private struct TagFlowLayoutView<Data: Collection, Content: View>: View where Da
                     }
             }
         }
-    }
-}
-
-struct KeywordTag: View {
-    let keyword: String
-    let onDelete: () -> Void
-    
-    var body: some View {
-        HStack(spacing: 6) {
-            Text(keyword)
-                .font(.subheadline)
-                .foregroundColor(.primary)
-            
-            Button(action: onDelete) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.secondary)
-                    .imageScale(.small)
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color(.systemGray6))
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-        )
-    }
-}
-
-extension View {
-    func cardStyle() -> some View {
-        self
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-            )
     }
 }

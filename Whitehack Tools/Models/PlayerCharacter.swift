@@ -398,8 +398,10 @@ struct Retainer: Codable, Identifiable {
     var keywords: [String]
     var attitude: String
     var notes: String
+    var currentHP: Int
+    var maxHP: Int
     
-    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 30, keywords: [String] = [], attitude: String = "", notes: String = "") {
+    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 30, keywords: [String] = [], attitude: String = "", notes: String = "", currentHP: Int = 1, maxHP: Int = 1) {
         self.id = id
         self.name = name
         self.type = type
@@ -409,6 +411,8 @@ struct Retainer: Codable, Identifiable {
         self.keywords = keywords
         self.attitude = attitude
         self.notes = notes
+        self.currentHP = currentHP
+        self.maxHP = maxHP
     }
 }
 
