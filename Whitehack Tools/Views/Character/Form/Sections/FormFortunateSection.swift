@@ -163,6 +163,17 @@ struct FormFortunateRetainerFormView: View {
                     }
                 }
                 
+                // Notes
+                VStack(alignment: .leading, spacing: 12) {
+                    FormFortunateSectionHeader(title: "Notes", icon: Image(systemName: "note.text"))
+                    
+                    TextEditor(text: $retainer.notes)
+                        .frame(height: 60)
+                        .padding(8)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                }
+                
                 // Keywords
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -211,14 +222,14 @@ struct FormFortunateRetainerFormView: View {
                 }
             }
             .padding()
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+            )
         }
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-        )
     }
 }
 

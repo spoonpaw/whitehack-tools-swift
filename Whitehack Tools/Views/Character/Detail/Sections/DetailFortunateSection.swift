@@ -81,6 +81,18 @@ struct RetainerDetailView: View {
                 RetainerStatView(label: "MV", value: retainer.movement, systemImage: "figure.walk")
             }
             
+            // Notes
+            if !retainer.notes.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label("Notes", systemImage: "note.text")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(retainer.notes)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                }
+            }
+            
             // Keywords
             if !retainer.keywords.isEmpty {
                 TagFlowView(data: retainer.keywords, spacing: 8) { keyword in

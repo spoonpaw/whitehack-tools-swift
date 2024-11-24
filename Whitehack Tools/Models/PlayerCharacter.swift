@@ -397,8 +397,9 @@ struct Retainer: Codable, Identifiable {
     var movement: Int
     var keywords: [String]
     var attitude: String
+    var notes: String
     
-    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 30, keywords: [String] = [], attitude: String = "") {
+    init(id: UUID = UUID(), name: String = "", type: String = "", hitDice: Int = 1, defenseFactor: Int = 0, movement: Int = 30, keywords: [String] = [], attitude: String = "", notes: String = "") {
         self.id = id
         self.name = name
         self.type = type
@@ -407,6 +408,7 @@ struct Retainer: Codable, Identifiable {
         self.movement = movement
         self.keywords = keywords
         self.attitude = attitude
+        self.notes = notes
     }
 }
 
