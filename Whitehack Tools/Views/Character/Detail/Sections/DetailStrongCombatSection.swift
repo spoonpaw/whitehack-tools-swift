@@ -11,6 +11,8 @@ struct DetailStrongCombatSection: View {
             Section {
                 VStack(alignment: .leading, spacing: 16) {
                     AttributeBonusesCard(character: character)
+                    ClassFeaturesCard()
+                    SelectedCombatOptionsCard(character: character)
                     ConflictLootingCard(character: character)
                     FlowAttacksCard(character: character)
                 }
@@ -263,6 +265,34 @@ private struct AttributeBonusesCard: View {
     }
 }
 
+private struct ClassFeaturesCard: View {
+    var body: some View {
+        CardContainer(title: "Class Features", icon: "shield.lefthalf.filled") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Combat Prowess")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("• Two free attacks per round (others get one)")
+                    Text("• Flow attacks when reducing enemy to 0 HP")
+                    Text("• Can make flow attacks against enemies adjacent to you (melee) or the prior target (ranged)")
+                    Text("• Maximum flow attacks per round = raises + 1")
+                }
+                .font(.subheadline)
+                
+                Text("Combat Options")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .padding(.top, 4)
+                
+                Text("Can use any special combat option and permanently fill slots with options from the Strong ability list. Unless noted, effects last one round and can be activated any number of times.")
+                    .font(.subheadline)
+            }
+        }
+    }
+}
+
 private struct FlowAttacksCard: View {
     let character: PlayerCharacter
     
@@ -309,6 +339,45 @@ private struct FlowAttacksCard: View {
                 .padding(12)
                 .background(Color.red.opacity(0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+        }
+    }
+}
+
+private struct SelectedCombatOptionsCard: View {
+    let character: PlayerCharacter
+    
+    private var availableSlots: Int {
+        AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots
+    }
+    
+    private var selectedOptions: [StrongCombatOption] {
+        character.availableCombatOptions.filter { character.strongCombatOptions.isActive($0) }
+    }
+    
+    var body: some View {
+        CardContainer(title: "Selected Combat Options", icon: "square.stack.3d.up.fill") {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("\(selectedOptions.count)/\(availableSlots) Slots Used")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                if selectedOptions.isEmpty {
+                    Text("No combat options selected")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.vertical, 4)
+                } else {
+                    ForEach(selectedOptions) { option in
+                        HStack(spacing: 12) {
+                            Image(systemName: "circle.fill")
+                                .font(.system(size: 6))
+                                .foregroundColor(.secondary)
+                            Text(option.name)
+                                .font(.subheadline)
+                        }
+                    }
+                }
             }
         }
     }
