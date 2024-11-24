@@ -17,180 +17,12 @@ struct DetailBraveQuirksSection: View {
         if characterClass == .brave {
             Section {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Class Overview Card
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "person.fill")
-                                .foregroundColor(.blue)
-                            Text("Class Overview")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        // Description Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Any character may show courage, but the ability to stand fast in the face of despair defines the Brave and makes up for their lack of skills and prowess. They are underdogs and unlikely heroes: failed apprentices, gardeners dreaming of dragons and elves, wannabe bards, peasants taking up arms against an oppressive ruler, or something similar.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.blue.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                        // Attributes & Features Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                    .foregroundColor(.blue)
-                                Text("Class Traits")
-                                    .font(.headline)
-                            }
-                            
-                            Text("Brave character may raise or lower attributes at even levels. They can use any weapon, but armor heavier than cloth incurs a 2 attribute penalty on all task rolls. The Brave also get two rolls for hp at levels 1–3 (marked with asterisks in the table), and the player picks the best roll. Finally, they emit a distinct aura: very perceptive people and creatures will always sense their courageous quality.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.blue.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    
-                    // Class Features Card
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: "star.fill")
-                                .foregroundColor(.yellow)
-                            Text("Class Features")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
-                        
-                        // Quirks Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Image(systemName: "sparkles")
-                                    .foregroundColor(.yellow)
-                                Text("Quirks")
-                                    .font(.headline)
-                                Spacer()
-                                Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
-                                    .font(.title3)
-                                    .foregroundColor(.secondary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 4)
-                                    .background(Color.secondary.opacity(0.1))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                            
-                            Text("Brave characters' slots can each hold a special quirk. There are eight quirks to permanently choose from as the character levels.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
-                            if braveQuirkOptions.activeQuirks.isEmpty {
-                                Text("No quirks selected")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .padding(.vertical, 8)
-                            } else {
-                                ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                                    if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
-                                        QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
-                                    }
-                                }
-                            }
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.yellow.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                        // Comeback Dice Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Image(systemName: "dice.fill")
-                                    .foregroundColor(.green)
-                                Text("Comeback Dice")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Text("\(comebackDice)d6")
-                                    .font(.title2)
-                                    .foregroundColor(comebackDice > 0 ? .green : .secondary)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 4)
-                                    .background(comebackDice > 0 ? Color.green.opacity(0.1) : Color.secondary.opacity(0.1))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                            
-                            Text("Every time a brave character loses an auction or fails at a task roll or a save (not attacks), she gains a \"comeback die\"—a d6. This die can be added to any attribute, to sv or to av, or to supplant a damage die, in a later situation when rolling for something else. If more than one comeback die is used, only the best one counts, and if a roll fails despite comeback dice, those dice are lost and the roll generates no new ones.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                BraveFeatureBullet(text: "Losing an auction")
-                                BraveFeatureBullet(text: "Failing a task roll")
-                                BraveFeatureBullet(text: "Failing a save (not attacks)")
-                            }
-                            .padding(.leading, 4)
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.green.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                        // Say No Power Card
-                        VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Image(systemName: "hand.raised.fill")
-                                    .foregroundColor(.red)
-                                Text("Say No Power")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                HStack(spacing: 12) {
-                                    Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(hasUsedSayNo ? .red : .green)
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text(hasUsedSayNo ? "Power Used" : "Power Available")
-                                            .font(.subheadline)
-                                            .foregroundColor(hasUsedSayNo ? .red : .green)
-                                        Text(hasUsedSayNo ? "Resets next session" : "Ready to defy fate")
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(hasUsedSayNo ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                            
-                            Text("Brave characters also have the power to say \"no,\" denying an enemy a successful attack, miraculous effect or fear effect directed at them. This power may be used once per session, and effectually turns a Referee roll into a failure or nullifies a power of one of her monsters. The player must explain how it is plausible in the situation, and what her character does to avoid or resist the enemy.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.red.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    .padding(12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    ClassOverviewCard()
+                    AttributesCard()
+                    ArmorCard()
+                    QuirksCard(braveQuirkOptions: braveQuirkOptions, availableSlots: availableSlots)
+                    ComebackDiceCard(comebackDice: comebackDice)
+                    SayNoPowerCard(hasUsedSayNo: hasUsedSayNo)
                     
                     if hasArmorPenalty {
                         ArmorPenaltyWarning()
@@ -215,7 +47,280 @@ struct DetailBraveQuirksSection: View {
     }
 }
 
+// MARK: - Cards
+private struct ClassOverviewCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "figure.walk.motion")
+                    .foregroundColor(.red)
+                Text("Class Overview")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
+            BraveFeatureRow(
+                icon: "heart.fill",
+                color: .red,
+                title: "Unlikely Heroes",
+                description: "Failed apprentices, gardeners dreaming of dragons and elves, wannabe bards, or peasants taking up arms against oppression."
+            )
+            
+            BraveFeatureRow(
+                icon: "sparkles",
+                color: .red,
+                title: "Courageous Aura",
+                description: "Very perceptive people and creatures will always sense their courageous quality."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct AttributesCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "person.crop.circle.badge.plus")
+                    .foregroundColor(.blue)
+                Text("Attributes & HP")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
+            BraveFeatureRow(
+                icon: "arrow.up.and.down",
+                color: .blue,
+                title: "Attribute Adjustments",
+                description: "May raise or lower attributes at even levels."
+            )
+            
+            BraveFeatureRow(
+                icon: "heart.circle.fill",
+                color: .blue,
+                title: "HP Advantage",
+                description: "Get two rolls for HP at levels 1–3, picking the best roll."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.blue.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ArmorCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "shield.fill")
+                    .foregroundColor(.purple)
+                Text("Armor & Weapons")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
+            BraveFeatureRow(
+                icon: "shield.lefthalf.filled",
+                color: .purple,
+                title: "Armor Restrictions",
+                description: "Armor heavier than cloth incurs a -2 penalty to all task rolls."
+            )
+            
+            BraveFeatureRow(
+                icon: "bolt.shield.fill",
+                color: .purple,
+                title: "Weapon Proficiency",
+                description: "Can use any weapon without penalty."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.purple.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct QuirksCard: View {
+    let braveQuirkOptions: BraveQuirkOptions
+    let availableSlots: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "sparkles")
+                    .foregroundColor(.yellow)
+                Text("Quirks")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
+            BraveFeatureRow(
+                icon: "star.circle.fill",
+                color: .yellow,
+                title: "Special Abilities",
+                description: "Each slot can hold a special quirk, with eight options to choose from as you level."
+            )
+            
+            if braveQuirkOptions.activeQuirks.isEmpty {
+                Text("No quirks selected")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.vertical, 8)
+            } else {
+                ForEach(0..<availableSlots, id: \.self) { slotIndex in
+                    if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
+                        QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct ComebackDiceCard: View {
+    let comebackDice: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "dice.fill")
+                    .foregroundColor(.green)
+                Text("Comeback Dice")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text("\(comebackDice)d6")
+                    .font(.title2)
+                    .foregroundColor(comebackDice > 0 ? .green : .secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(comebackDice > 0 ? Color.green.opacity(0.1) : Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
+            BraveFeatureRow(
+                icon: "arrow.clockwise",
+                color: .green,
+                title: "Gain Dice",
+                description: "Gain a d6 when losing an auction, failing a task roll, or failing a save (not attacks)."
+            )
+            
+            BraveFeatureRow(
+                icon: "dice.fill",
+                color: .green,
+                title: "Use Dice",
+                description: "Add to any attribute, sv, av, or replace a damage die. Only best die counts if using multiple."
+            )
+            
+            BraveFeatureRow(
+                icon: "xmark.diamond.fill",
+                color: .green,
+                title: "Lose Dice",
+                description: "Failed rolls with comeback dice are lost and generate no new ones."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.green.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct SayNoPowerCard: View {
+    let hasUsedSayNo: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "hand.raised.fill")
+                    .foregroundColor(.red)
+                Text("Say No Power")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Spacer()
+                HStack(spacing: 12) {
+                    Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(hasUsedSayNo ? .red : .green)
+                    
+                    VStack(alignment: .leading) {
+                        Text(hasUsedSayNo ? "Power Used" : "Power Available")
+                            .font(.subheadline)
+                            .foregroundColor(hasUsedSayNo ? .red : .green)
+                        Text(hasUsedSayNo ? "Resets next session" : "Ready to defy fate")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(hasUsedSayNo ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
+            BraveFeatureRow(
+                icon: "xmark.shield.fill",
+                color: .red,
+                title: "Deny Effects",
+                description: "Once per session, deny an enemy's successful attack, miraculous effect, or fear effect."
+            )
+            
+            BraveFeatureRow(
+                icon: "person.fill.questionmark",
+                color: .red,
+                title: "Explain Action",
+                description: "Must explain how your character plausibly avoids or resists the effect."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
 // MARK: - Helper Views
+private struct BraveFeatureRow: View {
+    let icon: String
+    let color: Color
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .font(.system(size: 18))
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+}
+
 private struct QuirkCard: View {
     let quirk: BraveQuirk
     let slotIndex: Int
@@ -258,22 +363,6 @@ private struct QuirkCard: View {
         .background(colorScheme == .dark ? Color(.systemGray6) : .white)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(color: Color(.systemGray4).opacity(0.3), radius: 6, x: 0, y: 2)
-    }
-}
-
-private struct BraveFeatureBullet: View {
-    let text: String
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "circle.fill")
-                .font(.system(size: 6))
-                .foregroundColor(.secondary)
-                .padding(.top, 6)
-            Text(text)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
     }
 }
 
