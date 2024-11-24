@@ -77,9 +77,9 @@ private struct ClassInfoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "figure.strengthtraining")
-                    .foregroundColor(.red)
-                    .imageScale(.large)
+                Ph.barbell.bold
+                    .frame(width: 24, height: 24)
+                    .foregroundStyle(.red)
                 Text("Class Overview")
                     .font(.headline)
                     .foregroundColor(.primary)
@@ -573,7 +573,7 @@ private struct AttributeBonusRow: View {
             icon
                 .bold
                 .frame(width: 20, height: 20)
-                .foregroundColor(color)
+                .foregroundStyle(color)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(attribute)
