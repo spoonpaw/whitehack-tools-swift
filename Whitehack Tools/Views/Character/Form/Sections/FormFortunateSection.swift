@@ -72,7 +72,6 @@ struct FormFortunateStandingCard: View {
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
-        .padding(.horizontal)
         .padding(.vertical, 8)
     }
 }
@@ -124,7 +123,6 @@ struct FormFortunateSignatureObjectCard: View {
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
-        .padding(.horizontal)
         .padding(.vertical, 8)
     }
 }
@@ -174,7 +172,6 @@ struct FormFortunateSection: View {
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
-                        .padding(.horizontal)
                         .padding(.vertical, 8)
                 }
             } header: {
