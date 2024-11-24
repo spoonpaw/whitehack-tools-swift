@@ -61,14 +61,20 @@ struct FormWiseMiracleSection: View {
                         }
                         
                         if index == 2 && slot.isMagicItem {
-                            TextField("Magic Item Name", text: $miracleSlots[index].magicItemName)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.horizontal)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.purple.opacity(0.5), lineWidth: 1)
-                                )
-                                .padding(.horizontal)
+                            VStack(spacing: 12) {
+                                TextField("Magic Item Name", text: $miracleSlots[index].magicItemName)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.purple.opacity(0.5), lineWidth: 1)
+                                    )
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                            )
+                            .padding(.horizontal)
                         } else {
                             let maxMiracles = index == 0 ? 2 + extraInactiveMiracles : 2
                             ForEach(0..<maxMiracles, id: \.self) { miracleIndex in
