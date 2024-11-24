@@ -85,7 +85,7 @@ struct FormCleverKnacksSection: View {
                         .padding(.top, 8)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            Picker("Select Knack", selection: Binding(
+                            Picker(cleverKnackOptions.getKnack(at: index) == nil ? "Select Knack" : "", selection: Binding(
                                 get: { cleverKnackOptions.getKnack(at: index) },
                                 set: { cleverKnackOptions.setKnack($0, at: index) }
                             )) {
