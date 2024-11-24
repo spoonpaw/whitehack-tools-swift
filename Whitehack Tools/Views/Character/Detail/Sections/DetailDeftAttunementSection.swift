@@ -73,28 +73,28 @@ private struct DeftFeaturesCard: View {
             }
             
             VStack(alignment: .leading, spacing: 16) {
-                FeatureRow(
+                DeftAttunementFeatureRow(
                     icon: "dice.fill",
                     color: .green,
                     title: "Double Roll",
                     description: "Always use positive double roll for tasks and attacks in line with vocation when properly equipped"
                 )
                 
-                FeatureRow(
+                DeftAttunementFeatureRow(
                     icon: "bolt.fill",
                     color: .orange,
                     title: "Combat Advantage",
                     description: "Can swap combat advantage for double damage if vocation is relevant"
                 )
                 
-                FeatureRow(
+                DeftAttunementFeatureRow(
                     icon: "shield.lefthalf.filled",
                     color: .blue,
                     title: "Weapon Proficiency",
                     description: "+2 AV with non-attuned two-handed melee weapons. Combat vocations get +1 damage and df from off-hand weapons"
                 )
                 
-                FeatureRow(
+                DeftAttunementFeatureRow(
                     icon: "tshirt.fill",
                     color: .red,
                     title: "Light Armor",
@@ -297,33 +297,29 @@ private struct AttunementItemView: View {
 }
 
 // MARK: - Helper Views
-private struct FeatureRow: View {
+private struct DeftAttunementFeatureRow: View {
     let icon: String
     let color: Color
     let title: String
     let description: String
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .frame(width: 20)
+                .imageScale(.medium)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline.bold())
-                    .foregroundColor(color)
-                Text(description)
                     .font(.subheadline)
+                    .foregroundColor(.primary)
+                Text(description)
+                    .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
             }
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.vertical, 4)
     }
 }
 

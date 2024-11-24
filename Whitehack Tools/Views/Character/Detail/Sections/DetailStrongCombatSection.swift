@@ -74,21 +74,21 @@ private struct ClassFeaturesCard: View {
                     .foregroundColor(.primary)
             }
             
-            FeatureRow(
+            StrongCombatFeatureRow(
                 icon: "figure.2.arms.open",
                 color: .red,
                 title: "Basic Combat",
                 description: "Get the same single basic attack per round as other classes, but two free attacks (others get one)."
             )
             
-            FeatureRow(
+            StrongCombatFeatureRow(
                 icon: "arrow.triangle.branch",
                 color: .red,
                 title: "Flow Attacks",
                 description: "When putting an enemy at zero or negative harm points, may attack another enemy adjacent to the Strong (melee) or prior target (ranged). Limited to raises + 1 per round."
             )
             
-            FeatureRow(
+            StrongCombatFeatureRow(
                 icon: "shield.lefthalf.filled",
                 color: .red,
                 title: "Combat Options",
@@ -102,33 +102,30 @@ private struct ClassFeaturesCard: View {
     }
 }
 
-private struct FeatureRow: View {
+// MARK: - Feature Row
+private struct StrongCombatFeatureRow: View {
     let icon: String
     let color: Color
     let title: String
     let description: String
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .frame(width: 20)
+                .imageScale(.medium)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline.bold())
-                    .foregroundColor(color)
-                Text(description)
                     .font(.subheadline)
+                    .foregroundColor(.primary)
+                Text(description)
+                    .font(.caption)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
             }
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(color.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.vertical, 4)
     }
 }
 

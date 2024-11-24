@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 // MARK: - Main View
 struct DetailWiseMiracleSection: View {
@@ -17,46 +18,33 @@ struct DetailWiseMiracleSection: View {
     
     var body: some View {
         if character.characterClass == .wise {
-            WiseSectionContent(character: character, colorScheme: colorScheme, extraInactiveMiracles: extraInactiveMiracles)
+            Section {
+                VStack(alignment: .leading, spacing: 16) {
+                    ClassInfoCard()
+                    ClassFeaturesCard()
+                    MiracleGuidelinesCard()
+                    CostModifiersCard()
+                    HPCostReferenceCard()
+                    
+                    ForEach(Array(character.wiseMiracleSlots.enumerated()), id: \.element.id) { index, slot in
+                        MiracleSlotCard(
+                            index: index,
+                            slot: slot,
+                            colorScheme: colorScheme
+                        )
+                    }
+                }
+                .padding(.vertical)
+            } header: {
+                WiseSectionHeader()
+            }
         } else {
             EmptyView()
         }
     }
 }
 
-// MARK: - Section Content
-private struct WiseSectionContent: View {
-    let character: PlayerCharacter
-    let colorScheme: ColorScheme
-    let extraInactiveMiracles: Int
-    
-    var body: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 16) {
-                ClassInfoCard()
-                ClassFeaturesCard()
-                MiracleGuidelinesCard()
-                CostModifiersCard()
-                HPCostReferenceCard()
-                
-                ForEach(Array(character.wiseMiracleSlots.enumerated()), id: \.element.id) { index, slot in
-                    MiracleSlotCard(
-                        index: index,
-                        slot: slot,
-                        colorScheme: colorScheme
-                    )
-                }
-            }
-            .padding(.vertical)
-        } header: {
-            WiseSectionHeader()
-        } footer: {
-            WiseSectionFooter(level: character.level, willpower: character.willpower, extraInactiveMiracles: extraInactiveMiracles)
-        }
-    }
-}
-
-// MARK: - Header & Footer
+// MARK: - Section Header
 private struct WiseSectionHeader: View {
     var body: some View {
         Label {
@@ -70,73 +58,68 @@ private struct WiseSectionHeader: View {
     }
 }
 
-private struct WiseSectionFooter: View {
-    let level: Int
-    let willpower: Int
-    let extraInactiveMiracles: Int
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if level == 1 {
-                Text("Level 1 slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else if level == 3 {
-                Text("Level 3 slot can hold a magic item instead of miracles")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-}
-
-// MARK: - Class Info Card
+// MARK: - Cards
 private struct ClassInfoCard: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Masters of miracles who negotiate with supernatural forces. Whether as cultists, chemists, meta-mathematicians, exorcists, druids, bards, or wizards, they channel powers beyond normal comprehension.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.yellow.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-    }
-}
-
-// MARK: - Class Features Card
-private struct ClassFeaturesCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "sparkles.square.filled.on.square")
                     .foregroundColor(.yellow)
-                Text("Class Features")
+                Text("Class Overview")
                     .font(.headline)
-                Spacer()
+                    .foregroundColor(.primary)
             }
             
-            VStack(alignment: .leading, spacing: 12) {
-                WiseBenefitRow(text: "Heal supernaturally at 2× natural rate (but need normal healing for non-HP recovery)", icon: "heart.fill", color: .red)
-                WiseBenefitRow(text: "+2 save vs. magick and mind influence", icon: "brain.head.profile", color: .blue)
-                WiseBenefitRow(text: "-2 AV with non-slotted two-handed weapons", icon: "shield.fill", color: .purple)
-                WiseBenefitRow(text: "+2 HP cost when using shields/heavy armor", icon: "shield.lefthalf.filled", color: .orange)
-                WiseBenefitRow(text: "Can slot scroll effects with Intelligence check (if level > HP cost)", icon: "scroll", color: .green)
-            }
+            Text("Masters of miracles who negotiate with supernatural forces. Whether as cultists, chemists, meta-mathematicians, exorcists, druids, bards, or wizards, they channel powers beyond normal comprehension.")
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Color.yellow.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-// MARK: - Miracle Guidelines Card
+private struct ClassFeaturesCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "star.fill")
+                    .foregroundColor(.yellow)
+                Text("Class Features")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
+            WiseMiracleFeatureRow(
+                icon: "wand.and.stars",
+                color: .yellow,
+                title: "Miracles",
+                description: "Can perform miracles by spending HP. Each miracle slot can hold multiple miracles, but only one can be active at a time."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "sparkles",
+                color: .yellow,
+                title: "Miracle Slots",
+                description: "Gain additional miracle slots at higher levels. Level 3 slot can alternatively hold a magic item."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "brain.head.profile",
+                color: .yellow,
+                title: "Willpower Bonus",
+                description: "High Willpower grants additional inactive miracles in the level 1 slot."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
 private struct MiracleGuidelinesCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -145,10 +128,12 @@ private struct MiracleGuidelinesCard: View {
                     .foregroundColor(.yellow)
                 Text("Miracle Guidelines")
                     .font(.headline)
-                Spacer()
-                Image(systemName: "sparkles")
-                    .foregroundColor(.yellow)
+                    .foregroundColor(.primary)
             }
+            
+            Text("Miracles are governed by the following rules:")
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
                 ForEach([
@@ -161,18 +146,13 @@ private struct MiracleGuidelinesCard: View {
                 }
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Color.yellow.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-// MARK: - Cost Modifiers Card
 private struct CostModifiersCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -181,10 +161,14 @@ private struct CostModifiersCard: View {
                     .foregroundColor(.yellow)
                 Text("Cost Modifiers")
                     .font(.headline)
-                Spacer()
+                    .foregroundColor(.primary)
             }
             
-            VStack(spacing: 16) {
+            Text("The following factors can modify the cost of a miracle:")
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
+            
+            VStack(alignment: .leading, spacing: 12) {
                 // Increased Cost Factors
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -249,18 +233,13 @@ private struct CostModifiersCard: View {
                 }
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Color.yellow.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-// MARK: - HP Cost Reference Card
 private struct HPCostReferenceCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -269,8 +248,12 @@ private struct HPCostReferenceCard: View {
                     .foregroundColor(.yellow)
                 Text("HP Cost Magnitudes")
                     .font(.headline)
-                Spacer()
+                    .foregroundColor(.primary)
             }
+            
+            Text("The following HP cost magnitudes are used for miracles:")
+                .font(.subheadline)
+                .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
                 ForEach([
@@ -284,18 +267,13 @@ private struct HPCostReferenceCard: View {
                 }
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity)
-        .background(Color.yellow.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
-// MARK: - Miracle Slot Card
 private struct MiracleSlotCard: View {
     let index: Int
     let slot: WiseMiracleSlot
@@ -308,6 +286,7 @@ private struct MiracleSlotCard: View {
                     .foregroundColor(.yellow)
                 Text("Miracle Slot \(index + 1)")
                     .font(.headline)
+                    .foregroundColor(.primary)
                 Spacer()
             }
             
@@ -324,13 +303,10 @@ private struct MiracleSlotCard: View {
                 }
             }
         }
-        .padding(16)
-        .background(Color.yellow.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     
     private func magickItemView() -> some View {
@@ -346,7 +322,6 @@ private struct MiracleSlotCard: View {
                     .font(.caption2)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(nil)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -437,21 +412,28 @@ private struct MiracleSlotCard: View {
     }
 }
 
-// MARK: - Wise Benefit Row
-struct WiseBenefitRow: View {
-    let text: String
+// MARK: - Feature Row
+struct WiseMiracleFeatureRow: View {
     let icon: String
     let color: Color
+    let title: String
+    let description: String
     
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .imageScale(.small)
-            Text(text)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .imageScale(.medium)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(.vertical, 4)
     }
