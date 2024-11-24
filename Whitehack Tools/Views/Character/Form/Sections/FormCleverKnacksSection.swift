@@ -40,7 +40,7 @@ struct FormCleverKnacksSection: View {
                         }
                     }
                     .padding(.horizontal)
-                    .padding(.top, 4)
+                    .padding(.top, 20)
                     
                     Toggle(isOn: $cleverKnackOptions.hasUsedUnorthodoxBonus) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -61,7 +61,7 @@ struct FormCleverKnacksSection: View {
                     }
                     .foregroundColor(cleverKnackOptions.hasUsedUnorthodoxBonus ? .red : .green)
                     .padding(.horizontal)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, 20)
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 20)
