@@ -173,16 +173,34 @@ private struct QuirksCard: View {
                 description: "Each slot can hold a special quirk, with eight options to choose from as you level."
             )
             
-            if braveQuirkOptions.activeQuirks.isEmpty {
-                Text("No quirks selected")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .padding(.vertical, 8)
-            } else {
-                ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                    if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
-                        QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
+            ForEach(0..<availableSlots, id: \.self) { slotIndex in
+                if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
+                    QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
+                } else {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Empty Slot")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text("Slot \(slotIndex + 1)")
+                                    .font(.caption2)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "sparkles")
+                                .foregroundColor(.yellow)
+                        }
+                        
+                        Text("Select a quirk to fill this slot")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.top, 4)
                     }
+                    .padding(12)
+                    .background(Color(.systemGray6))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(color: Color(.systemGray4).opacity(0.3), radius: 6, x: 0, y: 2)
                 }
             }
         }
