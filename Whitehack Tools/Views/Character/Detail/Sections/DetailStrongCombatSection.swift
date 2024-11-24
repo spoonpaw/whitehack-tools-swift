@@ -220,6 +220,7 @@ private struct SpecialAbilitiesCard: View {
                         .padding(.leading, 32)
                 }
                 .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(currentLoot.type == .substance ? .green : 
                                 currentLoot.type == .special ? .yellow : .purple).opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
