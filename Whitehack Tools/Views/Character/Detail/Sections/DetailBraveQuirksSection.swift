@@ -365,6 +365,7 @@ private struct QuirkCard: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.top, 4)
+                .fixedSize(horizontal: false, vertical: true)
             
             if quirk == .protectAlly && !protectedAlly.isEmpty {
                 HStack {
