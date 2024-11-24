@@ -45,7 +45,6 @@ struct FormFortunateSection: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.top, 20)
                         
                         Toggle(isOn: $fortunateOptions.hasUsedFortune) {
                             VStack(alignment: .leading, spacing: 6) {
@@ -59,7 +58,7 @@ struct FormFortunateSection: View {
                         .tint(.purple)
                         .padding(.horizontal)
                     }
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
                             .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
@@ -84,7 +83,6 @@ struct FormFortunateSection: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.top, 20)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             TextField("e.g., Reincarnated Master, Royal Heir", text: $fortunateOptions.standing)
@@ -96,7 +94,7 @@ struct FormFortunateSection: View {
                         }
                         .padding(.horizontal)
                     }
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
                             .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
@@ -121,7 +119,6 @@ struct FormFortunateSection: View {
                             }
                         }
                         .padding(.horizontal)
-                        .padding(.top, 20)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             TextField("Enter signature object name", text: $fortunateOptions.signatureObject.name)
@@ -133,7 +130,7 @@ struct FormFortunateSection: View {
                         }
                         .padding(.horizontal)
                     }
-                    .padding(.vertical, 20)
+                    .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 20)
                             .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
