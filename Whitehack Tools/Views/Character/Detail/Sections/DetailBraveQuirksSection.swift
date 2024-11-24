@@ -17,9 +17,9 @@ struct DetailBraveQuirksSection: View {
         if characterClass == .brave {
             Section {
                 VStack(alignment: .leading, spacing: 16) {
-                    // Class Info Card
+                    // Class Overview
                     VStack(alignment: .leading, spacing: 8) {
-                        Label("The Brave", systemImage: "heart.fill")
+                        Text("Class Overview")
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
@@ -40,108 +40,115 @@ struct DetailBraveQuirksSection: View {
                     Divider()
                         .background(Color.purple.opacity(0.3))
                     
-                    // Quirk Slots
+                    // Class Features
                     VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Label("Quirks", systemImage: "sparkles")
-                                .font(.headline)
-                            Spacer()
-                            Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
-                                .font(.title3)
+                        Text("Class Features")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        
+                        // Quirk Slots Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Label("Quirks", systemImage: "sparkles")
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
+                                    .font(.title3)
+                                    .foregroundColor(.secondary)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 4)
+                                    .background(Color.secondary.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                            
+                            Text("Quirks are unique abilities that define your character's heroic nature. You gain additional quirk slots as you level up.")
+                                .font(.caption)
                                 .foregroundColor(.secondary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(Color.secondary.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .padding(.horizontal, 4)
+                            
+                            if braveQuirkOptions.activeQuirks.isEmpty {
+                                Text("No quirks selected")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .padding(.vertical, 8)
+                            } else {
+                                ForEach(0..<availableSlots, id: \.self) { slotIndex in
+                                    if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
+                                        QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
+                                    }
+                                }
+                            }
                         }
                         
-                        Text("Quirks are unique abilities that define your character's heroic nature. You gain additional quirk slots as you level up.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
+                        Divider()
+                            .background(Color.purple.opacity(0.3))
                         
-                        if braveQuirkOptions.activeQuirks.isEmpty {
-                            Text("No quirks selected")
+                        // Comeback Dice Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Label("Comeback Dice", systemImage: "dice.fill")
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(comebackDice)d6")
+                                    .font(.title2)
+                                    .foregroundColor(comebackDice > 0 ? .green : .secondary)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 4)
+                                    .background(comebackDice > 0 ? Color.green.opacity(0.1) : Color.secondary.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                            
+                            Text("Your resilience turns setbacks into opportunities:")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
-                                .padding(.vertical, 8)
-                        } else {
-                            ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                                if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
-                                    QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
-                                }
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                BraveFeatureBullet(text: "Losing an auction")
+                                BraveFeatureBullet(text: "Failing a task roll")
+                                BraveFeatureBullet(text: "Failing a save (not attacks)")
                             }
-                        }
-                    }
-                    
-                    Divider()
-                        .background(Color.purple.opacity(0.3))
-                    
-                    // Comeback Dice
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Label("Comeback Dice", systemImage: "dice.fill")
-                                .font(.headline)
-                            Spacer()
-                            Text("\(comebackDice)d6")
-                                .font(.title2)
-                                .foregroundColor(comebackDice > 0 ? .green : .secondary)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 4)
-                                .background(comebackDice > 0 ? Color.green.opacity(0.1) : Color.secondary.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .padding(.leading, 4)
+                            
+                            Text("Use comeback dice to enhance attributes, saving throws, attack values, or replace damage dice. When using multiple dice, only the highest counts. Failed rolls with comeback dice don't generate new ones.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.top, 4)
                         }
                         
-                        Text("Your resilience turns setbacks into opportunities:")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        Divider()
+                            .background(Color.purple.opacity(0.3))
                         
-                        VStack(alignment: .leading, spacing: 8) {
-                            BraveFeatureBullet(text: "Losing an auction")
-                            BraveFeatureBullet(text: "Failing a task roll")
-                            BraveFeatureBullet(text: "Failing a save (not attacks)")
-                        }
-                        .padding(.leading, 4)
-                        
-                        Text("Use comeback dice to enhance attributes, saving throws, attack values, or replace damage dice. When using multiple dice, only the highest counts. Failed rolls with comeback dice don't generate new ones.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                    }
-                    
-                    Divider()
-                        .background(Color.purple.opacity(0.3))
-                    
-                    // Say No Power
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Label("Say No Power", systemImage: "hand.raised.fill")
-                                .font(.headline)
-                            Spacer()
-                            HStack(spacing: 12) {
-                                Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
-                                    .font(.title2)
-                                    .foregroundColor(hasUsedSayNo ? .red : .green)
-                                
-                                VStack(alignment: .leading) {
-                                    Text(hasUsedSayNo ? "Power Used" : "Power Available")
-                                        .font(.subheadline)
+                        // Say No Power Section
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Label("Say No Power", systemImage: "hand.raised.fill")
+                                    .font(.headline)
+                                Spacer()
+                                HStack(spacing: 12) {
+                                    Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
+                                        .font(.title2)
                                         .foregroundColor(hasUsedSayNo ? .red : .green)
-                                    Text(hasUsedSayNo ? "Resets next session" : "Ready to defy fate")
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text(hasUsedSayNo ? "Power Used" : "Power Available")
+                                            .font(.subheadline)
+                                            .foregroundColor(hasUsedSayNo ? .red : .green)
+                                        Text(hasUsedSayNo ? "Resets next session" : "Ready to defy fate")
+                                            .font(.caption2)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(hasUsedSayNo ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(hasUsedSayNo ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            
+                            Text("Once per session, you can deny an enemy's successful attack, miraculous effect, or fear effect directed at you. This power turns a Referee's roll into a failure or nullifies a monster's power. You must explain how your character plausibly avoids or resists the effect.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(.horizontal, 4)
                         }
-                        
-                        Text("Once per session, you can deny an enemy's successful attack, miraculous effect, or fear effect directed at you. This power turns a Referee's roll into a failure or nullifies a monster's power. You must explain how your character plausibly avoids or resists the effect.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
                     }
                 }
                 .padding(.vertical, 8)
@@ -155,6 +162,14 @@ struct DetailBraveQuirksSection: View {
                             .foregroundColor(.red)
                     }
                     .padding(.vertical, 8)
+                }
+            } header: {
+                Label {
+                    Text("The Brave")
+                        .font(.headline)
+                } icon: {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
                 }
             }
         }
