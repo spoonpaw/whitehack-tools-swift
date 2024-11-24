@@ -10,9 +10,9 @@ struct DetailStrongCombatSection: View {
         if character.characterClass == .strong {
             Section {
                 VStack(alignment: .leading, spacing: 16) {
-                    AttributeBonusesCard(character: character)
-                    ClassFeaturesCard()
-                    SelectedCombatOptionsCard(character: character)
+                    ClassInfoCard()
+                    CombatBenefitsCard()
+                    SpecialAbilitiesCard(character: character)
                     ConflictLootingCard(character: character)
                     FlowAttacksCard(character: character)
                 }
@@ -28,19 +28,19 @@ struct DetailStrongCombatSection: View {
 
 // MARK: - Static Data
 private let lootingOptions = [
-    (title: "Special Conflict", text: "Note special or culturally important conflicts. Gain +2 for one round to df/av/sv/hp/attribute/damage/healing/mv/initiative if related to the conflict memory.", icon: "star.fill", color: Color.yellow),
+    (title: "Special Conflict", text: "Note special or culturally important conflicts. Gain +2 for one round to df/av/sv/hp/attribute/damage/healing/mv/initiative if related to the conflict memory.", icon: "star.circle.fill", color: Color.yellow),
     (title: "Substance", text: "Extract rare substances from enemies with suitable keywords (poison, acid, etc.). May count toward encumbrance.", icon: "flask.fill", color: Color.green),
-    (title: "Supernatural", text: "Gain non-violent supernatural ability by delivering killing blow to creature", icon: "sparkles", color: Color.purple)
+    (title: "Supernatural", text: "Gain non-violent supernatural ability by delivering killing blow to creature", icon: "wand.and.stars", color: Color.purple)
 ]
 
 private let specialAbilities = [
     (level: 1, name: "Protect Ally", desc: "Protect adjacent ally, redirecting attacks to self (save allowed)", icon: "shield.lefthalf.filled", color: Color.blue),
-    (level: 2, name: "Push Opponent", desc: "Push opponent within 10ft after hit, optionally take their space (save negates)", icon: "arrow.up.and.down.and.arrow.left.and.right", color: Color.orange),
+    (level: 2, name: "Push Opponent", desc: "Push opponent within 10ft after hit, optionally take their space (save negates)", icon: "person.fill.turn.right", color: Color.orange),
     (level: 3, name: "Climb Opponent", desc: "Climb big opponents for +4 AV/damage, requires agility check", icon: "figure.climbing", color: Color.green),
     (level: 4, name: "Trade Damage", desc: "Trade damage for initiative/movement/ongoing damage effects", icon: "arrow.triangle.2.circlepath", color: Color.purple),
     (level: 5, name: "Grant Combat Advantage", desc: "Grant ally double combat advantage once per battle", icon: "person.2.fill", color: Color.yellow),
     (level: 6, name: "Boost Allies", desc: "Boost allies' or debuff enemies' AV/SV in 15ft radius", icon: "speaker.wave.3.fill", color: Color.red),
-    (level: 7, name: "Melee and Ranged Attack", desc: "Make both melee and ranged attack by forgoing movement", icon: "arrow.left.and.right", color: Color.orange),
+    (level: 7, name: "Melee and Ranged Attack", desc: "Make both melee and ranged attack by forgoing movement", icon: "arrow.left.and.right.circle.fill", color: Color.orange),
     (level: 8, name: "Parry", desc: "Parry for defense bonus and subsequent combat advantage", icon: "shield.righthalf.filled", color: Color.blue)
 ]
 
@@ -49,7 +49,7 @@ private let combatBenefits = [
     (text: "Flow attacks when reducing enemy to 0 HP (raises + 1 per round)", icon: "arrow.triangle.branch", color: Color.orange),
     (text: "Can use all special combat options", icon: "shield.righthalf.filled", color: Color.purple),
     (text: "+4 save vs. special melee attacks", icon: "person.crop.circle.badge.exclamationmark", color: Color.blue),
-    (text: "+1 save vs. poison and death", icon: "cross.vial", color: Color.green)
+    (text: "+1 save vs. poison and death", icon: "cross.vial.fill", color: Color.green)
 ]
 
 private let attributeBonuses = [
@@ -67,6 +67,7 @@ private struct StrongSectionHeader: View {
         } icon: {
             Image(systemName: "shield.fill")
                 .foregroundColor(.red)
+                .imageScale(.large)
         }
     }
 }
@@ -74,7 +75,16 @@ private struct StrongSectionHeader: View {
 // MARK: - Cards
 private struct ClassInfoCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "figure.strengthtraining")
+                    .foregroundColor(.red)
+                    .imageScale(.large)
+                Text("Class Overview")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
             Text("Masters of combat who rely on physical prowess and martial skill. Whether as warriors, guards, knights, bounty hunters, or barbarians, they excel in battle and can turn the tide of combat.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -83,98 +93,43 @@ private struct ClassInfoCard: View {
                 .background(Color.red.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
 private struct CombatBenefitsCard: View {
     var body: some View {
-        CardContainer(title: "Combat Benefits", icon: "shield.lefthalf.filled") {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "shield.lefthalf.filled")
+                    .foregroundColor(.red)
+                    .imageScale(.large)
                 Text("Combat Benefits")
-                    .font(.subheadline)
-                    .foregroundColor(.red)
-                
-                ForEach(combatBenefits, id: \.text) { benefit in
-                    CombatBenefitRow(
-                        text: benefit.text,
-                        icon: benefit.icon,
-                        color: benefit.color
-                    )
-                }
+                    .font(.headline)
             }
-        }
-    }
-}
-
-private struct ConflictLootingCard: View {
-    let character: PlayerCharacter
-    
-    var body: some View {
-        CardContainer(title: "Conflict Looting", icon: "bag.fill") {
+            
             VStack(alignment: .leading, spacing: 12) {
-                if let loot = character.currentConflictLoot {
+                ForEach(combatBenefits, id: \.text) { benefit in
                     HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: loot.type == .substance ? "flask.fill" : 
-                                       loot.type == .special ? "star.fill" : "sparkles")
-                            .font(.title2)
-                            .foregroundColor(loot.type == .substance ? .green :
-                                           loot.type == .special ? .yellow : .purple)
-                            .frame(width: 24)
+                        Image(systemName: benefit.icon)
+                            .foregroundColor(benefit.color)
+                            .imageScale(.large)
+                            .frame(width: 24, alignment: .center)
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(loot.type.rawValue.capitalized)
-                                .font(.headline)
-                            if !loot.keyword.isEmpty {
-                                Text("Keyword: \(loot.keyword)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            Text("\(loot.usesRemaining) use\(loot.usesRemaining != 1 ? "s" : "") remaining")
-                                .font(.caption)
-                                .foregroundColor(loot.usesRemaining > 0 ? .blue : .red)
-                        }
+                        Text(benefit.text)
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
                     }
-                    .padding(.vertical, 8)
-                } else {
-                    Text("No conflict loot currently held")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
                 }
-                
-                Divider()
-                    .padding(.vertical, 4)
-                
-                Text("Looting Types")
-                    .font(.subheadline)
-                    .foregroundColor(.red)
-                
-                ForEach(lootingOptions, id: \.title) { loot in
-                    LootOptionCard(title: loot.title, text: loot.text, icon: loot.icon, color: loot.color)
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Looting Rules")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-                    
-                    Text("• Can only hold one loot instance at a time")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("• Each instance is usable \(character.level) times (equal to character level)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("• Can exchange loot after new conflicts (unused substances spoil)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("• Substances may count toward encumbrance")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(12)
-                .background(Color.red.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
@@ -186,51 +141,180 @@ private struct SpecialAbilitiesCard: View {
     }
     
     var body: some View {
-        CardContainer(title: "Special Abilities", icon: "bolt.shield.fill") {
-            VStack(alignment: .leading, spacing: 12) {
-                if character.strongCombatOptions.activeOptions.isEmpty {
-                    Text("No abilities selected yet")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    if availableSlots > 0 {
-                        Text("You have \(availableSlots) ability slot\(availableSlots > 1 ? "s" : "") available")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                } else {
-                    ForEach(character.strongCombatOptions.activeOptions, id: \.self) { ability in
-                        AbilityCard(
-                            level: ability.rawValue + 1,
-                            name: ability.name,
-                            desc: ability.description,
-                            icon: ability.rawValue == 0 ? "shield.lefthalf.filled" :
-                                  ability.rawValue == 1 ? "arrow.up.and.down.and.arrow.left.and.right" :
-                                  ability.rawValue == 2 ? "figure.climbing" :
-                                  ability.rawValue == 3 ? "arrow.triangle.2.circlepath" :
-                                  ability.rawValue == 4 ? "person.2.fill" :
-                                  ability.rawValue == 5 ? "speaker.wave.3.fill" :
-                                  ability.rawValue == 6 ? "arrow.left.and.right" : "shield.righthalf.filled",
-                            color: ability.rawValue == 0 ? .blue :
-                                   ability.rawValue == 1 ? .orange :
-                                   ability.rawValue == 2 ? .green :
-                                   ability.rawValue == 3 ? .purple :
-                                   ability.rawValue == 4 ? .yellow :
-                                   ability.rawValue == 5 ? .red :
-                                   ability.rawValue == 6 ? .orange : .blue,
-                            isUnlocked: true
-                        )
-                    }
-                    
-                    let remainingSlots = availableSlots - character.strongCombatOptions.count
-                    if remainingSlots > 0 {
-                        Text("You have \(remainingSlots) more ability slot\(remainingSlots > 1 ? "s" : "") available")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .padding(.top, 4)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "bolt.shield.fill")
+                    .foregroundColor(.orange)
+                    .imageScale(.large)
+                Text("Selected Special Abilities")
+                    .font(.headline)
+            }
+            
+            if character.strongCombatOptions.activeOptions.isEmpty {
+                Text("No abilities selected")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 4)
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(Array(character.strongCombatOptions.activeOptions.enumerated()), id: \.element) { index, option in
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Image(systemName: specialAbilities[option.rawValue].icon)
+                                    .foregroundColor(specialAbilities[option.rawValue].color)
+                                    .imageScale(.large)
+                                
+                                Text("Slot \(index + 1): \(option.name)")
+                                    .font(.subheadline.bold())
+                                    .foregroundColor(specialAbilities[option.rawValue].color)
+                            }
+                            
+                            Text(option.description)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .padding(.leading, 32)
+                        }
+                        .padding(12)
+                        .background(specialAbilities[option.rawValue].color.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                 }
             }
+            
+            if let currentLoot = character.currentConflictLoot {
+                Divider()
+                    .padding(.vertical, 8)
+                
+                HStack {
+                    Image(systemName: "bag.fill.badge.plus")
+                        .foregroundColor(.yellow)
+                        .imageScale(.large)
+                    Text("Active Conflict Loot")
+                        .font(.headline)
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: currentLoot.type == .substance ? "flask.fill" : 
+                                       currentLoot.type == .special ? "star.circle.fill" : "wand.and.stars")
+                            .foregroundColor(currentLoot.type == .substance ? .green :
+                                           currentLoot.type == .special ? .yellow : .purple)
+                            .imageScale(.large)
+                        
+                        Text(currentLoot.type.rawValue.capitalized)
+                            .font(.subheadline.bold())
+                            .foregroundColor(currentLoot.type == .substance ? .green :
+                                           currentLoot.type == .special ? .yellow : .purple)
+                    }
+                    
+                    if !currentLoot.keyword.isEmpty {
+                        Text("Keyword: \(currentLoot.keyword)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding(.leading, 32)
+                    }
+                    
+                    Text("\(currentLoot.usesRemaining) use\(currentLoot.usesRemaining != 1 ? "s" : "") remaining")
+                        .font(.subheadline)
+                        .foregroundColor(currentLoot.usesRemaining > 0 ? .blue : .red)
+                        .padding(.leading, 32)
+                }
+                .padding(12)
+                .background(Color(currentLoot.type == .substance ? .green : 
+                                currentLoot.type == .special ? .yellow : .purple).opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+    }
+}
+
+private struct ConflictLootingCard: View {
+    let character: PlayerCharacter
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "bag.fill.badge.plus")
+                    .foregroundColor(.yellow)
+                    .imageScale(.large)
+                Text("Conflict Looting")
+                    .font(.headline)
+            }
+            
+            VStack(alignment: .leading, spacing: 16) {
+                ForEach(lootingOptions, id: \.title) { option in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: option.icon)
+                                .foregroundColor(option.color)
+                                .imageScale(.large)
+                            
+                            Text(option.title)
+                                .font(.subheadline.bold())
+                                .foregroundColor(option.color)
+                        }
+                        
+                        Text(option.text)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .padding(.leading, 32)
+                    }
+                    .padding(12)
+                    .background(option.color.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+    }
+}
+
+private struct FlowAttacksCard: View {
+    let character: PlayerCharacter
+    
+    private var maxFlowAttacks: Int {
+        let stats = AdvancementTables.shared.stats(for: character.characterClass, at: character.level)
+        // At level 1, raises is "-", so return 1 (just the base flow attack)
+        if stats.raises == "-" {
+            return 1
+        }
+        return Int(stats.raises)! + 1 // Flow attacks = raises + 1
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "arrow.triangle.branch")
+                    .foregroundColor(.orange)
+                    .imageScale(.large)
+                Text("Flow Attacks")
+                    .font(.headline)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Maximum Flow Attacks per Round: \(maxFlowAttacks)")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.primary)
+                
+                Text("When you reduce an enemy to 0 HP, you can make an additional attack against an adjacent enemy (melee) or an enemy adjacent to the prior target (ranged).")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .padding(12)
+            .background(Color.orange.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
@@ -246,8 +330,16 @@ private struct AttributeBonusesCard: View {
     }
     
     var body: some View {
-        CardContainer(title: "Attribute Bonuses", icon: "chart.bar.fill") {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .foregroundColor(.red)
+                    .imageScale(.large)
+                Text("Attribute Bonuses")
+                    .font(.headline)
+            }
+            
+            VStack(alignment: .leading, spacing: 16) {
                 AttributeBonusRow(
                     attribute: "Strength (\(character.strength))",
                     bonus: strengthBonus,
@@ -262,12 +354,24 @@ private struct AttributeBonusesCard: View {
                 )
             }
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
 private struct ClassFeaturesCard: View {
     var body: some View {
-        CardContainer(title: "Class Features", icon: "shield.lefthalf.filled") {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "shield.lefthalf.filled")
+                    .foregroundColor(.red)
+                    .imageScale(.large)
+                Text("Class Features")
+                    .font(.headline)
+            }
+            
             VStack(alignment: .leading, spacing: 12) {
                 Text("Combat Prowess")
                     .font(.headline)
@@ -290,57 +394,10 @@ private struct ClassFeaturesCard: View {
                     .font(.subheadline)
             }
         }
-    }
-}
-
-private struct FlowAttacksCard: View {
-    let character: PlayerCharacter
-    
-    var body: some View {
-        CardContainer(title: "Flow Attacks", icon: "arrow.triangle.branch") {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("When you reduce an enemy to 0 HP, you may:")
-                    .font(.subheadline)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "figure.fencing")
-                            .foregroundColor(.orange)
-                        Text("Attack another enemy adjacent to you (melee)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                            .foregroundColor(.orange)
-                        Text("Attack another enemy adjacent to prior target (ranged)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                .padding(.leading, 4)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Flow Attack Rules")
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-                    
-                    Text("• Requires a separate attack roll")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("• Must have a ready weapon")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    Text("• Limited to raises + 1 flow attacks per round")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(12)
-                .background(Color.red.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
@@ -356,8 +413,16 @@ private struct SelectedCombatOptionsCard: View {
     }
     
     var body: some View {
-        CardContainer(title: "Selected Combat Options", icon: "square.stack.3d.up.fill") {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "square.stack.3d.up.fill")
+                    .foregroundColor(.red)
+                    .imageScale(.large)
+                Text("Selected Combat Options")
+                    .font(.headline)
+            }
+            
+            VStack(alignment: .leading, spacing: 16) {
                 Text("\(selectedOptions.count)/\(availableSlots) Slots Used")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -380,6 +445,10 @@ private struct SelectedCombatOptionsCard: View {
                 }
             }
         }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
 
