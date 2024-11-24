@@ -174,6 +174,8 @@ struct CharacterFormView: View {
         
         formData.speciesGroup = character.speciesGroup ?? ""
         formData.vocationGroup = character.vocationGroup ?? ""
+        formData.isSpeciesGroupAdded = character.speciesGroup != nil && !character.speciesGroup!.isEmpty
+        formData.isVocationGroupAdded = character.vocationGroup != nil && !character.vocationGroup!.isEmpty
         formData.affiliationGroups = character.affiliationGroups
         formData.attributeGroupPairs = character.attributeGroupPairs
         
