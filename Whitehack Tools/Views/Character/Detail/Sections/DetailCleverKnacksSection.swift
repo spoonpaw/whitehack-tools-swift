@@ -284,21 +284,55 @@ private struct SpecialKnacksCard: View {
             }
             .padding(.horizontal, 4)
             
-            if activeKnacks.isEmpty {
-                EmptyKnacksView()
-            } else {
-                ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                    if slotIndex < activeKnacks.count {
-                        KnackCard(
-                            knack: activeKnacks[slotIndex],
-                            slotIndex: slotIndex,
-                            hasUsedCombatDie: slots[slotIndex].hasUsedCombatDie
-                        )
-                    }
+            ForEach(0..<availableSlots, id: \.self) { slotIndex in
+                if slotIndex < slots.count, let knack = slots[slotIndex].knack {
+                    KnackCard(
+                        knack: knack,
+                        slotIndex: slotIndex,
+                        hasUsedCombatDie: slots[slotIndex].hasUsedCombatDie
+                    )
+                } else {
+                    EmptyKnackCard(slotIndex: slotIndex)
                 }
             }
         }
         .padding(.top, 8)
+    }
+}
+
+struct EmptyKnackCard: View {
+    let slotIndex: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("Empty Slot")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .italic()
+                Spacer()
+                Text("Slot \(slotIndex + 1)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Text("No knack selected for this slot")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 4)
+            
+            HStack {
+                Image(systemName: "circle")
+                    .foregroundColor(.secondary)
+                Text("Available")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(12)
+        .background(Color.green.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
