@@ -76,14 +76,14 @@ struct RetainerDetailView: View {
             
             // Stats
             HStack(spacing: 16) {
-                StatDisplay(label: "HD", value: retainer.hitDice, systemImage: "heart.fill")
-                StatDisplay(label: "DF", value: retainer.defenseFactor, systemImage: "shield.fill")
-                StatDisplay(label: "MV", value: retainer.movement, systemImage: "figure.walk")
+                RetainerStatView(label: "HD", value: retainer.hitDice, systemImage: "heart.fill")
+                RetainerStatView(label: "DF", value: retainer.defenseFactor, systemImage: "shield.fill")
+                RetainerStatView(label: "MV", value: retainer.movement, systemImage: "figure.walk")
             }
             
             // Keywords
             if !retainer.keywords.isEmpty {
-                FlexibleView(data: retainer.keywords, spacing: 8) { keyword in
+                TagFlowView(data: retainer.keywords, spacing: 8) { keyword in
                     Text(keyword)
                         .font(.caption)
                         .padding(.horizontal, 8)
@@ -98,7 +98,7 @@ struct RetainerDetailView: View {
     }
 }
 
-struct StatDisplay: View {
+struct RetainerStatView: View {
     let label: String
     let value: Int
     let systemImage: String
