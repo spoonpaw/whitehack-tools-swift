@@ -16,20 +16,16 @@ struct FormBraveQuirksSection: View {
             Section {
                 // Quirk Slots
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Text("Quirks")
-                            .font(.headline)
-                        Spacer()
-                        Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
                     ForEach(0..<availableSlots, id: \.self) { slotIndex in
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Slot \(slotIndex + 1)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            HStack {
+                                Image(systemName: "sparkles")
+                                    .foregroundColor(.orange)
+                                Text("Slot \(slotIndex + 1)")
+                                    .font(.headline)
+                                    .foregroundColor(.orange)
+                            }
+                            .padding(.bottom, 4)
                             
                             Menu {
                                 Button("None") {
@@ -77,16 +73,27 @@ struct FormBraveQuirksSection: View {
                                 }
                             }
                         }
-                        .padding(.vertical, 8)
+                        .padding(16)
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(radius: 2)
+                        .padding(.vertical, 4)
                     }
                 }
-                .padding(.vertical, 8)
+                .padding(16)
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(radius: 2)
+                .padding(.vertical, 4)
                 
                 // Comeback Dice
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
+                        Image(systemName: "dice.fill")
+                            .foregroundColor(.green)
                         Text("Comeback Dice")
                             .font(.headline)
+                            .foregroundColor(.green)
                         Spacer()
                         Text("\(comebackDice)d6")
                             .font(.title2)
@@ -99,23 +106,42 @@ struct FormBraveQuirksSection: View {
                     
                     Stepper("Available Dice: \(comebackDice)", value: $comebackDice, in: 0...10)
                 }
-                .padding(.vertical, 8)
+                .padding(16)
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(radius: 2)
+                .padding(.vertical, 4)
                 
                 // Say No Power
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
+                        Image(systemName: "hand.raised.fill")
+                            .foregroundColor(.red)
                         Text("Say No Power")
                             .font(.headline)
+                            .foregroundColor(.red)
                         Spacer()
-                        Toggle("Used", isOn: $hasUsedSayNo)
-                            .toggleStyle(SwitchToggleStyle(tint: .red))
                     }
                     
-                    Text("Once per session, deny an enemy's successful attack, miraculous effect, or fear effect. Must explain how it's plausible and what your character does to avoid/resist.")
+                    Text("Once per session, you can say no to one thing that would affect you negatively.")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    
+                    Toggle(isOn: $hasUsedSayNo) {
+                        HStack {
+                            Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
+                            Text(hasUsedSayNo ? "USED - No longer available this session" : "AVAILABLE - Not yet used this session")
+                        }
+                        .foregroundColor(hasUsedSayNo ? .red : .green)
+                        .font(.subheadline.bold())
+                    }
+                    .toggleStyle(SwitchToggleStyle(tint: .red))
                 }
-                .padding(.vertical, 8)
+                .padding(16)
+                .background(Color(.systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(radius: 2)
+                .padding(.vertical, 4)
                 
             } header: {
                 Label("Brave Features", systemImage: "heart.fill")
