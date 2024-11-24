@@ -14,13 +14,18 @@ struct DetailFortunateSection: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     
-                    Text("Born to privilege, you gain unique advantages through nobility, fame, destiny, or wealth. Once per session, you may leverage your fortune for a major benefit.")
+                    Text("Born to privilege through nobility, fame, destiny, or wealth. Royal heirs, influential merchants, star performers, and religious icons who shape the world through their innate advantages and loyal followers.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.blue.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                        
+                    Text("You can use any weapon or armor without penalty. You gain +4 to charisma for retainer morale, +2 on reaction rolls, and +6 on reputation rolls.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 4)
                 }
                 
                 Divider()
@@ -34,6 +39,11 @@ struct DetailFortunateSection: View {
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
+                        Text("Your standing defines your character's influence and works as a group booster. For example, a 'Reincarnated Master' might have unique tattoos and training that enhance their groups' effectiveness.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                        
                         if !character.fortunateOptions.standing.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(character.fortunateOptions.standing)
@@ -43,10 +53,17 @@ struct DetailFortunateSection: View {
                                     .background(Color.purple.opacity(0.1))
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                 
-                                Text("Your standing grants group benefits when relevant: affiliated factions are more helpful, species benefits apply regardless of attributes, and aligned vocations may grant +6 bonus.")
-                                    .font(.caption)
+                                Text("When your standing is relevant:")
+                                    .font(.subheadline)
                                     .foregroundColor(.secondary)
-                                    .padding(.horizontal, 4)
+                                    .padding(.top, 4)
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    FortuneStandingBullet(text: "Affiliated factions are considerably more helpful (and their enemies more vengeful)")
+                                    FortuneStandingBullet(text: "Your species benefits apply regardless of attributes")
+                                    FortuneStandingBullet(text: "Get +6 bonus when standing and vocation align for a task")
+                                }
+                                .padding(.leading, 4)
                             }
                         }
                     }
@@ -60,7 +77,7 @@ struct DetailFortunateSection: View {
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
-                        Text("Once per session, you may use your fortune in a major way - like hiring a large ship, getting an audience with royalty, or being welcomed by a hostile tribe.")
+                        Text("Once per session, leverage your fortune for a major advantage - like hiring a large ship, performing the will of a god, getting an audience with royalty, or being welcomed by a hostile tribe. Note: Fortune cannot be used to purchase experience or fund XP for others.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 4)
@@ -74,7 +91,7 @@ struct DetailFortunateSection: View {
                                 Text(character.fortunateOptions.hasUsedFortune ? "Fortune has been used" : "Fortune is available")
                                     .font(.subheadline)
                                     .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .green)
-                                Text(character.fortunateOptions.hasUsedFortune ? "Will reset next session" : "Available for a major advantage")
+                                Text(character.fortunateOptions.hasUsedFortune ? "Will reset next session" : "Ready to shape your destiny")
                                     .font(.caption2)
                                     .foregroundColor(.secondary)
                             }
@@ -98,6 +115,11 @@ struct DetailFortunateSection: View {
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
+                        Text("A unique item that defines your character. At the Referee's discretion, it may be of special material, superior quality, or even magical.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                        
                         VStack(alignment: .leading, spacing: 8) {
                             Text(character.fortunateOptions.signatureObject.name)
                                 .font(.body)
@@ -106,7 +128,7 @@ struct DetailFortunateSection: View {
                                 .background(Color.blue.opacity(0.1))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                             
-                            Text("Your signature object has plot immunity - it can never be lost or destroyed unless you choose.")
+                            Text("Your signature object has plot immunity - it can never be lost, destroyed, or made irretrievable unless you choose to allow it.")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                                 .padding(.horizontal, 4)
@@ -125,10 +147,16 @@ struct DetailFortunateSection: View {
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
-                        Text("Your retainers can grow in strength as you level. They have their own HD, DF, MV, and keywords, acting as unique allies with personalities and attitudes.")
+                        Text("As the only class that can have growing retainers, you start with one and gain slots for more. Examples include chamberlains, cooks, apprentices, squires, bodyguards, or even spiritual companions.")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.horizontal, 4)
+                            
+                        Text("Retainers have their own HD, DF, MV, and keywords. Their first retainer can reach HD 6 by level 10, becoming a formidable ally. They act within their contracts but have unique personalities, and you may even play as them during adventures.")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 4)
+                            .padding(.top, 4)
                     }
                     
                     ForEach(character.fortunateOptions.retainers) { retainer in
@@ -309,5 +337,21 @@ struct TagWrappingView: View {
                 Capsule()
                     .stroke(Color.blue.opacity(0.3), lineWidth: 1)
             )
+    }
+}
+
+struct FortuneStandingBullet: View {
+    let text: String
+    
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            Image(systemName: "circle.inset.filled")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
     }
 }

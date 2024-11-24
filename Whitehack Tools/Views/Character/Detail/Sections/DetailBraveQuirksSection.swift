@@ -97,9 +97,9 @@ struct DetailBraveQuirksSection: View {
                             .foregroundColor(.secondary)
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            BulletPoint(text: "Gain a d6 when losing an auction")
-                            BulletPoint(text: "Gain a d6 when failing a task roll")
-                            BulletPoint(text: "Gain a d6 when failing a save (except attacks)")
+                            BraveFeatureBullet(text: "Losing an auction")
+                            BraveFeatureBullet(text: "Failing a task roll")
+                            BraveFeatureBullet(text: "Failing a save (not attacks)")
                         }
                         .padding(.leading, 4)
                         
@@ -211,7 +211,7 @@ struct QuirkCard: View {
     }
 }
 
-struct BulletPoint: View {
+struct BraveFeatureBullet: View {
     let text: String
     
     var body: some View {
