@@ -13,6 +13,16 @@ struct FormFortunateSection: View {
         return stats.slots
     }
     
+    private func initializeRetainersIfNeeded() {
+        // Ensure we have the correct number of retainers
+        while fortunateOptions.retainers.count < availableRetainers {
+            fortunateOptions.retainers.append(Retainer())
+        }
+        while fortunateOptions.retainers.count > availableRetainers {
+            fortunateOptions.retainers.removeLast()
+        }
+    }
+
     var body: some View {
         if characterClass == .fortunate {
             // MARK: - Standing & Fortune
@@ -80,20 +90,14 @@ struct FormFortunateSection: View {
             // MARK: - Retainers
             Section {
                 VStack(spacing: 16) {
-                    ForEach(0..<availableRetainers, id: \.self) { index in
-                        if index < fortunateOptions.retainers.count {
-                            FormFortunateRetainerFormView(retainer: binding(for: index))
-                                .transition(.scale.combined(with: .opacity))
-                        } else {
-                            FormFortunateEmptyRetainerSlot(index: index) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    fortunateOptions.retainers.append(Retainer())
-                                }
-                            }
+                    ForEach(0..<fortunateOptions.retainers.count, id: \.self) { index in
+                        FormFortunateRetainerFormView(retainer: binding(for: index))
                             .transition(.scale.combined(with: .opacity))
-                        }
                     }
                 }
+            }
+            .onAppear {
+                initializeRetainersIfNeeded()
             }
         }
     }
