@@ -151,6 +151,7 @@ private struct AttunementSlotsCard: View {
                 Text("Attunement Rules")
                     .font(.subheadline.bold())
                     .foregroundColor(.purple)
+                    .padding(.bottom, 4)
                 
                 RuleRow(icon: "clock.fill", text: "Switching attunements takes a day of practice")
                 RuleRow(icon: "sparkles", text: "Active attunements can be invoked once per day")
@@ -306,6 +307,7 @@ private struct FeatureRow: View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .foregroundColor(color)
+                .frame(width: 20)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -314,9 +316,12 @@ private struct FeatureRow: View {
                 Text(description)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
             }
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(color.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -327,12 +332,16 @@ private struct RuleRow: View {
     let text: String
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(alignment: .top, spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(.purple)
+                .frame(width: 20)
+            
             Text(text)
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.leading)
         }
     }
 }
