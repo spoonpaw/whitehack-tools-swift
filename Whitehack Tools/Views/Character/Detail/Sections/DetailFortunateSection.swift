@@ -4,354 +4,501 @@ import PhosphorSwift
 struct DetailFortunateSection: View {
     let character: PlayerCharacter
     @Environment(\.colorScheme) var colorScheme
-    
+
+    private var availableSlots: Int {
+        AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots
+    }
+
     var body: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 16) {
-                // Class Info Card
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("The Fortunate", systemImage: "crown.fill")
+        if character.characterClass == .fortunate {
+            Section {
+                VStack(alignment: .leading, spacing: 16) {
+                    ClassOverviewCard()
+                    FortunePowerCard(hasUsedFortune: character.fortunateOptions.hasUsedFortune)
+                    StandingCard(standing: character.fortunateOptions.standing)
+                    SignatureObjectCard(signatureObject: character.fortunateOptions.signatureObject)
+                    RetainersCard(
+                        retainers: character.fortunateOptions.retainers,
+                        availableSlots: availableSlots
+                    )
+                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
+            } header: {
+                Label {
+                    Text("The Fortunate")
                         .font(.headline)
-                        .foregroundStyle(.primary)
-                    
-                    Text("Born to privilege through nobility, fame, destiny, or wealth. Royal heirs, influential merchants, star performers, and religious icons who shape the world through their innate advantages and loyal followers.")
+                } icon: {
+                    Image(systemName: "crown.fill")
+                        .foregroundColor(.orange)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Cards
+private struct ClassOverviewCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "crown.fill")
+                    .foregroundColor(.orange)
+                Text("Class Overview")
+                    .font(.headline)
+            }
+            Text("""
+                Fortunate characters are born with the advantages of nobility, fame, destiny, wealth, or a combination thereof. They can be royal heirs, rich and influential merchants, star performers, or religious icons. Once per game session, they may use their good fortune in a major way, like hiring a large ship, performing the will of a god, getting a personal audience with the queen, or being hailed as a friend by a hostile tribe.
+
+                The Fortunate may use any weapon or armor without penalty. They have +4 to charisma when checking retainer morale, +2 in reaction rolls, and +6 in any reputation roll. They also get a single signature object with plot immunity.
+                """)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(12)
+                .background(Color.orange.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(maxWidth: .infinity)
+
+            VStack(alignment: .leading, spacing: 8) {
+                FeatureRow(
+                    icon: "shield.fill",
+                    color: .blue,
+                    title: "Combat Proficiency",
+                    description: "Can use any weapon or armor without penalty."
+                )
+                FeatureRow(
+                    icon: "person.2.fill",
+                    color: .green,
+                    title: "Social Advantages",
+                    description: "+4 to charisma for retainer morale, +2 on reaction rolls, +6 on reputation rolls."
+                )
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct FortunePowerCard: View {
+    let hasUsedFortune: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "star.circle.fill")
+                    .foregroundColor(.yellow)
+                Text("Fortune Power")
+                    .font(.headline)
+            }
+            Text("""
+                Once per game session, the Fortunate may use their good fortune in a major way, such as:
+
+                • Hiring a large ship.
+                • Performing the will of a god.
+                • Getting a personal audience with the queen.
+                • Being hailed as a friend by a hostile tribe.
+
+                Note: The Fortunate may not use their fortune power to purchase experience or fund XP for others.
+                """)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(12)
+                .background(Color.yellow.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(maxWidth: .infinity)
+
+            HStack {
+                Image(systemName: hasUsedFortune ? "xmark.circle.fill" : "checkmark.circle.fill")
+                    .foregroundColor(hasUsedFortune ? .red : .green)
+                Text(hasUsedFortune ? "Fortune power has been used this session" : "Fortune power is available")
+                    .foregroundColor(hasUsedFortune ? .red : .green)
+            }
+            .padding(8)
+            .background(Color(.systemGray6))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .frame(maxWidth: .infinity)
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct StandingCard: View {
+    let standing: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "building.columns.fill")
+                    .foregroundColor(.purple)
+                Text("Standing")
+                    .font(.headline)
+            }
+            if !standing.isEmpty {
+                Text(standing)
+                    .font(.body)
+                    .padding(12)
+                    .background(Color.purple.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(maxWidth: .infinity)
+
+                Text("When the referee thinks that the standing is relevant:")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 8)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    BenefitRow(
+                        icon: "person.3.fill",
+                        title: "Faction Relations",
+                        description: "Affiliated factions are considerably more helpful, and their enemies more vengeful. Others may distance themselves or show interest."
+                    )
+                    BenefitRow(
+                        icon: "hare.fill",
+                        title: "Species Benefits",
+                        description: "Your species gives any applicable benefits regardless of attribute."
+                    )
+                    BenefitRow(
+                        icon: "plus.circle.fill",
+                        title: "Task Bonus",
+                        description: "If standing and vocation align for a task, and the vocation is marked next to the applicable attribute, you get a +6 bonus."
+                    )
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                Text("No standing specified")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct SignatureObjectCard: View {
+    let signatureObject: SignatureObject
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "seal.fill")
+                    .foregroundColor(.orange)
+                Text("Signature Object")
+                    .font(.headline)
+            }
+            if !signatureObject.name.isEmpty {
+                Text(signatureObject.name)
+                    .font(.body)
+                    .padding(12)
+                    .background(Color.orange.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(maxWidth: .infinity)
+
+                Text("This object has plot immunity and cannot be lost, destroyed, or made irretrievable by the referee unless you wish it to happen.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            } else {
+                Text("No signature object specified")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct RetainersCard: View {
+    let retainers: [Retainer]
+    let availableSlots: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "person.2.fill")
+                    .foregroundColor(.blue)
+                Text("Retainers")
+                    .font(.headline)
+                Spacer()
+                Text("\(retainers.count)/\(availableSlots)")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            Text("""
+                As the only class, the Fortunate are allowed to have retainers that can grow in strength, like a chambermaid, a cook, an apprentice, or a squire. The Fortunate start the game with one retainer and gain slots for additional ones.
+
+                A fortunate retainer has HD, DF, MV, and keywords as per the monster rules. DF and AV (HD + 10) may be reconsidered if their equipment changes, and HD increases at the Fortunate’s even levels.
+
+                Retainers do their work within the confines of a written or otherwise established contract but also have ideas, feelings, and attitudes concerning their position and the Fortunate's standing. They are referee characters, but the player may switch into the retainer role for part of an adventure.
+                """)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(12)
+                .background(Color.blue.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(maxWidth: .infinity)
+
+            if availableSlots == 0 {
+                Text("No retainer slots available at current level.")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            } else {
+                ForEach(0..<availableSlots, id: \.self) { index in
+                    if index < retainers.count {
+                        RetainerDetailView(retainer: retainers[index], slotNumber: index + 1)
+                    } else {
+                        EmptyRetainerSlotView(slotNumber: index + 1)
+                    }
+                }
+            }
+
+            ExampleRetainersCard()
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Retainer Views
+private struct RetainerDetailView: View {
+    let retainer: Retainer
+    let slotNumber: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Retainer Slot \(slotNumber)")
+                .font(.headline)
+                .foregroundColor(.blue)
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(retainer.name)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.blue.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
-                    Text("You can use any weapon or armor without penalty. You gain +4 to charisma for retainer morale, +2 on reaction rolls, and +6 on reputation rolls.")
+                        .fontWeight(.medium)
+                    Text(retainer.type)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                        .padding(.horizontal, 4)
                 }
-                
-                Divider()
-                    .background(Color.purple.opacity(0.3))
-                
-                // Standing & Fortune Status
-                VStack(alignment: .leading, spacing: 16) {
-                    // Noble Status
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Noble Status", systemImage: "crown.fill")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                        
-                        Text("Your standing defines your character's influence and works as a group booster. For example, a 'Reincarnated Master' might have unique tattoos and training that enhance their groups' effectiveness.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                        
-                        if !character.fortunateOptions.standing.isEmpty {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(character.fortunateOptions.standing)
-                                    .font(.body)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(Color.purple.opacity(0.1))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                
-                                Text("When your standing is relevant:")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .padding(.top, 4)
-                                
-                                VStack(alignment: .leading, spacing: 8) {
-                                    FortuneStandingBullet(text: "Affiliated factions are considerably more helpful (and their enemies more vengeful)")
-                                    FortuneStandingBullet(text: "Your species benefits apply regardless of attributes")
-                                    FortuneStandingBullet(text: "Get +6 bonus when standing and vocation align for a task")
-                                }
-                                .padding(.leading, 4)
-                            }
-                        }
-                    }
-                    
-                    Divider()
-                        .background(Color.purple.opacity(0.3))
-                    
-                    // Fortune
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Fortune", systemImage: "star.circle.fill")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                        
-                        Text("Once per session, leverage your fortune for a major advantage - like hiring a large ship, performing the will of a god, getting an audience with royalty, or being welcomed by a hostile tribe. Note: Fortune cannot be used to purchase experience or fund XP for others.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                        
-                        HStack(spacing: 12) {
-                            Image(systemName: character.fortunateOptions.hasUsedFortune ? "xmark.circle.fill" : "sparkles")
-                                .font(.title2)
-                                .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .yellow)
-                            
-                            VStack(alignment: .leading) {
-                                Text(character.fortunateOptions.hasUsedFortune ? "Fortune has been used" : "Fortune is available")
-                                    .font(.subheadline)
-                                    .foregroundColor(character.fortunateOptions.hasUsedFortune ? .red : .green)
-                                Text(character.fortunateOptions.hasUsedFortune ? "Will reset next session" : "Ready to shape your destiny")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(character.fortunateOptions.hasUsedFortune ? 
-                            Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-                .padding(.bottom, 8)
-                
-                Divider()
-                    .background(Color.purple.opacity(0.3))
-                
-                // Signature Object
-                if !character.fortunateOptions.signatureObject.name.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Signature Object", systemImage: "sparkles")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                        
-                        Text("A unique item that defines your character. At the Referee's discretion, it may be of special material, superior quality, or even magical.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(character.fortunateOptions.signatureObject.name)
-                                .font(.body)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(Color.blue.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            
-                            Text("Your signature object has plot immunity - it can never be lost, destroyed, or made irretrievable unless you choose to allow it.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(.horizontal, 4)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    
-                    Divider()
-                        .background(Color.purple.opacity(0.3))
-                }
-                
-                // Retainers
-                VStack(alignment: .leading, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Retainers", systemImage: "person.2.fill")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                        
-                        Text("As the only class that can have growing retainers, you start with one and gain slots for more. Examples include chamberlains, cooks, apprentices, squires, bodyguards, or even spiritual companions.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                            
-                        Text("Retainers have their own HD, DF, MV, and keywords. Their first retainer can reach HD 6 by level 10, becoming a formidable ally. They act within their contracts but have unique personalities, and you may even play as them during adventures.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal, 4)
-                            .padding(.top, 4)
-                    }
-                    
-                    ForEach(character.fortunateOptions.retainers) { retainer in
-                        RetainerDetailView(retainer: retainer)
-                            .transition(.scale.combined(with: .opacity))
-                    }
+                Spacer()
+                HStack(spacing: 16) {
+                    StatBadge(value: retainer.hitDice, label: "HD", color: .red)
+                    StatBadge(value: retainer.defenseFactor, label: "DF", color: .blue)
+                    StatBadge(value: retainer.movement, label: "MV", color: .green)
                 }
             }
-            .padding(.vertical, 8)
+            HStack(spacing: 16) {
+                StatBadge(value: retainer.currentHP, label: "HP", color: .pink)
+                StatBadge(value: retainer.maxHP, label: "Max HP", color: .pink)
+            }
+            .padding(.top, 4)
+            if !retainer.keywords.isEmpty {
+                TagWrappingView(tags: retainer.keywords)
+                    .frame(height: 30)
+                    .frame(maxWidth: .infinity)
+            }
+            if !retainer.notes.isEmpty {
+                Text(retainer.notes)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            }
         }
+        .padding(12)
+        .background(Color.blue.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity)
     }
 }
 
-struct RetainerDetailView: View {
-    let retainer: Retainer
-    @Environment(\.colorScheme) var colorScheme
-    @State private var isExpanded = false
-    
+private struct EmptyRetainerSlotView: View {
+    let slotNumber: Int
+
     var body: some View {
-        VStack(spacing: 0) {
-            // Header - Now the entire header is tappable
-            VStack(spacing: 0) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(retainer.name.isEmpty ? "Unnamed Retainer" : retainer.name)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(.primary)
-                        Text(retainer.type.isEmpty ? "Type Undefined" : retainer.type)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                        .animation(.spring(response: 0.3), value: isExpanded)
-                }
-                .padding()
-                .background(colorScheme == .dark ? Color(.systemGray6) : .white)
-                .contentShape(Rectangle()) // This makes the entire header tappable
-                .onTapGesture {
-                    withAnimation(.spring(response: 0.3)) {
-                        isExpanded.toggle()
-                    }
-                }
-            }
-            
-            // Expanded Content
-            if isExpanded {
-                VStack(alignment: .leading, spacing: 16) {
-                    // Stats with cool icons and styling
-                    HStack(spacing: 20) {
-                        StatBadge(label: "HD", value: retainer.hitDice, icon: "heart.fill", color: .red)
-                        StatBadge(label: "DF", value: retainer.defenseFactor, icon: "shield.fill", color: .blue)
-                        StatBadge(label: "MV", value: retainer.movement, icon: "figure.walk", color: .green)
-                    }
-                    .padding(.top, 8)
-                    
-                    // Notes Section with fancy styling
-                    if !retainer.notes.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label("Notes", systemImage: "note.text")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            Text(retainer.notes)
-                                .font(.body)
-                                .padding(12)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.purple.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                    }
-                    
-                    // Keywords with modern tag styling
-                    if !retainer.keywords.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Label("Keywords", systemImage: "tag.fill")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            TagWrappingView(tags: retainer.keywords)
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom)
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Retainer Slot \(slotNumber)")
+                .font(.headline)
+                .foregroundColor(.secondary)
+            Text("Empty Slot")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
-        .background(colorScheme == .dark ? Color(.systemGray6) : .white)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-        )
+        .padding(12)
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity)
     }
 }
 
-struct StatBadge: View {
-    let label: String
-    let value: Int
+private struct ExampleRetainersCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "lightbulb.fill")
+                    .foregroundColor(.yellow)
+                Text("Example Retainers")
+                    .font(.headline)
+            }
+            Text("""
+                These examples can be re-skinned for non-fantasy genres, a pet becoming a drone, a spirit becoming a limited AI, etc.
+
+                • Apprentice
+                • Squire
+                • Cook
+                • Butler
+                • Guardian
+                • Lover
+                • Teacher
+                • Thief
+                • Ward
+                • Relative
+                • Student
+                • Guide
+                • Medic
+                • Chronicler
+                • Fan
+                • Bodyguard
+                • Thug
+                • Aide de Camp
+                • Maid
+                • Secretary
+                • Accountant
+                • Assistant
+                • Taster
+                • Jester
+                • Priest
+                • Interpreter
+                • Librarian
+                • Pet
+                • Familiarus
+                • Spirit
+                """)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(12)
+                .background(Color.yellow.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.top, 12)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Supporting Views
+private struct FeatureRow: View {
     let icon: String
     let color: Color
-    
+    let title: String
+    let description: String
+
     var body: some View {
-        VStack(spacing: 4) {
+        HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .font(.title3)
                 .foregroundColor(color)
-            
-            Text("\(label) \(value)")
-                .font(.caption)
-                .bold()
-                .foregroundColor(.primary)
+                .font(.system(size: 18))
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct BenefitRow: View {
+    let icon: String
+    let title: String
+    let description: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(.purple)
+                .font(.system(size: 18))
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct StatBadge: View {
+    let value: Int
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text("\(value)")
+                .font(.subheadline)
+                .fontWeight(.medium)
+            Text(label)
+                .font(.caption2)
+                .foregroundColor(.secondary)
         }
         .frame(width: 60)
-        .padding(.vertical, 8)
+        .padding(4)
         .background(color.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 }
 
-struct TagWrappingView: View {
+private struct TagWrappingView: View {
     let tags: [String]
-    
-    var body: some View {
-        GeometryReader { geometry in
-            self.generateContent(in: geometry)
-        }
-    }
-    
-    private func generateContent(in g: GeometryProxy) -> some View {
-        var width = CGFloat.zero
-        var height = CGFloat.zero
-        
-        return ZStack(alignment: .topLeading) {
-            ForEach(self.tags, id: \.self) { tag in
-                self.item(for: tag)
-                    .padding([.horizontal, .vertical], 4)
-                    .alignmentGuide(.leading) { d in
-                        if (abs(width - d.width) > g.size.width) {
-                            width = 0
-                            height -= d.height
-                        }
-                        let result = width
-                        if tag == self.tags.last! {
-                            width = 0
-                        } else {
-                            width -= d.width
-                        }
-                        return result
-                    }
-                    .alignmentGuide(.top) { _ in
-                        let result = height
-                        if tag == self.tags.last! {
-                            height = 0
-                        }
-                        return result
-                    }
-            }
-        }
-    }
-    
-    private func item(for text: String) -> some View {
-        Text(text)
-            .font(.caption)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Color.blue.opacity(0.1))
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(Color.blue.opacity(0.3), lineWidth: 1)
-            )
-    }
-}
 
-struct FortuneStandingBullet: View {
-    let text: String
-    
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
-            Image(systemName: "circle.inset.filled")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            Text(text)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(tags, id: \.self) { tag in
+                    Text(tag)
+                        .font(.caption)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.gray.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
+            }
+            .frame(maxWidth: .infinity)
         }
     }
 }
