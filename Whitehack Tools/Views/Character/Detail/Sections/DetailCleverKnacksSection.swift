@@ -44,7 +44,7 @@ struct DetailCleverKnacksSection: View {
                 // Daily Power Status
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
-                        Image(systemName: "sparkles.square.filled.on.square")
+                        Image(systemName: "wand.and.stars")
                             .foregroundStyle(.green)
                         Text("Unorthodox Solution")
                             .font(.headline)
@@ -88,7 +88,7 @@ struct DetailCleverKnacksSection: View {
                     }
                     
                     HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "brain.circle.fill")
+                        Image(systemName: "brain")
                             .foregroundStyle(.green)
                             .imageScale(.large)
                         Text("Your analytical mind develops specialized techniques as you advance. Each knack represents mastery over a particular domain of clever thinking.")
@@ -165,7 +165,7 @@ struct CleverPowerCard: View {
                 }
                 Spacer(minLength: 16)
                 if isAvailable {
-                    Image(systemName: "sparkles.circle.fill")
+                    Image(systemName: "sparkles")
                         .foregroundColor(.green)
                         .imageScale(.large)
                 } else {
@@ -234,6 +234,7 @@ struct KnackCard: View {
             Text(knack.description)
                 .font(.caption)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 4)
             
             if knack == .combatExploiter {
