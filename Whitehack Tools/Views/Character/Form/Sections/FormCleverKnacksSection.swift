@@ -21,20 +21,25 @@ struct FormCleverKnacksSection: View {
     
     var body: some View {
         if characterClass == .clever {
-            Section {
+            VStack(spacing: 16) {
                 // Daily Power Card
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 20) {
                     HStack {
                         Text("Daily Power")
-                            .font(.headline)
-                            .foregroundColor(.primary)
+                            .font(.title3)
+                            .fontWeight(.medium)
                         Spacer()
-                        Image(systemName: "sparkles")
-                            .foregroundColor(.red)
-                            .font(.caption)
+                        ZStack {
+                            Circle()
+                                .fill(Color.red.opacity(0.2))
+                                .frame(width: 44, height: 44)
+                            Image(systemName: "sparkles")
+                                .foregroundColor(.red)
+                                .font(.system(size: 20))
+                        }
                     }
                     .padding(.horizontal)
-                    .padding(.top, 8)
+                    .padding(.top, 4)
                     
                     Toggle(isOn: $cleverKnackOptions.hasUsedUnorthodoxBonus) {
                         VStack(alignment: .leading, spacing: 6) {
@@ -58,16 +63,14 @@ struct FormCleverKnacksSection: View {
                     .padding(.bottom, 8)
                 }
                 .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(colorScheme == .dark ? Color(.systemGray6) : Color.white)
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16)
+                    RoundedRectangle(cornerRadius: 20)
                         .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                 )
                 .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 8)
                 
                 // Knack Slots
                 ForEach(0..<availableSlots, id: \.self) { index in
@@ -101,9 +104,23 @@ struct FormCleverKnacksSection: View {
                                     
                                     Spacer()
                                     
-                                    Button(action: {
-                                        cleverKnackOptions.setKnack(nil, at: index)
-                                    }) {
+                                    Menu {
+                                        ForEach(availableKnacks(for: index), id: \.self) { knack in
+                                            Button(action: {
+                                                cleverKnackOptions.setKnack(knack, at: index)
+                                            }) {
+                                                Text(knack.name)
+                                            }
+                                        }
+                                        
+                                        Divider()
+                                        
+                                        Button(role: .destructive, action: {
+                                            cleverKnackOptions.setKnack(nil, at: index)
+                                        }) {
+                                            Text("Remove Knack")
+                                        }
+                                    } label: {
                                         Text("Change")
                                             .foregroundColor(.secondary)
                                     }
@@ -117,9 +134,6 @@ struct FormCleverKnacksSection: View {
                                 
                                 // Combat Exploiter Special Case
                                 if selectedKnack == .combatExploiter {
-                                    Divider()
-                                        .padding(.vertical, 8)
-                                    
                                     VStack(alignment: .leading, spacing: 16) {
                                         Text("Combat Die")
                                             .font(.headline)
@@ -148,6 +162,7 @@ struct FormCleverKnacksSection: View {
                                             .toggleStyle(SwitchToggleStyle(tint: .red))
                                         }
                                     }
+                                    .padding(.top, 12)
                                 }
                             }
                             .padding(20)
@@ -190,24 +205,10 @@ struct FormCleverKnacksSection: View {
                             .stroke(Color.primary.opacity(0.1), lineWidth: 1)
                     )
                     .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 8)
                 }
-            } header: {
-                Label {
-                    Text("Clever Features")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "lightbulb.fill")
-                        .foregroundColor(.yellow)
-                }
-            } footer: {
-                Text("The Clever get +2 to saves vs. illusions and vocation-related appraisal attempts. They get -2 AV with heavy weapons.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.top, 8)
             }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 8)
         }
     }
 }
