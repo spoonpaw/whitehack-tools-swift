@@ -44,12 +44,24 @@ struct CharacterRowView: View {
     
     private var classColor: Color {
         switch character.characterClass {
-        case .strong: return .red
-        case .wise: return .yellow
-        case .deft: return .purple
-        case .brave: return .blue
-        case .clever: return .green
-        case .fortunate: return .orange
+        case .strong: 
+            // Deep crimson - represents raw power, blood, and physical might
+            return Color(red: 0.698, green: 0.132, blue: 0.195)
+        case .wise: 
+            // Ethereal azure - mystical wisdom, divine insight, celestial knowledge
+            return Color(red: 0.408, green: 0.616, blue: 0.851)
+        case .deft: 
+            // Twilight violet - shadows, agility, mystique
+            return Color(red: 0.475, green: 0.298, blue: 0.635)
+        case .brave: 
+            // Burnished bronze - valor, heroic spirit, ancient warrior traditions
+            return Color(red: 0.804, green: 0.498, blue: 0.196)
+        case .clever: 
+            // Emerald sage - cunning intellect, growth, innovation
+            return Color(red: 0.216, green: 0.545, blue: 0.373)
+        case .fortunate: 
+            // Royal amethyst - nobility, destiny, supernatural luck
+            return Color(red: 0.557, green: 0.267, blue: 0.678)
         }
     }
     
