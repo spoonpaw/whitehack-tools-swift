@@ -691,3 +691,138 @@ class PlayerCharacter: Identifiable, Codable {
         self.hasUsedAttunementToday = hasUsedAttunementToday
     }
 }
+
+// MARK: - ID Regeneration Extension
+extension PlayerCharacter {
+    /// Creates a copy of the character with new UUIDs while maintaining relationships
+    func copyWithNewIDs() -> PlayerCharacter {
+        // Create a copy of the character with a new ID
+        let newCharacter = PlayerCharacter(
+            id: UUID(),
+            name: name,
+            characterClass: characterClass,
+            level: level,
+            strength: strength,
+            agility: agility,
+            toughness: toughness,
+            intelligence: intelligence,
+            willpower: willpower,
+            charisma: charisma,
+            currentHP: currentHP,
+            maxHP: maxHP,
+            _attackValue: _attackValue,
+            defenseValue: defenseValue,
+            movement: movement,
+            _saveValue: _saveValue,
+            saveColor: saveColor,
+            speciesGroup: speciesGroup,
+            vocationGroup: vocationGroup,
+            affiliationGroups: affiliationGroups,
+            corruption: corruption,
+            inventory: inventory,
+            currentEncumbrance: currentEncumbrance,
+            maxEncumbrance: maxEncumbrance,
+            coins: coins
+        )
+        
+        // Copy attribute group pairs with new IDs
+        newCharacter.attributeGroupPairs = attributeGroupPairs.map { pair in
+            AttributeGroupPair(
+                id: UUID(),
+                attribute: pair.attribute,
+                group: pair.group
+            )
+        }
+        
+        // Copy attunement slots with new IDs
+        newCharacter.attunementSlots = attunementSlots.map { slot in
+            AttunementSlot(
+                id: UUID(),
+                primaryAttunement: Attunement(
+                    id: UUID(),
+                    name: slot.primaryAttunement.name,
+                    isActive: slot.primaryAttunement.isActive,
+                    type: slot.primaryAttunement.type,
+                    isLost: slot.primaryAttunement.isLost
+                ),
+                secondaryAttunement: Attunement(
+                    id: UUID(),
+                    name: slot.secondaryAttunement.name,
+                    isActive: slot.secondaryAttunement.isActive,
+                    type: slot.secondaryAttunement.type,
+                    isLost: slot.secondaryAttunement.isLost
+                ),
+                hasUsedDailyPower: slot.hasUsedDailyPower
+            )
+        }
+        
+        // Copy wise miracle slots with new IDs
+        newCharacter.wiseMiracleSlots = wiseMiracleSlots.map { slot in
+            WiseMiracleSlot(
+                id: UUID(),
+                miracles: slot.miracles.map { miracle in
+                    WiseMiracle(
+                        id: UUID(),
+                        name: miracle.name,
+                        isActive: miracle.isActive
+                    )
+                },
+                isMagicItem: slot.isMagicItem,
+                magicItemName: slot.magicItemName
+            )
+        }
+        
+        // Copy brave quirk options
+        var newBraveQuirkOptions = BraveQuirkOptions()
+        for i in 0..<10 {
+            if let quirk = braveQuirkOptions.getQuirk(at: i) {
+                newBraveQuirkOptions.setQuirk(quirk, at: i)
+                newBraveQuirkOptions.setProtectedAlly(braveQuirkOptions.getProtectedAlly(at: i), at: i)
+            }
+        }
+        newCharacter.braveQuirkOptions = newBraveQuirkOptions
+        
+        // Copy clever knack options
+        var newCleverKnackOptions = CleverKnackOptions()
+        newCleverKnackOptions.hasUsedUnorthodoxBonus = cleverKnackOptions.hasUsedUnorthodoxBonus
+        for i in 0..<cleverKnackOptions.slots.count {
+            if let knack = cleverKnackOptions.getKnack(at: i) {
+                newCleverKnackOptions.setKnack(knack, at: i)
+            }
+        }
+        newCharacter.cleverKnackOptions = newCleverKnackOptions
+        
+        // Copy fortunate options
+        var newFortunateOptions = FortunateOptions()
+        newFortunateOptions.standing = fortunateOptions.standing
+        newFortunateOptions.hasUsedFortune = fortunateOptions.hasUsedFortune
+        newFortunateOptions.signatureObject = fortunateOptions.signatureObject
+        newFortunateOptions.newKeyword = fortunateOptions.newKeyword
+        newFortunateOptions.retainers = fortunateOptions.retainers.map { retainer in
+            Retainer(
+                id: UUID(),
+                name: retainer.name,
+                type: retainer.type,
+                hitDice: retainer.hitDice,
+                defenseFactor: retainer.defenseFactor,
+                movement: retainer.movement,
+                keywords: retainer.keywords,
+                attitude: retainer.attitude,
+                notes: retainer.notes,
+                currentHP: retainer.currentHP,
+                maxHP: retainer.maxHP
+            )
+        }
+        newCharacter.fortunateOptions = newFortunateOptions
+        
+        // Copy other properties
+        newCharacter.languages = languages
+        newCharacter.notes = notes
+        newCharacter.experience = experience
+        newCharacter.hasUsedAttunementToday = hasUsedAttunementToday
+        newCharacter.hasUsedSayNo = hasUsedSayNo
+        newCharacter.comebackDice = comebackDice
+        
+        return newCharacter
+    }
+}

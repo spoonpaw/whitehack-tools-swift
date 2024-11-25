@@ -147,12 +147,17 @@ struct CharacterImportView: View {
             
             // Try to decode as array first
             if let characters = try? decoder.decode([PlayerCharacter].self, from: characterData) {
-                characters.forEach { characterStore.addCharacter($0) }
+                // Create copies with new IDs for each character before adding
+                characters.forEach { character in
+                    let newCharacter = character.copyWithNewIDs()
+                    characterStore.addCharacter(newCharacter)
+                }
                 showSuccess(count: characters.count)
             }
             // If that fails, try single character
             else if let character = try? decoder.decode(PlayerCharacter.self, from: characterData) {
-                characterStore.addCharacter(character)
+                let newCharacter = character.copyWithNewIDs()
+                characterStore.addCharacter(newCharacter)
                 showSuccess(count: 1)
             }
             else {
