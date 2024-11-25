@@ -6,6 +6,8 @@ struct FormLanguagesSection: View {
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     @State private var isAddingLanguage = false
+    @State private var editingLanguage: String? = nil
+    @State private var tempLanguage = ""
     
     var body: some View {
         Section(header: Text("Languages").font(.headline)) {
@@ -58,18 +60,57 @@ struct FormLanguagesSection: View {
                                     .foregroundColor(.green)
                             }
                             .buttonStyle(BorderlessButtonStyle())
+                            .disabled(newLanguage.trimmingCharacters(in: .whitespaces).isEmpty)
                         }
                     }
                     
                     if !languages.isEmpty {
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 8) {
-                                ForEach(languages, id: \.self) { language in
-                                    HStack {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(languages, id: \.self) { language in
+                                HStack {
+                                    if editingLanguage == language {
+                                        HStack {
+                                            TextField("Edit Language", text: $tempLanguage)
+                                                .textInputAutocapitalization(.words)
+                                                .textFieldStyle(.roundedBorder)
+                                            
+                                            Button {
+                                                editingLanguage = nil
+                                            } label: {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .imageScale(.medium)
+                                                    .symbolRenderingMode(.hierarchical)
+                                                    .foregroundColor(.red)
+                                            }
+                                            .buttonStyle(BorderlessButtonStyle())
+                                            
+                                            Button {
+                                                updateLanguage(language)
+                                            } label: {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .imageScale(.medium)
+                                                    .symbolRenderingMode(.hierarchical)
+                                                    .foregroundColor(.green)
+                                            }
+                                            .buttonStyle(BorderlessButtonStyle())
+                                            .disabled(tempLanguage.trimmingCharacters(in: .whitespaces).isEmpty)
+                                        }
+                                    } else {
                                         Text(language)
                                             .foregroundColor(.primary)
                                         Spacer()
-                                        if language != "Common" {
+                                        HStack(spacing: 12) {
+                                            Button {
+                                                editingLanguage = language
+                                                tempLanguage = language
+                                            } label: {
+                                                Image(systemName: "pencil.circle.fill")
+                                                    .imageScale(.medium)
+                                                    .symbolRenderingMode(.hierarchical)
+                                                    .foregroundColor(.blue)
+                                            }
+                                            .buttonStyle(BorderlessButtonStyle())
+                                            
                                             Button {
                                                 withAnimation {
                                                     removeLanguage(language)
@@ -83,13 +124,12 @@ struct FormLanguagesSection: View {
                                             .buttonStyle(BorderlessButtonStyle())
                                         }
                                     }
-                                    .padding(10)
-                                    .background(Color(.systemGray6))
-                                    .cornerRadius(8)
                                 }
+                                .padding(10)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(8)
                             }
                         }
-                        .frame(maxHeight: 150)
                     }
                 }
             }
@@ -104,6 +144,17 @@ struct FormLanguagesSection: View {
             languages.append(trimmed)
             newLanguage = ""
             focusedField = nil
+        }
+    }
+    
+    private func updateLanguage(_ oldLanguage: String) {
+        let trimmed = tempLanguage.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        withAnimation {
+            if let index = languages.firstIndex(of: oldLanguage) {
+                languages[index] = trimmed
+            }
+            editingLanguage = nil
         }
     }
     
