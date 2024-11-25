@@ -132,7 +132,6 @@ struct FormEquipmentSection: View {
                                 .cornerRadius(8)
                             }
                         }
-                        .frame(maxHeight: inventory.count > 3 ? 150 : nil)
                     }
                 }
                 

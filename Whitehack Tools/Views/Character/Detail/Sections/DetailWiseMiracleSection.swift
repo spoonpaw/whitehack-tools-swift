@@ -425,7 +425,7 @@ private struct MiracleSlotCard: View {
             
             if index == 0 {
                 if extraInactiveMiracles > 0 {
-                    Text("(\(extraInactiveMiracles) from Willpower)")
+                    Text("(+\(extraInactiveMiracles) from Willpower)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 8)
