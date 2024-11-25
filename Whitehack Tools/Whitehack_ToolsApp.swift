@@ -6,8 +6,13 @@ struct Whitehack_ToolsApp: App {
     
     var body: some Scene {
         WindowGroup {
-            CharacterListView()
-                .environmentObject(characterStore)
+            NavigationView {
+                CharacterListView()
+                    .environmentObject(characterStore)
+                Text("Select a character")
+                    .foregroundColor(.secondary)
+            }
+            .navigationViewStyle(.columns)
         }
     }
 }
