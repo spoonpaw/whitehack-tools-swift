@@ -71,28 +71,56 @@ struct FormCombatStatsSection: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                TextField("Enter max HP", text: $maxHP)
-                    .keyboardType(.numberPad)
-                    .focused($focusedField, equals: .maxHP)
-                    .textFieldStyle(.roundedBorder)
-                    .onChange(of: maxHP) { newValue in
-                        // Only allow numbers
-                        let filtered = newValue.filter { "0123456789".contains($0) }
-                        if filtered != newValue {
-                            maxHP = filtered
+                HStack(spacing: 8) {
+                    // Minus button
+                    Button(action: {
+                        if let value = Int(maxHP) {
+                            maxHP = String(max(1, value - 1))
                         }
-                        
-                        // Don't allow ridiculously large numbers
-                        if filtered.count > 3 {
-                            maxHP = String(filtered.prefix(3))
+                    }) {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    
+                    TextField("Enter max HP", text: $maxHP)
+                        .keyboardType(.numberPad)
+                        .focused($focusedField, equals: .maxHP)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .onChange(of: maxHP) { newValue in
+                            // Only allow numbers
+                            let filtered = newValue.filter { "0123456789".contains($0) }
+                            if filtered != newValue {
+                                maxHP = filtered
+                            }
+                            
+                            // Don't allow ridiculously large numbers
+                            if filtered.count > 3 {
+                                maxHP = String(filtered.prefix(3))
+                            }
                         }
+                        .onSubmit {
+                            validateAndCorrectMaxHP()
+                        }
+                        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
+                            validateAndCorrectMaxHP()
+                        }
+                    
+                    // Plus button
+                    Button(action: {
+                        if let value = Int(maxHP) {
+                            maxHP = String(min(999, value + 1))
+                        }
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.green)
                     }
-                    .onSubmit {
-                        validateAndCorrectMaxHP()
-                    }
-                    .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
-                        validateAndCorrectMaxHP()
-                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                }
             }
             
             VStack(alignment: .leading, spacing: 5) {

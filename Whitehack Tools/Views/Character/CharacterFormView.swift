@@ -84,11 +84,6 @@ struct CharacterFormView: View {
                 maxEncumbrance: $formData.maxEncumbrance,
                 focusedField: $focusedField
             )
-            FormOtherInformationSection(
-                experience: $formData.experience,
-                corruption: $formData.corruption,
-                focusedField: $focusedField
-            )
             FormDeftAttunementSection(
                 characterClass: formData.selectedClass,
                 level: Int(formData.level) ?? 1,
@@ -126,6 +121,11 @@ struct CharacterFormView: View {
                     fortunateOptions: $formData.fortunateOptions
                 )
             }
+            FormOtherInformationSection(
+                experience: $formData.experience,
+                corruption: $formData.corruption,
+                focusedField: $focusedField
+            )
             FormNotesSection(
                 notes: $formData.notes,
                 focusedField: $focusedField
