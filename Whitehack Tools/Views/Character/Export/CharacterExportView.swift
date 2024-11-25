@@ -142,15 +142,34 @@ struct CharacterExportView: View {
     }
     
     private func shareCharacters() {
-        let av = UIActivityViewController(
-            activityItems: [characterData],
-            applicationActivities: nil
-        )
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first
+        else { return }
         
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
-           let rootVC = window.rootViewController {
-            rootVC.present(av, animated: true)
+        // Create a temporary file
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = "whitehack_characters.json"
+        let fileURL = tempDir.appendingPathComponent(fileName)
+        
+        do {
+            try characterData.write(to: fileURL, atomically: true, encoding: .utf8)
+            
+            let activityVC = UIActivityViewController(
+                activityItems: [fileURL],
+                applicationActivities: nil
+            )
+            
+            if let presenter = window.rootViewController?.presentedViewController ?? window.rootViewController {
+                // For iPad
+                if let popover = activityVC.popoverPresentationController {
+                    popover.sourceView = window
+                    popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
+                    popover.permittedArrowDirections = []
+                }
+                presenter.present(activityVC, animated: true)
+            }
+        } catch {
+            showAlert(title: "Error", message: "Could not create character file for sharing.")
         }
     }
     
