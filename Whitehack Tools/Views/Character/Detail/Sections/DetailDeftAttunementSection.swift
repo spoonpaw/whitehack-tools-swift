@@ -117,7 +117,10 @@ private struct AttunementSlotsCard: View {
     }
     
     private func isSlotEmpty(_ slot: AttunementSlot) -> Bool {
-        return slot.primaryAttunement.name.isEmpty && slot.secondaryAttunement.name.isEmpty
+        return slot.primaryAttunement.name.isEmpty && 
+               slot.secondaryAttunement.name.isEmpty && 
+               (!slot.hasTertiaryAttunement || slot.tertiaryAttunement.name.isEmpty) &&
+               (!slot.hasQuaternaryAttunement || slot.quaternaryAttunement.name.isEmpty)
     }
     
     var body: some View {
@@ -214,7 +217,25 @@ private struct AttunementSlotView: View {
             if !slot.secondaryAttunement.name.isEmpty {
                 AttunementItemView(
                     attunement: slot.secondaryAttunement,
-                    isActive: !slot.primaryAttunement.isActive,
+                    isActive: slot.secondaryAttunement.isActive,
+                    isPrimary: false
+                )
+            }
+            
+            // Tertiary Attunement (only for first slot)
+            if slotNumber == 1 && slot.hasTertiaryAttunement && !slot.tertiaryAttunement.name.isEmpty {
+                AttunementItemView(
+                    attunement: slot.tertiaryAttunement,
+                    isActive: slot.tertiaryAttunement.isActive,
+                    isPrimary: false
+                )
+            }
+            
+            // Quaternary Attunement (only for first slot)
+            if slotNumber == 1 && slot.hasQuaternaryAttunement && !slot.quaternaryAttunement.name.isEmpty {
+                AttunementItemView(
+                    attunement: slot.quaternaryAttunement,
+                    isActive: slot.quaternaryAttunement.isActive,
                     isPrimary: false
                 )
             }

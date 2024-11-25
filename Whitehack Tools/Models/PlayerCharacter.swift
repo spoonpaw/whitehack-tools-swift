@@ -29,12 +29,27 @@ struct AttunementSlot: Codable, Identifiable {
     let id: UUID
     var primaryAttunement: Attunement
     var secondaryAttunement: Attunement
+    var tertiaryAttunement: Attunement
+    var quaternaryAttunement: Attunement
+    var hasTertiaryAttunement: Bool
+    var hasQuaternaryAttunement: Bool
     var hasUsedDailyPower: Bool
     
-    init(id: UUID = UUID(), primaryAttunement: Attunement = Attunement(), secondaryAttunement: Attunement = Attunement(), hasUsedDailyPower: Bool = false) {
+    init(id: UUID = UUID(), 
+         primaryAttunement: Attunement = Attunement(), 
+         secondaryAttunement: Attunement = Attunement(), 
+         tertiaryAttunement: Attunement = Attunement(),
+         quaternaryAttunement: Attunement = Attunement(),
+         hasTertiaryAttunement: Bool = false,
+         hasQuaternaryAttunement: Bool = false,
+         hasUsedDailyPower: Bool = false) {
         self.id = id
         self.primaryAttunement = primaryAttunement
         self.secondaryAttunement = secondaryAttunement
+        self.tertiaryAttunement = tertiaryAttunement
+        self.quaternaryAttunement = quaternaryAttunement
+        self.hasTertiaryAttunement = hasTertiaryAttunement
+        self.hasQuaternaryAttunement = hasQuaternaryAttunement
         self.hasUsedDailyPower = hasUsedDailyPower
     }
 }
@@ -752,6 +767,22 @@ extension PlayerCharacter {
                     type: slot.secondaryAttunement.type,
                     isLost: slot.secondaryAttunement.isLost
                 ),
+                tertiaryAttunement: Attunement(
+                    id: UUID(),
+                    name: slot.tertiaryAttunement.name,
+                    isActive: slot.tertiaryAttunement.isActive,
+                    type: slot.tertiaryAttunement.type,
+                    isLost: slot.tertiaryAttunement.isLost
+                ),
+                quaternaryAttunement: Attunement(
+                    id: UUID(),
+                    name: slot.quaternaryAttunement.name,
+                    isActive: slot.quaternaryAttunement.isActive,
+                    type: slot.quaternaryAttunement.type,
+                    isLost: slot.quaternaryAttunement.isLost
+                ),
+                hasTertiaryAttunement: slot.hasTertiaryAttunement,
+                hasQuaternaryAttunement: slot.hasQuaternaryAttunement,
                 hasUsedDailyPower: slot.hasUsedDailyPower
             )
         }
