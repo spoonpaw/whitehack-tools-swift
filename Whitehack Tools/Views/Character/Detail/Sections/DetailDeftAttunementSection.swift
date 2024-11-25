@@ -91,7 +91,7 @@ private struct DeftFeaturesCard: View {
                     icon: "shield.lefthalf.filled",
                     color: .blue,
                     title: "Weapon Proficiency",
-                    description: "+2 AV with non-attuned two-handed melee weapons. Combat vocations get +1 damage and df from off-hand weapons"
+                    description: "-2 AV with non-attuned two-handed melee weapons. Combat vocations get +1 damage and df from off-hand weapons"
                 )
                 
                 DeftAttunementFeatureRow(
