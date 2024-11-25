@@ -5,7 +5,7 @@ struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
     @State private var isAddingWeapon = false
     @State private var editingWeaponIndex: Int? = nil
-    @State private var newWeapon = Weapon(
+    @State private var draftWeapon = Weapon(
         id: UUID(),
         name: "",
         damage: "1d6",
@@ -20,7 +20,6 @@ struct FormWeaponsSection: View {
     var body: some View {
         Section(header: Text("Weapons").font(.headline)) {
             VStack(spacing: 16) {
-                // Weapons List
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Weapons")
@@ -28,7 +27,7 @@ struct FormWeaponsSection: View {
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
                         Spacer()
-                        if !isAddingWeapon {
+                        if !isAddingWeapon && editingWeaponIndex == nil {
                             Button {
                                 isAddingWeapon = true
                             } label: {
@@ -41,20 +40,38 @@ struct FormWeaponsSection: View {
                     }
                     
                     if isAddingWeapon {
-                        WeaponFormView(weapon: $newWeapon) {
-                            weapons.append(newWeapon)
-                            isAddingWeapon = false
-                            newWeapon = Weapon(
-                                id: UUID(),
-                                name: "",
-                                damage: "1d6",
-                                weight: .regular,
-                                rateOfFire: "1",
-                                cost: 0,
-                                special: "",
-                                isMagical: false,
-                                magicalBonus: 0
-                            )
+                        WeaponFormView(weapon: $draftWeapon) {
+                            print("Saving weapon: \(draftWeapon)")
+                            weapons.append(draftWeapon)
+                            DispatchQueue.main.async {
+                                isAddingWeapon = false
+                                draftWeapon = Weapon(
+                                    id: UUID(),
+                                    name: "",
+                                    damage: "1d6",
+                                    weight: .regular,
+                                    rateOfFire: "1",
+                                    cost: 0,
+                                    special: "",
+                                    isMagical: false,
+                                    magicalBonus: 0
+                                )
+                            }
+                        } onCancel: {
+                            DispatchQueue.main.async {
+                                isAddingWeapon = false
+                                draftWeapon = Weapon(
+                                    id: UUID(),
+                                    name: "",
+                                    damage: "1d6",
+                                    weight: .regular,
+                                    rateOfFire: "1",
+                                    cost: 0,
+                                    special: "",
+                                    isMagical: false,
+                                    magicalBonus: 0
+                                )
+                            }
                         }
                     }
                     
@@ -63,13 +80,22 @@ struct FormWeaponsSection: View {
                             ForEach(Array(weapons.enumerated()), id: \.element.id) { index, weapon in
                                 if editingWeaponIndex == index {
                                     WeaponFormView(weapon: $weapons[index]) {
-                                        editingWeaponIndex = nil
+                                        print("Saving edited weapon at index \(index)")
+                                        DispatchQueue.main.async {
+                                            editingWeaponIndex = nil
+                                        }
+                                    } onCancel: {
+                                        DispatchQueue.main.async {
+                                            editingWeaponIndex = nil
+                                        }
                                     }
                                 } else {
                                     WeaponRowView(weapon: weapon) {
                                         editingWeaponIndex = index
                                     } onDelete: {
-                                        weapons.remove(at: index)
+                                        DispatchQueue.main.async {
+                                            weapons.remove(at: index)
+                                        }
                                     }
                                 }
                             }
@@ -85,9 +111,33 @@ struct FormWeaponsSection: View {
 struct WeaponFormView: View {
     @Binding var weapon: Weapon
     let onSave: () -> Void
+    let onCancel: () -> Void
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Button {
+                    onCancel()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.red)
+                        .imageScale(.large)
+                }
+                
+                Spacer()
+                
+                Button {
+                    print("Save button pressed. Weapon: \(weapon)")
+                    onSave()
+                } label: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .imageScale(.large)
+                }
+            }
+            .padding(.bottom, 8)
+            
             // Name
             VStack(alignment: .leading, spacing: 4) {
                 Label("Name", systemImage: "character.cursor.ibeam")
@@ -192,14 +242,6 @@ struct WeaponFormView: View {
                         .font(.subheadline)
                 }
             }
-            
-            // Save Button
-            Button(action: onSave) {
-                Text("Save Weapon")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .padding(.top, 8)
         }
         .padding()
         .background(Color(.systemBackground))
@@ -216,33 +258,11 @@ struct WeaponRowView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(weapon.name)
-                    .font(.headline)
-                
-                HStack(spacing: 12) {
-                    Label(weapon.damage, systemImage: "burst.fill")
-                        .font(.caption)
-                    
-                    Label(weapon.weight.rawValue, systemImage: "scalemass.fill")
-                        .font(.caption)
-                    
-                    if !weapon.rateOfFire.isEmpty {
-                        Label(weapon.rateOfFire, systemImage: "timer")
-                            .font(.caption)
-                    }
-                }
-                
-                if !weapon.special.isEmpty {
-                    Text(weapon.special)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                if weapon.isMagical {
-                    Text("+\(weapon.magicalBonus) Magical")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                }
+                Text(weapon.name.isEmpty ? "Unnamed Weapon" : weapon.name)
+                    .font(.subheadline)
+                Text("\(weapon.damage) damage")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
             
             Spacer()
@@ -250,22 +270,17 @@ struct WeaponRowView: View {
             HStack(spacing: 16) {
                 Button(action: onEdit) {
                     Image(systemName: "pencil.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
                         .foregroundColor(.blue)
+                        .imageScale(.large)
                 }
                 
                 Button(action: onDelete) {
                     Image(systemName: "trash.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
                         .foregroundColor(.red)
+                        .imageScale(.large)
                 }
             }
         }
-        .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(radius: 2)
+        .padding(.vertical, 4)
     }
 }
