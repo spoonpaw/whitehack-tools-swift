@@ -620,7 +620,7 @@ struct CostModifierRow: View {
     let color: Color
     
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 6) {
+        HStack(alignment: .center, spacing: 6) {
             Image(systemName: "circle.fill")
                 .font(.system(size: 4))
                 .foregroundColor(color.opacity(0.5))
