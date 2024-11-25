@@ -389,13 +389,21 @@ private struct AttunementSlotView: View {
                 }
             }
             
-            // Daily Power Usage
+            // Daily Power Status
             HStack {
-                Text("Daily Power Used")
-                    .font(.subheadline)
-                    .foregroundColor(.orange)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Daily Power")
+                        .font(.subheadline)
+                        .foregroundColor(.orange)
+                    Text(attunementSlots[index].hasUsedDailyPower ? 
+                        "This attunement's daily power has been used and cannot be used again until tomorrow" : 
+                        "This attunement's daily power is available to use")
+                        .font(.caption)
+                        .foregroundColor(attunementSlots[index].hasUsedDailyPower ? .secondary : .green)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Spacer()
-                Toggle(attunementSlots[index].hasUsedDailyPower ? "Daily Power: Used" : "Daily Power: Available", isOn: Binding(
+                Toggle("", isOn: Binding(
                     get: { index < attunementSlots.count ? attunementSlots[index].hasUsedDailyPower : false },
                     set: { 
                         if index >= attunementSlots.count {
@@ -406,6 +414,25 @@ private struct AttunementSlotView: View {
                 ))
                 .labelsHidden()
             }
+            .padding(.top, 8)
+            
+            // Daily Power Usage
+            // HStack {
+            //     Text("Daily Power Used")
+            //         .font(.subheadline)
+            //         .foregroundColor(.orange)
+            //     Spacer()
+            //     Toggle(attunementSlots[index].hasUsedDailyPower ? "Daily Power: Used" : "Daily Power: Available", isOn: Binding(
+            //         get: { index < attunementSlots.count ? attunementSlots[index].hasUsedDailyPower : false },
+            //         set: { 
+            //             if index >= attunementSlots.count {
+            //                 attunementSlots.append(AttunementSlot())
+            //             }
+            //             attunementSlots[index].hasUsedDailyPower = $0
+            //         }
+            //     ))
+            //     .labelsHidden()
+            // }
         }
         .padding(16)
         .background(Color(.systemBackground))
