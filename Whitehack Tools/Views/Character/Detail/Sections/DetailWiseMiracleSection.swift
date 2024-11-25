@@ -30,6 +30,7 @@ struct DetailWiseMiracleSection: View {
                         MiracleSlotCard(
                             index: index,
                             slot: slot,
+                            extraInactiveMiracles: extraInactiveMiracles,
                             colorScheme: colorScheme
                         )
                     }
@@ -277,28 +278,30 @@ private struct HPCostReferenceCard: View {
 private struct MiracleSlotCard: View {
     let index: Int
     let slot: WiseMiracleSlot
+    let extraInactiveMiracles: Int
     let colorScheme: ColorScheme
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "sparkles")
-                    .foregroundColor(.yellow)
-                Text("Miracle Slot \(index + 1)")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                Spacer()
-            }
+            slotHeader(index: index, slot: slot, extraInactiveMiracles: extraInactiveMiracles)
             
             if index == 2 && slot.isMagicItem {
                 magickItemView()
                 magickItemInfoView()
             } else {
-                ForEach(slot.miracles) { miracle in
+                // Base miracles
+                ForEach(slot.baseMiracles) { miracle in
                     miracleView(miracle)
                 }
                 
-                if slot.miracles.isEmpty {
+                // Additional miracles if this is slot 0
+                if index == 0 {
+                    ForEach(slot.additionalMiracles) { miracle in
+                        miracleView(miracle)
+                    }
+                }
+                
+                if slot.baseMiracles.isEmpty && (index != 0 || slot.additionalMiracles.isEmpty) {
                     emptyMiracleView()
                 }
             }
@@ -307,6 +310,43 @@ private struct MiracleSlotCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+    
+    private func slotHeader(index: Int, slot: WiseMiracleSlot, extraInactiveMiracles: Int) -> some View {
+        HStack {
+            Text("Slot \(index + 1)")
+                .font(.headline)
+                .foregroundColor(.purple)
+            
+            if index == 0 {
+                if extraInactiveMiracles > 0 {
+                    Text("(\(extraInactiveMiracles) from Willpower)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.secondary.opacity(0.2))
+                        .cornerRadius(12)
+                }
+                
+                if slot.additionalMiracleCount > 0 {
+                    Text("(+\(slot.additionalMiracleCount) Additional)")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(12)
+                }
+            }
+            
+            Spacer()
+            if index == 2 {
+                Image(systemName: "sparkles")
+                    .foregroundColor(.purple)
+                    .font(.caption)
+            }
+        }
     }
     
     private func magickItemView() -> some View {

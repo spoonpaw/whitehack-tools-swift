@@ -7,12 +7,6 @@ struct FormWiseMiracleSection: View {
     @Binding var miracleSlots: [WiseMiracleSlot]
     @Environment(\.colorScheme) var colorScheme
     
-    private var availableSlots: Int {
-        guard characterClass == .wise else { return 0 }
-        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.slots
-    }
-    
     private var extraInactiveMiracles: Int {
         guard level == 1 else { return 0 }
         if willpower >= 16 {
@@ -23,67 +17,31 @@ struct FormWiseMiracleSection: View {
         return 0
     }
     
+    enum MiracleType {
+        case base     // Regular miracles from the main list (0-2)
+        case additional  // Additional miracles in first/second slot
+    }
+    
     var body: some View {
         if characterClass == .wise {
             Section {
-                ForEach(Array(miracleSlots.enumerated()), id: \.element.id) { index, slot in
+                ForEach(Array(zip(miracleSlots.indices, miracleSlots)).prefix(level), id: \.0) { index, slot in
                     VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Slot \(index + 1)")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            if index == 0 && extraInactiveMiracles > 0 {
-                                Text("(\(extraInactiveMiracles) extra inactive)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.secondary.opacity(0.2))
-                                    .cornerRadius(12)
-                            }
-                            Spacer()
-                            if index == 2 {
-                                Image(systemName: "sparkles")
-                                    .foregroundColor(.purple)
-                                    .font(.caption)
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.top, 4)
+                        slotHeader(index: index)
                         
-                        if index == 2 { // Level 3 slot can be magic item
-                            Toggle(isOn: $miracleSlots[index].isMagicItem) {
-                                Label("Magic Item", systemImage: "wand.and.stars")
-                                    .foregroundColor(.purple)
-                            }
-                            .padding(.horizontal)
-                            .toggleStyle(SwitchToggleStyle(tint: .purple))
+                        if index == 2 {
+                            magicItemSection(index: index, slot: slot)
                         }
                         
-                        if index == 2 && slot.isMagicItem {
-                            VStack(spacing: 12) {
-                                TextField("Magic Item Name", text: $miracleSlots[index].magicItemName)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.purple.opacity(0.5), lineWidth: 1)
-                                    )
+                        if !slot.isMagicItem {
+                            // Base miracles
+                            ForEach(slot.baseMiracles) { miracle in
+                                miracleView(miracle, isAdditional: false, slotIndex: index)
                             }
-                            .padding(12)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
-                            )
-                            .padding(.horizontal)
-                        } else {
-                            let maxMiracles = index == 0 ? 2 + extraInactiveMiracles : 2
-                            ForEach(0..<maxMiracles, id: \.self) { miracleIndex in
-                                if miracleIndex < slot.miracles.count {
-                                    miracleView(slot.miracles[miracleIndex], slotIndex: index)
-                                } else {
-                                    emptyMiracleView(slotIndex: index)
-                                }
-                            }
+                        }
+                        
+                        if index == 0 {
+                            additionalMiraclesSection(index: index)
                         }
                     }
                     .padding(.vertical, 12)
@@ -98,19 +56,6 @@ struct FormWiseMiracleSection: View {
                     .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
                     .padding(.horizontal, 4)
                     .padding(.vertical, 4)
-                    .onChange(of: willpower) { _ in
-                        if index == 0 {
-                            // Remove excess miracles if willpower drops
-                            let maxAllowed = 2 + extraInactiveMiracles
-                            if slot.miracles.count > maxAllowed {
-                                miracleSlots[index].miracles = Array(slot.miracles.prefix(maxAllowed))
-                            }
-                            // Add empty miracles if needed
-                            while miracleSlots[index].miracles.count < maxAllowed {
-                                miracleSlots[index].miracles.append(WiseMiracle())
-                            }
-                        }
-                    }
                 }
             } header: {
                 Label {
@@ -138,16 +83,90 @@ struct FormWiseMiracleSection: View {
         }
     }
     
-    private func miracleView(_ miracle: WiseMiracle, slotIndex: Int) -> some View {
+    private func slotHeader(index: Int) -> some View {
+        HStack {
+            Text("Slot \(index + 1)")
+                .font(.headline)
+                .foregroundColor(.primary)
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
+    
+    private func magicItemSection(index: Int, slot: WiseMiracleSlot) -> some View {
+        VStack(spacing: 8) {
+            Toggle(isOn: $miracleSlots[index].isMagicItem) {
+                Label("Magic Item", systemImage: "wand.and.stars")
+                    .foregroundColor(.purple)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .purple))
+            
+            if slot.isMagicItem {
+                TextField("Magic Item Name", text: $miracleSlots[index].magicItemName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    private func additionalMiraclesSection(index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Additional Miracles")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .padding(.horizontal)
+            
+            additionalMiraclesContent(index: index)
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private func additionalMiraclesContent(index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle(isOn: Binding(
+                get: { miracleSlots[index].additionalMiracleCount >= 1 },
+                set: { newValue in
+                    miracleSlots[index].additionalMiracleCount = newValue ? 1 : 0
+                    updateMiracleCount(index: index)
+                }
+            )) {
+                Label("First Additional Miracle", systemImage: "plus.circle")
+                    .foregroundColor(.purple)
+            }
+            .toggleStyle(SwitchToggleStyle(tint: .purple))
+            .padding(.horizontal)
+
+            if miracleSlots[index].additionalMiracleCount >= 1 {
+                ForEach(miracleSlots[index].additionalMiracles) { miracle in
+                    miracleView(miracle, isAdditional: true, slotIndex: index)
+                }
+
+                Toggle(isOn: Binding(
+                    get: { miracleSlots[index].additionalMiracleCount == 2 },
+                    set: { newValue in
+                        miracleSlots[index].additionalMiracleCount = newValue ? 2 : 1
+                        updateMiracleCount(index: index)
+                    }
+                )) {
+                    Label("Second Additional Miracle", systemImage: "plus.circle.fill")
+                        .foregroundColor(.purple)
+                }
+                .toggleStyle(SwitchToggleStyle(tint: .purple))
+                .padding(.horizontal)
+            }
+        }
+    }
+    
+    private func miracleView(_ miracle: WiseMiracle, isAdditional: Bool, slotIndex: Int) -> some View {
         VStack(spacing: 12) {
-            TextField("Miracle Name", text: binding(for: miracle).name)
+            TextField("Miracle Name", text: binding(for: miracle, isAdditional: isAdditional).name)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(miracle.isActive ? Color.green.opacity(0.5) : Color.secondary.opacity(0.3), lineWidth: 1)
                 )
             
-            Toggle(isOn: binding(for: miracle).isActive) {
+            Toggle(isOn: binding(for: miracle, isAdditional: isAdditional).isActive) {
                 Label("Active", systemImage: miracle.isActive ? "checkmark.circle.fill" : "circle")
                     .foregroundColor(miracle.isActive ? .green : .secondary)
             }
@@ -158,105 +177,154 @@ struct FormWiseMiracleSection: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(miracle.isActive ? Color.green.opacity(0.2) : Color.clear, lineWidth: 1)
-        )
         .padding(.horizontal)
     }
     
-    private func emptyMiracleView(slotIndex: Int) -> some View {
-        VStack(spacing: 12) {
-            TextField("Miracle Name", text: .constant(""))
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .disabled(true)
-            
-            Toggle(isOn: .constant(false)) {
-                Label("Active", systemImage: "circle")
-                    .foregroundColor(.secondary)
-            }
-            .toggleStyle(SwitchToggleStyle(tint: .green))
-            .disabled(true)
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
-        )
-        .padding(.horizontal)
-        .opacity(0.5)
-    }
-    
-    private func binding(for miracle: WiseMiracle) -> WiseMiracleBinding {
-        WiseMiracleBinding(
-            miracle: Binding(
-                get: { miracle },
-                set: { newValue in
-                    if let slotIndex = miracleSlots.firstIndex(where: { $0.miracles.contains(where: { $0.id == miracle.id }) }),
-                       let miracleIndex = miracleSlots[slotIndex].miracles.firstIndex(where: { $0.id == miracle.id }) {
-                        miracleSlots[slotIndex].miracles[miracleIndex] = newValue
+    private func binding(for miracle: WiseMiracle, isAdditional: Bool) -> WiseMiracleBinding {
+        let miracleBinding = Binding(
+            get: { miracle },
+            set: { newValue in
+                if let index = miracleSlots.firstIndex(where: { slot in
+                    if isAdditional {
+                        return slot.additionalMiracles.contains(where: { $0.id == miracle.id })
+                    } else {
+                        return slot.baseMiracles.contains(where: { $0.id == miracle.id })
+                    }
+                }) {
+                    // If activating, deactivate ALL other miracles in this slot (both base and additional)
+                    if newValue.isActive {
+                        print("🎯 Deactivating all miracles in slot \(index)")
+                        
+                        // Deactivate base miracles
+                        for mIndex in miracleSlots[index].baseMiracles.indices {
+                            if miracleSlots[index].baseMiracles[mIndex].id != miracle.id {
+                                miracleSlots[index].baseMiracles[mIndex].isActive = false
+                            }
+                        }
+                        
+                        // Deactivate additional miracles
+                        for mIndex in miracleSlots[index].additionalMiracles.indices {
+                            if miracleSlots[index].additionalMiracles[mIndex].id != miracle.id {
+                                miracleSlots[index].additionalMiracles[mIndex].isActive = false
+                            }
+                        }
+                    }
+                    
+                    // Update the miracle in the correct array
+                    if isAdditional {
+                        if let miracleIndex = miracleSlots[index].additionalMiracles.firstIndex(where: { $0.id == miracle.id }) {
+                            miracleSlots[index].additionalMiracles[miracleIndex] = newValue
+                        }
+                    } else {
+                        if let miracleIndex = miracleSlots[index].baseMiracles.firstIndex(where: { $0.id == miracle.id }) {
+                            miracleSlots[index].baseMiracles[miracleIndex] = newValue
+                        }
                     }
                 }
-            ),
-            allMiracles: binding(forSlotContaining: miracle)
+            }
         )
+        
+        return WiseMiracleBinding(miracle: miracleBinding)
     }
     
-    private func binding(forSlotContaining miracle: WiseMiracle) -> Binding<[WiseMiracle]> {
-        if let slotIndex = miracleSlots.firstIndex(where: { $0.miracles.contains(where: { $0.id == miracle.id }) }) {
-            return $miracleSlots[slotIndex].miracles
+    private func updateMiracleCount(index: Int) {
+        // Calculate base miracle count (2 + any extra from willpower)
+        let baseMiracleCount = 2 + extraInactiveMiracles
+        
+        // Handle base miracles
+        while miracleSlots[index].baseMiracles.count < baseMiracleCount {
+            miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
         }
-        return .constant([])
+        if miracleSlots[index].baseMiracles.count > baseMiracleCount {
+            miracleSlots[index].baseMiracles = Array(miracleSlots[index].baseMiracles.prefix(baseMiracleCount))
+        }
+        
+        // Handle additional miracles
+        let totalAdditionalNeeded = miracleSlots[index].additionalMiracleCount
+        if miracleSlots[index].additionalMiracles.count < totalAdditionalNeeded {
+            let needToAdd = totalAdditionalNeeded - miracleSlots[index].additionalMiracles.count
+            for _ in 0..<needToAdd {
+                miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
+            }
+        } else if miracleSlots[index].additionalMiracles.count > totalAdditionalNeeded {
+            miracleSlots[index].additionalMiracles = Array(miracleSlots[index].additionalMiracles.prefix(totalAdditionalNeeded))
+        }
+    }
+    
+    private func ensureMiracleExists(index: Int, miracleIndex: Int, isAdditional: Bool) {
+        if isAdditional {
+            while miracleSlots[index].additionalMiracles.count <= miracleIndex {
+                miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
+            }
+        } else {
+            while miracleSlots[index].baseMiracles.count <= miracleIndex {
+                miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
+            }
+        }
     }
     
     private func initializeSlotsIfNeeded() {
-        // Initialize slots if empty
         if miracleSlots.isEmpty {
-            miracleSlots = Array(repeating: WiseMiracleSlot(), count: availableSlots)
+            miracleSlots = Array(repeating: WiseMiracleSlot(), count: 3)
         }
         
-        // Ensure we have the correct number of slots
-        while miracleSlots.count < availableSlots {
+        while miracleSlots.count < 3 {
             miracleSlots.append(WiseMiracleSlot())
         }
-        while miracleSlots.count > availableSlots {
+        while miracleSlots.count > 3 {
             miracleSlots.removeLast()
         }
         
-        // Initialize all miracle slots with the correct number of miracles
         for index in miracleSlots.indices {
-            let maxMiracles = index == 0 ? 2 + extraInactiveMiracles : 2
-            while miracleSlots[index].miracles.count < maxMiracles {
-                miracleSlots[index].miracles.append(WiseMiracle())
+            let baseMiracleCount = 2 + extraInactiveMiracles
+            while miracleSlots[index].baseMiracles.count < baseMiracleCount {
+                miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
             }
+            if miracleSlots[index].baseMiracles.count > baseMiracleCount {
+                miracleSlots[index].baseMiracles = Array(miracleSlots[index].baseMiracles.prefix(baseMiracleCount))
+            }
+            
+            let totalAdditionalNeeded = miracleSlots[index].additionalMiracleCount
+            if miracleSlots[index].additionalMiracles.count < totalAdditionalNeeded {
+                let needToAdd = totalAdditionalNeeded - miracleSlots[index].additionalMiracles.count
+                for _ in 0..<needToAdd {
+                    miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
+                }
+            } else if miracleSlots[index].additionalMiracles.count > totalAdditionalNeeded {
+                miracleSlots[index].additionalMiracles = Array(miracleSlots[index].additionalMiracles.prefix(totalAdditionalNeeded))
+            }
+        }
+    }
+    
+    private func addMiracle(to slot: Int, isAdditional: Bool = false) {
+        if isAdditional {
+            miracleSlots[slot].additionalMiracles.append(WiseMiracle(isAdditional: true))
+        } else {
+            miracleSlots[slot].baseMiracles.append(WiseMiracle(isAdditional: false))
         }
     }
 }
 
 struct WiseMiracleBinding {
-    let miracle: Binding<WiseMiracle>
-    let allMiracles: Binding<[WiseMiracle]>
+    let name: Binding<String>
+    let isActive: Binding<Bool>
     
-    var name: Binding<String> {
-        Binding(
+    init(miracle: Binding<WiseMiracle>) {
+        self.name = Binding(
             get: { miracle.wrappedValue.name },
-            set: { miracle.name.wrappedValue = $0 }
+            set: { newValue in
+                var updatedMiracle = miracle.wrappedValue
+                updatedMiracle.name = newValue
+                miracle.wrappedValue = updatedMiracle
+            }
         )
-    }
-    
-    var isActive: Binding<Bool> {
-        Binding(
+        
+        self.isActive = Binding(
             get: { miracle.wrappedValue.isActive },
             set: { newValue in
-                if newValue {
-                    // Deactivate all other miracles in the slot
-                    for index in allMiracles.wrappedValue.indices {
-                        if allMiracles.wrappedValue[index].id != miracle.wrappedValue.id {
-                            allMiracles[index].isActive.wrappedValue = false
-                        }
-                    }
-                }
-                miracle.isActive.wrappedValue = newValue
+                var updatedMiracle = miracle.wrappedValue
+                updatedMiracle.isActive = newValue
+                miracle.wrappedValue = updatedMiracle
             }
         )
     }

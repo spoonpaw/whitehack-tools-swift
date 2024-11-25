@@ -168,25 +168,31 @@ struct WiseMiracle: Codable, Identifiable {
     let id: UUID
     var name: String
     var isActive: Bool
+    var isAdditional: Bool  // Track whether this is an additional miracle
     
-    init(id: UUID = UUID(), name: String = "", isActive: Bool = false) {
+    init(id: UUID = UUID(), name: String = "", isActive: Bool = false, isAdditional: Bool = false) {
         self.id = id
         self.name = name
         self.isActive = isActive
+        self.isAdditional = isAdditional
     }
 }
 
 struct WiseMiracleSlot: Codable, Identifiable {
     let id: UUID
-    var miracles: [WiseMiracle] // Array of miracles in this slot
+    var baseMiracles: [WiseMiracle] // Array of base miracles in this slot
+    var additionalMiracles: [WiseMiracle] // Array of additional miracles
     var isMagicItem: Bool // If true, this slot holds a magic item instead of miracles
     var magicItemName: String // Name of the magic item if isMagicItem is true
+    var additionalMiracleCount: Int // Number of additional miracles (0-2 for first slot)
     
-    init(id: UUID = UUID(), miracles: [WiseMiracle] = [], isMagicItem: Bool = false, magicItemName: String = "") {
+    init(id: UUID = UUID(), baseMiracles: [WiseMiracle] = [], additionalMiracles: [WiseMiracle] = [], isMagicItem: Bool = false, magicItemName: String = "", additionalMiracleCount: Int = 0) {
         self.id = id
-        self.miracles = miracles
+        self.baseMiracles = baseMiracles
+        self.additionalMiracles = additionalMiracles
         self.isMagicItem = isMagicItem
         self.magicItemName = magicItemName
+        self.additionalMiracleCount = additionalMiracleCount
     }
 }
 
@@ -792,15 +798,25 @@ extension PlayerCharacter {
         newCharacter.wiseMiracleSlots = wiseMiracleSlots.map { slot in
             WiseMiracleSlot(
                 id: UUID(),
-                miracles: slot.miracles.map { miracle in
+                baseMiracles: slot.baseMiracles.map { miracle in
                     WiseMiracle(
                         id: UUID(),
                         name: miracle.name,
-                        isActive: miracle.isActive
+                        isActive: miracle.isActive,
+                        isAdditional: miracle.isAdditional
+                    )
+                },
+                additionalMiracles: slot.additionalMiracles.map { miracle in
+                    WiseMiracle(
+                        id: UUID(),
+                        name: miracle.name,
+                        isActive: miracle.isActive,
+                        isAdditional: miracle.isAdditional
                     )
                 },
                 isMagicItem: slot.isMagicItem,
-                magicItemName: slot.magicItemName
+                magicItemName: slot.magicItemName,
+                additionalMiracleCount: slot.additionalMiracleCount
             )
         }
         
