@@ -16,6 +16,10 @@ struct DetailWiseMiracleSection: View {
         return 0
     }
     
+    private var availableSlots: Int {
+        AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots
+    }
+    
     var body: some View {
         if character.characterClass == .wise {
             Section {
@@ -26,11 +30,11 @@ struct DetailWiseMiracleSection: View {
                     CostModifiersCard()
                     HPCostReferenceCard()
                     
-                    ForEach(Array(character.wiseMiracleSlots.enumerated()), id: \.element.id) { index, slot in
+                    ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
                         MiracleSlotCard(
                             index: index,
                             slot: slot,
-                            extraInactiveMiracles: extraInactiveMiracles,
+                            extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
                             colorScheme: colorScheme
                         )
                     }
@@ -270,7 +274,7 @@ private struct HPCostReferenceCard: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.yellow.opacity(0.1))
+        .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -405,7 +409,7 @@ private struct MiracleSlotCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(miracle.name.isEmpty ? "Empty Miracle" : miracle.name)
                     .foregroundColor(miracle.isActive ? .primary : .secondary)
-                Text(miracle.isActive ? "Prepared for use" : "Requires preparation")
+                Text(miracle.isActive ? "Active" : "Inactive")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }

@@ -130,15 +130,19 @@ struct FormWiseMiracleSection: View {
                     updateMiracleCount(index: index)
                 }
             )) {
-                Label("First Additional Miracle", systemImage: "plus.circle")
-                    .foregroundColor(.purple)
+                HStack(alignment: .center) {
+                    Image(systemName: "plus.circle")
+                        .foregroundColor(.purple)
+                    Text("First Additional Miracle")
+                }
             }
             .toggleStyle(SwitchToggleStyle(tint: .purple))
             .padding(.horizontal)
 
             if miracleSlots[index].additionalMiracleCount >= 1 {
-                ForEach(miracleSlots[index].additionalMiracles) { miracle in
-                    miracleView(miracle, isAdditional: true, slotIndex: index)
+                // First additional miracle
+                if let firstMiracle = miracleSlots[index].additionalMiracles.first {
+                    miracleView(firstMiracle, isAdditional: true, slotIndex: index)
                 }
 
                 Toggle(isOn: Binding(
@@ -148,11 +152,20 @@ struct FormWiseMiracleSection: View {
                         updateMiracleCount(index: index)
                     }
                 )) {
-                    Label("Second Additional Miracle", systemImage: "plus.circle.fill")
-                        .foregroundColor(.purple)
+                    HStack(alignment: .center) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.purple)
+                        Text("Second Additional Miracle")
+                    }
                 }
                 .toggleStyle(SwitchToggleStyle(tint: .purple))
                 .padding(.horizontal)
+
+                // Second additional miracle
+                if miracleSlots[index].additionalMiracleCount == 2,
+                   miracleSlots[index].additionalMiracles.count > 1 {
+                    miracleView(miracleSlots[index].additionalMiracles[1], isAdditional: true, slotIndex: index)
+                }
             }
         }
     }
