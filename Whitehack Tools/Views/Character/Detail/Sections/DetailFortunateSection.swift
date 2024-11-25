@@ -75,7 +75,7 @@ private struct ClassOverviewCard: View {
                     description: "+4 to charisma for retainer morale, +2 on reaction rolls, +6 on reputation rolls."
                 )
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
         .background(Color(.systemBackground))
@@ -176,7 +176,7 @@ private struct StandingCard: View {
                         description: "If standing and vocation align for a task, and the vocation is marked next to the applicable attribute, you get a +6 bonus."
                     )
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 Text("No standing specified")
                     .font(.body)
@@ -539,7 +539,6 @@ private struct FeatureRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             icon
-                .frame(width: 16)
                 .foregroundColor(color)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -550,7 +549,7 @@ private struct FeatureRow: View {
                     .foregroundColor(.secondary)
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -562,7 +561,6 @@ private struct BenefitRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             icon
-                .frame(width: 16)
                 .foregroundColor(.purple)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -573,7 +571,7 @@ private struct BenefitRow: View {
                     .foregroundColor(.secondary)
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
