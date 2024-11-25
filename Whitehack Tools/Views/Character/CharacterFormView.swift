@@ -222,7 +222,7 @@ struct CharacterFormView: View {
         // Combat Stats
         newCharacter.currentHP = Int(formData.currentHP) ?? 0
         newCharacter.maxHP = Int(formData.maxHP) ?? 0
-        newCharacter.defenseValue = Int(formData.defenseValue) ?? 10
+        newCharacter.defenseValue = Int(formData.defenseValue) ?? 0
         newCharacter.movement = Int(formData.movement) ?? 30
         newCharacter.saveColor = formData.saveColor
         
@@ -286,7 +286,7 @@ private class FormData: ObservableObject {
     
     @Published var currentHP = "1"
     @Published var maxHP = "0"
-    @Published var defenseValue = "10"
+    @Published var defenseValue = "0"
     @Published var movement = "30"
     @Published var saveColor = ""
     
