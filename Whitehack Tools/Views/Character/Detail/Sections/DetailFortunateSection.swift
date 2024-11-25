@@ -268,6 +268,9 @@ private struct RetainersCard: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 4)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             if retainers.isEmpty {
