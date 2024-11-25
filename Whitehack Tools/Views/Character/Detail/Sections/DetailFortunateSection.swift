@@ -383,7 +383,7 @@ private struct RetainerDetailView: View {
                     
                     Label {
                         Text(retainer.type)
-                            .font(.subheadline)
+                            .font(.headline)
                     } icon: {
                         Ph.users.bold
                             .frame(width: 16, height: 16)
@@ -402,52 +402,39 @@ private struct RetainerDetailView: View {
             
             Divider()
             
-            // Combat Stats
-            VStack(alignment: .leading, spacing: 8) {
-                Label {
-                    Text("Combat Stats")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                } icon: {
-                    Ph.shield.bold
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.red)
-                }
-                
-                HStack(spacing: 12) {
-                    StatBadge(
-                        label: "HD",
-                        value: "\(retainer.hitDice)",
-                        icon: AnyView(Ph.diceFive.bold.frame(width: 16, height: 16))
-                    )
-                    StatBadge(
-                        label: "DF",
-                        value: "\(retainer.defenseFactor)",
-                        icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16))
-                    )
-                    StatBadge(
-                        label: "MV",
-                        value: "\(retainer.movement)",
-                        icon: AnyView(Ph.personSimpleRun.bold.frame(width: 16, height: 16))
-                    )
-                }
+            // Type
+            Text(retainer.type)
+                .font(.headline)
+                .padding(.vertical, 4)
+            
+            HStack(spacing: 12) {
+                StatBadge(
+                    label: "HD",
+                    value: "\(retainer.hitDice)",
+                    icon: AnyView(Ph.diceFive.bold.frame(width: 16, height: 16))
+                )
+                StatBadge(
+                    label: "DF",
+                    value: "\(retainer.defenseFactor)",
+                    icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16))
+                )
+                StatBadge(
+                    label: "MV",
+                    value: "\(retainer.movement)",
+                    icon: AnyView(Ph.personSimpleRun.bold.frame(width: 16, height: 16))
+                )
             }
+            .frame(maxWidth: .infinity, alignment: .center)
             
             // HP
-            VStack(alignment: .leading, spacing: 4) {
-                Label {
-                    Text("Hit Points")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                } icon: {
-                    Ph.heart.bold
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(.red)
-                }
-                
+            HStack(spacing: 4) {
+                Text("HP")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                 Text("\(retainer.currentHP)/\(retainer.maxHP)")
                     .font(.system(.body, design: .monospaced))
             }
+            .frame(maxWidth: .infinity, alignment: .center)
             
             // Keywords
             if !retainer.keywords.isEmpty {
@@ -476,6 +463,7 @@ private struct RetainerDetailView: View {
                         .padding(.horizontal, 4)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
             
             // Notes
@@ -565,25 +553,5 @@ private struct BenefitRow: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
-private struct TagWrappingView: View {
-    let tags: [String]
-
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(tags, id: \.self) { tag in
-                    Text(tag)
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.gray.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
     }
 }
