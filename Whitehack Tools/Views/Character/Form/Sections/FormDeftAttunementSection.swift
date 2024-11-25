@@ -308,79 +308,81 @@ private struct AttunementSlotView: View {
                         }
                     }
                     
-                    // Quaternary Attunement
-                    HStack {
-                        Text("Quaternary Attunement")
-                            .font(.subheadline.bold())
-                            .foregroundColor(.blue)
-                        Spacer()
-                        Toggle("Enable", isOn: Binding(
-                            get: { attunementSlots[index].hasQuaternaryAttunement },
-                            set: { attunementSlots[index].hasQuaternaryAttunement = $0 }
-                        ))
-                        .labelsHidden()
-                    }
-                    
-                    if attunementSlots[index].hasQuaternaryAttunement {
-                        VStack(alignment: .leading, spacing: 8) {
-                            TextField("Name", text: Binding(
-                                get: { attunementSlots[index].quaternaryAttunement.name },
-                                set: { attunementSlots[index].quaternaryAttunement.name = $0 }
+                    if attunementSlots[index].hasTertiaryAttunement {
+                        // Quaternary Attunement
+                        HStack {
+                            Text("Quaternary Attunement")
+                                .font(.subheadline.bold())
+                                .foregroundColor(.blue)
+                            Spacer()
+                            Toggle("Enable", isOn: Binding(
+                                get: { attunementSlots[index].hasQuaternaryAttunement },
+                                set: { attunementSlots[index].hasQuaternaryAttunement = $0 }
                             ))
-                            .textFieldStyle(.roundedBorder)
-                            
-                            HStack(spacing: 8) {
-                                Text("Type")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Picker("", selection: Binding(
-                                    get: { attunementSlots[index].quaternaryAttunement.type },
-                                    set: { attunementSlots[index].quaternaryAttunement.type = $0 }
-                                )) {
-                                    ForEach(AttunementType.allCases, id: \.self) { type in
-                                        Label(
-                                            type.rawValue.capitalized,
-                                            systemImage: typeIcon(for: type)
-                                        ).tag(type)
-                                    }
-                                }
-                                .pickerStyle(.menu)
-                                .labelsHidden()
-                                Spacer()
-                            }
-                            
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("Active")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Toggle("", isOn: Binding(
-                                        get: { attunementSlots[index].quaternaryAttunement.isActive },
-                                        set: { 
-                                            attunementSlots[index].quaternaryAttunement.isActive = $0
-                                            // Ensure only one attunement is active
-                                            if $0 {
-                                                attunementSlots[index].primaryAttunement.isActive = false
-                                                attunementSlots[index].secondaryAttunement.isActive = false
-                                                attunementSlots[index].tertiaryAttunement.isActive = false
-                                            }
-                                        }
-                                    ))
-                                    .labelsHidden()
-                                }
-                                .frame(maxWidth: .infinity)
+                            .labelsHidden()
+                        }
+                        
+                        if attunementSlots[index].hasQuaternaryAttunement {
+                            VStack(alignment: .leading, spacing: 8) {
+                                TextField("Name", text: Binding(
+                                    get: { attunementSlots[index].quaternaryAttunement.name },
+                                    set: { attunementSlots[index].quaternaryAttunement.name = $0 }
+                                ))
+                                .textFieldStyle(.roundedBorder)
                                 
-                                VStack(alignment: .leading) {
-                                    Text("Lost")
+                                HStack(spacing: 8) {
+                                    Text("Type")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
-                                    Toggle("", isOn: Binding(
-                                        get: { attunementSlots[index].quaternaryAttunement.isLost },
-                                        set: { attunementSlots[index].quaternaryAttunement.isLost = $0 }
-                                    ))
+                                    Picker("", selection: Binding(
+                                        get: { attunementSlots[index].quaternaryAttunement.type },
+                                        set: { attunementSlots[index].quaternaryAttunement.type = $0 }
+                                    )) {
+                                        ForEach(AttunementType.allCases, id: \.self) { type in
+                                            Label(
+                                                type.rawValue.capitalized,
+                                                systemImage: typeIcon(for: type)
+                                            ).tag(type)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
                                     .labelsHidden()
+                                    Spacer()
                                 }
-                                .frame(maxWidth: .infinity)
+                                
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("Active")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        Toggle("", isOn: Binding(
+                                            get: { attunementSlots[index].quaternaryAttunement.isActive },
+                                            set: { 
+                                                attunementSlots[index].quaternaryAttunement.isActive = $0
+                                                // Ensure only one attunement is active
+                                                if $0 {
+                                                    attunementSlots[index].primaryAttunement.isActive = false
+                                                    attunementSlots[index].secondaryAttunement.isActive = false
+                                                    attunementSlots[index].tertiaryAttunement.isActive = false
+                                                }
+                                            }
+                                        ))
+                                        .labelsHidden()
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("Lost")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        Toggle("", isOn: Binding(
+                                            get: { attunementSlots[index].quaternaryAttunement.isLost },
+                                            set: { attunementSlots[index].quaternaryAttunement.isLost = $0 }
+                                        ))
+                                        .labelsHidden()
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                }
                             }
                         }
                     }
@@ -393,7 +395,7 @@ private struct AttunementSlotView: View {
                     .font(.subheadline)
                     .foregroundColor(.orange)
                 Spacer()
-                Toggle("", isOn: Binding(
+                Toggle(attunementSlots[index].hasUsedDailyPower ? "Daily Power: Used" : "Daily Power: Available", isOn: Binding(
                     get: { index < attunementSlots.count ? attunementSlots[index].hasUsedDailyPower : false },
                     set: { 
                         if index >= attunementSlots.count {

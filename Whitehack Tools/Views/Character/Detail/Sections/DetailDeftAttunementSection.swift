@@ -135,7 +135,7 @@ private struct AttunementSlotsCard: View {
             VStack(alignment: .leading, spacing: 16) {
                 ForEach(0..<availableSlots, id: \.self) { index in
                     if index < character.attunementSlots.count && !isSlotEmpty(character.attunementSlots[index]) {
-                        AttunementSlotView(slot: character.attunementSlots[index], slotNumber: index + 1)
+                        slotView(for: character.attunementSlots[index], index: index)
                     } else {
                         EmptySlotView(slotNumber: index + 1)
                     }
@@ -172,6 +172,84 @@ private struct AttunementSlotsCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
+    
+    private func attunementView(for attunement: Attunement, type: String, isActive: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(type)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                if isActive {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                }
+            }
+            
+            if attunement.name.isEmpty {
+                Text("(Empty)")
+                    .italic()
+                    .foregroundColor(.secondary)
+            } else {
+                Text(attunement.name)
+                    .fontWeight(.medium)
+                if attunement.isLost {
+                    Text("(Lost)")
+                        .foregroundColor(.red)
+                        .italic()
+                }
+            }
+            
+            Label(attunement.type.rawValue.capitalized, systemImage: typeIcon(for: attunement.type))
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+    
+    private func typeIcon(for type: AttunementType) -> String {
+        switch type {
+        case .teacher: return "person.fill.checkmark"
+        case .item: return "sparkles.square.filled.on.square"
+        case .vehicle: return "car.fill"
+        case .pet: return "pawprint.fill"
+        case .place: return "mappin.circle.fill"
+        }
+    }
+    
+    private func slotView(for slot: AttunementSlot, index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Slot \(index + 1)")
+                .font(.headline)
+                .foregroundColor(.blue)
+            
+            attunementView(for: slot.primaryAttunement, type: "Primary", isActive: slot.primaryAttunement.isActive)
+            attunementView(for: slot.secondaryAttunement, type: "Secondary", isActive: slot.secondaryAttunement.isActive)
+            
+            if slot.hasTertiaryAttunement {
+                attunementView(for: slot.tertiaryAttunement, type: "Tertiary", isActive: slot.tertiaryAttunement.isActive)
+            }
+            
+            if slot.hasQuaternaryAttunement {
+                attunementView(for: slot.quaternaryAttunement, type: "Quaternary", isActive: slot.quaternaryAttunement.isActive)
+            }
+            
+            if slot.hasUsedDailyPower {
+                Text("Daily Power: Used")
+                    .font(.subheadline)
+                    .foregroundColor(.orange)
+                    .italic()
+            } else {
+                Text("Daily Power: Available")
+                    .font(.subheadline)
+                    .foregroundColor(.green)
+                    .italic()
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemGray6))
+        .cornerRadius(10)
+    }
 }
 
 private struct EmptySlotView: View {
@@ -187,70 +265,6 @@ private struct EmptySlotView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .padding(.leading, 4)
-        }
-        .padding(12)
-        .background(Color.purple.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
-
-private struct AttunementSlotView: View {
-    let slot: AttunementSlot
-    let slotNumber: Int
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Slot \(slotNumber)")
-                .font(.headline)
-                .foregroundColor(.purple)
-            
-            // Primary Attunement
-            if !slot.primaryAttunement.name.isEmpty {
-                AttunementItemView(
-                    attunement: slot.primaryAttunement,
-                    isActive: slot.primaryAttunement.isActive,
-                    isPrimary: true
-                )
-            }
-            
-            // Secondary Attunement
-            if !slot.secondaryAttunement.name.isEmpty {
-                AttunementItemView(
-                    attunement: slot.secondaryAttunement,
-                    isActive: slot.secondaryAttunement.isActive,
-                    isPrimary: false
-                )
-            }
-            
-            // Tertiary Attunement (only for first slot)
-            if slotNumber == 1 && slot.hasTertiaryAttunement && !slot.tertiaryAttunement.name.isEmpty {
-                AttunementItemView(
-                    attunement: slot.tertiaryAttunement,
-                    isActive: slot.tertiaryAttunement.isActive,
-                    isPrimary: false
-                )
-            }
-            
-            // Quaternary Attunement (only for first slot)
-            if slotNumber == 1 && slot.hasQuaternaryAttunement && !slot.quaternaryAttunement.name.isEmpty {
-                AttunementItemView(
-                    attunement: slot.quaternaryAttunement,
-                    isActive: slot.quaternaryAttunement.isActive,
-                    isPrimary: false
-                )
-            }
-            
-            // Daily Power Status
-            if slot.hasUsedDailyPower {
-                HStack {
-                    Image(systemName: "sun.max.fill")
-                        .foregroundColor(.orange)
-                    Text("Daily Power Used")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                }
-                .padding(.vertical, 4)
-            }
         }
         .padding(12)
         .background(Color.purple.opacity(0.1))
