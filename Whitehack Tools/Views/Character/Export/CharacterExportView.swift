@@ -24,16 +24,89 @@ struct CharacterExportView: View {
     
     var body: some View {
         NavigationView {
-            List(selection: $selectedCharacters) {
-                Section {
-                    ForEach(characters) { character in
-                        CharacterExportRow(character: character)
+            VStack(spacing: 0) {
+                // Selection Header
+                HStack {
+                    HStack(spacing: 16) {
+                        Button(action: selectAll) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(selectedCharacters.count == characters.count ? .secondary : .accentColor)
+                                Text("Select All")
+                                    .foregroundColor(selectedCharacters.count == characters.count ? .secondary : .primary)
+                            }
+                            .font(.system(.body, design: .rounded).weight(.medium))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(selectedCharacters.count == characters.count)
+                        
+                        Button(action: deselectAll) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "circle")
+                                    .font(.system(size: 22))
+                                    .foregroundColor(selectedCharacters.isEmpty ? .secondary : .accentColor)
+                                Text("Deselect All")
+                                    .foregroundColor(selectedCharacters.isEmpty ? .secondary : .primary)
+                            }
+                            .font(.system(.body, design: .rounded).weight(.medium))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(selectedCharacters.isEmpty)
                     }
-                } header: {
-                    Text("Select characters to export")
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+                    
+                    Spacer()
+                    
+                    if !selectedCharacters.isEmpty {
+                        Text("\(selectedCharacters.count) selected")
+                            .foregroundColor(.secondary)
+                            .font(.subheadline.weight(.medium))
+                            .padding(.trailing)
+                    }
+                }
+                .background(.thinMaterial)
+                
+                List {
+                    ForEach(characters) { character in
+                        CharacterExportRow(character: character, isSelected: selectedCharacters.contains(character.id))
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                withAnimation {
+                                    if selectedCharacters.contains(character.id) {
+                                        selectedCharacters.remove(character.id)
+                                    } else {
+                                        selectedCharacters.insert(character.id)
+                                    }
+                                }
+                            }
+                    }
+                }
+                .listStyle(.plain)
+                
+                // Action Bar
+                if !selectedCharacters.isEmpty {
+                    HStack(spacing: 20) {
+                        Button(action: copyToClipboard) {
+                            Label("Copy", systemImage: "doc.on.doc")
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button(action: shareCharacters) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .font(.system(.body, design: .rounded).weight(.medium))
+                    .foregroundColor(.accentColor)
+                    .padding(.vertical, 16)
+                    .frame(maxWidth: .infinity)
+                    .background(.thinMaterial)
                 }
             }
-            .environment(\.editMode, .constant(.active))
             .navigationTitle("Export Characters")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -42,51 +115,30 @@ struct CharacterExportView: View {
                         dismiss()
                     }
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: selectAll) {
-                            Label("Select All", systemImage: "checkmark.circle")
-                        }
-                        Button(action: deselectAll) {
-                            Label("Deselect All", systemImage: "circle")
-                        }
-                        Divider()
-                        Button(action: copyToClipboard) {
-                            Label("Copy to Clipboard", systemImage: "doc.on.doc")
-                        }
-                        Button(action: shareCharacters) {
-                            Label("Share...", systemImage: "square.and.arrow.up")
-                        }
-                    } label: {
-                        if selectedCharacters.isEmpty {
-                            Text("Actions")
-                        } else {
-                            Text("Export (\(selectedCharacters.count))")
-                        }
-                    }
-                    .disabled(selectedCharacters.isEmpty)
-                }
             }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(alertMessage)
-            }
+        }
+        .alert(alertTitle, isPresented: $showingAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(alertMessage)
         }
     }
     
     private func selectAll() {
-        selectedCharacters = Set(characters.map { $0.id })
+        withAnimation {
+            selectedCharacters = Set(characters.map { $0.id })
+        }
     }
     
     private func deselectAll() {
-        selectedCharacters.removeAll()
+        withAnimation {
+            selectedCharacters = []
+        }
     }
     
     private func copyToClipboard() {
         UIPasteboard.general.string = characterData
-        showAlert(title: "Success", message: "Character data copied to clipboard!")
+        showAlert(title: "Copied!", message: "\(selectedCharacters.count) characters copied to clipboard")
     }
     
     private func shareCharacters() {
@@ -111,9 +163,14 @@ struct CharacterExportView: View {
 
 struct CharacterExportRow: View {
     let character: PlayerCharacter
+    let isSelected: Bool
     
     var body: some View {
         HStack(spacing: 12) {
+            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 22))
+                .foregroundColor(isSelected ? .accentColor : .secondary)
+            
             CharacterClassIcon(characterClass: character.characterClass)
                 .frame(width: 40, height: 40)
             
@@ -127,6 +184,7 @@ struct CharacterExportRow: View {
             }
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
 
