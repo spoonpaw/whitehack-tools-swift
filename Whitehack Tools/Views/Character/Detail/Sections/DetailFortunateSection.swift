@@ -29,7 +29,8 @@ struct DetailFortunateSection: View {
                     Text("The Fortunate")
                         .font(.headline)
                 } icon: {
-                    Image(systemName: "crown.fill")
+                    Ph.crown.bold
+                        .frame(width: 20, height: 20)
                         .foregroundColor(.orange)
                 }
             }
@@ -42,7 +43,8 @@ private struct ClassOverviewCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "crown.fill")
+                Ph.crown.bold
+                    .frame(width: 20, height: 20)
                     .foregroundColor(.orange)
                 Text("Class Overview")
                     .font(.headline)
@@ -61,14 +63,14 @@ private struct ClassOverviewCard: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 FeatureRow(
-                    icon: "shield.fill",
-                    color: .blue,
+                    icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16)),
+                    color: Color.blue,
                     title: "Combat Proficiency",
                     description: "Can use any weapon or armor without penalty."
                 )
                 FeatureRow(
-                    icon: "person.2.fill",
-                    color: .green,
+                    icon: AnyView(Ph.users.bold.frame(width: 16, height: 16)),
+                    color: Color.green,
                     title: "Social Advantages",
                     description: "+4 to charisma for retainer morale, +2 on reaction rolls, +6 on reputation rolls."
                 )
@@ -89,7 +91,8 @@ private struct FortunePowerCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "star.circle.fill")
+                Ph.star.bold
+                    .frame(width: 20, height: 20)
                     .foregroundColor(.yellow)
                 Text("Fortune Power")
                     .font(.headline)
@@ -112,7 +115,8 @@ private struct FortunePowerCard: View {
                 .frame(maxWidth: .infinity)
 
             HStack {
-                Image(systemName: hasUsedFortune ? "xmark.circle.fill" : "checkmark.circle.fill")
+                Ph.check.bold
+                    .frame(width: 16, height: 16)
                     .foregroundColor(hasUsedFortune ? .red : .green)
                 Text(hasUsedFortune ? "Fortune power has been used this session" : "Fortune power is available")
                     .foregroundColor(hasUsedFortune ? .red : .green)
@@ -136,7 +140,8 @@ private struct StandingCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "building.columns.fill")
+                Ph.buildings.bold
+                    .frame(width: 20, height: 20)
                     .foregroundColor(.purple)
                 Text("Standing")
                     .font(.headline)
@@ -156,17 +161,17 @@ private struct StandingCard: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     BenefitRow(
-                        icon: "person.3.fill",
+                        icon: AnyView(Ph.users.bold.frame(width: 16, height: 16)),
                         title: "Faction Relations",
                         description: "Affiliated factions are considerably more helpful, and their enemies more vengeful. Others may distance themselves or show interest."
                     )
                     BenefitRow(
-                        icon: "hare.fill",
+                        icon: AnyView(Ph.horse.bold.frame(width: 16, height: 16)),
                         title: "Species Benefits",
                         description: "Your species gives any applicable benefits regardless of attribute."
                     )
                     BenefitRow(
-                        icon: "plus.circle.fill",
+                        icon: AnyView(Ph.plusCircle.bold.frame(width: 16, height: 16)),
                         title: "Task Bonus",
                         description: "If standing and vocation align for a task, and the vocation is marked next to the applicable attribute, you get a +6 bonus."
                     )
@@ -193,7 +198,8 @@ private struct SignatureObjectCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "seal.fill")
+                Ph.seal.bold
+                    .frame(width: 20, height: 20)
                     .foregroundColor(.orange)
                 Text("Signature Object")
                     .font(.headline)
@@ -238,18 +244,20 @@ private struct RetainersCard: View {
                         Text("Retainers")
                             .font(.headline)
                     } icon: {
-                        Image(systemName: "person.2.fill")
+                        Ph.users.bold
+                            .frame(width: 20, height: 20)
                             .foregroundColor(.blue)
                     }
                     
                     Spacer()
                     
                     HStack(spacing: 4) {
-                        Image(systemName: "person.crop.circle.badge.plus")
-                            .foregroundColor(.secondary)
+                        Ph.userPlus.bold
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(Color.secondary)
                         Text("\(retainers.count)/\(availableSlots)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(Color.secondary)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -263,14 +271,29 @@ private struct RetainersCard: View {
                     .padding(.horizontal, 4)
             }
             
-            if availableSlots == 0 {
+            if retainers.isEmpty {
+                // No retainers message
+                HStack {
+                    Ph.warningCircle.bold
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.secondary)
+                    Text("No retainers")
+                        .font(.subheadline)
+                        .foregroundColor(Color.secondary)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+            } else if availableSlots == 0 {
                 // No slots available message
                 HStack {
-                    Image(systemName: "exclamationmark.circle")
-                        .foregroundColor(.secondary)
+                    Ph.warningCircle.bold
+                        .frame(width: 16, height: 16)
+                        .foregroundColor(Color.secondary)
                     Text("No retainer slots available at current level")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(Color.secondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -319,24 +342,35 @@ private struct RetainerDetailView: View {
     }
     
     private var emptySlotView: some View {
-        HStack {
-            Image(systemName: "person.crop.circle.badge.plus")
-                .font(.title2)
-                .foregroundColor(.secondary)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Empty Slot \(slotNumber)")
-                    .font(.headline)
-                Text("Tap to add a new retainer")
-                    .font(.caption)
+        Button {
+            // addRetainer()
+        } label: {
+            HStack {
+                Ph.userPlus.bold
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(Color.secondary)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Empty Slot \(slotNumber)")
+                        .font(.headline)
+                    Text("Add a retainer")
+                        .font(.subheadline)
+                        .foregroundColor(Color.secondary)
+                }
+                
+                Spacer()
+                
+                Ph.caretRight.bold
+                    .frame(width: 16, height: 16)
                     .foregroundColor(.secondary)
             }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            .padding()
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color(.systemGray4), lineWidth: 1)
+            )
         }
     }
     
@@ -349,7 +383,8 @@ private struct RetainerDetailView: View {
                         Text(retainer.name)
                             .font(.headline)
                     } icon: {
-                        Image(systemName: "person.circle.fill")
+                        Ph.user.bold
+                            .frame(width: 20, height: 20)
                             .foregroundColor(.blue)
                     }
                     
@@ -381,14 +416,27 @@ private struct RetainerDetailView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 } icon: {
-                    Image(systemName: "shield.fill")
+                    Ph.shield.bold
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.red)
                 }
                 
                 HStack(spacing: 12) {
-                    StatBadge(label: "HD", value: "\(retainer.hitDice)", icon: "dice.fill")
-                    StatBadge(label: "DF", value: "\(retainer.defenseFactor)", icon: "shield.lefthalf.filled")
-                    StatBadge(label: "MV", value: "\(retainer.movement)", icon: "figure.walk")
+                    StatBadge(
+                        label: "HD",
+                        value: "\(retainer.hitDice)",
+                        icon: AnyView(Ph.diceFive.bold.frame(width: 16, height: 16))
+                    )
+                    StatBadge(
+                        label: "DF",
+                        value: "\(retainer.defenseFactor)",
+                        icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16))
+                    )
+                    StatBadge(
+                        label: "MV",
+                        value: "\(retainer.movement)",
+                        icon: AnyView(Ph.personSimpleRun.bold.frame(width: 16, height: 16))
+                    )
                 }
             }
             
@@ -399,7 +447,8 @@ private struct RetainerDetailView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 } icon: {
-                    Image(systemName: "heart.fill")
+                    Ph.heart.bold
+                        .frame(width: 16, height: 16)
                         .foregroundColor(.red)
                 }
                 
@@ -415,7 +464,8 @@ private struct RetainerDetailView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     } icon: {
-                        Image(systemName: "text.word.spacing")
+                        Ph.tag.bold
+                            .frame(width: 16, height: 16)
                             .foregroundColor(.purple)
                     }
                     
@@ -443,7 +493,8 @@ private struct RetainerDetailView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     } icon: {
-                        Image(systemName: "note.text")
+                        Ph.note.bold
+                            .frame(width: 16, height: 16)
                             .foregroundColor(.green)
                     }
                     
@@ -459,13 +510,12 @@ private struct RetainerDetailView: View {
 private struct StatBadge: View {
     let label: String
     let value: String
-    let icon: String
-    
+    let icon: AnyView
+
     var body: some View {
         VStack(spacing: 2) {
             HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.caption2)
+                icon
                 Text(value)
                     .font(.system(.body, design: .monospaced))
             }
@@ -475,98 +525,22 @@ private struct StatBadge: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color.secondary.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-    }
-}
-
-private struct EmptyRetainerSlotView: View {
-    let slotNumber: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Retainer Slot \(slotNumber)")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            Text("Empty Slot")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .padding(12)
         .background(Color(.systemGray6))
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .frame(maxWidth: .infinity)
     }
 }
 
-private struct ExampleRetainersCard: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "lightbulb.fill")
-                    .foregroundColor(.yellow)
-                Text("Example Retainers")
-                    .font(.headline)
-            }
-            Text("""
-                These examples can be re-skinned for non-fantasy genres, a pet becoming a drone, a spirit becoming a limited AI, etc.
-
-                • Apprentice
-                • Squire
-                • Cook
-                • Butler
-                • Guardian
-                • Lover
-                • Teacher
-                • Thief
-                • Ward
-                • Relative
-                • Student
-                • Guide
-                • Medic
-                • Chronicler
-                • Fan
-                • Bodyguard
-                • Thug
-                • Aide de Camp
-                • Maid
-                • Secretary
-                • Accountant
-                • Assistant
-                • Taster
-                • Jester
-                • Priest
-                • Interpreter
-                • Librarian
-                • Pet
-                • Familiarus
-                • Spirit
-                """)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(12)
-                .background(Color.yellow.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .frame(maxWidth: .infinity)
-        }
-        .padding(.top, 12)
-        .frame(maxWidth: .infinity)
-    }
-}
-
-// MARK: - Supporting Views
 private struct FeatureRow: View {
-    let icon: String
+    let icon: AnyView
     let color: Color
     let title: String
     let description: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .font(.system(size: 16))
+            icon
                 .frame(width: 16)
+                .foregroundColor(color)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
@@ -575,24 +549,21 @@ private struct FeatureRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 4)
         .frame(maxWidth: .infinity)
     }
 }
 
 private struct BenefitRow: View {
-    let icon: String
+    let icon: AnyView
     let title: String
     let description: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(.purple)
-                .font(.system(size: 16))
+            icon
                 .frame(width: 16)
+                .foregroundColor(.purple)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
@@ -601,9 +572,7 @@ private struct BenefitRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, 4)
         .frame(maxWidth: .infinity)
     }
 }
