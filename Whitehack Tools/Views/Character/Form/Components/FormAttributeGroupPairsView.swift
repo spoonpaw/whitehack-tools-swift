@@ -46,9 +46,7 @@ struct FormAttributeGroupPairsView: View {
                             if editingPairId == pair.id {
                                 HStack(spacing: 8) {
                                     Menu {
-                                        ForEach(attributes.filter { attribute in
-                                            !attributeGroupPairs.contains { $0.attribute == attribute && $0.id != pair.id }
-                                        }, id: \.self) { attribute in
+                                        ForEach(attributes, id: \.self) { attribute in
                                             Button(attribute) {
                                                 withAnimation(.easeInOut) {
                                                     tempAttribute = attribute
@@ -163,9 +161,7 @@ struct FormAttributeGroupPairsView: View {
             if isAddingAttributeGroup {
                 VStack(alignment: .leading, spacing: 12) {
                     Menu {
-                        ForEach(attributes.filter { attribute in
-                            !attributeGroupPairs.contains { $0.attribute == attribute }
-                        }, id: \.self) { attribute in
+                        ForEach(attributes, id: \.self) { attribute in
                             Button(attribute) {
                                 withAnimation(.easeInOut) {
                                     selectedAttribute = attribute
