@@ -252,9 +252,6 @@ private struct RetainersCard: View {
                     Spacer()
                     
                     HStack(spacing: 4) {
-                        Ph.userPlus.bold
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(Color.secondary)
                         Text("\(retainers.count)/\(availableSlots)")
                             .font(.subheadline)
                             .foregroundColor(Color.secondary)
@@ -346,7 +343,7 @@ private struct RetainerDetailView: View {
             // addRetainer()
         } label: {
             HStack {
-                Ph.userPlus.bold
+                Ph.warningCircle.bold
                     .frame(width: 16, height: 16)
                     .foregroundColor(Color.secondary)
                 
@@ -359,10 +356,6 @@ private struct RetainerDetailView: View {
                 }
                 
                 Spacer()
-                
-                Ph.caretRight.bold
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(.secondary)
             }
             .padding()
             .background(Color(.systemBackground))
