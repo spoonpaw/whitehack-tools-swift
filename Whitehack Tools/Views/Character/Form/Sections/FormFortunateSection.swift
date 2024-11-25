@@ -168,7 +168,7 @@ struct FormFortunateSection: View {
                 
                 // Show retainer forms
                 ForEach(Array(displayedRetainers.enumerated()), id: \.element.id) { index, retainer in
-                    FormFortunateRetainerFormView(retainer: binding(for: index))
+                    FormFortunateRetainerFormView(retainer: binding(for: index), slotNumber: index + 1)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -209,6 +209,7 @@ struct FormFortunateSection: View {
 // MARK: - Retainer Form View
 struct FormFortunateRetainerFormView: View {
     @Binding var retainer: Retainer
+    let slotNumber: Int
     @State private var isAddingKeyword = false
     @State private var editingKeywordIndex: Int? = nil
     @State private var tempKeywordText = ""
@@ -219,22 +220,17 @@ struct FormFortunateRetainerFormView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(retainer.name.isEmpty ? "Unnamed Retainer" : retainer.name)
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    Text(retainer.type.isEmpty ? "Type Undefined" : retainer.type)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    Image(systemName: "person.fill")
+                        .font(.headline)
+                        .foregroundColor(.purple)
+                    Text("Retainer #\(slotNumber)")
+                        .font(.headline)
+                        .foregroundColor(.primary)
                 }
                 Spacer()
-                Image(systemName: "person.fill")
-                    .font(.title2)
-                    .foregroundColor(.purple)
             }
             .padding()
-            
-            Divider()
             
             // Content
             VStack(spacing: 20) {
