@@ -285,7 +285,7 @@ private class FormData: ObservableObject {
     @Published var charisma = "10"
     
     @Published var currentHP = "1"
-    @Published var maxHP = "0"
+    @Published var maxHP = "1"
     @Published var defenseValue = "0"
     @Published var movement = "30"
     @Published var saveColor = ""
