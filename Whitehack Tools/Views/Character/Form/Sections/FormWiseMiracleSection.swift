@@ -8,12 +8,17 @@ struct FormWiseMiracleSection: View {
     @Environment(\.colorScheme) var colorScheme
     
     private var extraInactiveMiracles: Int {
-        guard level == 1 else { return 0 }
-        if willpower >= 16 {
+        print("[WISEFORM] Calculating extra inactive miracles...")
+        let willpowerValue = Int(willpower) ?? 0
+        print("[WISEFORM] Willpower value: \(willpowerValue)")
+        if willpowerValue >= 16 {
+            print("[WISEFORM] Willpower >= 16, adding 2 extra miracles")
             return 2
-        } else if willpower >= 13 {
+        } else if willpowerValue >= 14 {
+            print("[WISEFORM] Willpower >= 14, adding 1 extra miracle")
             return 1
         }
+        print("[WISEFORM] Willpower < 14, no extra miracles")
         return 0
     }
     
@@ -67,18 +72,7 @@ struct FormWiseMiracleSection: View {
                         .foregroundColor(.yellow)
                 }
             } footer: {
-                if level == 1 {
-                    Text("Level 1 slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } else if level == 3 {
-                    Text("Level 3 slot can hold a magic item instead of miracles")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .onAppear {
-                initializeSlotsIfNeeded()
+                Text("Level \(level) slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))")
             }
         }
     }
@@ -206,7 +200,7 @@ struct FormWiseMiracleSection: View {
                 }) {
                     // If activating, deactivate ALL other miracles in this slot (both base and additional)
                     if newValue.isActive {
-                        print("🎯 Deactivating all miracles in slot \(index)")
+                        print("[WISEFORM] Deactivating all miracles in slot \(index)")
                         
                         // Deactivate base miracles
                         for mIndex in miracleSlots[index].baseMiracles.indices {
@@ -241,79 +235,96 @@ struct FormWiseMiracleSection: View {
     }
     
     private func updateMiracleCount(index: Int) {
-        // Calculate base miracle count (2 + any extra from willpower)
-        let baseMiracleCount = 2 + extraInactiveMiracles
+        print("\n[WISEFORM] Updating miracle count for slot \(index)...")
+        
+        // Only slot 0 gets extra miracles from willpower
+        let baseMiracleCount = index == 0 ? (2 + extraInactiveMiracles) : 2
+        print("[WISEFORM] Slot \(index) should have \(baseMiracleCount) base miracles")
+        print("[WISEFORM] Current base miracles: \(miracleSlots[index].baseMiracles.count)")
         
         // Handle base miracles
         while miracleSlots[index].baseMiracles.count < baseMiracleCount {
+            print("[WISEFORM] Adding base miracle to slot \(index)")
             miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
         }
         if miracleSlots[index].baseMiracles.count > baseMiracleCount {
+            print("[WISEFORM] Removing excess base miracles from slot \(index)")
             miracleSlots[index].baseMiracles = Array(miracleSlots[index].baseMiracles.prefix(baseMiracleCount))
         }
         
         // Handle additional miracles
         let totalAdditionalNeeded = miracleSlots[index].additionalMiracleCount
+        print("[WISEFORM] Slot \(index) needs \(totalAdditionalNeeded) additional miracles")
+        print("[WISEFORM] Current additional miracles: \(miracleSlots[index].additionalMiracles.count)")
+        
         if miracleSlots[index].additionalMiracles.count < totalAdditionalNeeded {
             let needToAdd = totalAdditionalNeeded - miracleSlots[index].additionalMiracles.count
+            print("[WISEFORM] Adding \(needToAdd) additional miracles to slot \(index)")
             for _ in 0..<needToAdd {
                 miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
             }
         } else if miracleSlots[index].additionalMiracles.count > totalAdditionalNeeded {
+            print("[WISEFORM] Removing excess additional miracles from slot \(index)")
             miracleSlots[index].additionalMiracles = Array(miracleSlots[index].additionalMiracles.prefix(totalAdditionalNeeded))
         }
-    }
-    
-    private func ensureMiracleExists(index: Int, miracleIndex: Int, isAdditional: Bool) {
-        if isAdditional {
-            while miracleSlots[index].additionalMiracles.count <= miracleIndex {
-                miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
-            }
-        } else {
-            while miracleSlots[index].baseMiracles.count <= miracleIndex {
-                miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
-            }
-        }
+        
+        print("[WISEFORM] Final counts for slot \(index):")
+        print("  - Base miracles: \(miracleSlots[index].baseMiracles.count)")
+        print("  - Additional miracles: \(miracleSlots[index].additionalMiracles.count)")
     }
     
     private func initializeSlotsIfNeeded() {
+        print("\n[WISEFORM] Initializing miracle slots...")
+        print("[WISEFORM] Current slot count: \(miracleSlots.count)")
+        
         if miracleSlots.isEmpty {
+            print("[WISEFORM] Creating initial 3 miracle slots")
             miracleSlots = Array(repeating: WiseMiracleSlot(), count: 3)
         }
         
         while miracleSlots.count < 3 {
+            print("[WISEFORM] Adding missing miracle slot")
             miracleSlots.append(WiseMiracleSlot())
         }
         while miracleSlots.count > 3 {
+            print("[WISEFORM] Removing excess miracle slot")
             miracleSlots.removeLast()
         }
         
+        print("[WISEFORM] Initializing each slot...")
         for index in miracleSlots.indices {
-            let baseMiracleCount = 2 + extraInactiveMiracles
+            print("\n[WISEFORM] Initializing slot \(index):")
+            let baseMiracleCount = index == 0 ? (2 + extraInactiveMiracles) : 2
+            print("[WISEFORM] Slot \(index) should have \(baseMiracleCount) base miracles")
+            print("[WISEFORM] Current base miracles: \(miracleSlots[index].baseMiracles.count)")
+            
             while miracleSlots[index].baseMiracles.count < baseMiracleCount {
+                print("[WISEFORM] Adding base miracle to slot \(index)")
                 miracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
             }
             if miracleSlots[index].baseMiracles.count > baseMiracleCount {
+                print("[WISEFORM] Removing excess base miracles from slot \(index)")
                 miracleSlots[index].baseMiracles = Array(miracleSlots[index].baseMiracles.prefix(baseMiracleCount))
             }
             
             let totalAdditionalNeeded = miracleSlots[index].additionalMiracleCount
+            print("[WISEFORM] Slot \(index) needs \(totalAdditionalNeeded) additional miracles")
+            print("[WISEFORM] Current additional miracles: \(miracleSlots[index].additionalMiracles.count)")
+            
             if miracleSlots[index].additionalMiracles.count < totalAdditionalNeeded {
                 let needToAdd = totalAdditionalNeeded - miracleSlots[index].additionalMiracles.count
+                print("[WISEFORM] Adding \(needToAdd) additional miracles to slot \(index)")
                 for _ in 0..<needToAdd {
                     miracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
                 }
             } else if miracleSlots[index].additionalMiracles.count > totalAdditionalNeeded {
+                print("[WISEFORM] Removing excess additional miracles from slot \(index)")
                 miracleSlots[index].additionalMiracles = Array(miracleSlots[index].additionalMiracles.prefix(totalAdditionalNeeded))
             }
-        }
-    }
-    
-    private func addMiracle(to slot: Int, isAdditional: Bool = false) {
-        if isAdditional {
-            miracleSlots[slot].additionalMiracles.append(WiseMiracle(isAdditional: true))
-        } else {
-            miracleSlots[slot].baseMiracles.append(WiseMiracle(isAdditional: false))
+            
+            print("[WISEFORM] Final counts for slot \(index):")
+            print("  - Base miracles: \(miracleSlots[index].baseMiracles.count)")
+            print("  - Additional miracles: \(miracleSlots[index].additionalMiracles.count)")
         }
     }
 }

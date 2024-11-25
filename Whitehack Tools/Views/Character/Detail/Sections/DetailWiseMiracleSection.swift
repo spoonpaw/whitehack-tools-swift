@@ -7,17 +7,101 @@ struct DetailWiseMiracleSection: View {
     @Environment(\.colorScheme) var colorScheme
     
     private var extraInactiveMiracles: Int {
-        guard character.characterClass == .wise && character.level == 1 else { return 0 }
+        print("\n[WISEDETAIL] Calculating extra inactive miracles...")
+        print("[WISEDETAIL] Willpower value: \(character.willpower)")
         if character.willpower >= 16 {
+            print("[WISEDETAIL] Willpower >= 16, adding 2 extra miracles")
             return 2
-        } else if character.willpower >= 13 {
+        } else if character.willpower >= 14 {
+            print("[WISEDETAIL] Willpower >= 14, adding 1 extra miracle")
             return 1
         }
+        print("[WISEDETAIL] Willpower < 14, no extra miracles")
         return 0
     }
     
     private var availableSlots: Int {
-        AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots
+        print("[WISEDETAIL] Calculating available slots...")
+        print("[WISEDETAIL] Available slots: \(AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots)")
+        return AdvancementTables.shared.stats(for: character.characterClass, at: character.level).slots
+    }
+    
+    private func initializeSlots() {
+        print("\n[WISEDETAIL] Initializing miracle slots...")
+        
+        // Get number of slots from advancement table
+        let slots = availableSlots
+        print("[WISEDETAIL] Available slots: \(slots)")
+        
+        // Initialize slots if needed
+        while character.wiseMiracleSlots.count < slots {
+            character.wiseMiracleSlots.append(WiseMiracleSlot())
+        }
+        
+        // Update each slot
+        for index in 0..<slots {
+            print("\n[WISEDETAIL] Updating slot \(index)...")
+            
+            // Only slot 0 gets extra miracles from willpower
+            let baseMiracleCount = index == 0 ? (2 + extraInactiveMiracles) : 2
+            print("[WISEDETAIL] Slot \(index) should have \(baseMiracleCount) base miracles")
+            
+            // Update base miracles
+            while character.wiseMiracleSlots[index].baseMiracles.count < baseMiracleCount {
+                character.wiseMiracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
+            }
+            while character.wiseMiracleSlots[index].baseMiracles.count > baseMiracleCount {
+                character.wiseMiracleSlots[index].baseMiracles.removeLast()
+            }
+            
+            // Update additional miracles for slot 0 only
+            if index == 0 {
+                let additionalCount = character.wiseMiracleSlots[index].additionalMiracleCount
+                print("[WISEDETAIL] Slot 0 should have \(additionalCount) additional miracles")
+                
+                while character.wiseMiracleSlots[index].additionalMiracles.count < additionalCount {
+                    character.wiseMiracleSlots[index].additionalMiracles.append(WiseMiracle(isAdditional: true))
+                }
+                while character.wiseMiracleSlots[index].additionalMiracles.count > additionalCount {
+                    character.wiseMiracleSlots[index].additionalMiracles.removeLast()
+                }
+            } else {
+                // Clear any additional miracles from other slots
+                if !character.wiseMiracleSlots[index].additionalMiracles.isEmpty {
+                    print("[WISEDETAIL] Clearing additional miracles from slot \(index)")
+                    character.wiseMiracleSlots[index].additionalMiracles.removeAll()
+                }
+            }
+            
+            print("[WISEDETAIL] Slot \(index) final counts:")
+            print("  Base miracles: \(character.wiseMiracleSlots[index].baseMiracles.count)")
+            print("  Additional miracles: \(character.wiseMiracleSlots[index].additionalMiracles.count)")
+        }
+    }
+    
+    private func logMiracleStructure() {
+        print("\n[WISEDETAIL] Full Miracle Structure:")
+        print("Character Class: \(character.characterClass)")
+        print("Character Level: \(character.level)")
+        print("Character Willpower: \(character.willpower)")
+        print("Available Slots: \(availableSlots)")
+        print("Extra Inactive Miracles: \(extraInactiveMiracles)")
+        
+        for (index, slot) in character.wiseMiracleSlots.prefix(availableSlots).enumerated() {
+            print("\nSlot \(index):")
+            print("  Base Miracles (\(slot.baseMiracles.count)):")
+            for (i, miracle) in slot.baseMiracles.enumerated() {
+                print("    \(i): \(miracle.name) (Active: \(miracle.isActive))")
+            }
+            print("  Additional Miracles (\(slot.additionalMiracles.count)):")
+            for (i, miracle) in slot.additionalMiracles.enumerated() {
+                print("    \(i): \(miracle.name) (Active: \(miracle.isActive))")
+            }
+            if slot.isMagicItem {
+                print("  Magic Item: \(slot.magicItemName)")
+            }
+        }
+        print("\n")
     }
     
     var body: some View {
@@ -30,6 +114,17 @@ struct DetailWiseMiracleSection: View {
                     CostModifiersCard()
                     HPCostReferenceCard()
                     
+                    Text("Miracles")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .padding(.top, 8)
+                        .onAppear {
+                            initializeSlots()
+                            logMiracleStructure()
+                        }
+                    
+                    let _ = initializeSlots() // Force initialization before ForEach
                     ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
                         MiracleSlotCard(
                             index: index,
@@ -37,6 +132,12 @@ struct DetailWiseMiracleSection: View {
                             extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
                             colorScheme: colorScheme
                         )
+                        .onAppear {
+                            print("\n[WISEDETAIL] Slot \(index) appeared")
+                            print("[WISEDETAIL] Base miracles: \(slot.baseMiracles.count)")
+                            print("[WISEDETAIL] Additional miracles: \(slot.additionalMiracles.count)")
+                            print("[WISEDETAIL] Extra inactive miracles for this slot: \(index == 0 ? extraInactiveMiracles : 0)")
+                        }
                     }
                 }
                 .padding(.vertical)
@@ -441,6 +542,7 @@ private struct MiracleSlotCard: View {
                 Text("No miracle assigned")
                     .font(.caption2)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             
             Spacer()
