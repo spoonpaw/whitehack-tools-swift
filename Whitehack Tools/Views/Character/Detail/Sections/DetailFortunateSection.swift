@@ -357,7 +357,8 @@ private struct RetainerDetailView: View {
                         Text(retainer.type)
                             .font(.subheadline)
                     } icon: {
-                        Image(systemName: "tag.fill")
+                        Ph.users.bold
+                            .frame(width: 16, height: 16)
                             .foregroundColor(.orange)
                     }
                 }
@@ -418,15 +419,18 @@ private struct RetainerDetailView: View {
                             .foregroundColor(.purple)
                     }
                     
-                    HStack(spacing: 4) {
-                        ForEach(retainer.keywords, id: \.self) { keyword in
-                            Text(keyword)
-                                .font(.callout)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.purple.opacity(0.1))
-                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(retainer.keywords, id: \.self) { keyword in
+                                Text(keyword)
+                                    .font(.callout)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.purple.opacity(0.1))
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                            }
                         }
+                        .padding(.horizontal, 4)
                     }
                 }
             }
