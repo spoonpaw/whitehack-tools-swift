@@ -17,6 +17,8 @@
 		A93E17302CF20A88007114C7 /* DetailFortunateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E172F2CF20A88007114C7 /* DetailFortunateSection.swift */; };
 		A93E17322CF20A99007114C7 /* FormFortunateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E17312CF20A99007114C7 /* FormFortunateSection.swift */; };
 		A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A959EC782CF1A99E0051DCEC /* PhosphorSwift */; };
+		A9807D0C2CF416210082D624 /* CharacterExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9807D092CF416210082D624 /* CharacterExportView.swift */; };
+		A9807D0D2CF416210082D624 /* CharacterImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9807D0B2CF416210082D624 /* CharacterImportView.swift */; };
 		A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */; };
 		A98488E62CF157E500A7CD7B /* ProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98488E52CF157E500A7CD7B /* ProgressBar.swift */; };
 		A98489102CF1671F00A7CD7B /* FormBasicInfoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A98489082CF1671D00A7CD7B /* FormBasicInfoSection.swift */; };
@@ -69,6 +71,8 @@
 		A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormCleverKnacksSection.swift; sourceTree = "<group>"; };
 		A93E172F2CF20A88007114C7 /* DetailFortunateSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailFortunateSection.swift; sourceTree = "<group>"; };
 		A93E17312CF20A99007114C7 /* FormFortunateSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormFortunateSection.swift; sourceTree = "<group>"; };
+		A9807D092CF416210082D624 /* CharacterExportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterExportView.swift; sourceTree = "<group>"; };
+		A9807D0B2CF416210082D624 /* CharacterImportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterImportView.swift; sourceTree = "<group>"; };
 		A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancementTables.swift; sourceTree = "<group>"; };
 		A98488E52CF157E500A7CD7B /* ProgressBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressBar.swift; sourceTree = "<group>"; };
 		A98489082CF1671D00A7CD7B /* FormBasicInfoSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormBasicInfoSection.swift; sourceTree = "<group>"; };
@@ -125,6 +129,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A9807D082CF416210082D624 /* Export */ = {
+			isa = PBXGroup;
+			children = (
+				A9807D092CF416210082D624 /* CharacterExportView.swift */,
+			);
+			path = Export;
+			sourceTree = "<group>";
+		};
+		A9807D0A2CF416210082D624 /* Import */ = {
+			isa = PBXGroup;
+			children = (
+				A9807D0B2CF416210082D624 /* CharacterImportView.swift */,
+			);
+			path = Import;
+			sourceTree = "<group>";
+		};
 		A98488F42CF160D000A7CD7B /* Detail */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +223,8 @@
 		A99CAAB62CE85A65004163DA /* Character */ = {
 			isa = PBXGroup;
 			children = (
+				A9807D082CF416210082D624 /* Export */,
+				A9807D0A2CF416210082D624 /* Import */,
 				A98488F42CF160D000A7CD7B /* Detail */,
 				A99CAABA2CE85B9A004163DA /* Form */,
 				A9F072AE2CE7597B005033F2 /* CharacterListView.swift */,
@@ -408,6 +430,8 @@
 				A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */,
 				A93E17222CF1F068007114C7 /* FormWiseMiracleSection.swift in Sources */,
 				A93E17242CF1FA29007114C7 /* DetailBraveQuirksSection.swift in Sources */,
+				A9807D0C2CF416210082D624 /* CharacterExportView.swift in Sources */,
+				A9807D0D2CF416210082D624 /* CharacterImportView.swift in Sources */,
 				A9F072B92CE75AE4005033F2 /* CharacterDetailView.swift in Sources */,
 				A9F072B72CE75ABE005033F2 /* WhitehackTypes.swift in Sources */,
 				A98489282CF1673000A7CD7B /* DetailHeaderSection.swift in Sources */,

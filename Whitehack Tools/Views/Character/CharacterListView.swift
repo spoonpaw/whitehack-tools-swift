@@ -2,8 +2,12 @@ import SwiftUI
 import PhosphorSwift
 
 struct CharacterListView: View {
-    @StateObject private var characterStore = CharacterStore()
+    @EnvironmentObject private var characterStore: CharacterStore
     @State private var showingAddSheet = false
+    @State private var showingImportSheet = false
+    @State private var showingExportSheet = false
+    @State private var showingDeleteConfirmation = false
+    @State private var characterToDelete: IndexSet?
     
     var body: some View {
         NavigationView {
@@ -20,19 +24,65 @@ struct CharacterListView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            characterToDelete = IndexSet([characterStore.characters.firstIndex(where: { $0.id == character.id })!])
+                            showingDeleteConfirmation = true
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
                 .onDelete(perform: characterStore.deleteCharacter)
             }
             .navigationTitle("Characters")
             .toolbar {
-                Button(action: { showingAddSheet = true }) {
-                    Label("Add Character", systemImage: "plus")
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack(spacing: 16) {
+                        Button(action: { showingImportSheet = true }) {
+                            HStack {
+                                Ph.arrowDown.bold
+                                    .frame(width: 16, height: 16)
+                                Text("Import")
+                            }
+                        }
+                        
+                        Button(action: { showingExportSheet = true }) {
+                            HStack {
+                                Ph.arrowUp.bold
+                                    .frame(width: 16, height: 16)
+                                Text("Export")
+                            }
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingAddSheet = true }) {
+                        Label("Add Character", systemImage: "plus")
+                    }
                 }
             }
             .sheet(isPresented: $showingAddSheet) {
                 NavigationView {
                     CharacterFormView(characterStore: characterStore)
                 }
+            }
+            .sheet(isPresented: $showingImportSheet) {
+                CharacterImportView(characterStore: characterStore)
+            }
+            .sheet(isPresented: $showingExportSheet) {
+                CharacterExportView(characters: characterStore.characters)
+            }
+            .alert("Delete Character?", isPresented: $showingDeleteConfirmation) {
+                Button("Delete", role: .destructive) {
+                    if let indexSet = characterToDelete {
+                        characterStore.deleteCharacter(at: indexSet)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This action cannot be undone.")
             }
         }
     }
@@ -77,77 +127,74 @@ struct CharacterRowView: View {
     }
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Class Icon Circle
-            ZStack {
-                Circle()
-                    .fill(classColor.opacity(0.15))
-                    .frame(width: 50, height: 50)
-                
-                classIcon
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundColor(classColor)
-                    .frame(width: 24, height: 24)
-            }
-            
-            // Character Info
-            VStack(alignment: .leading, spacing: 4) {
-                Text(character.name)
-                    .font(.headline)
-                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                
-                HStack(spacing: 8) {
-                    // Class Badge
-                    Text(character.characterClass.rawValue)
-                        .font(.caption.bold())
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(classColor.opacity(0.15))
-                        .foregroundColor(classColor)
-                        .clipShape(Capsule())
+        VStack {
+            HStack(spacing: 16) {
+                // Class Icon Circle
+                ZStack {
+                    Circle()
+                        .fill(classColor.opacity(0.15))
+                        .frame(width: 50, height: 50)
                     
-                    // Level Badge
-                    Text("Level \(character.level)")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.secondary.opacity(0.15))
-                        .clipShape(Capsule())
+                    classIcon
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(classColor)
+                        .frame(width: 24, height: 24)
                 }
                 
-                if let species = character.speciesGroup {
-                    HStack(spacing: 4) {
-                        Ph.dna.bold
-                            .frame(width: 12, height: 12)
-                            .foregroundColor(.secondary)
-                        Text(species)
+                // Character Info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(character.name)
+                        .font(.headline)
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                    
+                    HStack(spacing: 8) {
+                        // Class Badge
+                        Text(character.characterClass.rawValue)
+                            .font(.caption.bold())
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(classColor.opacity(0.15))
+                            .foregroundColor(classColor)
+                            .clipShape(Capsule())
+                        
+                        // Level Badge
+                        Text("Level \(character.level)")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.secondary.opacity(0.15))
+                            .clipShape(Capsule())
+                    }
+                    
+                    if let species = character.speciesGroup {
+                        HStack(spacing: 4) {
+                            Ph.dna.bold
+                                .frame(width: 12, height: 12)
+                                .foregroundColor(.secondary)
+                            Text(species)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    if let vocation = character.vocationGroup {
+                        HStack(spacing: 4) {
+                            Ph.briefcase.bold
+                                .frame(width: 12, height: 12)
+                                .foregroundColor(.secondary)
+                            Text(vocation)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
                 
-                if let vocation = character.vocationGroup {
-                    HStack(spacing: 4) {
-                        Ph.briefcase.bold
-                            .frame(width: 12, height: 12)
-                            .foregroundColor(.secondary)
-                        Text(vocation)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
+                Spacer()
             }
-            
-            Spacer()
-            
-            // Arrow indicator
-            Ph.caretRight.bold
-                .frame(width: 16, height: 16)
-                .foregroundColor(.secondary.opacity(0.5))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12)
