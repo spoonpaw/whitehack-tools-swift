@@ -42,6 +42,10 @@
 		A98489302CF174F200A7CD7B /* FormVocationGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A984892C2CF174F200A7CD7B /* FormVocationGroupView.swift */; };
 		A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A984892D2CF174F200A7CD7B /* FormAttributeGroupPairsView.swift */; };
 		A98489322CF174F200A7CD7B /* FormSpeciesGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A984892E2CF174F200A7CD7B /* FormSpeciesGroupView.swift */; };
+		A988F7592CF4E1C800D879BA /* FormWeaponsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A988F7572CF4E1C800D879BA /* FormWeaponsSection.swift */; };
+		A988F75A2CF4E1C800D879BA /* FormArmorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A988F7582CF4E1C800D879BA /* FormArmorSection.swift */; };
+		A988F75D2CF4E1D500D879BA /* DetailArmorSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A988F75B2CF4E1D500D879BA /* DetailArmorSection.swift */; };
+		A988F75E2CF4E1D500D879BA /* DetailWeaponsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A988F75C2CF4E1D500D879BA /* DetailWeaponsSection.swift */; };
 		A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */; };
 		A99E17292CF18BE500B69E26 /* FormDeftAttunementSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E17282CF18BE500B69E26 /* FormDeftAttunementSection.swift */; };
 		A99E172B2CF1982D00B69E26 /* DetailDeftAttunementSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */; };
@@ -96,6 +100,10 @@
 		A984892C2CF174F200A7CD7B /* FormVocationGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormVocationGroupView.swift; sourceTree = "<group>"; };
 		A984892D2CF174F200A7CD7B /* FormAttributeGroupPairsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormAttributeGroupPairsView.swift; sourceTree = "<group>"; };
 		A984892E2CF174F200A7CD7B /* FormSpeciesGroupView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormSpeciesGroupView.swift; sourceTree = "<group>"; };
+		A988F7572CF4E1C800D879BA /* FormWeaponsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormWeaponsSection.swift; sourceTree = "<group>"; };
+		A988F7582CF4E1C800D879BA /* FormArmorSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormArmorSection.swift; sourceTree = "<group>"; };
+		A988F75B2CF4E1D500D879BA /* DetailArmorSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailArmorSection.swift; sourceTree = "<group>"; };
+		A988F75C2CF4E1D500D879BA /* DetailWeaponsSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailWeaponsSection.swift; sourceTree = "<group>"; };
 		A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeEditor.swift; sourceTree = "<group>"; };
 		A99E17282CF18BE500B69E26 /* FormDeftAttunementSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormDeftAttunementSection.swift; sourceTree = "<group>"; };
 		A99E172A2CF1982D00B69E26 /* DetailDeftAttunementSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailDeftAttunementSection.swift; sourceTree = "<group>"; };
@@ -156,6 +164,8 @@
 		A98488F52CF160D000A7CD7B /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A988F75B2CF4E1D500D879BA /* DetailArmorSection.swift */,
+				A988F75C2CF4E1D500D879BA /* DetailWeaponsSection.swift */,
 				A93E172F2CF20A88007114C7 /* DetailFortunateSection.swift */,
 				A93E172B2CF2027C007114C7 /* DetailCleverKnacksSection.swift */,
 				A93E17232CF1FA29007114C7 /* DetailBraveQuirksSection.swift */,
@@ -256,6 +266,8 @@
 		A99CAABB2CE85BAA004163DA /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A988F7582CF4E1C800D879BA /* FormArmorSection.swift */,
+				A988F7572CF4E1C800D879BA /* FormWeaponsSection.swift */,
 				A93E17312CF20A99007114C7 /* FormFortunateSection.swift */,
 				A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */,
 				A93E17252CF1FA31007114C7 /* FormBraveQuirksSection.swift */,
@@ -397,6 +409,7 @@
 				A93E17322CF20A99007114C7 /* FormFortunateSection.swift in Sources */,
 				A93E172C2CF2027C007114C7 /* DetailCleverKnacksSection.swift in Sources */,
 				A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */,
+				A988F75A2CF4E1C800D879BA /* FormArmorSection.swift in Sources */,
 				A93E171A2CF1E73B007114C7 /* FormAttributesSection.swift in Sources */,
 				A98489162CF1671F00A7CD7B /* FormEquipmentSection.swift in Sources */,
 				A99E172B2CF1982D00B69E26 /* DetailDeftAttunementSection.swift in Sources */,
@@ -432,10 +445,13 @@
 				A93E17242CF1FA29007114C7 /* DetailBraveQuirksSection.swift in Sources */,
 				A9807D0C2CF416210082D624 /* CharacterExportView.swift in Sources */,
 				A9807D0D2CF416210082D624 /* CharacterImportView.swift in Sources */,
+				A988F75E2CF4E1D500D879BA /* DetailWeaponsSection.swift in Sources */,
 				A9F072B92CE75AE4005033F2 /* CharacterDetailView.swift in Sources */,
+				A988F7592CF4E1C800D879BA /* FormWeaponsSection.swift in Sources */,
 				A9F072B72CE75ABE005033F2 /* WhitehackTypes.swift in Sources */,
 				A98489282CF1673000A7CD7B /* DetailHeaderSection.swift in Sources */,
 				A9F072B52CE75A06005033F2 /* PlayerCharacter.swift in Sources */,
+				A988F75D2CF4E1D500D879BA /* DetailArmorSection.swift in Sources */,
 				A98489322CF174F200A7CD7B /* FormSpeciesGroupView.swift in Sources */,
 				A98489292CF1673000A7CD7B /* DetailStatsSection.swift in Sources */,
 				A98489222CF1673000A7CD7B /* DetailEquipmentSection.swift in Sources */,

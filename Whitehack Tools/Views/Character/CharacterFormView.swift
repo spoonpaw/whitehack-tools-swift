@@ -29,6 +29,8 @@ struct CharacterFormView: View {
         case experience, corruption
         case selectedAttribute, newAttributeGroup
         case attunementName
+        case weaponName, weaponDamage, weaponRateOfFire, weaponCost, weaponSpecial
+        case armorName, armorCost
     }
     
     var body: some View {
@@ -68,6 +70,8 @@ struct CharacterFormView: View {
                 saveColor: $formData.saveColor,
                 focusedField: $focusedField
             )
+            FormWeaponsSection(weapons: $formData.weapons)
+            FormArmorSection(armor: $formData.armor)
             FormLanguagesSection(
                 languages: $formData.languages,
                 newLanguage: $formData.newLanguage,
@@ -203,6 +207,9 @@ struct CharacterFormView: View {
         formData.hasUsedSayNo = character.hasUsedSayNo
         formData.cleverKnackOptions = character.cleverKnackOptions
         formData.fortunateOptions = character.fortunateOptions
+        
+        formData.weapons = character.weapons
+        formData.armor = character.armor
     }
     
     private func saveCharacter() {
@@ -261,6 +268,9 @@ struct CharacterFormView: View {
         newCharacter.hasUsedSayNo = formData.hasUsedSayNo
         newCharacter.cleverKnackOptions = formData.cleverKnackOptions
         newCharacter.fortunateOptions = formData.fortunateOptions
+        
+        newCharacter.weapons = formData.weapons
+        newCharacter.armor = formData.armor
         
         if character != nil {
             characterStore.updateCharacter(newCharacter)
@@ -340,6 +350,9 @@ private class FormData: ObservableObject {
     
     // Fortunate Class Specific Properties
     @Published var fortunateOptions = FortunateOptions()
+    
+    @Published var weapons: [Weapon] = []
+    @Published var armor: [Armor] = []
     
     var name: String {
         get { _name }

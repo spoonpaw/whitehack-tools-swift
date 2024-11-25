@@ -11,6 +11,8 @@ struct CharacterDetailView: View {
             DetailHeaderSection(character: character)
             DetailStatsSection(character: character)
             DetailCombatSection(character: character)
+            DetailWeaponsSection(weapons: character.weapons)
+            DetailArmorSection(armor: character.armor, totalDefenseValue: character.totalDefenseValue)
             DetailGroupsSection(character: character)
             DetailLanguagesSection(character: character)
             DetailEquipmentSection(character: character)

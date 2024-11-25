@@ -453,6 +453,37 @@ struct FortunateOptions: Codable {
     }
 }
 
+// MARK: - Weapon Types
+enum WeaponWeight: String, Codable {
+    case none = "-"
+    case noSize = "No Size (100/slot)"
+    case minor = "Minor (2/slot)"
+    case regular = "Regular (1 slot)"
+    case heavy = "Heavy (2 slots)"
+}
+
+struct Weapon: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var damage: String       // e.g., "1d6+1"
+    var weight: WeaponWeight
+    var rateOfFire: String  // e.g., "1", "1/2", "-"
+    var cost: Int
+    var special: String     // Special properties
+    var isMagical: Bool     // For magical weapons
+    var magicalBonus: Int   // +1, +2, etc.
+}
+
+// MARK: - Armor Types
+struct Armor: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var defenseValue: Int
+    var cost: Int
+    var isMagical: Bool
+    var magicalBonus: Int
+}
+
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -569,6 +600,15 @@ class PlayerCharacter: Identifiable, Codable {
     var currentEncumbrance: Int
     var maxEncumbrance: Int
     var coins: Int
+    var weapons: [Weapon]
+    var armor: [Armor]
+    
+    var totalDefenseValue: Int {
+        let baseDF = armor.reduce(0) { total, armor in
+            total + armor.defenseValue + (armor.isMagical ? armor.magicalBonus : 0)
+        }
+        return baseDF
+    }
     
     // MARK: - Deft Attunement Methods
     
@@ -671,6 +711,8 @@ class PlayerCharacter: Identifiable, Codable {
         currentEncumbrance: Int = 0,
         maxEncumbrance: Int = 15,
         coins: Int = 0,
+        weapons: [Weapon] = [],
+        armor: [Armor] = [],
         hasUsedAttunementToday: Bool = false) {
         self.id = id
         self.name = name
@@ -710,6 +752,8 @@ class PlayerCharacter: Identifiable, Codable {
         self.currentEncumbrance = currentEncumbrance
         self.maxEncumbrance = maxEncumbrance
         self.coins = coins
+        self.weapons = weapons
+        self.armor = armor
         self.hasUsedAttunementToday = hasUsedAttunementToday
     }
 }
