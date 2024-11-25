@@ -416,11 +416,11 @@ private struct FeatureRow: View {
     let description: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 8) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .font(.system(size: 18))
-                .frame(width: 24)
+                .font(.system(size: 16))
+                .frame(width: 16)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
@@ -429,7 +429,7 @@ private struct FeatureRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.vertical, 4)
         .frame(maxWidth: .infinity)
