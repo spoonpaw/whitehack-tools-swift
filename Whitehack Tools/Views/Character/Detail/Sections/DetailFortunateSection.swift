@@ -234,6 +234,10 @@ private struct RetainersCard: View {
     let retainers: [Retainer]
     let availableSlots: Int
     
+    private var nonEmptyRetainerCount: Int {
+        retainers.filter { !$0.name.isEmpty }.count
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Header
@@ -250,7 +254,7 @@ private struct RetainersCard: View {
                     Spacer()
                     
                     HStack(spacing: 4) {
-                        Text("\(retainers.count)/\(availableSlots)")
+                        Text("\(nonEmptyRetainerCount)/\(availableSlots)")
                             .font(.subheadline)
                             .foregroundColor(Color.secondary)
                     }
@@ -398,11 +402,6 @@ private struct RetainerDetailView: View {
             
             Divider()
             
-            // Type
-            Text(retainer.type)
-                .font(.headline)
-                .padding(.vertical, 4)
-            
             HStack(spacing: 12) {
                 StatBadge(
                     label: "HD",
@@ -444,19 +443,18 @@ private struct RetainerDetailView: View {
                             .foregroundColor(.secondary)
                     }
                     
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(retainer.keywords, id: \.self) { keyword in
-                                Text(keyword)
-                                    .font(.callout)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.purple.opacity(0.1))
-                                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                            }
+                    HStack(alignment: .center, spacing: 8) {
+                        ForEach(retainer.keywords, id: \.self) { keyword in
+                            Text(keyword)
+                                .font(.callout)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.purple.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
-                        .padding(.horizontal, 4)
                     }
+                    .padding(.horizontal, 4)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             }
