@@ -25,13 +25,12 @@ struct DetailFortunateSection: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity)
             } header: {
-                Label {
-                    Text("The Fortunate")
-                        .font(.headline)
-                } icon: {
+                HStack(spacing: 4) {
                     Ph.crown.bold
                         .frame(width: 20, height: 20)
                         .foregroundColor(.orange)
+                    Text("The Fortunate")
+                        .font(.headline)
                 }
             }
         }
@@ -240,13 +239,12 @@ private struct RetainersCard: View {
             // Header
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Label {
-                        Text("Retainers")
-                            .font(.headline)
-                    } icon: {
+                    HStack(spacing: 4) {
                         Ph.users.bold
                             .frame(width: 20, height: 20)
                             .foregroundColor(.blue)
+                        Text("Retainers")
+                            .font(.headline)
                     }
                     
                     Spacer()
@@ -372,22 +370,20 @@ private struct RetainerDetailView: View {
             // Header with name and type
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Label {
-                        Text(retainer.name)
-                            .font(.headline)
-                    } icon: {
+                    HStack(spacing: 4) {
                         Ph.user.bold
                             .frame(width: 20, height: 20)
                             .foregroundColor(.blue)
+                        Text(retainer.name)
+                            .font(.headline)
                     }
                     
-                    Label {
-                        Text(retainer.type)
-                            .font(.headline)
-                    } icon: {
+                    HStack(spacing: 4) {
                         Ph.users.bold
                             .frame(width: 16, height: 16)
                             .foregroundColor(.orange)
+                        Text(retainer.type)
+                            .font(.headline)
                     }
                 }
                 
@@ -438,15 +434,14 @@ private struct RetainerDetailView: View {
             
             // Keywords
             if !retainer.keywords.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Label {
-                        Text("Keywords")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } icon: {
+                VStack(alignment: .center, spacing: 4) {
+                    HStack(spacing: 4) {
                         Ph.tag.bold
                             .frame(width: 16, height: 16)
                             .foregroundColor(.purple)
+                        Text("Keywords")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -468,21 +463,21 @@ private struct RetainerDetailView: View {
             
             // Notes
             if !retainer.notes.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Label {
+                VStack(alignment: .center, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Ph.noteBlank.bold
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.purple)
                         Text("Notes")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                    } icon: {
-                        Ph.note.bold
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(.green)
                     }
                     
                     Text(retainer.notes)
                         .font(.callout)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.center)
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
     }
