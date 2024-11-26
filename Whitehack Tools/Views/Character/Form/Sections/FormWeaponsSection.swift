@@ -133,77 +133,101 @@ struct WeaponRow: View {
     let onEdit: () -> Void
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
-                // Name
-                HStack {
-                    IconFrame(icon: Ph.textAa.bold, color: .blue)
-                    Text(weapon.name)
-                        .font(.headline)
-                }
-                
-                // Combat Stats
-                HStack(spacing: 16) {
-                    // Damage
-                    HStack {
-                        IconFrame(icon: Ph.target.bold, color: .red)
-                        Text(weapon.damage)
-                            .foregroundStyle(.red)
-                    }
-                    
-                    // Weight
-                    HStack {
-                        IconFrame(icon: Ph.scales.bold, color: .blue)
-                        Text(weapon.weight)
-                            .foregroundStyle(.blue)
-                    }
-                    
-                    // Rate of Fire
-                    if weapon.rateOfFire != "-" {
-                        HStack {
-                            IconFrame(icon: Ph.timer.bold, color: .green)
-                            Text("Rate of Fire: \(weapon.rateOfFire)")
-                                .foregroundStyle(.green)
-                        }
-                    }
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            // Name Section
+            Text("Weapon Name")
                 .font(.subheadline)
+                .foregroundColor(.secondary)
+            HStack {
+                IconFrame(icon: Ph.textAa.bold, color: .blue)
+                Text(weapon.name)
+                    .font(.headline)
+            }
+            
+            Divider()
+            
+            // Combat Stats Section
+            Text("Combat Statistics")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                // Damage
+                Label {
+                    Text("Damage: \(weapon.damage)")
+                } icon: {
+                    IconFrame(icon: Ph.target.bold, color: .red)
+                }
+                .foregroundStyle(.red)
                 
-                // Special
-                if !weapon.special.isEmpty {
-                    HStack {
-                        IconFrame(icon: Ph.star.bold, color: .purple)
-                        Text(weapon.special)
-                            .italic()
-                            .foregroundStyle(.secondary)
+                // Weight
+                Label {
+                    Text("Weight: \(weapon.weight)")
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+                .foregroundStyle(.blue)
+                
+                // Rate of Fire
+                if weapon.rateOfFire != "-" {
+                    Label {
+                        Text("Rate of Fire: \(weapon.rateOfFire)")
+                    } icon: {
+                        IconFrame(icon: Ph.timer.bold, color: .green)
                     }
-                    .font(.caption)
+                    .foregroundStyle(.green)
+                }
+            }
+            .font(.subheadline)
+            
+            // Special Properties Section
+            if !weapon.special.isEmpty {
+                Divider()
+                
+                Text("Special Properties")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Text(weapon.special)
+                        .font(.system(.caption))
+                        .fontWeight(.light)
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .purple)
                 }
             }
             
-            Spacer()
+            Divider()
             
-            // Action Buttons
-            HStack(spacing: 12) {
+            // Actions Section
+            HStack {
+                Spacer()
                 Button(action: onEdit) {
-                    Image(systemName: "pencil.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.blue)
+                    Label {
+                        Text("Edit Weapon")
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                    }
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                .foregroundColor(.blue)
                 
                 Button(action: { onDelete(weapon) }) {
-                    Image(systemName: "trash.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Delete Weapon")
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                    }
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                .foregroundColor(.red)
             }
+            .padding(.top, 4)
         }
-        .padding(.vertical, 8)
+        .padding()
         .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 1)
     }
 }
 
@@ -228,33 +252,60 @@ struct WeaponEditRow: View {
     }
     
     var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                IconFrame(icon: Ph.textAa.bold, color: .blue)
-                TextField("Name", text: $name)
+        VStack(spacing: 12) {
+            // Name Field
+            VStack(alignment: .leading) {
+                Text("Weapon Name")
+                    .font(.headline)
+                HStack {
+                    IconFrame(icon: Ph.textAa.bold, color: .blue)
+                    TextField("Enter weapon name", text: $name)
+                }
             }
             
-            HStack {
-                IconFrame(icon: Ph.target.bold, color: .red)
-                TextField("Damage", text: $damage)
+            // Damage Field
+            VStack(alignment: .leading) {
+                Text("Damage")
+                    .font(.headline)
+                HStack {
+                    IconFrame(icon: Ph.target.bold, color: .red)
+                    TextField("Enter damage (e.g., 1d6)", text: $damage)
+                }
             }
             
-            HStack {
-                IconFrame(icon: Ph.scales.bold, color: .blue)
-                TextField("Weight", text: $weight)
+            // Weight Field
+            VStack(alignment: .leading) {
+                Text("Weight Category")
+                    .font(.headline)
+                HStack {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                    TextField("Enter weight (Negligible/Minor/Regular/Heavy)", text: $weight)
+                }
             }
             
-            HStack {
-                IconFrame(icon: Ph.timer.bold, color: .green)
-                TextField("Rate of Fire", text: $rateOfFire)
+            // Rate of Fire Field
+            VStack(alignment: .leading) {
+                Text("Rate of Fire")
+                    .font(.headline)
+                HStack {
+                    IconFrame(icon: Ph.timer.bold, color: .green)
+                    TextField("Enter rate of fire (e.g., 1, 1/2, or -)", text: $rateOfFire)
+                }
             }
             
-            HStack {
-                IconFrame(icon: Ph.star.bold, color: .purple)
-                TextField("Special", text: $special)
+            // Special Properties Field
+            VStack(alignment: .leading) {
+                Text("Special Properties")
+                    .font(.headline)
+                HStack {
+                    IconFrame(icon: Ph.star.bold, color: .purple)
+                    TextField("Enter special properties", text: $special)
+                }
             }
             
+            // Save Button
             HStack {
+                Spacer()
                 Button(action: {
                     let updatedWeapon = Weapon(
                         name: name,
@@ -265,12 +316,18 @@ struct WeaponEditRow: View {
                     )
                     onSave(updatedWeapon)
                 }) {
-                    Text("Save")
+                    Text("Save Weapon")
                         .foregroundColor(.blue)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(8)
                 }
+                Spacer()
             }
+            .padding(.top, 8)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
     }
 }
 
@@ -327,45 +384,63 @@ struct WeaponDataRow: View {
     let weaponData: [String: String]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
+            // Weapon Name
             Text(weaponData["name"] ?? "")
                 .font(.headline)
             
-            HStack(spacing: 12) {
-                Label {
-                    Text(weaponData["damage"] ?? "")
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: Color.red)
-                }
+            // Combat Stats
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Combat Statistics")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
                 
-                Label {
-                    Text(weaponData["weight"] ?? "")
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: Color.blue)
-                }
-                
-                if weaponData["rateOfFire"] != "-" {
+                HStack(spacing: 16) {
+                    // Damage
                     Label {
-                        Text("RoF: \(weaponData["rateOfFire"] ?? "")")
+                        Text("Damage: \(weaponData["damage"] ?? "")")
                     } icon: {
-                        IconFrame(icon: Ph.timer.bold, color: Color.green)
+                        IconFrame(icon: Ph.target.bold, color: Color.red)
+                    }
+                    
+                    // Weight
+                    Label {
+                        Text("Weight: \(weaponData["weight"] ?? "")")
+                    } icon: {
+                        IconFrame(icon: Ph.scales.bold, color: Color.blue)
+                    }
+                    
+                    // Rate of Fire
+                    if weaponData["rateOfFire"] != "-" {
+                        Label {
+                            Text("Rate of Fire: \(weaponData["rateOfFire"] ?? "")")
+                        } icon: {
+                            IconFrame(icon: Ph.timer.bold, color: Color.green)
+                        }
                     }
                 }
-            }
-            .font(.caption)
-            
-            if let special = weaponData["special"], !special.isEmpty {
-                Label {
-                    Text(special)
-                        .italic()
-                } icon: {
-                    IconFrame(icon: Ph.star.bold, color: Color.purple)
-                }
                 .font(.caption)
-                .foregroundColor(.secondary)
+            }
+            
+            // Special Properties
+            if let special = weaponData["special"], !special.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Special Properties")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Label {
+                        Text(special)
+                            .font(.system(.caption))
+                            .fontWeight(.light)
+                    } icon: {
+                        IconFrame(icon: Ph.star.bold, color: Color.purple)
+                    }
+                    .font(.caption)
+                }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
     }
 }
 
