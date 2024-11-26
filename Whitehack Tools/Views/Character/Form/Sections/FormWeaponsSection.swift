@@ -20,6 +20,8 @@ struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
     @State private var editingWeaponId: String?
     @State private var isAddingNew = false
+    @State private var isCustomWeapon = false
+    @State private var selectedWeaponName: String?
     
     var body: some View {
         Section {
@@ -43,9 +45,48 @@ struct FormWeaponsSection: View {
                 .padding(.vertical, 20)
             } else {
                 if isAddingNew {
-                    WeaponEditRow(weapon: Weapon()) { newWeapon in
-                        weapons.append(newWeapon)
-                        isAddingNew = false
+                    if isCustomWeapon {
+                        WeaponEditRow(weapon: Weapon()) { newWeapon in
+                            weapons.append(newWeapon)
+                            isAddingNew = false
+                            isCustomWeapon = false
+                        }
+                    } else {
+                        VStack {
+                            Picker("Select Weapon", selection: $selectedWeaponName) {
+                                Text("Select a Weapon").tag(String?.none)
+                                ForEach(WeaponData.weapons, id: \.["name"]) { weapon in
+                                    Text(weapon["name"] ?? "").tag(weapon["name"] as String?)
+                                }
+                                Text("Custom Weapon").tag("custom" as String?)
+                            }
+                            .onChange(of: selectedWeaponName) { newValue in
+                                if newValue == "custom" {
+                                    isCustomWeapon = true
+                                } else if let weaponName = newValue,
+                                          let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
+                                    let weapon = Weapon(
+                                        name: weaponData["name"] ?? "",
+                                        damage: weaponData["damage"] ?? "",
+                                        weight: weaponData["weight"] ?? "",
+                                        rateOfFire: weaponData["rateOfFire"] ?? "",
+                                        cost: Int(weaponData["cost"] ?? "") ?? 0,
+                                        special: weaponData["special"] ?? ""
+                                    )
+                                    weapons.append(weapon)
+                                    isAddingNew = false
+                                    selectedWeaponName = nil
+                                }
+                            }
+                            
+                            Button("Cancel") {
+                                isAddingNew = false
+                                isCustomWeapon = false
+                                selectedWeaponName = nil
+                            }
+                            .foregroundColor(.red)
+                        }
+                        .padding(.vertical, 8)
                     }
                 }
                 
@@ -71,6 +112,8 @@ struct FormWeaponsSection: View {
                 if !isAddingNew {
                     Button(action: {
                         isAddingNew = true
+                        isCustomWeapon = false
+                        selectedWeaponName = nil
                     }) {
                         Label("Add Another Weapon", systemImage: "plus.circle.fill")
                     }
