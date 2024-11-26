@@ -269,9 +269,10 @@ struct WeaponEditRow: View {
             Text("Weapon Name")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            HStack {
-                IconFrame(icon: Ph.textAa.bold, color: .blue)
+            Label {
                 TextField("Enter weapon name", text: $name)
+            } icon: {
+                IconFrame(icon: Ph.textAa.bold, color: .blue)
             }
             
             Divider()
@@ -282,22 +283,43 @@ struct WeaponEditRow: View {
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 8) {
                 // Damage
-                HStack {
+                Label {
+                    VStack(alignment: .leading) {
+                        Text("Damage")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter damage (e.g., 1d6)", text: $damage)
+                    }
+                } icon: {
                     IconFrame(icon: Ph.target.bold, color: .red)
-                    TextField("Enter damage (e.g., 1d6)", text: $damage)
                 }
+                .foregroundStyle(.red)
                 
                 // Weight
-                HStack {
+                Label {
+                    VStack(alignment: .leading) {
+                        Text("Weight Category")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter weight (Negligible/Minor/Regular/Heavy)", text: $weight)
+                    }
+                } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
-                    TextField("Enter weight (Negligible/Minor/Regular/Heavy)", text: $weight)
                 }
+                .foregroundStyle(.blue)
                 
                 // Rate of Fire
-                HStack {
+                Label {
+                    VStack(alignment: .leading) {
+                        Text("Rate of Fire")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter rate of fire (e.g., 1, 1/2, or -)", text: $rateOfFire)
+                    }
+                } icon: {
                     IconFrame(icon: Ph.timer.bold, color: .green)
-                    TextField("Enter rate of fire (e.g., 1, 1/2, or -)", text: $rateOfFire)
                 }
+                .foregroundStyle(.green)
             }
             
             Divider()
@@ -306,19 +328,27 @@ struct WeaponEditRow: View {
             Text("Special Properties")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            HStack {
+            Label {
+                VStack(alignment: .leading) {
+                    Text("Special Properties")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("Enter special properties", text: $special)
+                }
+            } icon: {
                 IconFrame(icon: Ph.star.bold, color: .purple)
-                TextField("Enter special properties", text: $special)
             }
+            .foregroundStyle(.purple)
             
             // Action Buttons
-            HStack {
+            HStack(spacing: 24) {
                 Spacer()
                 
                 // Cancel Button
                 Button(action: onCancel) {
                     Label {
                         Text("Cancel")
+                            .padding(.horizontal, 8)
                     } icon: {
                         Image(systemName: "xmark.circle.fill")
                             .imageScale(.large)
@@ -341,6 +371,7 @@ struct WeaponEditRow: View {
                 }) {
                     Label {
                         Text("Save")
+                            .padding(.horizontal, 8)
                     } icon: {
                         Image(systemName: "checkmark.circle.fill")
                             .imageScale(.large)
