@@ -46,11 +46,14 @@ struct FormWeaponsSection: View {
             } else {
                 if isAddingNew {
                     if isCustomWeapon {
-                        WeaponEditRow(weapon: Weapon()) { newWeapon in
+                        WeaponEditRow(weapon: Weapon(), onSave: { newWeapon in
                             weapons.append(newWeapon)
                             isAddingNew = false
                             isCustomWeapon = false
-                        }
+                        }, onCancel: {
+                            isAddingNew = false
+                            isCustomWeapon = false
+                        })
                     } else {
                         VStack {
                             Picker("Select Weapon", selection: $selectedWeaponName) {
@@ -91,12 +94,14 @@ struct FormWeaponsSection: View {
                 
                 ForEach(weapons) { weapon in
                     if editingWeaponId == weapon.id {
-                        WeaponEditRow(weapon: weapon) { updatedWeapon in
+                        WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
                             if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
                                 weapons[index] = updatedWeapon
                             }
                             editingWeaponId = nil
-                        }
+                        }, onCancel: {
+                            editingWeaponId = nil
+                        })
                     } else {
                         WeaponRow(weapon: weapon, onDelete: { weapon in
                             if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
@@ -239,6 +244,7 @@ struct WeaponRow: View {
 struct WeaponEditRow: View {
     let weapon: Weapon
     let onSave: (Weapon) -> Void
+    let onCancel: () -> Void
     
     @State private var name: String
     @State private var damage: String
@@ -246,9 +252,10 @@ struct WeaponEditRow: View {
     @State private var rateOfFire: String
     @State private var special: String
     
-    init(weapon: Weapon, onSave: @escaping (Weapon) -> Void) {
+    init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
         self.weapon = weapon
         self.onSave = onSave
+        self.onCancel = onCancel
         _name = State(initialValue: weapon.name)
         _damage = State(initialValue: weapon.damage)
         _weight = State(initialValue: weapon.weight)
@@ -257,60 +264,71 @@ struct WeaponEditRow: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            // Name Field
-            VStack(alignment: .leading) {
-                Text("Weapon Name")
-                    .font(.headline)
-                HStack {
-                    IconFrame(icon: Ph.textAa.bold, color: .blue)
-                    TextField("Enter weapon name", text: $name)
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            // Name Section
+            Text("Weapon Name")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            HStack {
+                IconFrame(icon: Ph.textAa.bold, color: .blue)
+                TextField("Enter weapon name", text: $name)
             }
             
-            // Damage Field
-            VStack(alignment: .leading) {
-                Text("Damage")
-                    .font(.headline)
+            Divider()
+            
+            // Combat Stats Section
+            Text("Combat Statistics")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                // Damage
                 HStack {
                     IconFrame(icon: Ph.target.bold, color: .red)
                     TextField("Enter damage (e.g., 1d6)", text: $damage)
                 }
-            }
-            
-            // Weight Field
-            VStack(alignment: .leading) {
-                Text("Weight Category")
-                    .font(.headline)
+                
+                // Weight
                 HStack {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                     TextField("Enter weight (Negligible/Minor/Regular/Heavy)", text: $weight)
                 }
-            }
-            
-            // Rate of Fire Field
-            VStack(alignment: .leading) {
-                Text("Rate of Fire")
-                    .font(.headline)
+                
+                // Rate of Fire
                 HStack {
                     IconFrame(icon: Ph.timer.bold, color: .green)
                     TextField("Enter rate of fire (e.g., 1, 1/2, or -)", text: $rateOfFire)
                 }
             }
             
-            // Special Properties Field
-            VStack(alignment: .leading) {
-                Text("Special Properties")
-                    .font(.headline)
-                HStack {
-                    IconFrame(icon: Ph.star.bold, color: .purple)
-                    TextField("Enter special properties", text: $special)
-                }
+            Divider()
+            
+            // Special Properties Section
+            Text("Special Properties")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            HStack {
+                IconFrame(icon: Ph.star.bold, color: .purple)
+                TextField("Enter special properties", text: $special)
             }
             
-            // Save Button
+            // Action Buttons
             HStack {
                 Spacer()
+                
+                // Cancel Button
+                Button(action: onCancel) {
+                    Label {
+                        Text("Cancel")
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                            .imageScale(.large)
+                            .symbolRenderingMode(.hierarchical)
+                    }
+                }
+                .foregroundColor(.red)
+                .buttonStyle(BorderlessButtonStyle())
+                
+                // Save Button
                 Button(action: {
                     let updatedWeapon = Weapon(
                         name: name,
@@ -321,18 +339,23 @@ struct WeaponEditRow: View {
                     )
                     onSave(updatedWeapon)
                 }) {
-                    Text("Save Weapon")
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
+                    Label {
+                        Text("Save")
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .imageScale(.large)
+                            .symbolRenderingMode(.hierarchical)
+                    }
                 }
-                Spacer()
+                .foregroundColor(.green)
+                .buttonStyle(BorderlessButtonStyle())
             }
             .padding(.top, 8)
         }
-        .padding(.vertical, 12)
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 1)
     }
 }
 
