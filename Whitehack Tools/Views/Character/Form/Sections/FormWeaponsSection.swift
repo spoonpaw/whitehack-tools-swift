@@ -83,7 +83,8 @@ struct FormWeaponsSection: View {
                                         damage: weaponData["damage"] ?? "",
                                         weight: weaponData["weight"] ?? "",
                                         rateOfFire: weaponData["rateOfFire"] ?? "",
-                                        special: weaponData["special"] ?? ""
+                                        special: weaponData["special"] ?? "",
+                                        range: weaponData["range"] ?? ""
                                     )
                                     weapons.append(weapon)
                                     isAddingNew = false
@@ -201,6 +202,14 @@ struct WeaponRow: View {
                     }
                     .foregroundStyle(.green)
                 }
+                
+                // Range
+                Label {
+                    Text("Range: \(weapon.range)")
+                } icon: {
+                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
+                }
+                .foregroundStyle(.purple)
             }
             .font(.subheadline)
             
@@ -271,6 +280,7 @@ struct WeaponEditRow: View {
     @State private var weight: String
     @State private var rateOfFire: String
     @State private var special: String
+    @State private var range: String
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -291,6 +301,7 @@ struct WeaponEditRow: View {
         _weight = State(initialValue: weapon.weight)
         _rateOfFire = State(initialValue: weapon.rateOfFire)
         _special = State(initialValue: weapon.special)
+        _range = State(initialValue: weapon.range)
     }
     
     var body: some View {
@@ -346,13 +357,26 @@ struct WeaponEditRow: View {
                 }
                 .foregroundStyle(.blue)
                 
+                // Range
+                Label {
+                    VStack(alignment: .leading) {
+                        Text("Range")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("Enter range", text: $range)
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
+                }
+                .foregroundStyle(.purple)
+                
                 // Rate of Fire
                 Label {
                     VStack(alignment: .leading) {
                         Text("Rate of Fire")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        TextField("Enter rate of fire (e.g., 1, 1/2, or -)", text: $rateOfFire)
+                        TextField("Enter rate of fire", text: $rateOfFire)
                     }
                 } icon: {
                     IconFrame(icon: Ph.timer.bold, color: .green)
@@ -403,7 +427,8 @@ struct WeaponEditRow: View {
                         damage: damage,
                         weight: weight,
                         rateOfFire: rateOfFire,
-                        special: special
+                        special: special,
+                        range: range
                     )
                     onSave(updatedWeapon)
                 }) {
@@ -525,6 +550,13 @@ struct WeaponDataRow: View {
                             IconFrame(icon: Ph.timer.bold, color: Color.green)
                         }
                     }
+                    
+                    // Range
+                    Label {
+                        Text("Range: \(weaponData["range"] ?? "")")
+                    } icon: {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: Color.purple)
+                    }
                 }
                 .font(.caption)
             }
@@ -560,6 +592,7 @@ struct CustomWeaponForm: View {
     @State private var weight = ""
     @State private var rateOfFire = ""
     @State private var special = ""
+    @State private var range = ""
     @State private var editingWeapon: Weapon?
     
     private func getWeightDisplayText(_ weight: String) -> String {
@@ -594,6 +627,7 @@ struct CustomWeaponForm: View {
                                     weight = weapon.weight
                                     rateOfFire = weapon.rateOfFire
                                     special = weapon.special
+                                    range = weapon.range
                                 }) {
                                     Image(systemName: "pencil.circle.fill")
                                         .foregroundColor(.blue)
@@ -649,6 +683,14 @@ struct CustomWeaponForm: View {
                             .font(.caption)
                         TextField("e.g., 1, 1/2, or -", text: $rateOfFire)
                     }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: Color.purple)
+                        Text("Range")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("e.g., Close, Near, Far", text: $range)
+                    }
                 } header: {
                     Text("Combat Stats")
                 }
@@ -676,7 +718,8 @@ struct CustomWeaponForm: View {
                         damage: damage,
                         weight: weight,
                         rateOfFire: rateOfFire,
-                        special: special
+                        special: special,
+                        range: range
                     )
                     if let editingWeapon = editingWeapon,
                        let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {

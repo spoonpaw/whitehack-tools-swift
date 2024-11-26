@@ -53,29 +53,34 @@ private struct WeaponDetailRow: View {
             Divider()
             
             // Combat Stats
-            HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
                 Label {
-                    Text(weapon.damage)
+                    Text("Damage: \(weapon.damage)")
                 } icon: {
                     IconFrame(icon: Ph.target.bold, color: .red)
                 }
                 .foregroundStyle(.red)
                 
                 Label {
-                    Text(weapon.weight)
+                    Text("Weight: \(weapon.weight)")
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
                 .foregroundStyle(.blue)
                 
-                if weapon.rateOfFire != "-" {
-                    Label {
-                        Text("Rate of Fire: \(weapon.rateOfFire)")
-                    } icon: {
-                        IconFrame(icon: Ph.timer.bold, color: .green)
-                    }
-                    .foregroundStyle(.green)
+                Label {
+                    Text("Range: \(weapon.range)")
+                } icon: {
+                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
                 }
+                .foregroundStyle(.purple)
+                
+                Label {
+                    Text("Rate of Fire: \(weapon.rateOfFire)")
+                } icon: {
+                    IconFrame(icon: Ph.timer.bold, color: .green)
+                }
+                .foregroundStyle(.green)
             }
             .font(.subheadline)
             

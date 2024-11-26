@@ -461,13 +461,15 @@ struct Weapon: Codable, Identifiable {
     var weight: String
     var rateOfFire: String
     var special: String
+    var range: String
     
-    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "") {
+    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "", range: String = "") {
         self.name = name
         self.damage = damage
         self.weight = weight
         self.rateOfFire = rateOfFire
         self.special = special
+        self.range = range
     }
     
     static func fromData(_ data: [String: String]) -> Weapon {
@@ -476,7 +478,8 @@ struct Weapon: Codable, Identifiable {
             damage: data["damage"] ?? "",
             weight: data["weight"] ?? "",
             rateOfFire: data["rateOfFire"] ?? "",
-            special: data["special"] ?? ""
+            special: data["special"] ?? "",
+            range: data["range"] ?? ""
         )
     }
 }
