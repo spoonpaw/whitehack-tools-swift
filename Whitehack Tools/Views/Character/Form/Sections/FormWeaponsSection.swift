@@ -198,11 +198,13 @@ struct WeaponRow: View {
             Divider()
             
             // Actions Section
-            HStack {
+            HStack(spacing: 16) {
                 Spacer()
+                
+                // Edit Button
                 Button(action: onEdit) {
                     Label {
-                        Text("Edit Weapon")
+                        Text("Edit")
                     } icon: {
                         Image(systemName: "pencil.circle.fill")
                             .imageScale(.medium)
@@ -210,10 +212,12 @@ struct WeaponRow: View {
                     }
                 }
                 .foregroundColor(.blue)
+                .buttonStyle(BorderlessButtonStyle())
                 
+                // Delete Button
                 Button(action: { onDelete(weapon) }) {
                     Label {
-                        Text("Delete Weapon")
+                        Text("Delete")
                     } icon: {
                         Image(systemName: "trash.circle.fill")
                             .imageScale(.medium)
@@ -221,6 +225,7 @@ struct WeaponRow: View {
                     }
                 }
                 .foregroundColor(.red)
+                .buttonStyle(BorderlessButtonStyle())
             }
             .padding(.top, 4)
         }
