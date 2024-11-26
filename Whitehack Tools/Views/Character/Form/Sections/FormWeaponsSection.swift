@@ -23,6 +23,16 @@ struct FormWeaponsSection: View {
     @State private var isCustomWeapon = false
     @State private var selectedWeaponName: String?
     
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
     var body: some View {
         Section {
             if weapons.isEmpty && !isAddingNew {
@@ -137,6 +147,16 @@ struct WeaponRow: View {
     let onDelete: (Weapon) -> Void
     let onEdit: () -> Void
     
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Name Section
@@ -166,7 +186,7 @@ struct WeaponRow: View {
                 
                 // Weight
                 Label {
-                    Text("Weight: \(weapon.weight)")
+                    Text("Weight: \(getWeightDisplayText(weapon.weight))")
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
@@ -252,6 +272,16 @@ struct WeaponEditRow: View {
     @State private var rateOfFire: String
     @State private var special: String
     
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
     init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
         self.weapon = weapon
         self.onSave = onSave
@@ -301,7 +331,15 @@ struct WeaponEditRow: View {
                         Text("Weight Category")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        TextField("Enter weight (Negligible/Minor/Regular/Heavy)", text: $weight)
+                        Menu {
+                            Button("No size (100/slot)") { weight = "No size" }
+                            Button("Minor (2/slot)") { weight = "Minor" }
+                            Button("Regular (1 slot)") { weight = "Regular" }
+                            Button("Heavy (2 slots)") { weight = "Heavy" }
+                        } label: {
+                            Text(weight.isEmpty ? "Select Weight" : getWeightDisplayText(weight))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
@@ -442,6 +480,16 @@ struct WeaponPickerView: View {
 struct WeaponDataRow: View {
     let weaponData: [String: String]
     
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Weapon Name
@@ -464,7 +512,7 @@ struct WeaponDataRow: View {
                     
                     // Weight
                     Label {
-                        Text("Weight: \(weaponData["weight"] ?? "")")
+                        Text("Weight: \(getWeightDisplayText(weaponData["weight"] ?? ""))")
                     } icon: {
                         IconFrame(icon: Ph.scales.bold, color: Color.blue)
                     }
@@ -513,6 +561,16 @@ struct CustomWeaponForm: View {
     @State private var rateOfFire = ""
     @State private var special = ""
     @State private var editingWeapon: Weapon?
+    
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
     
     var body: some View {
         NavigationView {
