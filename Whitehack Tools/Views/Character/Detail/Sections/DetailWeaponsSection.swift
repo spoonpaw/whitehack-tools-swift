@@ -70,7 +70,7 @@ private struct WeaponDetailRow: View {
                 
                 if weapon.rateOfFire != "-" {
                     Label {
-                        Text("RoF: \(weapon.rateOfFire)")
+                        Text("Rate of Fire: \(weapon.rateOfFire)")
                     } icon: {
                         IconFrame(icon: Ph.timer.bold, color: .green)
                     }

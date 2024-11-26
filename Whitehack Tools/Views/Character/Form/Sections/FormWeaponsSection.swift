@@ -162,7 +162,7 @@ struct WeaponRow: View {
                     if weapon.rateOfFire != "-" {
                         HStack {
                             IconFrame(icon: Ph.timer.bold, color: .green)
-                            Text("RoF: \(weapon.rateOfFire)")
+                            Text("Rate of Fire: \(weapon.rateOfFire)")
                                 .foregroundStyle(.green)
                         }
                     }
