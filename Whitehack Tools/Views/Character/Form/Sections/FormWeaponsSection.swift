@@ -108,6 +108,7 @@ struct FormWeaponsSection: View {
                         })
                     }
                 }
+                .onDelete(perform: nil)
                 
                 if !isAddingNew {
                     Button(action: {
@@ -134,38 +135,87 @@ struct WeaponRow: View {
     
     var body: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Text(weapon.name)
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 8) {
+                // Name
                 HStack {
-                    Text(weapon.damage)
-                    Text(weapon.weight)
+                    IconFrame(icon: Ph.textAa.bold, color: .blue)
+                    Text(weapon.name)
+                        .font(.headline)
+                }
+                
+                // Combat Stats
+                HStack(spacing: 16) {
+                    // Damage
+                    HStack {
+                        IconFrame(icon: Ph.target.bold, color: .red)
+                        Text(weapon.damage)
+                            .foregroundStyle(.red)
+                    }
+                    
+                    // Weight
+                    HStack {
+                        IconFrame(icon: Ph.scales.bold, color: .blue)
+                        Text(weapon.weight)
+                            .foregroundStyle(.blue)
+                    }
+                    
+                    // Rate of Fire
                     if weapon.rateOfFire != "-" {
-                        Text("RoF: \(weapon.rateOfFire)")
+                        HStack {
+                            IconFrame(icon: Ph.timer.bold, color: .green)
+                            Text("RoF: \(weapon.rateOfFire)")
+                                .foregroundStyle(.green)
+                        }
+                    }
+                }
+                .font(.subheadline)
+                
+                // Cost and Special
+                HStack {
+                    // Cost
+                    HStack {
+                        IconFrame(icon: Ph.coins.bold, color: .yellow)
+                        Text("\(weapon.cost) GP")
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    if !weapon.special.isEmpty {
+                        Spacer()
+                        // Special
+                        HStack {
+                            IconFrame(icon: Ph.star.bold, color: .purple)
+                            Text(weapon.special)
+                                .italic()
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
                 .font(.caption)
-                .foregroundColor(.secondary)
-                
-                if !weapon.special.isEmpty {
-                    Text(weapon.special)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
             }
+            
             Spacer()
+            
+            // Action Buttons
             HStack(spacing: 12) {
                 Button(action: onEdit) {
                     Image(systemName: "pencil.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
                         .foregroundColor(.blue)
                 }
+                .buttonStyle(BorderlessButtonStyle())
+                
                 Button(action: { onDelete(weapon) }) {
                     Image(systemName: "trash.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
                         .foregroundColor(.red)
                 }
+                .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
+        .background(Color(.systemBackground))
     }
 }
 
