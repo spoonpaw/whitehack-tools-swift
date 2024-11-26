@@ -7,10 +7,22 @@ struct DetailWeaponsSection: View {
     var body: some View {
         Section(header: SectionHeader(title: "Weapons", icon: Ph.sword.bold)) {
             if weapons.isEmpty {
-                Text("No weapons")
-                    .foregroundColor(.secondary)
-                    .italic()
-                    .padding(.vertical, 8)
+                VStack(spacing: 12) {
+                    Image(systemName: "shield.slash")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary)
+                    
+                    Text("No Weapons")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Add weapons in edit mode")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .italic()
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(weapons) { weapon in
@@ -27,46 +39,71 @@ private struct WeaponDetailRow: View {
     let weapon: Weapon
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 8) {
+            // Name and Cost
             HStack {
-                Text(weapon.name)
-                    .font(.headline)
-                
-                if weapon.isMagical {
-                    Text("+\(weapon.magicalBonus)")
+                Label {
+                    Text(weapon.name)
                         .font(.headline)
-                        .foregroundColor(.blue)
+                } icon: {
+                    IconFrame(icon: Ph.sword.bold)
                 }
                 
                 Spacer()
                 
-                Text("\(weapon.cost) GP")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                Label {
+                    Text("\(weapon.cost) GP")
+                        .font(.subheadline)
+                } icon: {
+                    IconFrame(icon: Ph.coins.bold, color: .yellow)
+                }
+                .foregroundColor(.secondary)
             }
             
-            HStack(spacing: 12) {
-                Label(weapon.damage, systemImage: "burst.fill")
-                    .font(.caption)
+            Divider()
+            
+            // Combat Stats
+            HStack(spacing: 16) {
+                Label {
+                    Text(weapon.damage)
+                } icon: {
+                    IconFrame(icon: Ph.target.bold, color: .red)
+                }
+                .foregroundStyle(.red)
                 
-                Label(weapon.weight.rawValue, systemImage: "scalemass.fill")
-                    .font(.caption)
+                Label {
+                    Text(weapon.weight)
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+                .foregroundStyle(.blue)
                 
-                if !weapon.rateOfFire.isEmpty {
-                    Label(weapon.rateOfFire, systemImage: "timer")
-                        .font(.caption)
+                if weapon.rateOfFire != "-" {
+                    Label {
+                        Text("RoF: \(weapon.rateOfFire)")
+                    } icon: {
+                        IconFrame(icon: Ph.timer.bold, color: .green)
+                    }
+                    .foregroundStyle(.green)
                 }
             }
+            .font(.subheadline)
             
+            // Special Properties
             if !weapon.special.isEmpty {
-                Text(weapon.special)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                Label {
+                    Text(weapon.special)
+                        .italic()
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .purple)
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
             }
         }
         .padding()
         .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
 }

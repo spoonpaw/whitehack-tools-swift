@@ -454,24 +454,34 @@ struct FortunateOptions: Codable {
 }
 
 // MARK: - Weapon Types
-enum WeaponWeight: String, Codable {
-    case none = "-"
-    case noSize = "No Size (100/slot)"
-    case minor = "Minor (2/slot)"
-    case regular = "Regular (1 slot)"
-    case heavy = "Heavy (2 slots)"
-}
-
 struct Weapon: Codable, Identifiable {
-    let id: UUID
+    var id: String { name }  // Using name as id since weapons are unique by name
     var name: String
-    var damage: String       // e.g., "1d6+1"
-    var weight: WeaponWeight
-    var rateOfFire: String  // e.g., "1", "1/2", "-"
+    var damage: String
+    var weight: String
+    var rateOfFire: String
     var cost: Int
-    var special: String     // Special properties
-    var isMagical: Bool     // For magical weapons
-    var magicalBonus: Int   // +1, +2, etc.
+    var special: String
+    
+    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", cost: Int = 0, special: String = "") {
+        self.name = name
+        self.damage = damage
+        self.weight = weight
+        self.rateOfFire = rateOfFire
+        self.cost = cost
+        self.special = special
+    }
+    
+    static func fromData(_ data: [String: String]) -> Weapon {
+        Weapon(
+            name: data["name"] ?? "",
+            damage: data["damage"] ?? "",
+            weight: data["weight"] ?? "",
+            rateOfFire: data["rateOfFire"] ?? "",
+            cost: Int(data["cost"] ?? "0") ?? 0,
+            special: data["special"] ?? ""
+        )
+    }
 }
 
 // MARK: - Armor Types
