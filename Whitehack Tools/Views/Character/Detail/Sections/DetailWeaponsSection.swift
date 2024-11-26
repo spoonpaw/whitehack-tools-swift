@@ -40,7 +40,7 @@ private struct WeaponDetailRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Name and Cost
+            // Name
             HStack {
                 Label {
                     Text(weapon.name)
@@ -48,16 +48,6 @@ private struct WeaponDetailRow: View {
                 } icon: {
                     IconFrame(icon: Ph.sword.bold)
                 }
-                
-                Spacer()
-                
-                Label {
-                    Text("\(weapon.cost) GP")
-                        .font(.subheadline)
-                } icon: {
-                    IconFrame(icon: Ph.coins.bold, color: .yellow)
-                }
-                .foregroundColor(.secondary)
             }
             
             Divider()

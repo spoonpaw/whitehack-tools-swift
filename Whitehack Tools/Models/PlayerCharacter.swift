@@ -460,15 +460,13 @@ struct Weapon: Codable, Identifiable {
     var damage: String
     var weight: String
     var rateOfFire: String
-    var cost: Int
     var special: String
     
-    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", cost: Int = 0, special: String = "") {
+    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "") {
         self.name = name
         self.damage = damage
         self.weight = weight
         self.rateOfFire = rateOfFire
-        self.cost = cost
         self.special = special
     }
     
@@ -478,7 +476,6 @@ struct Weapon: Codable, Identifiable {
             damage: data["damage"] ?? "",
             weight: data["weight"] ?? "",
             rateOfFire: data["rateOfFire"] ?? "",
-            cost: Int(data["cost"] ?? "0") ?? 0,
             special: data["special"] ?? ""
         )
     }

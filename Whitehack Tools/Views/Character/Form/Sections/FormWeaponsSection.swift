@@ -70,7 +70,6 @@ struct FormWeaponsSection: View {
                                         damage: weaponData["damage"] ?? "",
                                         weight: weaponData["weight"] ?? "",
                                         rateOfFire: weaponData["rateOfFire"] ?? "",
-                                        cost: Int(weaponData["cost"] ?? "") ?? 0,
                                         special: weaponData["special"] ?? ""
                                     )
                                     weapons.append(weapon)
@@ -170,27 +169,16 @@ struct WeaponRow: View {
                 }
                 .font(.subheadline)
                 
-                // Cost and Special
-                HStack {
-                    // Cost
+                // Special
+                if !weapon.special.isEmpty {
                     HStack {
-                        IconFrame(icon: Ph.coins.bold, color: .yellow)
-                        Text("\(weapon.cost) GP")
+                        IconFrame(icon: Ph.star.bold, color: .purple)
+                        Text(weapon.special)
+                            .italic()
                             .foregroundStyle(.secondary)
                     }
-                    
-                    if !weapon.special.isEmpty {
-                        Spacer()
-                        // Special
-                        HStack {
-                            IconFrame(icon: Ph.star.bold, color: .purple)
-                            Text(weapon.special)
-                                .italic()
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+                    .font(.caption)
                 }
-                .font(.caption)
             }
             
             Spacer()
@@ -227,7 +215,6 @@ struct WeaponEditRow: View {
     @State private var damage: String
     @State private var weight: String
     @State private var rateOfFire: String
-    @State private var cost: String
     @State private var special: String
     
     init(weapon: Weapon, onSave: @escaping (Weapon) -> Void) {
@@ -237,7 +224,6 @@ struct WeaponEditRow: View {
         _damage = State(initialValue: weapon.damage)
         _weight = State(initialValue: weapon.weight)
         _rateOfFire = State(initialValue: weapon.rateOfFire)
-        _cost = State(initialValue: String(weapon.cost))
         _special = State(initialValue: weapon.special)
     }
     
@@ -264,12 +250,6 @@ struct WeaponEditRow: View {
             }
             
             HStack {
-                IconFrame(icon: Ph.coins.bold, color: .yellow)
-                TextField("Cost", text: $cost)
-                    .keyboardType(.numberPad)
-            }
-            
-            HStack {
                 IconFrame(icon: Ph.star.bold, color: .purple)
                 TextField("Special", text: $special)
             }
@@ -281,7 +261,6 @@ struct WeaponEditRow: View {
                         damage: damage,
                         weight: weight,
                         rateOfFire: rateOfFire,
-                        cost: Int(cost) ?? 0,
                         special: special
                     )
                     onSave(updatedWeapon)
@@ -398,7 +377,6 @@ struct CustomWeaponForm: View {
     @State private var damage = ""
     @State private var weight = ""
     @State private var rateOfFire = ""
-    @State private var cost = ""
     @State private var special = ""
     @State private var editingWeapon: Weapon?
     
@@ -423,7 +401,6 @@ struct CustomWeaponForm: View {
                                     damage = weapon.damage
                                     weight = weapon.weight
                                     rateOfFire = weapon.rateOfFire
-                                    cost = "\(weapon.cost)"
                                     special = weapon.special
                                 }) {
                                     Image(systemName: "pencil.circle.fill")
@@ -486,19 +463,6 @@ struct CustomWeaponForm: View {
                 
                 Section {
                     HStack {
-                        IconFrame(icon: Ph.coins.bold, color: Color.yellow)
-                        Text("Cost")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("GP", text: $cost)
-                            .keyboardType(.numberPad)
-                    }
-                } header: {
-                    Text("Cost")
-                }
-                
-                Section {
-                    HStack {
                         IconFrame(icon: Ph.star.bold, color: Color.purple)
                         Text("Special")
                             .foregroundStyle(Color.secondary)
@@ -520,7 +484,6 @@ struct CustomWeaponForm: View {
                         damage: damage,
                         weight: weight,
                         rateOfFire: rateOfFire,
-                        cost: Int(cost) ?? 0,
                         special: special
                     )
                     if let editingWeapon = editingWeapon,
