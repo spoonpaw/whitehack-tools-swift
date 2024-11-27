@@ -215,6 +215,8 @@ struct WeaponEditRow: View {
     let onSave: (Weapon) -> Void
     let onCancel: () -> Void
     
+    let weapon: Weapon  // Add this back
+    
     // Basic Properties
     @State private var name: String
     @State private var damage: String
@@ -236,6 +238,7 @@ struct WeaponEditRow: View {
     
     // Initialize with a weapon
     init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
+        self.weapon = weapon  // Initialize the weapon property
         self.onSave = onSave
         self.onCancel = onCancel
         
@@ -580,6 +583,23 @@ struct WeaponEditRow: View {
         }
         .padding()
         .onAppear {
+            // Reset state to match the input weapon
+            name = weapon.name
+            damage = weapon.damage
+            weight = weapon.weight
+            range = weapon.range
+            rateOfFire = weapon.rateOfFire
+            special = weapon.special
+            isEquipped = weapon.isEquipped
+            isStashed = weapon.isStashed
+            isMagical = weapon.isMagical
+            isCursed = weapon.isCursed
+            bonus = weapon.bonus
+            quantity = weapon.quantity
+            isBonus = weapon.bonus >= 0
+            bonusString = "\(abs(weapon.bonus))"
+            isProcessingAction = false
+            
             print("🎭 WeaponEditRow appeared")
             print("   Name: \(name)")
             print("   Damage: \(damage)")
@@ -1125,7 +1145,7 @@ struct FormWeaponsSection: View {
                                 isAddingNew = false
                             }
                         })
-                        .id(weapon.id)  // Force view recreation when weapon changes
+                        .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
                     } else {
                         VStack(spacing: 12) {
                             Text("Select Weapon Type")
@@ -1177,6 +1197,7 @@ struct FormWeaponsSection: View {
                                 print("❌ Canceling weapon edit - reverting to original state")
                                 editingWeaponId = nil
                             })
+                            .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
                         }
                     } else {
                         WeaponRow(weapon: weapon, onEdit: {
