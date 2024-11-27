@@ -520,13 +520,14 @@ struct WeaponEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Picker("Weight", selection: $weight) {
+                    Picker("", selection: $weight) {
                         Text("No size (100/slot)").tag("No size")
                         Text("Minor (2/slot)").tag("Minor")
                         Text("Regular (1 slot)").tag("Regular")
                         Text("Heavy (2 slots)").tag("Heavy")
                     }
                     .pickerStyle(.menu)
+                    .labelsHidden()
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
@@ -576,12 +577,15 @@ struct WeaponEditRow: View {
                 Text("Quantity")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Label {
-                    Stepper(value: $quantity, in: 1...99) {
-                        Text("Quantity: \(quantity)")
+                HStack {
+                    Label {
+                        Text("\(quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .gray)
                     }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .gray)
+                    Spacer()
+                    Stepper("", value: $quantity, in: 1...99)
+                        .labelsHidden()
                 }
             }
             
@@ -627,13 +631,16 @@ struct WeaponEditRow: View {
                 Text(bonus == 0 ? "No Modifier" : (bonus > 0 ? "Bonus" : "Penalty"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Label {
-                    Stepper(value: $bonus, in: -5...5) {
-                        Text("\(bonus == 0 ? "Modifier" : (bonus > 0 ? "Bonus" : "Penalty")): \(bonus >= 0 ? "+" : "")\(bonus)")
+                HStack {
+                    Label {
+                        Text("\(bonus >= 0 ? "+" : "")\(bonus)")
+                    } icon: {
+                        IconFrame(icon: bonus == 0 ? Ph.equals.bold : (bonus > 0 ? Ph.plus.bold : Ph.minus.bold),
+                                color: bonus == 0 ? .gray : (bonus > 0 ? .green : .red))
                     }
-                } icon: {
-                    IconFrame(icon: bonus == 0 ? Ph.equals.bold : (bonus > 0 ? Ph.plus.bold : Ph.minus.bold),
-                            color: bonus == 0 ? .gray : (bonus > 0 ? .green : .red))
+                    Spacer()
+                    Stepper("", value: $bonus, in: -5...5)
+                        .labelsHidden()
                 }
             }
             
