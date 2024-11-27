@@ -467,8 +467,9 @@ struct Weapon: Codable, Identifiable, Hashable {
     var isMagical: Bool
     var isCursed: Bool
     var bonus: Int
+    var quantity: Int
     
-    init(id: UUID = UUID(), name: String = "", damage: String = "", weight: String = "", range: String = "", rateOfFire: String = "-", special: String = "", isEquipped: Bool = false, isStashed: Bool = false, isMagical: Bool = false, isCursed: Bool = false, bonus: Int = 0) {
+    init(id: UUID = UUID(), name: String = "", damage: String = "", weight: String = "", range: String = "", rateOfFire: String = "-", special: String = "", isEquipped: Bool = false, isStashed: Bool = false, isMagical: Bool = false, isCursed: Bool = false, bonus: Int = 0, quantity: Int = 1) {
         self.id = id
         self.name = name
         self.damage = damage
@@ -481,6 +482,7 @@ struct Weapon: Codable, Identifiable, Hashable {
         self.isMagical = isMagical
         self.isCursed = isCursed
         self.bonus = bonus
+        self.quantity = quantity
     }
     
     static func fromData(_ data: [String: String]) -> Weapon {
@@ -496,7 +498,8 @@ struct Weapon: Codable, Identifiable, Hashable {
             isStashed: data["isStashed"]?.lowercased() == "true",
             isMagical: data["isMagical"]?.lowercased() == "true",
             isCursed: data["isCursed"]?.lowercased() == "true",
-            bonus: Int(data["bonus"] ?? "0") ?? 0
+            bonus: Int(data["bonus"] ?? "0") ?? 0,
+            quantity: Int(data["quantity"] ?? "1") ?? 1
         )
     }
 }

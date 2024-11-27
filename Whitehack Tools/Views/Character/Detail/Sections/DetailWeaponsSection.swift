@@ -40,44 +40,50 @@ private struct WeaponDetailRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Name and Status
+            // Name and Quantity
             HStack {
-                Text(weapon.name)
-                    .font(.headline)
+                Label {
+                    Text(weapon.name)
+                        .font(.headline)
+                } icon: {
+                    IconFrame(icon: Ph.sword.bold, color: .blue)
+                }
+                
                 Spacer()
+                
+                Text("×\(weapon.quantity)")
+                    .foregroundColor(.secondary)
+                    .font(.callout)
             }
+            
+            // Status Section
+            HStack {
+                // Equipped Status
+                Label {
+                    Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                        .foregroundColor(weapon.isEquipped ? .green : .secondary)
+                } icon: {
+                    IconFrame(icon: weapon.isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
+                            color: weapon.isEquipped ? .green : .gray)
+                }
+                
+                Spacer()
+                
+                // Location Status
+                Label {
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                        .foregroundColor(weapon.isStashed ? .orange : .secondary)
+                } icon: {
+                    IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: weapon.isStashed ? .orange : .gray)
+                }
+            }
+            .font(.callout)
             
             Divider()
             
             // Combat Stats
             VStack(alignment: .leading, spacing: 4) {
-                // Stashed/On Person Status
-                if weapon.isEquipped {
-                    Label {
-                        Text("Equipped")
-                            .font(.subheadline)
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: .green)
-                    }
-                    .foregroundStyle(.green)
-                } else if weapon.isStashed {
-                    Label {
-                        Text("Stashed")
-                            .font(.subheadline)
-                    } icon: {
-                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                    }
-                    .foregroundStyle(.orange)
-                } else {
-                    Label {
-                        Text("On Person")
-                            .font(.subheadline)
-                    } icon: {
-                        IconFrame(icon: Ph.user.bold, color: .gray)
-                    }
-                    .foregroundStyle(.gray)
-                }
-                
                 // Magical Status
                 if weapon.isMagical {
                     Label {

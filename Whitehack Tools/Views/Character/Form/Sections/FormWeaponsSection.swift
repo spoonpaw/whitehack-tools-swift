@@ -179,16 +179,44 @@ struct WeaponRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Name Section
-            Text("Weapon Name")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            // Name Section with Quantity
             HStack {
-                IconFrame(icon: Ph.textAa.bold, color: .blue)
-                Text(weapon.name)
-                    .font(.headline)
+                Label {
+                    Text(weapon.name)
+                } icon: {
+                    IconFrame(icon: Ph.sword.bold, color: .blue)
+                }
+                
                 Spacer()
+                
+                Text("×\(weapon.quantity)")
+                    .foregroundColor(.secondary)
+                    .font(.callout)
             }
+            
+            // Status Section
+            HStack {
+                // Equipped Status
+                Label {
+                    Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                        .foregroundColor(weapon.isEquipped ? .green : .secondary)
+                } icon: {
+                    IconFrame(icon: weapon.isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
+                            color: weapon.isEquipped ? .green : .gray)
+                }
+                
+                Spacer()
+                
+                // Location Status
+                Label {
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                        .foregroundColor(weapon.isStashed ? .orange : .secondary)
+                } icon: {
+                    IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: weapon.isStashed ? .orange : .gray)
+                }
+            }
+            .font(.callout)
             
             Divider()
             
@@ -197,28 +225,6 @@ struct WeaponRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 8) {
-                // Stashed Status
-                Label {
-                    Text(weapon.isStashed ? "Stashed" : "On Person")
-                } icon: {
-                    if weapon.isStashed {
-                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                    } else {
-                        IconFrame(icon: Ph.user.bold, color: .gray)
-                    }
-                }
-                .foregroundStyle(weapon.isStashed ? .orange : .gray)
-                
-                // Equipped Status (only if not stashed)
-                if !weapon.isStashed {
-                    Label {
-                        Text(weapon.isEquipped ? "Currently Equipped" : "Unequipped")
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                    }
-                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
-                }
-                
                 // Magical Status
                 if weapon.isMagical {
                     Label {
@@ -359,6 +365,7 @@ struct WeaponEditRow: View {
     @State private var isMagical: Bool
     @State private var isCursed: Bool
     @State private var bonus: Int
+    @State private var quantity: Int
     
     private let numberFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -392,6 +399,7 @@ struct WeaponEditRow: View {
         _isMagical = State(initialValue: weapon.isMagical)
         _isCursed = State(initialValue: weapon.isCursed)
         _bonus = State(initialValue: weapon.bonus)
+        _quantity = State(initialValue: weapon.quantity)
     }
     
     var body: some View {
@@ -412,10 +420,25 @@ struct WeaponEditRow: View {
             Text("Combat Statistics")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+            
             VStack(alignment: .leading, spacing: 8) {
+                // Quantity
+                Label {
+                    VStack(alignment: .leading) {
+                        Text("Quantity")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        TextField("1", value: $quantity, formatter: numberFormatter)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .blue)
+                }
+                
                 // Equipped Status
                 Label {
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                    Toggle(isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
                             isEquipped = newValue
@@ -423,15 +446,18 @@ struct WeaponEditRow: View {
                                 isStashed = false
                             }
                         }
-                    ))
+                    )) {
+                        Text(isEquipped ? "Equipped" : "Unequipped")
+                            .foregroundColor(isEquipped ? .green : .secondary)
+                    }
                 } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
+                    IconFrame(icon: isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
+                            color: isEquipped ? .green : .gray)
                 }
-                .foregroundStyle(isEquipped ? .green : .gray)
                 
                 // Stashed Status
                 Label {
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                    Toggle(isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
                             isStashed = newValue
@@ -439,11 +465,14 @@ struct WeaponEditRow: View {
                                 isEquipped = false
                             }
                         }
-                    ))
+                    )) {
+                        Text(isStashed ? "Stashed" : "On Person")
+                            .foregroundColor(isStashed ? .orange : .secondary)
+                    }
                 } icon: {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, color: isStashed ? .orange : .gray)
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: isStashed ? .orange : .gray)
                 }
-                .foregroundStyle(isStashed ? .orange : .gray)
                 
                 // Magical Status
                 Label {
@@ -610,7 +639,7 @@ struct WeaponEditRow: View {
                 // Save Button
                 Button(action: {
                     let updatedWeapon = Weapon(
-                        id: UUID(),
+                        id: weapon.id,
                         name: name,
                         damage: damage,
                         weight: weight,
@@ -621,7 +650,8 @@ struct WeaponEditRow: View {
                         isStashed: isStashed,
                         isMagical: isMagical,
                         isCursed: isCursed,
-                        bonus: bonus
+                        bonus: bonus,
+                        quantity: quantity
                     )
                     onSave(updatedWeapon)
                 }) {
