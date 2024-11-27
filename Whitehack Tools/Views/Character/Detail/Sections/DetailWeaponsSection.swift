@@ -42,50 +42,39 @@ private struct WeaponDetailRow: View {
         VStack(alignment: .leading, spacing: 8) {
             // Name and Status
             HStack {
-                Label {
-                    Text(weapon.name)
-                        .font(.headline)
-                } icon: {
-                    IconFrame(icon: Ph.sword.bold)
-                }
-                
+                Text(weapon.name)
+                    .font(.headline)
                 Spacer()
             }
-            
-            // Status Indicators
-            HStack(spacing: 16) {
-                // Stashed Status
-                Label {
-                    Text(weapon.isStashed ? "Stashed" : "On Person")
-                        .font(.subheadline)
-                        .frame(width: 80, alignment: .leading)
-                } icon: {
-                    IconFrame(icon: Ph.warehouse.bold, color: weapon.isStashed ? .orange : .gray)
-                }
-                .foregroundStyle(weapon.isStashed ? .orange : .gray)
-                .frame(minWidth: 160, alignment: .leading)
-                
-                // Equipped Status (only if not stashed)
-                if !weapon.isStashed {
-                    Label {
-                        Text(weapon.isEquipped ? "Equipped" : "Not Equipped")
-                            .font(.subheadline)
-                            .frame(width: 100, alignment: .leading)
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                    }
-                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
-                    .frame(minWidth: 160, alignment: .leading)
-                }
-                
-                Spacer()
-            }
-            .padding(.vertical, 4)
             
             Divider()
             
             // Combat Stats
             VStack(alignment: .leading, spacing: 4) {
+                // Stashed/On Person Status
+                Label {
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                        .font(.subheadline)
+                } icon: {
+                    if weapon.isStashed {
+                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
+                    } else {
+                        IconFrame(icon: Ph.user.bold, color: .gray)
+                    }
+                }
+                .foregroundStyle(weapon.isStashed ? .orange : .gray)
+                
+                // Equipped Status (only if not stashed)
+                if !weapon.isStashed {
+                    Label {
+                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    }
+                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
+                }
+                
                 Label {
                     Text("Damage: \(weapon.damage)")
                 } icon: {

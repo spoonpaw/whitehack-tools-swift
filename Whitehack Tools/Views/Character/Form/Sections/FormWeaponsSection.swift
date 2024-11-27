@@ -168,10 +168,6 @@ struct WeaponRow: View {
                 IconFrame(icon: Ph.textAa.bold, color: .blue)
                 Text(weapon.name)
                     .font(.headline)
-                if weapon.isEquipped {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                }
                 Spacer()
             }
             
@@ -182,21 +178,27 @@ struct WeaponRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 8) {
-                // Equipped Status
-                Label {
-                    Text(weapon.isEquipped ? "Currently Equipped" : "Not Equipped")
-                } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                }
-                .foregroundStyle(weapon.isEquipped ? .green : .gray)
-                
                 // Stashed Status
                 Label {
                     Text(weapon.isStashed ? "Stashed" : "On Person")
                 } icon: {
-                    IconFrame(icon: Ph.warehouse.bold, color: weapon.isStashed ? .orange : .gray)
+                    if weapon.isStashed {
+                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
+                    } else {
+                        IconFrame(icon: Ph.user.bold, color: .gray)
+                    }
                 }
                 .foregroundStyle(weapon.isStashed ? .orange : .gray)
+                
+                // Equipped Status (only if not stashed)
+                if !weapon.isStashed {
+                    Label {
+                        Text(weapon.isEquipped ? "Currently Equipped" : "Unequipped")
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    }
+                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
+                }
                 
                 // Damage
                 Label {
@@ -243,8 +245,6 @@ struct WeaponRow: View {
                     .foregroundColor(.secondary)
                 Label {
                     Text(weapon.special)
-                        .font(.system(.caption))
-                        .fontWeight(.light)
                 } icon: {
                     IconFrame(icon: Ph.star.bold, color: .purple)
                 }
@@ -350,7 +350,7 @@ struct WeaponEditRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Equipped Status
                 Label {
-                    Toggle("Equipped", isOn: Binding(
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
                             isEquipped = newValue
@@ -366,7 +366,7 @@ struct WeaponEditRow: View {
                 
                 // Stashed Status
                 Label {
-                    Toggle("Stashed", isOn: Binding(
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
                             isStashed = newValue
@@ -376,7 +376,11 @@ struct WeaponEditRow: View {
                         }
                     ))
                 } icon: {
-                    IconFrame(icon: Ph.warehouse.bold, color: isStashed ? .orange : .gray)
+                    if isStashed {
+                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
+                    } else {
+                        IconFrame(icon: Ph.user.bold, color: .gray)
+                    }
                 }
                 .foregroundStyle(isStashed ? .orange : .gray)
                 
@@ -631,8 +635,6 @@ struct WeaponDataRow: View {
                     
                     Label {
                         Text(special)
-                            .font(.system(.caption))
-                            .fontWeight(.light)
                     } icon: {
                         IconFrame(icon: Ph.star.bold, color: Color.purple)
                     }
