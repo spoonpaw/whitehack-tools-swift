@@ -490,69 +490,109 @@ struct WeaponEditRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Name Section
-            Label {
-                TextField("Weapon Name", text: $name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } icon: {
-                IconFrame(icon: Ph.sword.bold, color: .purple)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weapon Name")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Weapon Name", text: $name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.sword.bold, color: .purple)
+                }
             }
             
             // Damage Section
-            Label {
-                TextField("Damage (e.g. 1d6+1)", text: $damage)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } icon: {
-                IconFrame(icon: Ph.target.bold, color: .red)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Damage")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Damage (e.g. 1d6+1)", text: $damage)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.target.bold, color: .red)
+                }
             }
             
             // Weight Section
-            Label {
-                Picker("Weight", selection: $weight) {
-                    Text("No size (100/slot)").tag("No size")
-                    Text("Minor (2/slot)").tag("Minor")
-                    Text("Regular (1 slot)").tag("Regular")
-                    Text("Heavy (2 slots)").tag("Heavy")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Picker("Weight", selection: $weight) {
+                        Text("No size (100/slot)").tag("No size")
+                        Text("Minor (2/slot)").tag("Minor")
+                        Text("Regular (1 slot)").tag("Regular")
+                        Text("Heavy (2 slots)").tag("Heavy")
+                    }
+                    .pickerStyle(.menu)
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
-                .pickerStyle(.menu)
-            } icon: {
-                IconFrame(icon: Ph.scales.bold, color: .blue)
             }
             
             // Rate of Fire Section
-            Label {
-                TextField("Rate of Fire", text: $rateOfFire)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } icon: {
-                IconFrame(icon: Ph.timer.bold, color: .orange)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Rate of Fire")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Rate of Fire", text: $rateOfFire)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.timer.bold, color: .orange)
+                }
             }
             
             // Range Section
-            Label {
-                TextField("Range", text: $range)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } icon: {
-                IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Range")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Range", text: $range)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+                }
             }
             
             // Special Section
-            Label {
-                TextField("Special Properties", text: $special)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            } icon: {
-                IconFrame(icon: Ph.star.bold, color: .yellow)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Special Properties")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Special Properties", text: $special)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .yellow)
+                }
             }
             
             // Quantity Section
-            Label {
-                Stepper(value: $quantity, in: 1...99) {
-                    Text("Quantity: \(quantity)")
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Stepper(value: $quantity, in: 1...99) {
+                        Text("Quantity: \(quantity)")
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .gray)
                 }
-            } icon: {
-                IconFrame(icon: Ph.stack.bold, color: .gray)
             }
             
             // Status Section
             VStack(alignment: .leading, spacing: 8) {
+                Text("Status")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 4)
+                
                 // Equipped Status
                 Label {
                     Toggle("Equipped", isOn: $isEquipped)
@@ -583,17 +623,20 @@ struct WeaponEditRow: View {
             }
             
             // Bonus Section
-            Label {
-                HStack {
-                    Text("Bonus/Penalty:")
-                    Spacer()
-                    Text("\(bonus >= 0 ? "+" : "")\(bonus)")
-                        .frame(minWidth: 40)
-                    Stepper("", value: $bonus, in: -5...5)
-                        .labelsHidden()
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Bonus/Penalty")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        Text("\(bonus >= 0 ? "+" : "")\(bonus)")
+                            .frame(minWidth: 40)
+                        Stepper("", value: $bonus, in: -5...5)
+                            .labelsHidden()
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.plusMinus.bold, color: .blue)
                 }
-            } icon: {
-                IconFrame(icon: Ph.plusMinus.bold, color: .blue)
             }
             
             // Save/Cancel Buttons
