@@ -598,14 +598,32 @@ struct WeaponEditRow: View {
                 
                 // Equipped Status
                 Label {
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                        get: { isEquipped },
+                        set: { newValue in
+                            isEquipped = newValue
+                            if newValue {
+                                // If equipping, unstash
+                                isStashed = false
+                            }
+                        }
+                    ))
                 } icon: {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                 }
                 
                 // Stashed Status
                 Label {
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                        get: { isStashed },
+                        set: { newValue in
+                            isStashed = newValue
+                            if newValue {
+                                // If stashing, unequip
+                                isEquipped = false
+                            }
+                        }
+                    ))
                 } icon: {
                     IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
                             color: isStashed ? .brown : .blue)
