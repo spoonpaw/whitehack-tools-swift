@@ -190,6 +190,14 @@ struct WeaponRow: View {
                 }
                 .foregroundStyle(weapon.isEquipped ? .green : .gray)
                 
+                // Stashed Status
+                Label {
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                } icon: {
+                    IconFrame(icon: Ph.warehouse.bold, color: weapon.isStashed ? .orange : .gray)
+                }
+                .foregroundStyle(weapon.isStashed ? .orange : .gray)
+                
                 // Damage
                 Label {
                     Text("Damage: \(weapon.damage)")
@@ -295,6 +303,7 @@ struct WeaponEditRow: View {
     @State private var special: String
     @State private var range: String
     @State private var isEquipped: Bool
+    @State private var isStashed: Bool
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -317,6 +326,7 @@ struct WeaponEditRow: View {
         _special = State(initialValue: weapon.special)
         _range = State(initialValue: weapon.range)
         _isEquipped = State(initialValue: weapon.isEquipped)
+        _isStashed = State(initialValue: weapon.isStashed)
     }
     
     var body: some View {
@@ -340,11 +350,35 @@ struct WeaponEditRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Equipped Status
                 Label {
-                    Toggle("Equipped", isOn: $isEquipped)
+                    Toggle("Equipped", isOn: Binding(
+                        get: { isEquipped },
+                        set: { newValue in
+                            isEquipped = newValue
+                            if newValue {
+                                isStashed = false
+                            }
+                        }
+                    ))
                 } icon: {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                 }
                 .foregroundStyle(isEquipped ? .green : .gray)
+                
+                // Stashed Status
+                Label {
+                    Toggle("Stashed", isOn: Binding(
+                        get: { isStashed },
+                        set: { newValue in
+                            isStashed = newValue
+                            if newValue {
+                                isEquipped = false
+                            }
+                        }
+                    ))
+                } icon: {
+                    IconFrame(icon: Ph.warehouse.bold, color: isStashed ? .orange : .gray)
+                }
+                .foregroundStyle(isStashed ? .orange : .gray)
                 
                 // Damage
                 Label {
@@ -454,7 +488,8 @@ struct WeaponEditRow: View {
                         rateOfFire: rateOfFire,
                         special: special,
                         range: range,
-                        isEquipped: isEquipped
+                        isEquipped: isEquipped,
+                        isStashed: isStashed
                     )
                     onSave(updatedWeapon)
                 }) {
