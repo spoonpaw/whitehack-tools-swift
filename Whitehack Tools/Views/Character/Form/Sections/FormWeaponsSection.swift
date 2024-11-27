@@ -1,35 +1,107 @@
 import SwiftUI
+import Foundation
 import PhosphorSwift
-
-struct IconFrame<Icon: View>: View {
-    let icon: Icon
-    var color: Color = .blue
-    
-    var body: some View {
-        icon
-            .frame(width: 24, height: 24)
-            .foregroundStyle(color)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(color.opacity(0.1))
-            )
-    }
-}
 
 struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
     @State private var editingWeaponId: UUID?
-    @State private var isAddingNew = false
-    @State private var selectedWeaponName: String?
-    @State private var editingNewWeapon: Weapon?
+    @State private var isAddingNew = false {
+        didSet {
+            print("🔄 isAddingNew changed: \(oldValue) -> \(isAddingNew)")
+            if !isAddingNew {
+                print("🔄 Resetting state after cancel")
+                print("🧹 Cleaning up weapon states")
+                selectedWeaponName = nil
+                editingNewWeapon = nil
+            }
+        }
+    }
+    @State private var selectedWeaponName: String? = nil {
+        didSet {
+            print("🎯 selectedWeaponName changed: \(oldValue.map { "Optional(\"\($0)\")" } ?? "nil") -> \(selectedWeaponName.map { "Optional(\"\($0)\")" } ?? "nil")")
+            if let name = selectedWeaponName {
+                print("🎯 Creating weapon from selection: \(name)")
+                if let weaponData = WeaponData.weapons.first(where: { $0["name"] == name }) {
+                    print("📦 Found weapon data: \(weaponData)")
+                    let weapon = Weapon(
+                        id: UUID(),
+                        name: name,
+                        damage: weaponData["damage"] ?? "",
+                        weight: weaponData["weight"] ?? "",
+                        range: weaponData["range"] ?? "",
+                        rateOfFire: weaponData["rateOfFire"] ?? "",
+                        special: weaponData["special"] ?? "",
+                        isEquipped: false,
+                        isStashed: false,
+                        isMagical: false,
+                        isCursed: false,
+                        bonus: 0,
+                        quantity: 1
+                    )
+                    print("🛠️ Created weapon:")
+                    print("   Name: \(weapon.name)")
+                    print("   Damage: \(weapon.damage)")
+                    print("   Weight: \(weapon.weight)")
+                    print("   Rate of Fire: \(weapon.rateOfFire)")
+                    print("   Range: \(weapon.range)")
+                    print("   Special: \(weapon.special)")
+                    editingNewWeapon = weapon
+                    print("⚔️ editingNewWeapon changed: nil -> Optional(\"\(weapon.name)\")")
+                    print("   Damage: \(weapon.damage)")
+                    print("   Weight: \(weapon.weight)")
+                    print("   Rate of Fire: \(weapon.rateOfFire)")
+                    print("   Range: \(weapon.range)")
+                    print("   Special: \(weapon.special)")
+                }
+            } else {
+                print("⚠️ No weapon selected")
+                editingNewWeapon = nil
+                print("⚔️ editingNewWeapon changed: nil -> nil")
+            }
+        }
+    }
+    @State private var editingNewWeapon: Weapon? = nil
     
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "No size": return "No size (100/slot)"
-        case "Minor": return "Minor (2/slot)"
-        case "Regular": return "Regular (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
-        default: return weight
+    private func createWeaponFromSelection(_ weaponName: String) {
+        print("🎯 Creating weapon from selection: \(weaponName)")
+        
+        if weaponName == "custom" {
+            print("🎨 Creating custom weapon")
+            let newWeapon = Weapon()
+            print("✨ Created empty weapon template")
+            DispatchQueue.main.async {
+                self.editingNewWeapon = newWeapon
+            }
+        } else if let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
+            print("📦 Found weapon data: \(weaponData)")
+            let weapon = Weapon(
+                id: UUID(),
+                name: weaponName,
+                damage: weaponData["damage"] ?? "",
+                weight: weaponData["weight"] ?? "",
+                range: weaponData["range"] ?? "",
+                rateOfFire: weaponData["rateOfFire"] ?? "",
+                special: weaponData["special"] ?? "",
+                isEquipped: false,
+                isStashed: false,
+                isMagical: false,
+                isCursed: false,
+                bonus: 0,
+                quantity: 1
+            )
+            print("🛠️ Created weapon:")
+            print("   Name: \(weapon.name)")
+            print("   Damage: \(weapon.damage)")
+            print("   Weight: \(weapon.weight)")
+            print("   Rate of Fire: \(weapon.rateOfFire)")
+            print("   Range: \(weapon.range)")
+            print("   Special: \(weapon.special)")
+            
+            DispatchQueue.main.async {
+                self.editingNewWeapon = weapon
+            }
+        } else {
+            print("⚠️ No weapon data found for: \(weaponName)")
         }
     }
     
@@ -46,7 +118,10 @@ struct FormWeaponsSection: View {
                         .foregroundColor(.secondary)
                     
                     Button(action: {
-                        isAddingNew = true
+                        print("📱 Add First Weapon tapped")
+                        withAnimation {
+                            isAddingNew = true
+                        }
                     }) {
                         Label("Add Your First Weapon", systemImage: "plus.circle.fill")
                     }
@@ -57,66 +132,54 @@ struct FormWeaponsSection: View {
                 if isAddingNew {
                     if let weapon = editingNewWeapon {
                         WeaponEditRow(weapon: weapon, onSave: { newWeapon in
+                            print("💾 Saving weapon: \(newWeapon.name)")
                             weapons.append(newWeapon)
-                            isAddingNew = false
-                            editingNewWeapon = nil
-                            selectedWeaponName = nil
+                            print("🔄 Resetting state after save")
+                            withAnimation {
+                                isAddingNew = false
+                            }
                         }, onCancel: {
-                            isAddingNew = false
-                            editingNewWeapon = nil
-                            selectedWeaponName = nil
+                            print("❌ Canceling weapon edit for: \(weapon.name)")
+                            print("🔄 Resetting state after cancel")
+                            withAnimation {
+                                isAddingNew = false
+                            }
                         })
+                        .id(weapon.id) // Force a new instance when weapon changes
+                        .transition(.opacity)
                     } else {
                         VStack(spacing: 12) {
-                            if let weapon = editingNewWeapon {
-                                WeaponEditRow(weapon: weapon, onSave: { newWeapon in
-                                    weapons.append(newWeapon)
-                                    isAddingNew = false
+                            Text("Select Weapon Type")
+                                .font(.headline)
+                            
+                            Picker("Select Weapon", selection: $selectedWeaponName) {
+                                Text("Select a Weapon").tag(nil as String?)
+                                ForEach(WeaponData.weapons.map { $0["name"] ?? "" }.sorted(), id: \.self) { name in
+                                    Text(name).tag(name as String?)
+                                }
+                                Text("Custom Weapon").tag("custom" as String?)
+                            }
+                            .pickerStyle(.menu)
+                            .onChange(of: selectedWeaponName) { newValue in
+                                print("🎲 Weapon selection changed to: \(String(describing: newValue))")
+                                if let weaponName = newValue {
+                                    createWeaponFromSelection(weaponName)
+                                } else {
+                                    print("⚠️ No weapon selected")
                                     editingNewWeapon = nil
-                                    selectedWeaponName = nil
-                                }, onCancel: {
-                                    isAddingNew = false
-                                    editingNewWeapon = nil
-                                    selectedWeaponName = nil
-                                })
-                            } else {
-                                HStack {
-                                    Text("Select Weapon")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Spacer()
                                 }
-                                
-                                Picker("", selection: $selectedWeaponName) {
-                                    Text("Select a Weapon").tag(String?.none)
-                                    ForEach(WeaponData.weapons, id: \.["name"]) { weapon in
-                                        Text(weapon["name"] ?? "").tag(weapon["name"] as String?)
-                                    }
-                                    Text("Custom Weapon").tag("custom" as String?)
-                                }
-                                .onChange(of: selectedWeaponName) { newValue in
-                                    print("Selected weapon name: \(String(describing: newValue))")
-                                    if newValue == "custom" {
-                                        editingNewWeapon = Weapon()
-                                    } else if let weaponName = newValue,
-                                              let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
-                                        print("Found weapon data: \(weaponData)")
-                                        editingNewWeapon = Weapon.fromData(weaponData)
-                                        print("Created weapon: \(editingNewWeapon)")
-                                    }
-                                }
-                                
-                                HStack {
-                                    Spacer()
-                                    Button(action: {
+                            }
+                            
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    print("❌ Cancel button tapped")
+                                    withAnimation {
                                         isAddingNew = false
-                                        editingNewWeapon = nil
-                                        selectedWeaponName = nil
-                                    }) {
-                                        Text("Cancel")
-                                            .foregroundColor(.red)
                                     }
-                                    .buttonStyle(.borderless)
+                                }) {
+                                    Text("Cancel")
+                                        .foregroundColor(.red)
                                 }
                             }
                         }
@@ -127,19 +190,25 @@ struct FormWeaponsSection: View {
                 ForEach(weapons) { weapon in
                     if editingWeaponId == weapon.id {
                         WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
+                            print("💾 Saving updated weapon: \(updatedWeapon.name)")
                             if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                print("🔄 Updating weapon at index: \(index)")
                                 weapons[index] = updatedWeapon
                             }
                             editingWeaponId = nil
                         }, onCancel: {
+                            print("❌ Canceling weapon edit for: \(weapon.name)")
                             editingWeaponId = nil
                         })
                     } else {
                         WeaponRow(weapon: weapon, onDelete: { weapon in
+                            print("🚮 Deleting weapon: \(weapon.name)")
                             if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                print("🔄 Removing weapon at index: \(index)")
                                 weapons.remove(at: index)
                             }
                         }, onEdit: {
+                            print("📝 Editing weapon: \(weapon.name)")
                             editingWeaponId = weapon.id
                         })
                     }
@@ -148,7 +217,10 @@ struct FormWeaponsSection: View {
                 
                 if !isAddingNew {
                     Button(action: {
-                        isAddingNew = true
+                        print("🔄 Adding new weapon")
+                        withAnimation {
+                            isAddingNew = true
+                        }
                     }) {
                         Label("Add Another Weapon", systemImage: "plus.circle.fill")
                     }
@@ -385,9 +457,20 @@ struct WeaponEditRow: View {
     }
     
     init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
+        print("🏗️ Initializing WeaponEditRow")
+        print("📝 Initial weapon data:")
+        print("   Name: \(weapon.name)")
+        print("   Damage: \(weapon.damage)")
+        print("   Weight: \(weapon.weight)")
+        print("   Rate of Fire: \(weapon.rateOfFire)")
+        print("   Range: \(weapon.range)")
+        print("   Special: \(weapon.special)")
+        
         self.weapon = weapon
         self.onSave = onSave
         self.onCancel = onCancel
+        
+        // Initialize state with weapon data
         _name = State(initialValue: weapon.name)
         _damage = State(initialValue: weapon.damage)
         _weight = State(initialValue: weapon.weight)
@@ -399,245 +482,134 @@ struct WeaponEditRow: View {
         _isMagical = State(initialValue: weapon.isMagical)
         _isCursed = State(initialValue: weapon.isCursed)
         _bonus = State(initialValue: weapon.bonus)
-        _quantity = State(initialValue: weapon.quantity)
+        _quantity = State(initialValue: max(1, weapon.quantity))
+        
+        print("✅ State initialization complete")
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Name Section
-            Text("Weapon Name")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
             Label {
-                TextField("Enter weapon name", text: $name)
+                TextField("Weapon Name", text: $name)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             } icon: {
-                IconFrame(icon: Ph.textAa.bold, color: .blue)
+                IconFrame(icon: Ph.sword.bold, color: .purple)
             }
             
-            Divider()
+            // Damage Section
+            Label {
+                TextField("Damage (e.g. 1d6+1)", text: $damage)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            } icon: {
+                IconFrame(icon: Ph.target.bold, color: .red)
+            }
             
-            // Combat Stats Section
-            Text("Combat Statistics")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                // Quantity
-                Label {
-                    VStack(alignment: .leading) {
-                        Text("Quantity")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        TextField("1", value: $quantity, formatter: numberFormatter)
-                            .keyboardType(.numberPad)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .blue)
+            // Weight Section
+            Label {
+                Picker("Weight", selection: $weight) {
+                    Text("No size (100/slot)").tag("No size")
+                    Text("Minor (2/slot)").tag("Minor")
+                    Text("Regular (1 slot)").tag("Regular")
+                    Text("Heavy (2 slots)").tag("Heavy")
                 }
-                
+                .pickerStyle(.menu)
+            } icon: {
+                IconFrame(icon: Ph.scales.bold, color: .blue)
+            }
+            
+            // Rate of Fire Section
+            Label {
+                TextField("Rate of Fire", text: $rateOfFire)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            } icon: {
+                IconFrame(icon: Ph.timer.bold, color: .orange)
+            }
+            
+            // Range Section
+            Label {
+                TextField("Range", text: $range)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            } icon: {
+                IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+            }
+            
+            // Special Section
+            Label {
+                TextField("Special Properties", text: $special)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+            } icon: {
+                IconFrame(icon: Ph.star.bold, color: .yellow)
+            }
+            
+            // Quantity Section
+            Label {
+                Stepper(value: $quantity, in: 1...99) {
+                    Text("Quantity: \(quantity)")
+                }
+            } icon: {
+                IconFrame(icon: Ph.stack.bold, color: .gray)
+            }
+            
+            // Status Section
+            VStack(alignment: .leading, spacing: 8) {
                 // Equipped Status
                 Label {
-                    Toggle(isOn: Binding(
-                        get: { isEquipped },
-                        set: { newValue in
-                            isEquipped = newValue
-                            if newValue {
-                                isStashed = false
-                            }
-                        }
-                    )) {
-                        Text(isEquipped ? "Equipped" : "Unequipped")
-                            .foregroundColor(isEquipped ? .green : .secondary)
-                    }
+                    Toggle("Equipped", isOn: $isEquipped)
                 } icon: {
-                    IconFrame(icon: isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
-                            color: isEquipped ? .green : .gray)
+                    IconFrame(icon: Ph.bagSimple.bold, color: .green)
                 }
                 
                 // Stashed Status
                 Label {
-                    Toggle(isOn: Binding(
-                        get: { isStashed },
-                        set: { newValue in
-                            isStashed = newValue
-                            if newValue {
-                                isEquipped = false
-                            }
-                        }
-                    )) {
-                        Text(isStashed ? "Stashed" : "On Person")
-                            .foregroundColor(isStashed ? .orange : .secondary)
-                    }
+                    Toggle("Stashed", isOn: $isStashed)
                 } icon: {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: isStashed ? .orange : .gray)
+                    IconFrame(icon: Ph.warehouse.bold, color: .brown)
                 }
                 
                 // Magical Status
                 Label {
                     Toggle("Magical", isOn: $isMagical)
                 } icon: {
-                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
+                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
                 }
-                .foregroundStyle(isMagical ? .purple : .gray)
                 
                 // Cursed Status
                 Label {
                     Toggle("Cursed", isOn: $isCursed)
                 } icon: {
-                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                    IconFrame(icon: Ph.skull.bold, color: .red)
                 }
-                .foregroundStyle(isCursed ? .red : .gray)
-                
-                // Bonus/Penalty
-                Label {
-                    HStack(spacing: 8) {
-                        // Decrease Button
-                        Button(action: {
-                            bonus -= 1
-                        }) {
-                            Image(systemName: "minus.circle.fill")
-                                .foregroundStyle(Color.purple.opacity(0.8))
-                        }
-                        .buttonStyle(.borderless)
-                        
-                        // Bonus Display with Toggle
-                        HStack(spacing: 2) {
-                            Button(action: {
-                                bonus = -bonus
-                            }) {
-                                Text(bonus >= 0 ? "+" : "-")
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(Color.purple)
-                                    .frame(width: 20)
-                            }
-                            .buttonStyle(.borderless)
-                            
-                            Text("\(abs(bonus))")
-                                .frame(width: 20, alignment: .leading)
-                                .foregroundStyle(Color.purple)
-                        }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.purple.opacity(0.1))
-                        .cornerRadius(8)
-                        
-                        // Increase Button
-                        Button(action: {
-                            bonus += 1
-                        }) {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(Color.purple.opacity(0.8))
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.plusMinus.bold, color: .purple)
-                }
-                .foregroundStyle(.purple)
-                
-                // Damage
-                Label {
-                    VStack(alignment: .leading) {
-                        Text("Damage")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        TextField("Enter damage (e.g., 1d6)", text: $damage)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: .red)
-                }
-                .foregroundStyle(.red)
-                
-                // Weight
-                Label {
-                    VStack(alignment: .leading) {
-                        Text("Weight Category")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Menu {
-                            Button("No size (100/slot)") { weight = "No size" }
-                            Button("Minor (2/slot)") { weight = "Minor" }
-                            Button("Regular (1 slot)") { weight = "Regular" }
-                            Button("Heavy (2 slots)") { weight = "Heavy" }
-                        } label: {
-                            Text(weight.isEmpty ? "Select Weight" : getWeightDisplayText(weight))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-                .foregroundStyle(.blue)
-                
-                // Range
-                Label {
-                    VStack(alignment: .leading) {
-                        Text("Range")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        TextField("Enter range", text: $range)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
-                }
-                .foregroundStyle(.purple)
-                
-                // Rate of Fire
-                Label {
-                    VStack(alignment: .leading) {
-                        Text("Rate of Fire")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        TextField("Enter rate of fire", text: $rateOfFire)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.timer.bold, color: .green)
-                }
-                .foregroundStyle(.green)
             }
             
-            Divider()
-            
-            // Special Properties Section
-            Text("Special Properties")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            // Bonus Section
             Label {
-                VStack(alignment: .leading) {
-                    Text("Special Properties")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    TextField("Enter special properties", text: $special)
+                HStack {
+                    Text("Bonus/Penalty:")
+                    Spacer()
+                    Text("\(bonus >= 0 ? "+" : "")\(bonus)")
+                        .frame(minWidth: 40)
+                    Stepper("", value: $bonus, in: -5...5)
+                        .labelsHidden()
                 }
             } icon: {
-                IconFrame(icon: Ph.star.bold, color: .purple)
+                IconFrame(icon: Ph.plusMinus.bold, color: .blue)
             }
-            .foregroundStyle(.purple)
             
-            Divider()
-            
-            // Action Buttons
-            HStack(spacing: 24) {
+            // Save/Cancel Buttons
+            HStack {
                 Spacer()
-                
-                // Cancel Button
-                Button(action: onCancel) {
-                    Label {
-                        Text("Cancel")
-                            .padding(.horizontal, 8)
-                    } icon: {
-                        Image(systemName: "xmark.circle.fill")
-                            .imageScale(.large)
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                }
-                .foregroundColor(.red)
-                .buttonStyle(BorderlessButtonStyle())
-                
-                // Save Button
                 Button(action: {
+                    print("❌ Cancel button tapped")
+                    onCancel()
+                }) {
+                    Text("Cancel")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(.borderless)
+                
+                Button(action: {
+                    print("💾 Save button tapped")
                     let updatedWeapon = Weapon(
                         id: weapon.id,
                         name: name,
@@ -655,24 +627,23 @@ struct WeaponEditRow: View {
                     )
                     onSave(updatedWeapon)
                 }) {
-                    Label {
-                        Text("Save")
-                            .padding(.horizontal, 8)
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                            .imageScale(.large)
-                            .symbolRenderingMode(.hierarchical)
-                    }
+                    Text("Save")
+                        .bold()
                 }
-                .foregroundColor(.green)
-                .buttonStyle(BorderlessButtonStyle())
+                .buttonStyle(.borderedProminent)
+                .disabled(name.isEmpty || damage.isEmpty)
             }
-            .padding(.top, 8)
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 1)
+        .onAppear {
+            print("🎭 WeaponEditRow appeared")
+            print("   Name: \(name)")
+            print("   Damage: \(damage)")
+            print("   Weight: \(weight)")
+            print("   Rate of Fire: \(rateOfFire)")
+            print("   Range: \(range)")
+            print("   Special: \(special)")
+        }
     }
 }
 
@@ -726,6 +697,7 @@ struct CustomWeaponForm: View {
                             Spacer()
                             HStack(spacing: 12) {
                                 Button(action: {
+                                    print("📝 Editing weapon: \(weapon.name)")
                                     editingWeapon = weapon
                                     name = weapon.name
                                     damage = weapon.damage
@@ -743,7 +715,9 @@ struct CustomWeaponForm: View {
                                         .foregroundColor(.blue)
                                 }
                                 Button(action: {
+                                    print("🚮 Deleting weapon: \(weapon.name)")
                                     if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                        print("🔄 Removing weapon at index: \(index)")
                                         weapons.remove(at: index)
                                     }
                                 }) {
@@ -837,6 +811,7 @@ struct CustomWeaponForm: View {
                         HStack(spacing: 8) {
                             // Decrease Button
                             Button(action: {
+                                print("🔄 Decreasing bonus")
                                 bonus -= 1
                             }) {
                                 Image(systemName: "minus.circle.fill")
@@ -847,6 +822,7 @@ struct CustomWeaponForm: View {
                             // Bonus Display with Toggle
                             HStack(spacing: 2) {
                                 Button(action: {
+                                    print("🔄 Toggling bonus")
                                     bonus = -bonus
                                 }) {
                                     Text(bonus >= 0 ? "+" : "-")
@@ -867,6 +843,7 @@ struct CustomWeaponForm: View {
                             
                             // Increase Button
                             Button(action: {
+                                print("🔄 Increasing bonus")
                                 bonus += 1
                             }) {
                                 Image(systemName: "plus.circle.fill")
@@ -888,6 +865,7 @@ struct CustomWeaponForm: View {
                         Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                             get: { isEquipped },
                             set: { newValue in
+                                print("🔄 Equipped status changed to: \(newValue)")
                                 isEquipped = newValue
                                 if newValue {
                                     isStashed = false
@@ -904,6 +882,7 @@ struct CustomWeaponForm: View {
                         Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                             get: { isStashed },
                             set: { newValue in
+                                print("🔄 Stashed status changed to: \(newValue)")
                                 isStashed = newValue
                                 if newValue {
                                     isEquipped = false
@@ -930,9 +909,11 @@ struct CustomWeaponForm: View {
             .navigationTitle(editingWeapon == nil ? "Add Weapon" : "Edit Weapon")
             .navigationBarItems(
                 leading: Button("Cancel") {
+                    print("❌ Cancel button tapped")
                     isPresented = false
                 },
                 trailing: Button(editingWeapon == nil ? "Save" : "Update") {
+                    print("💾 Save button tapped")
                     if let editingWeapon = editingWeapon {
                         let updatedWeapon = Weapon(
                             id: editingWeapon.id,
@@ -949,6 +930,7 @@ struct CustomWeaponForm: View {
                             bonus: bonus
                         )
                         if let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {
+                            print("🔄 Updating weapon at index: \(index)")
                             weapons[index] = updatedWeapon
                         }
                     } else {
@@ -965,6 +947,7 @@ struct CustomWeaponForm: View {
                             isCursed: isCursed,
                             bonus: bonus
                         )
+                        print("🎯 Created new weapon: \(newWeapon.name)")
                         weapons.append(newWeapon)
                     }
                     isPresented = false
@@ -986,6 +969,7 @@ struct WeaponPickerView: View {
             List {
                 Section {
                     Button(action: {
+                        print("🎨 Creating custom weapon")
                         isPresented = false
                         showCustomWeapon()
                     }) {
@@ -1007,6 +991,7 @@ struct WeaponPickerView: View {
                 Section {
                     ForEach(WeaponData.weapons, id: \.["name"]) { weaponData in
                         Button(action: {
+                            print("📦 Adding weapon: \(weaponData["name"] ?? "")")
                             weapons.append(Weapon.fromData(weaponData))
                             isPresented = false
                             isAddingNew = false
@@ -1021,6 +1006,7 @@ struct WeaponPickerView: View {
             .navigationTitle("Add Weapon")
             .navigationBarItems(
                 leading: Button("Cancel") {
+                    print("❌ Cancel button tapped")
                     isPresented = false
                     isAddingNew = false
                 }
@@ -1105,5 +1091,20 @@ struct WeaponDataRow: View {
             }
         }
         .padding(.vertical, 8)
+    }
+}
+
+struct IconFrame<Icon: View>: View {
+    let icon: Icon
+    var color: Color = .blue
+    
+    var body: some View {
+        icon
+            .frame(width: 24, height: 24)
+            .foregroundStyle(color)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(color.opacity(0.1))
+            )
     }
 }
