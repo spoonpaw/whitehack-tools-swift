@@ -133,7 +133,7 @@ struct WeaponRow: View {
                 }
                 
                 // Magical Properties Section
-                if weapon.isMagical || weapon.isCursed || weapon.bonus != 0 {
+                if weapon.isMagical || weapon.isCursed {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Magical Properties")
                             .font(.subheadline)
@@ -153,14 +153,21 @@ struct WeaponRow: View {
                                     IconFrame(icon: Ph.skull.bold, color: .red)
                                 }
                             }
-                            if weapon.bonus != 0 {
-                                Label {
-                                    Text("\(abs(weapon.bonus))")
-                                } icon: {
-                                    IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
-                                            color: weapon.bonus > 0 ? .green : .red)
-                                }
-                            }
+                        }
+                    }
+                }
+                
+                // Bonus/Penalty Section
+                if weapon.bonus != 0 {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(weapon.bonus > 0 ? "Bonus" : "Penalty")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("\(abs(weapon.bonus))")
+                        } icon: {
+                            IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                    color: weapon.bonus > 0 ? .green : .red)
                         }
                     }
                 }
@@ -486,45 +493,47 @@ struct WeaponEditRow: View {
                     IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
                     Toggle("Cursed", isOn: $isCursed)
                 }
-                
-                // Modifier Control
-                VStack(alignment: .leading, spacing: 8) {
-                    // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
-                    Toggle(isOn: $isBonus) {
-                        Text(isBonus ? "Bonus" : "Penalty")
-                            .foregroundColor(isBonus ? .green : .red)
-                    }
-                    .onChange(of: isBonus) { newValue in
-                        bonus = newValue ? abs(bonus) : -abs(bonus)
-                    }
-                    
-                    // Value Control
-                    HStack {
-                        IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
-                                color: isBonus ? .green : .red)
-                        TextField("", text: $bonusString)
-                            .keyboardType(.numberPad)
-                            .frame(width: 60)
-                            .multilineTextAlignment(.leading)
-                            .onChange(of: bonusString) { newValue in
-                                validateBonusInput(newValue)
-                            }
-                            .onChange(of: bonus) { newValue in
-                                bonusString = "\(abs(newValue))"
-                            }
-                        Spacer()
-                        Stepper("", value: Binding(
-                            get: { abs(bonus) },
-                            set: { newValue in
-                                let value = max(0, newValue)  // Prevent negative values
-                                bonus = isBonus ? value : -value
-                            }
-                        ), in: 0...Int.max)  // Add range constraint
-                        .labelsHidden()
-                    }
-                }
             } header: {
                 Text("Magical Properties")
+            }
+            
+            // Bonus/Penalty Section
+            Section {
+                // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
+                Toggle(isOn: $isBonus) {
+                    Text(isBonus ? "Bonus" : "Penalty")
+                        .foregroundColor(isBonus ? .green : .red)
+                }
+                .onChange(of: isBonus) { newValue in
+                    bonus = newValue ? abs(bonus) : -abs(bonus)
+                }
+                
+                // Value Control
+                HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
+                    TextField("", text: $bonusString)
+                        .keyboardType(.numberPad)
+                        .frame(width: 60)
+                        .multilineTextAlignment(.leading)
+                        .onChange(of: bonusString) { newValue in
+                            validateBonusInput(newValue)
+                        }
+                        .onChange(of: bonus) { newValue in
+                            bonusString = "\(abs(newValue))"
+                        }
+                    Spacer()
+                    Stepper("", value: Binding(
+                        get: { abs(bonus) },
+                        set: { newValue in
+                            let value = max(0, newValue)  // Prevent negative values
+                            bonus = isBonus ? value : -value
+                        }
+                    ), in: 0...Int.max)  // Add range constraint
+                    .labelsHidden()
+                }
+            } header: {
+                Text("Bonus/Penalty")
             }
             
             // Save/Cancel Buttons
