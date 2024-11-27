@@ -143,7 +143,7 @@ struct CharacterFormView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Save") {
+                Button("Save All") {
                     saveCharacter()
                     dismiss()
                 }
