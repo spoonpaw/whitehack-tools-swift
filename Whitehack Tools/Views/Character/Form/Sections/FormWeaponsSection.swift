@@ -20,8 +20,8 @@ struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
     @State private var editingWeaponId: UUID?
     @State private var isAddingNew = false
-    @State private var isCustomWeapon = false
     @State private var selectedWeaponName: String?
+    @State private var editingNewWeapon: Weapon?
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -55,18 +55,27 @@ struct FormWeaponsSection: View {
                 .padding(.vertical, 20)
             } else {
                 if isAddingNew {
-                    if isCustomWeapon {
-                        WeaponEditRow(weapon: Weapon(), onSave: { newWeapon in
+                    if let weapon = editingNewWeapon {
+                        WeaponEditRow(weapon: weapon, onSave: { newWeapon in
                             weapons.append(newWeapon)
                             isAddingNew = false
-                            isCustomWeapon = false
+                            editingNewWeapon = nil
+                            selectedWeaponName = nil
                         }, onCancel: {
                             isAddingNew = false
-                            isCustomWeapon = false
+                            editingNewWeapon = nil
+                            selectedWeaponName = nil
                         })
                     } else {
-                        VStack {
-                            Picker("Select Weapon", selection: $selectedWeaponName) {
+                        VStack(spacing: 12) {
+                            HStack {
+                                Text("Select Weapon")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            
+                            Picker("", selection: $selectedWeaponName) {
                                 Text("Select a Weapon").tag(String?.none)
                                 ForEach(WeaponData.weapons, id: \.["name"]) { weapon in
                                     Text(weapon["name"] ?? "").tag(weapon["name"] as String?)
@@ -75,35 +84,25 @@ struct FormWeaponsSection: View {
                             }
                             .onChange(of: selectedWeaponName) { newValue in
                                 if newValue == "custom" {
-                                    isCustomWeapon = true
+                                    editingNewWeapon = Weapon()
                                 } else if let weaponName = newValue,
                                           let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
-                                    let weapon = Weapon(
-                                        id: UUID(),
-                                        name: weaponData["name"] ?? "",
-                                        damage: weaponData["damage"] ?? "",
-                                        weight: weaponData["weight"] ?? "",
-                                        range: weaponData["range"] ?? "",
-                                        rateOfFire: weaponData["rateOfFire"] ?? "-",
-                                        special: weaponData["special"] ?? "",
-                                        isEquipped: false,
-                                        isStashed: false,
-                                        isMagical: false,
-                                        isCursed: false,
-                                        bonus: 0
-                                    )
-                                    weapons.append(weapon)
-                                    isAddingNew = false
-                                    selectedWeaponName = nil
+                                    editingNewWeapon = Weapon.fromData(weaponData)
                                 }
                             }
                             
-                            Button("Cancel") {
-                                isAddingNew = false
-                                isCustomWeapon = false
-                                selectedWeaponName = nil
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    isAddingNew = false
+                                    editingNewWeapon = nil
+                                    selectedWeaponName = nil
+                                }) {
+                                    Text("Cancel")
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(.borderless)
                             }
-                            .foregroundColor(.red)
                         }
                         .padding(.vertical, 8)
                     }
@@ -134,8 +133,6 @@ struct FormWeaponsSection: View {
                 if !isAddingNew {
                     Button(action: {
                         isAddingNew = true
-                        isCustomWeapon = false
-                        selectedWeaponName = nil
                     }) {
                         Label("Add Another Weapon", systemImage: "plus.circle.fill")
                     }
@@ -402,7 +399,7 @@ struct WeaponEditRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Equipped Status
                 Label {
-                    Toggle("Equipped", isOn: Binding(
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
                             isEquipped = newValue
@@ -418,7 +415,7 @@ struct WeaponEditRow: View {
                 
                 // Stashed Status
                 Label {
-                    Toggle("Stashed", isOn: Binding(
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
                             isStashed = newValue
@@ -428,11 +425,7 @@ struct WeaponEditRow: View {
                         }
                     ))
                 } icon: {
-                    if isStashed {
-                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                    } else {
-                        IconFrame(icon: Ph.user.bold, color: .gray)
-                    }
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, color: isStashed ? .orange : .gray)
                 }
                 .foregroundStyle(isStashed ? .orange : .gray)
                 
@@ -843,18 +836,34 @@ struct CustomWeaponForm: View {
                 Section {
                     HStack {
                         IconFrame(icon: Ph.bagSimple.bold, color: Color.green)
-                        Text("Equipped")
+                        Text("Status")
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
-                        Toggle("Equipped", isOn: $isEquipped)
+                        Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                            get: { isEquipped },
+                            set: { newValue in
+                                isEquipped = newValue
+                                if newValue {
+                                    isStashed = false
+                                }
+                            }
+                        ))
                     }
                     
                     HStack {
-                        IconFrame(icon: Ph.warehouse.bold, color: Color.orange)
-                        Text("Stashed")
+                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, color: isStashed ? Color.orange : Color.gray)
+                        Text("Location")
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
-                        Toggle("Stashed", isOn: $isStashed)
+                        Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                            get: { isStashed },
+                            set: { newValue in
+                                isStashed = newValue
+                                if newValue {
+                                    isEquipped = false
+                                }
+                            }
+                        ))
                     }
                 } header: {
                     Text("Status")
@@ -922,6 +931,7 @@ struct CustomWeaponForm: View {
 
 struct WeaponPickerView: View {
     @Binding var isPresented: Bool
+    @Binding var isAddingNew: Bool
     let showCustomWeapon: () -> Void
     @Binding var weapons: [Weapon]
     
@@ -953,6 +963,7 @@ struct WeaponPickerView: View {
                         Button(action: {
                             weapons.append(Weapon.fromData(weaponData))
                             isPresented = false
+                            isAddingNew = false
                         }) {
                             WeaponDataRow(weaponData: weaponData)
                         }
@@ -962,9 +973,12 @@ struct WeaponPickerView: View {
                 }
             }
             .navigationTitle("Add Weapon")
-            .navigationBarItems(trailing: Button("Cancel") {
-                isPresented = false
-            })
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    isPresented = false
+                    isAddingNew = false
+                }
+            )
         }
     }
 }

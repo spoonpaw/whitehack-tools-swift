@@ -52,27 +52,30 @@ private struct WeaponDetailRow: View {
             // Combat Stats
             VStack(alignment: .leading, spacing: 4) {
                 // Stashed/On Person Status
-                Label {
-                    Text(weapon.isStashed ? "Stashed" : "On Person")
-                        .font(.subheadline)
-                } icon: {
-                    if weapon.isStashed {
-                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                    } else {
-                        IconFrame(icon: Ph.user.bold, color: .gray)
-                    }
-                }
-                .foregroundStyle(weapon.isStashed ? .orange : .gray)
-                
-                // Equipped Status (only if not stashed)
-                if !weapon.isStashed {
+                if weapon.isEquipped {
                     Label {
-                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                        Text("Equipped")
                             .font(.subheadline)
                     } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                        IconFrame(icon: Ph.bagSimple.bold, color: .green)
                     }
-                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
+                    .foregroundStyle(.green)
+                } else if weapon.isStashed {
+                    Label {
+                        Text("Stashed")
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
+                    }
+                    .foregroundStyle(.orange)
+                } else {
+                    Label {
+                        Text("On Person")
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.user.bold, color: .gray)
+                    }
+                    .foregroundStyle(.gray)
                 }
                 
                 // Magical Status
