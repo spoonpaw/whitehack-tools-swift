@@ -11,6 +11,12 @@ struct DetailHeaderSection: View {
                     .font(.title)
                     .fontWeight(.bold)
                 
+                if !character.playerName.isEmpty {
+                    Text("Player: \(character.playerName)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                
                 HStack(spacing: 16) {
                     StatPill(label: "Level", value: "\(character.level)")
                     StatPill(label: "Class", value: character.characterClass.rawValue)

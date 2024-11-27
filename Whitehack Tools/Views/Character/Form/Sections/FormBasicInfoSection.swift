@@ -3,19 +3,31 @@ import SwiftUI
 
 struct FormBasicInfoSection: View {
     @Binding var name: String
+    @Binding var playerName: String
     @Binding var selectedClass: CharacterClass
     @Binding var level: String
-    let focusedField: FocusState<CharacterFormView.Field?>.Binding
+    var focusedField: CharacterFormView.Field?
+    @FocusState.Binding var focusBinding: CharacterFormView.Field?
 
     var body: some View {
         Section(header: Text("Basic Info").font(.headline)) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Name")
-                    .font(.subheadline)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Character Name")
+                    .font(.caption)
                     .foregroundColor(.secondary)
-                TextField("Enter name", text: $name)
+                TextField("", text: $name)
                     .textInputAutocapitalization(.words)
-                    .focused(focusedField, equals: .name)
+                    .focused($focusBinding, equals: .name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Player Name")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                TextField("", text: $playerName)
+                    .textInputAutocapitalization(.words)
+                    .focused($focusBinding, equals: .playerName)
                     .textFieldStyle(.roundedBorder)
             }
             
@@ -25,7 +37,7 @@ struct FormBasicInfoSection: View {
                     .foregroundColor(.secondary)
                 TextField("Enter level", text: $level)
                     .keyboardType(.numberPad)
-                    .focused(focusedField, equals: .level)
+                    .focused($focusBinding, equals: .level)
                     .textFieldStyle(.roundedBorder)
             }
             
@@ -45,15 +57,11 @@ struct FormBasicInfoSection: View {
                         Text(selectedClass.rawValue)
                         Spacer()
                         Image(systemName: "chevron.up.chevron.down")
+                            .foregroundColor(.secondary)
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .background(Color(.systemBackground))
+                    .padding(10)
+                    .background(Color(.systemGray6))
                     .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(.systemGray4), lineWidth: 1)
-                    )
                 }
             }
         }

@@ -518,6 +518,7 @@ class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
     var name: String
+    var playerName: String
     var characterClass: CharacterClass
     var level: Int {
         didSet {
@@ -705,6 +706,7 @@ class PlayerCharacter: Identifiable, Codable {
     init(
         id: UUID = UUID(),
         name: String = "",
+        playerName: String = "",
         characterClass: CharacterClass = .deft,
         level: Int = 1,
         strength: Int = 10,
@@ -746,6 +748,7 @@ class PlayerCharacter: Identifiable, Codable {
         hasUsedAttunementToday: Bool = false) {
         self.id = id
         self.name = name
+        self.playerName = playerName
         self.characterClass = characterClass
         self.level = level
         self.strength = strength
@@ -796,6 +799,7 @@ extension PlayerCharacter {
         let newCharacter = PlayerCharacter(
             id: UUID(),
             name: name,
+            playerName: playerName,
             characterClass: characterClass,
             level: level,
             strength: strength,

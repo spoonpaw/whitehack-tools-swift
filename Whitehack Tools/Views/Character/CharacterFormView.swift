@@ -18,7 +18,7 @@ struct CharacterFormView: View {
     
     // MARK: - Form Fields
     enum Field: Hashable {
-        case name, level
+        case name, playerName, level
         case strength, agility, toughness, intelligence, willpower, charisma
         case currentHP, maxHP, defenseValue, movement, saveColor
         case speciesGroup, vocationGroup, newAffiliationGroup
@@ -37,9 +37,11 @@ struct CharacterFormView: View {
         Form(content: {
             FormBasicInfoSection(
                 name: $formData.name,
+                playerName: $formData.playerName,
                 selectedClass: $formData.selectedClass,
                 level: $formData.level,
-                focusedField: $focusedField
+                focusedField: focusedField,
+                focusBinding: $focusedField
             )
             FormAttributesSection(
                 strength: $formData.strength,
@@ -160,6 +162,7 @@ struct CharacterFormView: View {
     // MARK: - Helper Functions
     private func loadCharacter(_ character: PlayerCharacter) {
         formData.name = character.name
+        formData.playerName = character.playerName
         formData.selectedClass = character.characterClass
         formData.level = String(character.level)
         
@@ -215,6 +218,7 @@ struct CharacterFormView: View {
     private func saveCharacter() {
         let newCharacter = PlayerCharacter(id: character?.id ?? UUID())
         newCharacter.name = formData.name
+        newCharacter.playerName = formData.playerName
         newCharacter.characterClass = formData.selectedClass
         newCharacter.level = Int(formData.level) ?? 1
         
@@ -284,6 +288,7 @@ struct CharacterFormView: View {
 // MARK: - Form Data Model
 private class FormData: ObservableObject {
     @Published private var _name = ""
+    @Published var playerName = ""
     @Published var selectedClass: CharacterClass = .deft
     @Published var level = "1"
     
