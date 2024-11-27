@@ -18,150 +18,154 @@ struct WeaponRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Name Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Weapon Name")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    Text(weapon.name)
-                } icon: {
-                    IconFrame(icon: Ph.sword.bold, color: .purple)
-                }
-            }
-            
-            // Damage Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Damage")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    Text(weapon.damage)
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: .red)
-                }
-            }
-            
-            // Weight Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Weight")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    Text(getWeightDisplayText(weapon.weight))
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-            }
-            
-            // Rate of Fire Section
-            if !weapon.rateOfFire.isEmpty {
+            // Content Area
+            VStack(alignment: .leading, spacing: 12) {
+                // Name Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Rate of Fire")
+                    Text("Weapon Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(weapon.rateOfFire)
+                        Text(weapon.name)
                     } icon: {
-                        IconFrame(icon: Ph.timer.bold, color: .orange)
+                        IconFrame(icon: Ph.sword.bold, color: .purple)
                     }
                 }
-            }
-            
-            // Range Section
-            if !weapon.range.isEmpty {
+                
+                // Damage Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Range")
+                    Text("Damage")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(weapon.range)
+                        Text(weapon.damage)
                     } icon: {
-                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+                        IconFrame(icon: Ph.target.bold, color: .red)
                     }
                 }
-            }
-            
-            // Special Section
-            if !weapon.special.isEmpty {
+                
+                // Weight Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Special Properties")
+                    Text("Weight")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(weapon.special)
+                        Text(getWeightDisplayText(weapon.weight))
                     } icon: {
-                        IconFrame(icon: Ph.star.bold, color: .yellow)
+                        IconFrame(icon: Ph.scales.bold, color: .blue)
                     }
                 }
-            }
-            
-            // Quantity Section
-            if weapon.quantity > 1 {
+                
+                // Rate of Fire Section
+                if !weapon.rateOfFire.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Rate of Fire")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text(weapon.rateOfFire)
+                        } icon: {
+                            IconFrame(icon: Ph.timer.bold, color: .orange)
+                        }
+                    }
+                }
+                
+                // Range Section
+                if !weapon.range.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Range")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text(weapon.range)
+                        } icon: {
+                            IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+                        }
+                    }
+                }
+                
+                // Special Section
+                if !weapon.special.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Special Properties")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text(weapon.special)
+                        } icon: {
+                            IconFrame(icon: Ph.star.bold, color: .yellow)
+                        }
+                    }
+                }
+                
+                // Quantity Section
+                if weapon.quantity > 1 {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Quantity")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("\(weapon.quantity)")
+                        } icon: {
+                            IconFrame(icon: Ph.stack.bold, color: .gray)
+                        }
+                    }
+                }
+                
+                // Status Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Quantity")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        Text("\(weapon.quantity)")
-                    } icon: {
-                        IconFrame(icon: Ph.stack.bold, color: .gray)
-                    }
-                }
-            }
-            
-            // Status Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Status")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack(spacing: 16) {
-                    Label {
-                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                    }
-                    Label {
-                        Text(weapon.isStashed ? "Stashed" : "On Person")
-                    } icon: {
-                        IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                color: weapon.isStashed ? .orange : .gray)
-                    }
-                }
-            }
-            
-            // Magical Properties Section
-            if weapon.isMagical || weapon.isCursed || weapon.bonus != 0 {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Magical Properties")
+                    Text("Status")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     HStack(spacing: 16) {
-                        if weapon.isMagical {
-                            Label {
-                                Text("Magical")
-                            } icon: {
-                                IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                            }
+                        Label {
+                            Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                        } icon: {
+                            IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
                         }
-                        if weapon.isCursed {
-                            Label {
-                                Text("Cursed")
-                            } icon: {
-                                IconFrame(icon: Ph.skull.bold, color: .red)
-                            }
+                        Label {
+                            Text(weapon.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: weapon.isStashed ? .orange : .gray)
                         }
-                        if weapon.bonus != 0 {
-                            Label {
-                                Text("\(abs(weapon.bonus))")
-                            } icon: {
-                                IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
-                                        color: weapon.bonus > 0 ? .green : .red)
+                    }
+                }
+                
+                // Magical Properties Section
+                if weapon.isMagical || weapon.isCursed || weapon.bonus != 0 {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Magical Properties")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        HStack(spacing: 16) {
+                            if weapon.isMagical {
+                                Label {
+                                    Text("Magical")
+                                } icon: {
+                                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                                }
+                            }
+                            if weapon.isCursed {
+                                Label {
+                                    Text("Cursed")
+                                } icon: {
+                                    IconFrame(icon: Ph.skull.bold, color: .red)
+                                }
+                            }
+                            if weapon.bonus != 0 {
+                                Label {
+                                    Text("\(abs(weapon.bonus))")
+                                } icon: {
+                                    IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                            color: weapon.bonus > 0 ? .green : .red)
+                                }
                             }
                         }
                     }
                 }
             }
+            .allowsHitTesting(false)  // Disable touch interaction for content area only
             
             Divider()
             
@@ -195,8 +199,6 @@ struct WeaponRow: View {
         .padding()
         .background(Color(.secondarySystemBackground))
         .cornerRadius(10)
-        .contentShape(Rectangle())  // Define hit testing area
-        .allowsHitTesting(false)  // Disable touch interaction for the content area
     }
 }
 
