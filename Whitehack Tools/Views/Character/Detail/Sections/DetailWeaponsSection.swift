@@ -50,30 +50,37 @@ private struct WeaponDetailRow: View {
                 }
                 
                 Spacer()
-                
-                // Location and Equipment Status
-                HStack(spacing: 12) {
-                    // Stashed Status
-                    Label {
-                        Text(weapon.isStashed ? "Stashed" : "On Person")
-                            .font(.caption)
-                    } icon: {
-                        IconFrame(icon: Ph.warehouse.bold, color: weapon.isStashed ? .orange : .gray)
-                    }
-                    .foregroundStyle(weapon.isStashed ? .orange : .gray)
-                    
-                    // Equipped Status (only if not stashed)
-                    if !weapon.isStashed {
-                        Label {
-                            Text(weapon.isEquipped ? "Equipped" : "Not Equipped")
-                                .font(.caption)
-                        } icon: {
-                            IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                        }
-                        .foregroundStyle(weapon.isEquipped ? .green : .gray)
-                    }
-                }
             }
+            
+            // Status Indicators
+            HStack(spacing: 16) {
+                // Stashed Status
+                Label {
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                        .font(.subheadline)
+                        .frame(width: 80, alignment: .leading)
+                } icon: {
+                    IconFrame(icon: Ph.warehouse.bold, color: weapon.isStashed ? .orange : .gray)
+                }
+                .foregroundStyle(weapon.isStashed ? .orange : .gray)
+                .frame(minWidth: 160, alignment: .leading)
+                
+                // Equipped Status (only if not stashed)
+                if !weapon.isStashed {
+                    Label {
+                        Text(weapon.isEquipped ? "Equipped" : "Not Equipped")
+                            .font(.subheadline)
+                            .frame(width: 100, alignment: .leading)
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    }
+                    .foregroundStyle(weapon.isEquipped ? .green : .gray)
+                    .frame(minWidth: 160, alignment: .leading)
+                }
+                
+                Spacer()
+            }
+            .padding(.vertical, 4)
             
             Divider()
             
