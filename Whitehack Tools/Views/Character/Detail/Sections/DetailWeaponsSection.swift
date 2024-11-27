@@ -48,6 +48,17 @@ private struct WeaponDetailRow: View {
                 } icon: {
                     IconFrame(icon: Ph.sword.bold)
                 }
+                
+                Spacer()
+                
+                // Equipped Status
+                Label {
+                    Text(weapon.isEquipped ? "Equipped" : "Not Equipped")
+                        .font(.caption)
+                } icon: {
+                    IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                }
+                .foregroundStyle(weapon.isEquipped ? .green : .gray)
             }
             
             Divider()

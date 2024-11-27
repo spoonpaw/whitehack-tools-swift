@@ -168,6 +168,11 @@ struct WeaponRow: View {
                 IconFrame(icon: Ph.textAa.bold, color: .blue)
                 Text(weapon.name)
                     .font(.headline)
+                if weapon.isEquipped {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                }
+                Spacer()
             }
             
             Divider()
@@ -177,6 +182,14 @@ struct WeaponRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 8) {
+                // Equipped Status
+                Label {
+                    Text(weapon.isEquipped ? "Currently Equipped" : "Not Equipped")
+                } icon: {
+                    IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                }
+                .foregroundStyle(weapon.isEquipped ? .green : .gray)
+                
                 // Damage
                 Label {
                     Text("Damage: \(weapon.damage)")
@@ -281,6 +294,7 @@ struct WeaponEditRow: View {
     @State private var rateOfFire: String
     @State private var special: String
     @State private var range: String
+    @State private var isEquipped: Bool
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -302,6 +316,7 @@ struct WeaponEditRow: View {
         _rateOfFire = State(initialValue: weapon.rateOfFire)
         _special = State(initialValue: weapon.special)
         _range = State(initialValue: weapon.range)
+        _isEquipped = State(initialValue: weapon.isEquipped)
     }
     
     var body: some View {
@@ -323,6 +338,14 @@ struct WeaponEditRow: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             VStack(alignment: .leading, spacing: 8) {
+                // Equipped Status
+                Label {
+                    Toggle("Equipped", isOn: $isEquipped)
+                } icon: {
+                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
+                }
+                .foregroundStyle(isEquipped ? .green : .gray)
+                
                 // Damage
                 Label {
                     VStack(alignment: .leading) {
@@ -402,6 +425,8 @@ struct WeaponEditRow: View {
             }
             .foregroundStyle(.purple)
             
+            Divider()
+            
             // Action Buttons
             HStack(spacing: 24) {
                 Spacer()
@@ -428,7 +453,8 @@ struct WeaponEditRow: View {
                         weight: weight,
                         rateOfFire: rateOfFire,
                         special: special,
-                        range: range
+                        range: range,
+                        isEquipped: isEquipped
                     )
                     onSave(updatedWeapon)
                 }) {

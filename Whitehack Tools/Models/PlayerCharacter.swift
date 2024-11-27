@@ -462,14 +462,16 @@ struct Weapon: Codable, Identifiable {
     var rateOfFire: String
     var special: String
     var range: String
+    var isEquipped: Bool
     
-    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "", range: String = "") {
+    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "", range: String = "", isEquipped: Bool = false) {
         self.name = name
         self.damage = damage
         self.weight = weight
         self.rateOfFire = rateOfFire
         self.special = special
         self.range = range
+        self.isEquipped = isEquipped
     }
     
     static func fromData(_ data: [String: String]) -> Weapon {
