@@ -628,11 +628,8 @@ struct WeaponEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    HStack {
-                        Text("\(bonus >= 0 ? "+" : "")\(bonus)")
-                            .frame(minWidth: 40)
-                        Stepper("", value: $bonus, in: -5...5)
-                            .labelsHidden()
+                    Stepper(value: $bonus, in: -5...5) {
+                        Text("Bonus: \(bonus >= 0 ? "+" : "")\(bonus)")
                     }
                 } icon: {
                     IconFrame(icon: Ph.plusMinus.bold, color: .blue)
