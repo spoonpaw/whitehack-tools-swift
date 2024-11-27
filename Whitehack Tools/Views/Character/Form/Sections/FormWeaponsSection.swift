@@ -239,6 +239,8 @@ struct WeaponRow: View {
     let onDelete: (Weapon) -> Void
     let onEdit: () -> Void
     
+    private var isBonus: Bool { weapon.bonus >= 0 }  // Computed property for bonus/penalty
+    
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
         case "No size": return "No size (100/slot)"
@@ -267,27 +269,22 @@ struct WeaponRow: View {
             }
             
             // Status Section
-            HStack {
-                // Equipped Status
-                Label {
-                    Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                        .foregroundColor(weapon.isEquipped ? .green : .secondary)
-                } icon: {
+            Section {
+                // Equipped Toggle with Icon
+                HStack {
                     IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    Toggle(weapon.isEquipped ? "Equipped" : "Unequipped", isOn: .constant(false))
                 }
                 
-                Spacer()
-                
-                // Location Status
-                Label {
-                    Text(weapon.isStashed ? "Stashed" : "On Person")
-                        .foregroundColor(weapon.isStashed ? .orange : .secondary)
-                } icon: {
-                    IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                // Location Toggle with Icon
+                HStack {
+                    IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold, 
                             color: weapon.isStashed ? .orange : .gray)
+                    Toggle(weapon.isStashed ? "Stashed" : "On Person", isOn: .constant(false))
                 }
+            } header: {
+                Text("Status")
             }
-            .font(.callout)
             
             Divider()
             
@@ -298,35 +295,35 @@ struct WeaponRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Magical Status
                 if weapon.isMagical {
-                    Label {
-                        Text("Magical")
-                    } icon: {
+                    // Magical Toggle with Icon
+                    HStack {
                         IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                        Toggle("Magical", isOn: .constant(false))
                     }
-                    .foregroundStyle(.purple)
                     
-                    // Bonus (if has bonus)
-                    if weapon.bonus != 0 {
-                        Label {
-                            HStack(spacing: 8) {
-                                Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
-                                Text("\(abs(weapon.bonus))")
-                            }
-                        } icon: {
-                            IconFrame(icon: Ph.plusMinus.bold, color: .purple)
-                        }
-                        .foregroundStyle(.purple)
-                    }
-                }
-                
-                // Cursed Status
-                if weapon.isCursed {
-                    Label {
-                        Text("Cursed")
-                    } icon: {
+                    // Cursed Toggle with Icon
+                    HStack {
                         IconFrame(icon: Ph.skull.bold, color: .red)
+                        Toggle("Cursed", isOn: .constant(false))
                     }
-                    .foregroundStyle(.red)
+                    
+                    // Modifier Control
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Toggle between Bonus/Penalty
+                        Toggle(weapon.bonus < 0 ? "Penalty" : "Bonus", isOn: .constant(false))
+                        
+                        // Value Control
+                        HStack {
+                            IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                                    color: isBonus ? .green : .red)
+                            Text("\(abs(weapon.bonus))")
+                                .foregroundColor(isBonus ? .green : .red)
+                                .frame(width: 30, alignment: .leading)
+                            Spacer()
+                            Stepper("", value: .constant(0))
+                            .labelsHidden()
+                        }
+                    }
                 }
                 
                 // Damage
@@ -421,21 +418,31 @@ struct WeaponRow: View {
 }
 
 struct WeaponEditRow: View {
-    let weapon: Weapon
+    @Environment(\.dismiss) private var dismiss
+    
     let onSave: (Weapon) -> Void
     let onCancel: () -> Void
     
+    // Basic Properties
     @State private var name: String
     @State private var damage: String
     @State private var weight: String
     @State private var rateOfFire: String
-    @State private var special: String
     @State private var range: String
+    @State private var special: String
+    
+    // Status Properties
     @State private var isEquipped: Bool
     @State private var isStashed: Bool
+    
+    // Magical Properties
     @State private var isMagical: Bool
     @State private var isCursed: Bool
     @State private var bonus: Int
+    @State private var isBonus: Bool  // true = bonus (right/green), false = penalty (left/red)
+    @State private var bonusString: String = "0"
+    
+    // Quantity
     @State private var quantity: Int
     @State private var quantityString: String = "1"
     
@@ -445,6 +452,45 @@ struct WeaponEditRow: View {
         formatter.minimum = 0
         return formatter
     }()
+    
+    init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
+        print("🏗️ Initializing WeaponEditRow")
+        print("📝 Initial weapon data:")
+        print("   Name: \(weapon.name)")
+        print("   Damage: \(weapon.damage)")
+        print("   Weight: \(weapon.weight)")
+        print("   Rate of Fire: \(weapon.rateOfFire)")
+        print("   Range: \(weapon.range)")
+        print("   Special: \(weapon.special)")
+        print("   Equipped: \(weapon.isEquipped)")
+        print("   Stashed: \(weapon.isStashed)")
+        print("   Magical: \(weapon.isMagical)")
+        print("   Cursed: \(weapon.isCursed)")
+        print("   Bonus: \(weapon.bonus)")
+        print("   Quantity: \(weapon.quantity)")
+        
+        self.onSave = onSave
+        self.onCancel = onCancel
+        
+        // Initialize all @State properties
+        _name = State(initialValue: weapon.name)
+        _damage = State(initialValue: weapon.damage)
+        _weight = State(initialValue: weapon.weight)
+        _rateOfFire = State(initialValue: weapon.rateOfFire)
+        _range = State(initialValue: weapon.range)
+        _special = State(initialValue: weapon.special)
+        _isEquipped = State(initialValue: weapon.isEquipped)
+        _isStashed = State(initialValue: weapon.isStashed)
+        _isMagical = State(initialValue: weapon.isMagical)
+        _isCursed = State(initialValue: weapon.isCursed)
+        _bonus = State(initialValue: weapon.bonus)
+        _isBonus = State(initialValue: weapon.bonus >= 0)  // Default to bonus if 0 or positive
+        _bonusString = State(initialValue: "\(abs(weapon.bonus))")
+        _quantity = State(initialValue: max(1, weapon.quantity))
+        _quantityString = State(initialValue: "\(max(1, weapon.quantity))")
+        
+        print("✅ State initialization complete")
+    }
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -479,36 +525,16 @@ struct WeaponEditRow: View {
         }
     }
     
-    init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
-        print("🏗️ Initializing WeaponEditRow")
-        print("📝 Initial weapon data:")
-        print("   Name: \(weapon.name)")
-        print("   Damage: \(weapon.damage)")
-        print("   Weight: \(weapon.weight)")
-        print("   Rate of Fire: \(weapon.rateOfFire)")
-        print("   Range: \(weapon.range)")
-        print("   Special: \(weapon.special)")
-        
-        self.weapon = weapon
-        self.onSave = onSave
-        self.onCancel = onCancel
-        
-        // Initialize state with weapon data
-        _name = State(initialValue: weapon.name)
-        _damage = State(initialValue: weapon.damage)
-        _weight = State(initialValue: weapon.weight)
-        _rateOfFire = State(initialValue: weapon.rateOfFire)
-        _special = State(initialValue: weapon.special)
-        _range = State(initialValue: weapon.range)
-        _isEquipped = State(initialValue: weapon.isEquipped)
-        _isStashed = State(initialValue: weapon.isStashed)
-        _isMagical = State(initialValue: weapon.isMagical)
-        _isCursed = State(initialValue: weapon.isCursed)
-        _bonus = State(initialValue: weapon.bonus)
-        _quantity = State(initialValue: max(1, weapon.quantity))
-        _quantityString = State(initialValue: "\(max(1, weapon.quantity))")
-        
-        print("✅ State initialization complete")
+    private func validateBonusInput(_ input: String) {
+        if let newValue = Int(input) {
+            // Only allow positive numbers
+            let absValue = max(0, abs(newValue))
+            bonus = isBonus ? absValue : -absValue
+            bonusString = "\(absValue)"
+        } else if !input.isEmpty {
+            // If not a valid number and not empty, revert to previous value
+            bonusString = "\(abs(bonus))"
+        }
     }
     
     var body: some View {
@@ -625,78 +651,95 @@ struct WeaponEditRow: View {
                         .labelsHidden()
                 }
             }
-            
+
             // Status Section
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Status")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .padding(.top, 4)
-                
-                // Equipped Status
-                Label {
+            Section {
+                // Equipped Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                     Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
+                            print("🔄 Equipped status changed to: \(newValue)")
                             isEquipped = newValue
                             if newValue {
-                                // If equipping, unstash
                                 isStashed = false
                             }
                         }
                     ))
-                } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                 }
                 
-                // Stashed Status
-                Label {
+                // Location Toggle with Icon
+                HStack {
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                            color: isStashed ? .orange : .gray)
                     Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
+                            print("🔄 Stashed status changed to: \(newValue)")
                             isStashed = newValue
                             if newValue {
-                                // If stashing, unequip
                                 isEquipped = false
                             }
                         }
                     ))
-                } icon: {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
-                            color: isStashed ? .brown : .blue)
                 }
-                
-                // Magical Status
-                Label {
-                    Toggle("Magical", isOn: $isMagical)
-                } icon: {
-                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                }
-                
-                // Cursed Status
-                Label {
-                    Toggle("Cursed", isOn: $isCursed)
-                } icon: {
-                    IconFrame(icon: Ph.skull.bold, color: .red)
-                }
+            } header: {
+                Text("Status")
             }
             
-            // Bonus Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text(bonus == 0 ? "No Modifier" : (bonus > 0 ? "Bonus" : "Penalty"))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+            // Magical Properties Section
+            Section {
+                // Magical Toggle with Icon
                 HStack {
-                    Label {
-                        Text("\(bonus >= 0 ? "+" : "")\(bonus)")
-                    } icon: {
-                        IconFrame(icon: bonus == 0 ? Ph.equals.bold : (bonus > 0 ? Ph.plus.bold : Ph.minus.bold),
-                                color: bonus == 0 ? .gray : (bonus > 0 ? .green : .red))
-                    }
-                    Spacer()
-                    Stepper("", value: $bonus, in: -5...5)
-                        .labelsHidden()
+                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
+                    Toggle("Magical", isOn: $isMagical)
                 }
+                
+                // Cursed Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                    Toggle("Cursed", isOn: $isCursed)
+                }
+                
+                // Modifier Control
+                VStack(alignment: .leading, spacing: 8) {
+                    // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
+                    Toggle(isOn: $isBonus) {
+                        Text(isBonus ? "Bonus" : "Penalty")
+                            .foregroundColor(isBonus ? .green : .red)
+                    }
+                    .onChange(of: isBonus) { newValue in
+                        bonus = newValue ? abs(bonus) : -abs(bonus)
+                    }
+                    
+                    // Value Control
+                    HStack {
+                        IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                                color: isBonus ? .green : .red)
+                        TextField("", text: $bonusString)
+                            .keyboardType(.numberPad)
+                            .frame(width: 60)
+                            .multilineTextAlignment(.leading)
+                            .onChange(of: bonusString) { newValue in
+                                validateBonusInput(newValue)
+                            }
+                            .onChange(of: bonus) { newValue in
+                                bonusString = "\(abs(newValue))"
+                            }
+                        Spacer()
+                        Stepper("", value: Binding(
+                            get: { abs(bonus) },
+                            set: { newValue in
+                                let value = max(0, newValue)  // Prevent negative values
+                                bonus = isBonus ? value : -value
+                            }
+                        ), in: 0...Int.max)  // Add range constraint
+                        .labelsHidden()
+                    }
+                }
+            } header: {
+                Text("Magical Properties")
             }
             
             // Save/Cancel Buttons
@@ -714,7 +757,7 @@ struct WeaponEditRow: View {
                 Button(action: {
                     print("💾 Save button tapped")
                     let updatedWeapon = Weapon(
-                        id: weapon.id,
+                        id: UUID(),
                         name: name,
                         damage: damage,
                         weight: weight,
@@ -883,76 +926,42 @@ struct CustomWeaponForm: View {
                 }
                 
                 Section {
-                    // Magical Status
-                    HStack {
-                        IconFrame(icon: Ph.sparkle.bold, color: Color.purple)
-                        Text("Magical")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
+                    // Magical Toggle
+                    Label {
                         Toggle("Magical", isOn: $isMagical)
+                    } icon: {
+                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
                     }
                     
-                    // Cursed Status
-                    HStack {
-                        IconFrame(icon: Ph.skull.bold, color: Color.red)
-                        Text("Cursed")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
+                    // Cursed Toggle
+                    Label {
                         Toggle("Cursed", isOn: $isCursed)
+                    } icon: {
+                        IconFrame(icon: Ph.skull.bold, color: .red)
                     }
                     
                     // Bonus/Penalty
-                    HStack {
-                        IconFrame(icon: Ph.plusMinus.bold, color: Color.purple)
-                        Text(bonus >= 0 ? "Bonus" : "Penalty")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        
-                        Spacer()
-                        
-                        // Bonus Control Group
-                        HStack(spacing: 8) {
-                            // Decrease Button
-                            Button(action: {
-                                print("🔄 Decreasing bonus")
-                                bonus -= 1
-                            }) {
-                                Image(systemName: "minus.circle.fill")
-                                    .foregroundStyle(Color.purple.opacity(0.8))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Modifier")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        HStack {
+                            Toggle(isOn: .constant(false)) {
+                                Text("Penalty")
                             }
-                            .buttonStyle(.borderless)
-                            
-                            // Bonus Display with Toggle
-                            HStack(spacing: 2) {
-                                Button(action: {
-                                    print("🔄 Toggling bonus")
-                                    bonus = -bonus
-                                }) {
-                                    Text(bonus >= 0 ? "+" : "-")
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(Color.purple)
-                                        .frame(width: 20)
-                                }
-                                .buttonStyle(.borderless)
-                                
+                            .onChange(of: isMagical) { newValue in
+                                // bonus = newValue ? -abs(bonus) : abs(bonus)
+                            }
+                        }
+                        HStack {
+                            Label {
                                 Text("\(abs(bonus))")
-                                    .frame(width: 20, alignment: .leading)
-                                    .foregroundStyle(Color.purple)
+                            } icon: {
+                                IconFrame(icon: Ph.minus.bold, color: .red)
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.purple.opacity(0.1))
-                            .cornerRadius(8)
-                            
-                            // Increase Button
-                            Button(action: {
-                                print("🔄 Increasing bonus")
-                                bonus += 1
-                            }) {
-                                Image(systemName: "plus.circle.fill")
-                                    .foregroundStyle(Color.purple.opacity(0.8))
-                            }
-                            .buttonStyle(.borderless)
+                            Spacer()
+                            Stepper("", value: .constant(0))
+                            .labelsHidden()
                         }
                     }
                 } header: {
@@ -965,16 +974,7 @@ struct CustomWeaponForm: View {
                         Text("Status")
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
-                        Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
-                            get: { isEquipped },
-                            set: { newValue in
-                                print("🔄 Equipped status changed to: \(newValue)")
-                                isEquipped = newValue
-                                if newValue {
-                                    isStashed = false
-                                }
-                            }
-                        ))
+                        Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: .constant(false))
                     }
                     
                     HStack {
@@ -982,16 +982,7 @@ struct CustomWeaponForm: View {
                         Text("Location")
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
-                        Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
-                            get: { isStashed },
-                            set: { newValue in
-                                print("🔄 Stashed status changed to: \(newValue)")
-                                isStashed = newValue
-                                if newValue {
-                                    isEquipped = false
-                                }
-                            }
-                        ))
+                        Toggle(isStashed ? "Stashed" : "On Person", isOn: .constant(false))
                     }
                 } header: {
                     Text("Status")
