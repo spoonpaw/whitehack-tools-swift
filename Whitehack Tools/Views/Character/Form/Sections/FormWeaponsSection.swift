@@ -1,245 +1,8 @@
 import SwiftUI
-import Foundation
 import PhosphorSwift
-
-struct FormWeaponsSection: View {
-    @Binding var weapons: [Weapon]
-    @State private var editingWeaponId: UUID?
-    @State private var isAddingNew = false {
-        didSet {
-            print("🔄 isAddingNew changed: \(oldValue) -> \(isAddingNew)")
-            if !isAddingNew {
-                print("🔄 Resetting state after cancel")
-                print("🧹 Cleaning up weapon states")
-                selectedWeaponName = nil
-                editingNewWeapon = nil
-            }
-        }
-    }
-    @State private var selectedWeaponName: String? = nil {
-        didSet {
-            print("🎯 selectedWeaponName changed: \(oldValue.map { "Optional(\"\($0)\")" } ?? "nil") -> \(selectedWeaponName.map { "Optional(\"\($0)\")" } ?? "nil")")
-            if let name = selectedWeaponName {
-                print("🎯 Creating weapon from selection: \(name)")
-                if let weaponData = WeaponData.weapons.first(where: { $0["name"] == name }) {
-                    print("📦 Found weapon data: \(weaponData)")
-                    let weapon = Weapon(
-                        id: UUID(),
-                        name: name,
-                        damage: weaponData["damage"] ?? "",
-                        weight: weaponData["weight"] ?? "",
-                        range: weaponData["range"] ?? "",
-                        rateOfFire: weaponData["rateOfFire"] ?? "",
-                        special: weaponData["special"] ?? "",
-                        isEquipped: false,
-                        isStashed: false,
-                        isMagical: false,
-                        isCursed: false,
-                        bonus: 0,
-                        quantity: 1
-                    )
-                    print("🛠️ Created weapon:")
-                    print("   Name: \(weapon.name)")
-                    print("   Damage: \(weapon.damage)")
-                    print("   Weight: \(weapon.weight)")
-                    print("   Rate of Fire: \(weapon.rateOfFire)")
-                    print("   Range: \(weapon.range)")
-                    print("   Special: \(weapon.special)")
-                    editingNewWeapon = weapon
-                    print("⚔️ editingNewWeapon changed: nil -> Optional(\"\(weapon.name)\")")
-                    print("   Damage: \(weapon.damage)")
-                    print("   Weight: \(weapon.weight)")
-                    print("   Rate of Fire: \(weapon.rateOfFire)")
-                    print("   Range: \(weapon.range)")
-                    print("   Special: \(weapon.special)")
-                }
-            } else {
-                print("⚠️ No weapon selected")
-                editingNewWeapon = nil
-                print("⚔️ editingNewWeapon changed: nil -> nil")
-            }
-        }
-    }
-    @State private var editingNewWeapon: Weapon? = nil
-    
-    private func createWeaponFromSelection(_ weaponName: String) {
-        print("🎯 Creating weapon from selection: \(weaponName)")
-        
-        if weaponName == "custom" {
-            print("🎨 Creating custom weapon")
-            let newWeapon = Weapon()
-            print("✨ Created empty weapon template")
-            DispatchQueue.main.async {
-                self.editingNewWeapon = newWeapon
-            }
-        } else if let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
-            print("📦 Found weapon data: \(weaponData)")
-            let weapon = Weapon(
-                id: UUID(),
-                name: weaponName,
-                damage: weaponData["damage"] ?? "",
-                weight: weaponData["weight"] ?? "",
-                range: weaponData["range"] ?? "",
-                rateOfFire: weaponData["rateOfFire"] ?? "",
-                special: weaponData["special"] ?? "",
-                isEquipped: false,
-                isStashed: false,
-                isMagical: false,
-                isCursed: false,
-                bonus: 0,
-                quantity: 1
-            )
-            print("🛠️ Created weapon:")
-            print("   Name: \(weapon.name)")
-            print("   Damage: \(weapon.damage)")
-            print("   Weight: \(weapon.weight)")
-            print("   Rate of Fire: \(weapon.rateOfFire)")
-            print("   Range: \(weapon.range)")
-            print("   Special: \(weapon.special)")
-            
-            DispatchQueue.main.async {
-                self.editingNewWeapon = weapon
-            }
-        } else {
-            print("⚠️ No weapon data found for: \(weaponName)")
-        }
-    }
-    
-    var body: some View {
-        Section {
-            if weapons.isEmpty && !isAddingNew {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Weapons")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        print("📱 Add First Weapon tapped")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Your First Weapon", systemImage: "plus.circle.fill")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-            } else {
-                if isAddingNew {
-                    if let weapon = editingNewWeapon {
-                        WeaponEditRow(weapon: weapon, onSave: { newWeapon in
-                            print("💾 Saving weapon: \(newWeapon.name)")
-                            weapons.append(newWeapon)
-                            print("🔄 Resetting state after save")
-                            withAnimation {
-                                isAddingNew = false
-                            }
-                        }, onCancel: {
-                            print("❌ Canceling weapon edit for: \(weapon.name)")
-                            print("🔄 Resetting state after cancel")
-                            withAnimation {
-                                isAddingNew = false
-                            }
-                        })
-                        .id(weapon.id) // Force a new instance when weapon changes
-                        .transition(.opacity)
-                    } else {
-                        VStack(spacing: 12) {
-                            Text("Select Weapon Type")
-                                .font(.headline)
-                            
-                            Picker("Select Weapon", selection: $selectedWeaponName) {
-                                Text("Select a Weapon").tag(nil as String?)
-                                ForEach(WeaponData.weapons.map { $0["name"] ?? "" }.sorted(), id: \.self) { name in
-                                    Text(name).tag(name as String?)
-                                }
-                                Text("Custom Weapon").tag("custom" as String?)
-                            }
-                            .pickerStyle(.menu)
-                            .onChange(of: selectedWeaponName) { newValue in
-                                print("🎲 Weapon selection changed to: \(String(describing: newValue))")
-                                if let weaponName = newValue {
-                                    createWeaponFromSelection(weaponName)
-                                } else {
-                                    print("⚠️ No weapon selected")
-                                    editingNewWeapon = nil
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    print("❌ Cancel button tapped")
-                                    withAnimation {
-                                        isAddingNew = false
-                                    }
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 8)
-                    }
-                }
-                
-                ForEach(weapons) { weapon in
-                    if editingWeaponId == weapon.id {
-                        WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
-                            print("💾 Saving updated weapon: \(updatedWeapon.name)")
-                            if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                print("🔄 Updating weapon at index: \(index)")
-                                weapons[index] = updatedWeapon
-                            }
-                            editingWeaponId = nil
-                        }, onCancel: {
-                            print("❌ Canceling weapon edit for: \(weapon.name)")
-                            editingWeaponId = nil
-                        })
-                    } else {
-                        WeaponRow(weapon: weapon, onDelete: { weapon in
-                            print("🚮 Deleting weapon: \(weapon.name)")
-                            if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                print("🔄 Removing weapon at index: \(index)")
-                                weapons.remove(at: index)
-                            }
-                        }, onEdit: {
-                            print("📝 Editing weapon: \(weapon.name)")
-                            editingWeaponId = weapon.id
-                        })
-                    }
-                }
-                .onDelete(perform: nil)
-                
-                if !isAddingNew {
-                    Button(action: {
-                        print("🔄 Adding new weapon")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Another Weapon", systemImage: "plus.circle.fill")
-                    }
-                }
-            }
-        } header: {
-            if !weapons.isEmpty {
-                Label("Weapons", systemImage: "shield.lefthalf.filled")
-            }
-        }
-    }
-}
 
 struct WeaponRow: View {
     let weapon: Weapon
-    let onDelete: (Weapon) -> Void
-    let onEdit: () -> Void
-    
-    private var isBonus: Bool { weapon.bonus >= 0 }  // Computed property for bonus/penalty
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -253,167 +16,154 @@ struct WeaponRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Name Section with Quantity
-            HStack {
-                Label {
-                    Text(weapon.name)
-                } icon: {
-                    IconFrame(icon: Ph.sword.bold, color: .blue)
-                }
-                
-                Spacer()
-                
-                Text("×\(weapon.quantity)")
-                    .foregroundColor(.secondary)
-                    .font(.callout)
-            }
-            
-            // Status Section
-            Section {
-                // Equipped Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                    Toggle(weapon.isEquipped ? "Equipped" : "Unequipped", isOn: .constant(false))
-                }
-                
-                // Location Toggle with Icon
-                HStack {
-                    IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold, 
-                            color: weapon.isStashed ? .orange : .gray)
-                    Toggle(weapon.isStashed ? "Stashed" : "On Person", isOn: .constant(false))
-                }
-            } header: {
-                Text("Status")
-            }
-            
-            Divider()
-            
-            // Combat Stats Section
-            Text("Combat Statistics")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            VStack(alignment: .leading, spacing: 8) {
-                // Magical Status
-                if weapon.isMagical {
-                    // Magical Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                        Toggle("Magical", isOn: .constant(false))
-                    }
-                    
-                    // Cursed Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.skull.bold, color: .red)
-                        Toggle("Cursed", isOn: .constant(false))
-                    }
-                    
-                    // Modifier Control
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Toggle between Bonus/Penalty
-                        Toggle(weapon.bonus < 0 ? "Penalty" : "Bonus", isOn: .constant(false))
-                        
-                        // Value Control
-                        HStack {
-                            IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
-                                    color: isBonus ? .green : .red)
-                            Text("\(abs(weapon.bonus))")
-                                .foregroundColor(isBonus ? .green : .red)
-                                .frame(width: 30, alignment: .leading)
-                            Spacer()
-                            Stepper("", value: .constant(0))
-                            .labelsHidden()
-                        }
-                    }
-                }
-                
-                // Damage
-                Label {
-                    Text("Damage: \(weapon.damage)")
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: .red)
-                }
-                .foregroundStyle(.red)
-                
-                // Weight
-                Label {
-                    Text("Weight: \(getWeightDisplayText(weapon.weight))")
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-                .foregroundStyle(.blue)
-                
-                // Rate of Fire
-                if weapon.rateOfFire != "-" {
-                    Label {
-                        Text("Rate of Fire: \(weapon.rateOfFire)")
-                    } icon: {
-                        IconFrame(icon: Ph.timer.bold, color: .green)
-                    }
-                    .foregroundStyle(.green)
-                }
-                
-                // Range
-                Label {
-                    Text("Range: \(weapon.range)")
-                } icon: {
-                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
-                }
-                .foregroundStyle(.purple)
-            }
-            .font(.subheadline)
-            
-            // Special Properties Section
-            if !weapon.special.isEmpty {
-                Divider()
-                
-                Text("Special Properties")
+            // Name Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weapon Name")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Text(weapon.special)
+                    Text(weapon.name)
                 } icon: {
-                    IconFrame(icon: Ph.star.bold, color: .purple)
+                    IconFrame(icon: Ph.sword.bold, color: .purple)
                 }
             }
             
-            Divider()
-            
-            // Actions Section
-            HStack(spacing: 16) {
-                Spacer()
-                
-                // Edit Button
-                Button(action: onEdit) {
-                    Label {
-                        Text("Edit")
-                    } icon: {
-                        Image(systemName: "pencil.circle.fill")
-                            .imageScale(.medium)
-                            .symbolRenderingMode(.hierarchical)
-                    }
+            // Damage Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Damage")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Text(weapon.damage)
+                } icon: {
+                    IconFrame(icon: Ph.target.bold, color: .red)
                 }
-                .foregroundColor(.blue)
-                .buttonStyle(BorderlessButtonStyle())
-                
-                // Delete Button
-                Button(action: { onDelete(weapon) }) {
-                    Label {
-                        Text("Delete")
-                    } icon: {
-                        Image(systemName: "trash.circle.fill")
-                            .imageScale(.medium)
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                }
-                .foregroundColor(.red)
-                .buttonStyle(BorderlessButtonStyle())
             }
-            .padding(.top, 4)
+            
+            // Weight Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Text(getWeightDisplayText(weapon.weight))
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+            }
+            
+            // Rate of Fire Section
+            if !weapon.rateOfFire.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Rate of Fire")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.rateOfFire)
+                    } icon: {
+                        IconFrame(icon: Ph.timer.bold, color: .orange)
+                    }
+                }
+            }
+            
+            // Range Section
+            if !weapon.range.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Range")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.range)
+                    } icon: {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
+                    }
+                }
+            }
+            
+            // Special Section
+            if !weapon.special.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Special Properties")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.special)
+                    } icon: {
+                        IconFrame(icon: Ph.star.bold, color: .yellow)
+                    }
+                }
+            }
+            
+            // Quantity Section
+            if weapon.quantity > 1 {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quantity")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(weapon.quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .gray)
+                    }
+                }
+            }
+            
+            // Status Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Status")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 16) {
+                    Label {
+                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    }
+                    Label {
+                        Text(weapon.isStashed ? "Stashed" : "On Person")
+                    } icon: {
+                        IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                color: weapon.isStashed ? .orange : .gray)
+                    }
+                }
+            }
+            
+            // Magical Properties Section
+            if weapon.isMagical || weapon.isCursed || weapon.bonus != 0 {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Magical Properties")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        if weapon.isMagical {
+                            Label {
+                                Text("Magical")
+                            } icon: {
+                                IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                            }
+                        }
+                        if weapon.isCursed {
+                            Label {
+                                Text("Cursed")
+                            } icon: {
+                                IconFrame(icon: Ph.skull.bold, color: .red)
+                            }
+                        }
+                        if weapon.bonus != 0 {
+                            Label {
+                                Text("\(abs(weapon.bonus))")
+                            } icon: {
+                                IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                        color: weapon.bonus > 0 ? .green : .red)
+                            }
+                        }
+                    }
+                }
+            }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(radius: 1)
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(10)
     }
 }
 
@@ -978,7 +728,8 @@ struct CustomWeaponForm: View {
                     }
                     
                     HStack {
-                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, color: isStashed ? Color.orange : Color.gray)
+                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                                color: isStashed ? Color.orange : Color.gray)
                         Text("Location")
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
@@ -1200,5 +951,242 @@ struct IconFrame<Icon: View>: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(color.opacity(0.1))
             )
+    }
+}
+
+struct FormWeaponsSection: View {
+    @Binding var weapons: [Weapon]
+    @State private var editingWeaponId: UUID?
+    @State private var isAddingNew = false {
+        didSet {
+            print("🔄 isAddingNew changed: \(oldValue) -> \(isAddingNew)")
+            if !isAddingNew {
+                print("🔄 Resetting state after cancel")
+                print("🧹 Cleaning up weapon states")
+                selectedWeaponName = nil
+                editingNewWeapon = nil
+            }
+        }
+    }
+    @State private var selectedWeaponName: String? = nil {
+        didSet {
+            print("🎯 selectedWeaponName changed: \(oldValue.map { "Optional(\"\($0)\")" } ?? "nil") -> \(selectedWeaponName.map { "Optional(\"\($0)\")" } ?? "nil")")
+            if let name = selectedWeaponName {
+                print("🎯 Creating weapon from selection: \(name)")
+                if let weaponData = WeaponData.weapons.first(where: { $0["name"] == name }) {
+                    print("📦 Found weapon data: \(weaponData)")
+                    let weapon = Weapon(
+                        id: UUID(),
+                        name: name,
+                        damage: weaponData["damage"] ?? "",
+                        weight: weaponData["weight"] ?? "",
+                        range: weaponData["range"] ?? "",
+                        rateOfFire: weaponData["rateOfFire"] ?? "",
+                        special: weaponData["special"] ?? "",
+                        isEquipped: false,
+                        isStashed: false,
+                        isMagical: false,
+                        isCursed: false,
+                        bonus: 0,
+                        quantity: 1
+                    )
+                    print("🛠️ Created weapon:")
+                    print("   Name: \(weapon.name)")
+                    print("   Damage: \(weapon.damage)")
+                    print("   Weight: \(weapon.weight)")
+                    print("   Rate of Fire: \(weapon.rateOfFire)")
+                    print("   Range: \(weapon.range)")
+                    print("   Special: \(weapon.special)")
+                    editingNewWeapon = weapon
+                    print("⚔️ editingNewWeapon changed: nil -> Optional(\"\(weapon.name)\")")
+                    print("   Damage: \(weapon.damage)")
+                    print("   Weight: \(weapon.weight)")
+                    print("   Rate of Fire: \(weapon.rateOfFire)")
+                    print("   Range: \(weapon.range)")
+                    print("   Special: \(weapon.special)")
+                }
+            } else {
+                print("⚠️ No weapon selected")
+                editingNewWeapon = nil
+                print("⚔️ editingNewWeapon changed: nil -> nil")
+            }
+        }
+    }
+    @State private var editingNewWeapon: Weapon? = nil
+    
+    private func createWeaponFromSelection(_ weaponName: String) {
+        print("🎯 Creating weapon from selection: \(weaponName)")
+        
+        if weaponName == "custom" {
+            print("🎨 Creating custom weapon")
+            let newWeapon = Weapon()
+            print("✨ Created empty weapon template")
+            DispatchQueue.main.async {
+                self.editingNewWeapon = newWeapon
+            }
+        } else if let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
+            print("📦 Found weapon data: \(weaponData)")
+            let weapon = Weapon(
+                id: UUID(),
+                name: weaponName,
+                damage: weaponData["damage"] ?? "",
+                weight: weaponData["weight"] ?? "",
+                range: weaponData["range"] ?? "",
+                rateOfFire: weaponData["rateOfFire"] ?? "",
+                special: weaponData["special"] ?? "",
+                isEquipped: false,
+                isStashed: false,
+                isMagical: false,
+                isCursed: false,
+                bonus: 0,
+                quantity: 1
+            )
+            print("🛠️ Created weapon:")
+            print("   Name: \(weapon.name)")
+            print("   Damage: \(weapon.damage)")
+            print("   Weight: \(weapon.weight)")
+            print("   Rate of Fire: \(weapon.rateOfFire)")
+            print("   Range: \(weapon.range)")
+            print("   Special: \(weapon.special)")
+            
+            DispatchQueue.main.async {
+                self.editingNewWeapon = weapon
+            }
+        } else {
+            print("⚠️ No weapon data found for: \(weaponName)")
+        }
+    }
+    
+    var body: some View {
+        Section {
+            if weapons.isEmpty && !isAddingNew {
+                VStack(spacing: 12) {
+                    Image(systemName: "shield.slash")
+                        .font(.system(size: 40))
+                        .foregroundColor(.secondary)
+                    
+                    Text("No Weapons")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Button(action: {
+                        print("📱 Add First Weapon tapped")
+                        withAnimation {
+                            isAddingNew = true
+                        }
+                    }) {
+                        Label("Add Your First Weapon", systemImage: "plus.circle.fill")
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+            } else {
+                if isAddingNew {
+                    if let weapon = editingNewWeapon {
+                        Group {
+                            WeaponEditRow(weapon: weapon, onSave: { newWeapon in
+                                print("💾 Saving weapon: \(newWeapon.name)")
+                                weapons.append(newWeapon)
+                                print("🔄 Resetting state after save")
+                                withAnimation {
+                                    isAddingNew = false
+                                }
+                            }, onCancel: {
+                                print("❌ Canceling weapon edit for: \(weapon.name)")
+                                print("🔄 Resetting state after cancel")
+                                withAnimation {
+                                    isAddingNew = false
+                                }
+                            })
+                        }
+                        .id(weapon.id) // Force a new instance when weapon changes
+                        .transition(.opacity)
+                    } else {
+                        VStack(spacing: 12) {
+                            Text("Select Weapon Type")
+                                .font(.headline)
+                            
+                            Picker("Select Weapon", selection: $selectedWeaponName) {
+                                Text("Select a Weapon").tag(nil as String?)
+                                ForEach(WeaponData.weapons.map { $0["name"] ?? "" }.sorted(), id: \.self) { name in
+                                    Text(name).tag(name as String?)
+                                }
+                                Text("Custom Weapon").tag("custom" as String?)
+                            }
+                            .pickerStyle(.menu)
+                            .onChange(of: selectedWeaponName) { newValue in
+                                print("🎲 Weapon selection changed to: \(String(describing: newValue))")
+                                if let weaponName = newValue {
+                                    createWeaponFromSelection(weaponName)
+                                } else {
+                                    print("⚠️ No weapon selected")
+                                    editingNewWeapon = nil
+                                }
+                            }
+                            
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    print("❌ Cancel button tapped")
+                                    withAnimation {
+                                        isAddingNew = false
+                                    }
+                                }) {
+                                    Text("Cancel")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
+                }
+                
+                ForEach(weapons) { weapon in
+                    if editingWeaponId == weapon.id {
+                        Group {
+                            WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
+                                print("💾 Saving updated weapon: \(updatedWeapon.name)")
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    print("🔄 Updating weapon at index: \(index)")
+                                    weapons[index] = updatedWeapon
+                                }
+                                editingWeaponId = nil
+                            }, onCancel: {
+                                print("❌ Canceling weapon edit")
+                                editingWeaponId = nil
+                            })
+                        }
+                    } else {
+                        WeaponRow(weapon: weapon)
+                            .onTapGesture {
+                                editingWeaponId = weapon.id
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    weapons.removeAll { $0.id == weapon.id }
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
+                }
+                .onDelete(perform: nil)
+                
+                if !isAddingNew {
+                    Button(action: {
+                        print("🔄 Adding new weapon")
+                        withAnimation {
+                            isAddingNew = true
+                        }
+                    }) {
+                        Label("Add Another Weapon", systemImage: "plus.circle.fill")
+                    }
+                }
+            }
+        } header: {
+            if !weapons.isEmpty {
+                Label("Weapons", systemImage: "shield.lefthalf.filled")
+            }
+        }
     }
 }
