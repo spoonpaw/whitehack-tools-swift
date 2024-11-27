@@ -219,69 +219,41 @@ struct WeaponEditRow: View {
     @State private var name: String
     @State private var damage: String
     @State private var weight: String
-    @State private var rateOfFire: String
     @State private var range: String
+    @State private var rateOfFire: String
     @State private var special: String
-    
-    // Status Properties
     @State private var isEquipped: Bool
     @State private var isStashed: Bool
-    
-    // Magical Properties
     @State private var isMagical: Bool
     @State private var isCursed: Bool
     @State private var bonus: Int
-    @State private var isBonus: Bool  // true = bonus (right/green), false = penalty (left/red)
-    @State private var bonusString: String = "0"
-    
-    // Quantity
     @State private var quantity: Int
-    @State private var quantityString: String = "1"
+    @State private var isBonus: Bool
+    @State private var bonusString: String
     
-    private let numberFormatter: NumberFormatter = {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimum = 0
-        return formatter
-    }()
+    // Button state tracking
+    @State private var isProcessingAction = false
     
+    // Initialize with a weapon
     init(weapon: Weapon, onSave: @escaping (Weapon) -> Void, onCancel: @escaping () -> Void) {
-        print("🏗️ Initializing WeaponEditRow")
-        print("📝 Initial weapon data:")
-        print("   Name: \(weapon.name)")
-        print("   Damage: \(weapon.damage)")
-        print("   Weight: \(weapon.weight)")
-        print("   Rate of Fire: \(weapon.rateOfFire)")
-        print("   Range: \(weapon.range)")
-        print("   Special: \(weapon.special)")
-        print("   Equipped: \(weapon.isEquipped)")
-        print("   Stashed: \(weapon.isStashed)")
-        print("   Magical: \(weapon.isMagical)")
-        print("   Cursed: \(weapon.isCursed)")
-        print("   Bonus: \(weapon.bonus)")
-        print("   Quantity: \(weapon.quantity)")
-        
         self.onSave = onSave
         self.onCancel = onCancel
         
-        // Initialize all @State properties
+        // Initialize state properties
         _name = State(initialValue: weapon.name)
         _damage = State(initialValue: weapon.damage)
         _weight = State(initialValue: weapon.weight)
-        _rateOfFire = State(initialValue: weapon.rateOfFire)
         _range = State(initialValue: weapon.range)
+        _rateOfFire = State(initialValue: weapon.rateOfFire)
         _special = State(initialValue: weapon.special)
         _isEquipped = State(initialValue: weapon.isEquipped)
         _isStashed = State(initialValue: weapon.isStashed)
         _isMagical = State(initialValue: weapon.isMagical)
         _isCursed = State(initialValue: weapon.isCursed)
         _bonus = State(initialValue: weapon.bonus)
-        _isBonus = State(initialValue: weapon.bonus >= 0)  // Default to bonus if 0 or positive
+        _quantity = State(initialValue: weapon.quantity)
+        _isBonus = State(initialValue: weapon.bonus >= 0)
         _bonusString = State(initialValue: "\(abs(weapon.bonus))")
-        _quantity = State(initialValue: max(1, weapon.quantity))
-        _quantityString = State(initialValue: "\(max(1, weapon.quantity))")
-        
-        print("✅ State initialization complete")
     }
     
     private func getWeightDisplayText(_ weight: String) -> String {
@@ -328,6 +300,15 @@ struct WeaponEditRow: View {
             bonusString = "\(abs(bonus))"
         }
     }
+    
+    @State private var quantityString: String = "1"
+    
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimum = 0
+        return formatter
+    }()
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -537,11 +518,13 @@ struct WeaponEditRow: View {
             }
             
             // Save/Cancel Buttons
-            HStack {
-                Button(action: {
-                    print("❌ Cancel button tapped")
+            HStack(spacing: 20) {  // Added explicit spacing
+                Button {
+                    guard !isProcessingAction else { return }
+                    isProcessingAction = true
+                    print("🔴 Cancel action starting")
                     onCancel()
-                }) {
+                } label: {
                     Label {
                         Text("Cancel")
                             .fontWeight(.medium)
@@ -550,11 +533,14 @@ struct WeaponEditRow: View {
                     }
                     .foregroundColor(.red)
                 }
+                .buttonStyle(.borderless)  // Explicit button style
                 
                 Spacer()
                 
-                Button(action: {
-                    print("💾 Save button tapped")
+                Button {
+                    guard !isProcessingAction else { return }
+                    isProcessingAction = true
+                    print("🟢 Save action starting")
                     let updatedWeapon = Weapon(
                         id: UUID(),
                         name: name,
@@ -571,7 +557,7 @@ struct WeaponEditRow: View {
                         quantity: quantity
                     )
                     onSave(updatedWeapon)
-                }) {
+                } label: {
                     Label {
                         Text("Save")
                             .fontWeight(.medium)
@@ -580,6 +566,7 @@ struct WeaponEditRow: View {
                     }
                     .foregroundColor(.blue)
                 }
+                .buttonStyle(.borderless)  // Explicit button style
                 .disabled(name.isEmpty || damage.isEmpty)
             }
             .padding(.horizontal)
@@ -1016,69 +1003,48 @@ struct FormWeaponsSection: View {
         didSet {
             print("🔄 isAddingNew changed: \(oldValue) -> \(isAddingNew)")
             if !isAddingNew {
-                print("🔄 Resetting state after cancel")
                 print("🧹 Cleaning up weapon states")
                 selectedWeaponName = nil
                 editingNewWeapon = nil
             }
         }
     }
-    @State private var selectedWeaponName: String? = nil {
+    @State private var selectedWeaponName: String? {
         didSet {
-            print("🎯 selectedWeaponName changed: \(oldValue.map { "Optional(\"\($0)\")" } ?? "nil") -> \(selectedWeaponName.map { "Optional(\"\($0)\")" } ?? "nil")")
-            if let name = selectedWeaponName {
-                print("🎯 Creating weapon from selection: \(name)")
-                if let weaponData = WeaponData.weapons.first(where: { $0["name"] == name }) {
-                    print("📦 Found weapon data: \(weaponData)")
-                    let weapon = Weapon(
-                        id: UUID(),
-                        name: name,
-                        damage: weaponData["damage"] ?? "",
-                        weight: weaponData["weight"] ?? "",
-                        range: weaponData["range"] ?? "",
-                        rateOfFire: weaponData["rateOfFire"] ?? "",
-                        special: weaponData["special"] ?? "",
-                        isEquipped: false,
-                        isStashed: false,
-                        isMagical: false,
-                        isCursed: false,
-                        bonus: 0,
-                        quantity: 1
-                    )
-                    print("🛠️ Created weapon:")
-                    print("   Name: \(weapon.name)")
-                    print("   Damage: \(weapon.damage)")
-                    print("   Weight: \(weapon.weight)")
-                    print("   Rate of Fire: \(weapon.rateOfFire)")
-                    print("   Range: \(weapon.range)")
-                    print("   Special: \(weapon.special)")
-                    editingNewWeapon = weapon
-                    print("⚔️ editingNewWeapon changed: nil -> Optional(\"\(weapon.name)\")")
-                    print("   Damage: \(weapon.damage)")
-                    print("   Weight: \(weapon.weight)")
-                    print("   Rate of Fire: \(weapon.rateOfFire)")
-                    print("   Range: \(weapon.range)")
-                    print("   Special: \(weapon.special)")
-                }
-            } else {
+            print("🎯 selectedWeaponName changed: \(String(describing: oldValue)) -> \(String(describing: selectedWeaponName))")
+            if selectedWeaponName == nil {
                 print("⚠️ No weapon selected")
                 editingNewWeapon = nil
-                print("⚔️ editingNewWeapon changed: nil -> nil")
             }
         }
     }
-    @State private var editingNewWeapon: Weapon? = nil
+    @State private var editingNewWeapon: Weapon? {
+        didSet {
+            print("⚔️ editingNewWeapon changed: \(String(describing: oldValue?.name)) -> \(String(describing: editingNewWeapon?.name))")
+        }
+    }
     
     private func createWeaponFromSelection(_ weaponName: String) {
         print("🎯 Creating weapon from selection: \(weaponName)")
         
         if weaponName == "custom" {
-            print("🎨 Creating custom weapon")
-            let newWeapon = Weapon()
-            print("✨ Created empty weapon template")
-            DispatchQueue.main.async {
-                self.editingNewWeapon = newWeapon
-            }
+            // Handle custom weapon creation
+            let weapon = Weapon(
+                id: UUID(),
+                name: "",
+                damage: "",
+                weight: "",
+                range: "",
+                rateOfFire: "",
+                special: "",
+                isEquipped: false,
+                isStashed: false,
+                isMagical: false,
+                isCursed: false,
+                bonus: 0,
+                quantity: 1
+            )
+            editingNewWeapon = weapon
         } else if let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
             print("📦 Found weapon data: \(weaponData)")
             let weapon = Weapon(
@@ -1104,11 +1070,9 @@ struct FormWeaponsSection: View {
             print("   Range: \(weapon.range)")
             print("   Special: \(weapon.special)")
             
-            DispatchQueue.main.async {
-                self.editingNewWeapon = weapon
+            withAnimation {
+                editingNewWeapon = weapon
             }
-        } else {
-            print("⚠️ No weapon data found for: \(weaponName)")
         }
     }
     
@@ -1138,24 +1102,24 @@ struct FormWeaponsSection: View {
             } else {
                 if isAddingNew {
                     if let weapon = editingNewWeapon {
-                        Group {
-                            WeaponEditRow(weapon: weapon, onSave: { newWeapon in
-                                print("💾 Saving weapon: \(newWeapon.name)")
-                                weapons.append(newWeapon)
-                                print("🔄 Resetting state after save")
-                                withAnimation {
-                                    isAddingNew = false
-                                }
-                            }, onCancel: {
-                                print("❌ Canceling weapon edit for: \(weapon.name)")
-                                print("🔄 Resetting state after cancel")
-                                withAnimation {
-                                    isAddingNew = false
-                                }
-                            })
-                        }
-                        .id(weapon.id) // Force a new instance when weapon changes
-                        .transition(.opacity)
+                        WeaponEditRow(weapon: weapon, onSave: { newWeapon in
+                            print("🟢 [FormWeaponsSection] Save action received for: \(newWeapon.name)")
+                            weapons.append(newWeapon)
+                            print("✅ [FormWeaponsSection] Weapon added to array")
+                            withAnimation {
+                                print("🔄 [FormWeaponsSection] Resetting form state after save")
+                                isAddingNew = false
+                            }
+                        }, onCancel: {
+                            print("🔴 [FormWeaponsSection] Cancel action received")
+                            withAnimation {
+                                print("🔄 [FormWeaponsSection] Resetting form state after cancel")
+                                selectedWeaponName = nil
+                                editingNewWeapon = nil
+                                isAddingNew = false
+                            }
+                        })
+                        .id(weapon.id)  // Force view recreation when weapon changes
                     } else {
                         VStack(spacing: 12) {
                             Text("Select Weapon Type")
@@ -1169,13 +1133,10 @@ struct FormWeaponsSection: View {
                                 Text("Custom Weapon").tag("custom" as String?)
                             }
                             .pickerStyle(.menu)
+                            .labelsHidden()
                             .onChange(of: selectedWeaponName) { newValue in
-                                print("🎲 Weapon selection changed to: \(String(describing: newValue))")
                                 if let weaponName = newValue {
                                     createWeaponFromSelection(weaponName)
-                                } else {
-                                    print("⚠️ No weapon selected")
-                                    editingNewWeapon = nil
                                 }
                             }
                             
@@ -1207,7 +1168,7 @@ struct FormWeaponsSection: View {
                                 }
                                 editingWeaponId = nil
                             }, onCancel: {
-                                print("❌ Canceling weapon edit")
+                                print("❌ Canceling weapon edit - reverting to original state")
                                 editingWeaponId = nil
                             })
                         }
