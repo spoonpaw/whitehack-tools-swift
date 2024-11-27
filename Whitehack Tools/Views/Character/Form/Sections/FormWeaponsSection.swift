@@ -273,8 +273,7 @@ struct WeaponRow: View {
                     Text(weapon.isEquipped ? "Equipped" : "Unequipped")
                         .foregroundColor(weapon.isEquipped ? .green : .secondary)
                 } icon: {
-                    IconFrame(icon: weapon.isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
-                            color: weapon.isEquipped ? .green : .gray)
+                    IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
                 }
                 
                 Spacer()
@@ -595,16 +594,17 @@ struct WeaponEditRow: View {
                 
                 // Equipped Status
                 Label {
-                    Toggle("Equipped", isOn: $isEquipped)
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
                 } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: .green)
+                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                 }
                 
                 // Stashed Status
                 Label {
-                    Toggle("Stashed", isOn: $isStashed)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
                 } icon: {
-                    IconFrame(icon: Ph.warehouse.bold, color: .brown)
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                            color: isStashed ? .brown : .blue)
                 }
                 
                 // Magical Status
@@ -624,15 +624,16 @@ struct WeaponEditRow: View {
             
             // Bonus Section
             VStack(alignment: .leading, spacing: 4) {
-                Text("Bonus/Penalty")
+                Text(bonus == 0 ? "No Modifier" : (bonus > 0 ? "Bonus" : "Penalty"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
                     Stepper(value: $bonus, in: -5...5) {
-                        Text("Bonus: \(bonus >= 0 ? "+" : "")\(bonus)")
+                        Text("\(bonus == 0 ? "Modifier" : (bonus > 0 ? "Bonus" : "Penalty")): \(bonus >= 0 ? "+" : "")\(bonus)")
                     }
                 } icon: {
-                    IconFrame(icon: Ph.plusMinus.bold, color: .blue)
+                    IconFrame(icon: bonus == 0 ? Ph.equals.bold : (bonus > 0 ? Ph.plus.bold : Ph.minus.bold),
+                            color: bonus == 0 ? .gray : (bonus > 0 ? .green : .red))
                 }
             }
             
