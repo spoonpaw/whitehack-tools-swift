@@ -437,6 +437,7 @@ struct WeaponEditRow: View {
     @State private var isCursed: Bool
     @State private var bonus: Int
     @State private var quantity: Int
+    @State private var quantityString: String = "1"
     
     private let numberFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -452,6 +453,29 @@ struct WeaponEditRow: View {
         case "Regular": return "Regular (1 slot)"
         case "Heavy": return "Heavy (2 slots)"
         default: return weight
+        }
+    }
+    
+    private func validateAndUpdateQuantity() {
+        if let newValue = Int(quantityString) {
+            quantity = max(1, newValue)  // Just ensure it's at least 1
+        }
+        // Always update string to match actual quantity
+        quantityString = "\(quantity)"
+    }
+    
+    private func validateQuantityInput(_ input: String) {
+        // Only ensure it's a valid number and at least 1
+        if let newValue = Int(input) {
+            if newValue < 1 {
+                quantityString = "1"
+                quantity = 1
+            } else {
+                quantity = newValue  // Update the actual quantity value
+            }
+        } else if !input.isEmpty {
+            // If not a valid number and not empty, revert to previous value
+            quantityString = "\(quantity)"
         }
     }
     
@@ -482,6 +506,7 @@ struct WeaponEditRow: View {
         _isCursed = State(initialValue: weapon.isCursed)
         _bonus = State(initialValue: weapon.bonus)
         _quantity = State(initialValue: max(1, weapon.quantity))
+        _quantityString = State(initialValue: "\(max(1, weapon.quantity))")
         
         print("✅ State initialization complete")
     }
@@ -579,12 +604,24 @@ struct WeaponEditRow: View {
                     .foregroundColor(.secondary)
                 HStack {
                     Label {
-                        Text("\(quantity)")
+                        TextField("", text: $quantityString)
+                            .keyboardType(.numberPad)
+                            .frame(width: 60)  // Made wider to accommodate larger numbers
+                            .multilineTextAlignment(.leading)
+                            .onChange(of: quantityString) { newValue in
+                                validateQuantityInput(newValue)
+                            }
+                            .onSubmit {
+                                validateAndUpdateQuantity()
+                            }
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
                     } icon: {
                         IconFrame(icon: Ph.stack.bold, color: .gray)
                     }
                     Spacer()
-                    Stepper("", value: $quantity, in: 1...99)
+                    Stepper("", value: $quantity, in: 1...Int.max)  // Allow any positive number
                         .labelsHidden()
                 }
             }
