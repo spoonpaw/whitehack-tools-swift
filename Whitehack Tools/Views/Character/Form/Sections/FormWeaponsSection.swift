@@ -524,6 +524,9 @@ struct WeaponEditRow: View {
                     isProcessingAction = true
                     print("🔴 Cancel action starting")
                     onCancel()
+                    DispatchQueue.main.async {
+                        isProcessingAction = false
+                    }
                 } label: {
                     Label {
                         Text("Cancel")
@@ -557,6 +560,9 @@ struct WeaponEditRow: View {
                         quantity: quantity
                     )
                     onSave(updatedWeapon)
+                    DispatchQueue.main.async {
+                        isProcessingAction = false
+                    }
                 } label: {
                     Label {
                         Text("Save")
