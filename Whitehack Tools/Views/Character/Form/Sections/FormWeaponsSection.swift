@@ -529,15 +529,20 @@ struct WeaponEditRow: View {
             
             // Save/Cancel Buttons
             HStack {
-                Spacer()
                 Button(action: {
                     print("❌ Cancel button tapped")
                     onCancel()
                 }) {
-                    Text("Cancel")
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
-                .buttonStyle(.borderless)
+                
+                Spacer()
                 
                 Button(action: {
                     print("💾 Save button tapped")
@@ -558,12 +563,18 @@ struct WeaponEditRow: View {
                     )
                     onSave(updatedWeapon)
                 }) {
-                    Text("Save")
-                        .bold()
+                    Label {
+                        Text("Save")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    .foregroundColor(.blue)
                 }
-                .buttonStyle(.borderedProminent)
                 .disabled(name.isEmpty || damage.isEmpty)
             }
+            .padding(.horizontal)
+            .padding(.top, 16)
         }
         .padding()
         .onAppear {
