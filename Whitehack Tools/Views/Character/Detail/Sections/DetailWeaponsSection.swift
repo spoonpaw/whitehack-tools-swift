@@ -80,6 +80,17 @@ private struct WeaponDetailRow: View {
             }
             .font(.callout)
             
+            // Weight and Slots
+            HStack {
+                Label {
+                    Text(getWeightDisplayText(weapon.weight))
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+                .foregroundColor(.secondary)
+                .font(.callout)
+            }
+            
             Divider()
             
             // Combat Stats
@@ -128,13 +139,6 @@ private struct WeaponDetailRow: View {
                 .foregroundStyle(.red)
                 
                 Label {
-                    Text("Weight: \(weapon.weight)")
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-                .foregroundStyle(.blue)
-                
-                Label {
                     Text("Range: \(weapon.range)")
                 } icon: {
                     IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
@@ -166,5 +170,15 @@ private struct WeaponDetailRow: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
+    }
+    
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
     }
 }
