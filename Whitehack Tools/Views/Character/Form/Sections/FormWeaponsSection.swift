@@ -3,6 +3,8 @@ import PhosphorSwift
 
 struct WeaponRow: View {
     let weapon: Weapon
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -165,7 +167,27 @@ struct WeaponRow: View {
             
             // Action Buttons
             HStack(spacing: 20) {
+                Button(action: onEdit) {
+                    Label {
+                        Text("Edit")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                    }
+                    .foregroundColor(.blue)
+                }
+                
                 Spacer()
+                
+                Button(action: onDelete) {
+                    Label {
+                        Text("Delete")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                    }
+                    .foregroundColor(.red)
+                }
             }
             .padding(.horizontal)
             .padding(.top, 4)
@@ -173,6 +195,8 @@ struct WeaponRow: View {
         .padding()
         .background(Color(.secondarySystemBackground))
         .cornerRadius(10)
+        .contentShape(Rectangle())  // Define hit testing area
+        .allowsHitTesting(false)  // Disable touch interaction for the content area
     }
 }
 
@@ -1166,7 +1190,17 @@ struct FormWeaponsSection: View {
                             })
                         }
                     } else {
-                        WeaponRow(weapon: weapon)
+                        WeaponRow(weapon: weapon, onEdit: {
+                            editingWeaponId = weapon.id
+                        }, onDelete: {
+                            withAnimation {
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    print("🔄 Removing weapon at index: \(index)")
+                                    weapons.remove(at: index)
+                                }
+                            }
+                        })
+                        .buttonStyle(PlainButtonStyle())  // Prevent button-like behavior
                     }
                 }
                 .onDelete(perform: nil)
