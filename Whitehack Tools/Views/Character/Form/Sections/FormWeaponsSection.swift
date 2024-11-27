@@ -68,40 +68,56 @@ struct FormWeaponsSection: View {
                         })
                     } else {
                         VStack(spacing: 12) {
-                            HStack {
-                                Text("Select Weapon")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            
-                            Picker("", selection: $selectedWeaponName) {
-                                Text("Select a Weapon").tag(String?.none)
-                                ForEach(WeaponData.weapons, id: \.["name"]) { weapon in
-                                    Text(weapon["name"] ?? "").tag(weapon["name"] as String?)
-                                }
-                                Text("Custom Weapon").tag("custom" as String?)
-                            }
-                            .onChange(of: selectedWeaponName) { newValue in
-                                if newValue == "custom" {
-                                    editingNewWeapon = Weapon()
-                                } else if let weaponName = newValue,
-                                          let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
-                                    editingNewWeapon = Weapon.fromData(weaponData)
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
+                            if let weapon = editingNewWeapon {
+                                WeaponEditRow(weapon: weapon, onSave: { newWeapon in
+                                    weapons.append(newWeapon)
                                     isAddingNew = false
                                     editingNewWeapon = nil
                                     selectedWeaponName = nil
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
+                                }, onCancel: {
+                                    isAddingNew = false
+                                    editingNewWeapon = nil
+                                    selectedWeaponName = nil
+                                })
+                            } else {
+                                HStack {
+                                    Text("Select Weapon")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
                                 }
-                                .buttonStyle(.borderless)
+                                
+                                Picker("", selection: $selectedWeaponName) {
+                                    Text("Select a Weapon").tag(String?.none)
+                                    ForEach(WeaponData.weapons, id: \.["name"]) { weapon in
+                                        Text(weapon["name"] ?? "").tag(weapon["name"] as String?)
+                                    }
+                                    Text("Custom Weapon").tag("custom" as String?)
+                                }
+                                .onChange(of: selectedWeaponName) { newValue in
+                                    print("Selected weapon name: \(String(describing: newValue))")
+                                    if newValue == "custom" {
+                                        editingNewWeapon = Weapon()
+                                    } else if let weaponName = newValue,
+                                              let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
+                                        print("Found weapon data: \(weaponData)")
+                                        editingNewWeapon = Weapon.fromData(weaponData)
+                                        print("Created weapon: \(editingNewWeapon)")
+                                    }
+                                }
+                                
+                                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        isAddingNew = false
+                                        editingNewWeapon = nil
+                                        selectedWeaponName = nil
+                                    }) {
+                                        Text("Cancel")
+                                            .foregroundColor(.red)
+                                    }
+                                    .buttonStyle(.borderless)
+                                }
                             }
                         }
                         .padding(.vertical, 8)
