@@ -75,6 +75,42 @@ private struct WeaponDetailRow: View {
                     .foregroundStyle(weapon.isEquipped ? .green : .gray)
                 }
                 
+                // Magical Status
+                if weapon.isMagical {
+                    Label {
+                        Text("Magical")
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                    }
+                    .foregroundStyle(.purple)
+                }
+                
+                // Cursed Status
+                if weapon.isCursed {
+                    Label {
+                        Text("Cursed")
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.skull.bold, color: .red)
+                    }
+                    .foregroundStyle(.red)
+                }
+                
+                // Bonus/Penalty
+                if weapon.bonus != 0 {
+                    Label {
+                        HStack(spacing: 4) {
+                            Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
+                            Text("\(abs(weapon.bonus))")
+                        }
+                        .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                    }
+                    .foregroundStyle(.purple)
+                }
+                
                 Label {
                     Text("Damage: \(weapon.damage)")
                 } icon: {

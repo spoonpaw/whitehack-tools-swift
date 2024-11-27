@@ -18,7 +18,7 @@ struct IconFrame<Icon: View>: View {
 
 struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
-    @State private var editingWeaponId: String?
+    @State private var editingWeaponId: UUID?
     @State private var isAddingNew = false
     @State private var isCustomWeapon = false
     @State private var selectedWeaponName: String?
@@ -79,12 +79,18 @@ struct FormWeaponsSection: View {
                                 } else if let weaponName = newValue,
                                           let weaponData = WeaponData.weapons.first(where: { $0["name"] == weaponName }) {
                                     let weapon = Weapon(
+                                        id: UUID(),
                                         name: weaponData["name"] ?? "",
                                         damage: weaponData["damage"] ?? "",
                                         weight: weaponData["weight"] ?? "",
-                                        rateOfFire: weaponData["rateOfFire"] ?? "",
+                                        range: weaponData["range"] ?? "",
+                                        rateOfFire: weaponData["rateOfFire"] ?? "-",
                                         special: weaponData["special"] ?? "",
-                                        range: weaponData["range"] ?? ""
+                                        isEquipped: false,
+                                        isStashed: false,
+                                        isMagical: false,
+                                        isCursed: false,
+                                        bonus: 0
                                     )
                                     weapons.append(weapon)
                                     isAddingNew = false
@@ -200,6 +206,39 @@ struct WeaponRow: View {
                     .foregroundStyle(weapon.isEquipped ? .green : .gray)
                 }
                 
+                // Magical Status
+                if weapon.isMagical {
+                    Label {
+                        Text("Magical")
+                    } icon: {
+                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                    }
+                    .foregroundStyle(.purple)
+                    
+                    // Bonus (if has bonus)
+                    if weapon.bonus != 0 {
+                        Label {
+                            HStack(spacing: 8) {
+                                Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
+                                Text("\(abs(weapon.bonus))")
+                            }
+                        } icon: {
+                            IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                        }
+                        .foregroundStyle(.purple)
+                    }
+                }
+                
+                // Cursed Status
+                if weapon.isCursed {
+                    Label {
+                        Text("Cursed")
+                    } icon: {
+                        IconFrame(icon: Ph.skull.bold, color: .red)
+                    }
+                    .foregroundStyle(.red)
+                }
+                
                 // Damage
                 Label {
                     Text("Damage: \(weapon.damage)")
@@ -304,6 +343,16 @@ struct WeaponEditRow: View {
     @State private var range: String
     @State private var isEquipped: Bool
     @State private var isStashed: Bool
+    @State private var isMagical: Bool
+    @State private var isCursed: Bool
+    @State private var bonus: Int
+    
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimum = 0
+        return formatter
+    }()
     
     private func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
@@ -327,6 +376,9 @@ struct WeaponEditRow: View {
         _range = State(initialValue: weapon.range)
         _isEquipped = State(initialValue: weapon.isEquipped)
         _isStashed = State(initialValue: weapon.isStashed)
+        _isMagical = State(initialValue: weapon.isMagical)
+        _isCursed = State(initialValue: weapon.isCursed)
+        _bonus = State(initialValue: weapon.bonus)
     }
     
     var body: some View {
@@ -350,7 +402,7 @@ struct WeaponEditRow: View {
             VStack(alignment: .leading, spacing: 8) {
                 // Equipped Status
                 Label {
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                    Toggle("Equipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
                             isEquipped = newValue
@@ -366,7 +418,7 @@ struct WeaponEditRow: View {
                 
                 // Stashed Status
                 Label {
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                    Toggle("Stashed", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
                             isStashed = newValue
@@ -383,6 +435,69 @@ struct WeaponEditRow: View {
                     }
                 }
                 .foregroundStyle(isStashed ? .orange : .gray)
+                
+                // Magical Status
+                Label {
+                    Toggle("Magical", isOn: $isMagical)
+                } icon: {
+                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
+                }
+                .foregroundStyle(isMagical ? .purple : .gray)
+                
+                // Cursed Status
+                Label {
+                    Toggle("Cursed", isOn: $isCursed)
+                } icon: {
+                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                }
+                .foregroundStyle(isCursed ? .red : .gray)
+                
+                // Bonus/Penalty
+                Label {
+                    HStack(spacing: 8) {
+                        // Decrease Button
+                        Button(action: {
+                            bonus -= 1
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .foregroundStyle(Color.purple.opacity(0.8))
+                        }
+                        .buttonStyle(.borderless)
+                        
+                        // Bonus Display with Toggle
+                        HStack(spacing: 2) {
+                            Button(action: {
+                                bonus = -bonus
+                            }) {
+                                Text(bonus >= 0 ? "+" : "-")
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(Color.purple)
+                                    .frame(width: 20)
+                            }
+                            .buttonStyle(.borderless)
+                            
+                            Text("\(abs(bonus))")
+                                .frame(width: 20, alignment: .leading)
+                                .foregroundStyle(Color.purple)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.purple.opacity(0.1))
+                        .cornerRadius(8)
+                        
+                        // Increase Button
+                        Button(action: {
+                            bonus += 1
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(Color.purple.opacity(0.8))
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                }
+                .foregroundStyle(.purple)
                 
                 // Damage
                 Label {
@@ -486,14 +601,18 @@ struct WeaponEditRow: View {
                 // Save Button
                 Button(action: {
                     let updatedWeapon = Weapon(
+                        id: UUID(),
                         name: name,
                         damage: damage,
                         weight: weight,
+                        range: range,
                         rateOfFire: rateOfFire,
                         special: special,
-                        range: range,
                         isEquipped: isEquipped,
-                        isStashed: isStashed
+                        isStashed: isStashed,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        bonus: bonus
                     )
                     onSave(updatedWeapon)
                 }) {
@@ -515,6 +634,289 @@ struct WeaponEditRow: View {
         .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(radius: 1)
+    }
+}
+
+struct CustomWeaponForm: View {
+    @Binding var weapons: [Weapon]
+    @Binding var isPresented: Bool
+    
+    @State private var name = ""
+    @State private var damage = ""
+    @State private var weight = ""
+    @State private var rateOfFire = ""
+    @State private var special = ""
+    @State private var range = ""
+    @State private var editingWeapon: Weapon?
+    @State private var isMagical = false
+    @State private var isCursed = false
+    @State private var bonus = 0
+    @State private var isEquipped = false
+    @State private var isStashed = false
+    
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimum = 0
+        return formatter
+    }()
+    
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    ForEach(weapons) { weapon in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(weapon.name)
+                                    .font(.headline)
+                                Text("Damage: \(weapon.damage)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            HStack(spacing: 12) {
+                                Button(action: {
+                                    editingWeapon = weapon
+                                    name = weapon.name
+                                    damage = weapon.damage
+                                    weight = weapon.weight
+                                    rateOfFire = weapon.rateOfFire
+                                    special = weapon.special
+                                    range = weapon.range
+                                    isMagical = weapon.isMagical
+                                    isCursed = weapon.isCursed
+                                    bonus = weapon.bonus
+                                    isEquipped = weapon.isEquipped
+                                    isStashed = weapon.isStashed
+                                }) {
+                                    Image(systemName: "pencil.circle.fill")
+                                        .foregroundColor(.blue)
+                                }
+                                Button(action: {
+                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                        weapons.remove(at: index)
+                                    }
+                                }) {
+                                    Image(systemName: "trash.circle.fill")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    if !weapons.isEmpty {
+                        Text("Existing Weapons")
+                    }
+                }
+                
+                Section {
+                    HStack {
+                        IconFrame(icon: Ph.textAa.bold, color: Color.blue)
+                        Text("Name")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("Weapon Name", text: $name)
+                    }
+                }
+                
+                Section {
+                    HStack {
+                        IconFrame(icon: Ph.target.bold, color: Color.red)
+                        Text("Damage")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("e.g., 1d6+1", text: $damage)
+                    }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.scales.bold, color: Color.blue)
+                        Text("Weight")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("N, M, R, or H", text: $weight)
+                    }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.timer.bold, color: Color.green)
+                        Text("Rate of Fire")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("e.g., 1, 1/2, or -", text: $rateOfFire)
+                    }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: Color.purple)
+                        Text("Range")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("e.g., Close, Near, Far", text: $range)
+                    }
+                } header: {
+                    Text("Combat Stats")
+                }
+                
+                Section {
+                    // Magical Status
+                    HStack {
+                        IconFrame(icon: Ph.sparkle.bold, color: Color.purple)
+                        Text("Magical")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        Toggle("Magical", isOn: $isMagical)
+                    }
+                    
+                    // Cursed Status
+                    HStack {
+                        IconFrame(icon: Ph.skull.bold, color: Color.red)
+                        Text("Cursed")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        Toggle("Cursed", isOn: $isCursed)
+                    }
+                    
+                    // Bonus/Penalty
+                    HStack {
+                        IconFrame(icon: Ph.plusMinus.bold, color: Color.purple)
+                        Text(bonus >= 0 ? "Bonus" : "Penalty")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        
+                        Spacer()
+                        
+                        // Bonus Control Group
+                        HStack(spacing: 8) {
+                            // Decrease Button
+                            Button(action: {
+                                bonus -= 1
+                            }) {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(Color.purple.opacity(0.8))
+                            }
+                            .buttonStyle(.borderless)
+                            
+                            // Bonus Display with Toggle
+                            HStack(spacing: 2) {
+                                Button(action: {
+                                    bonus = -bonus
+                                }) {
+                                    Text(bonus >= 0 ? "+" : "-")
+                                        .fontWeight(.bold)
+                                        .foregroundStyle(Color.purple)
+                                        .frame(width: 20)
+                                }
+                                .buttonStyle(.borderless)
+                                
+                                Text("\(abs(bonus))")
+                                    .frame(width: 20, alignment: .leading)
+                                    .foregroundStyle(Color.purple)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.purple.opacity(0.1))
+                            .cornerRadius(8)
+                            
+                            // Increase Button
+                            Button(action: {
+                                bonus += 1
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(Color.purple.opacity(0.8))
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                    }
+                } header: {
+                    Text("Magical Properties")
+                }
+                
+                Section {
+                    HStack {
+                        IconFrame(icon: Ph.bagSimple.bold, color: Color.green)
+                        Text("Equipped")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        Toggle("Equipped", isOn: $isEquipped)
+                    }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.warehouse.bold, color: Color.orange)
+                        Text("Stashed")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        Toggle("Stashed", isOn: $isStashed)
+                    }
+                } header: {
+                    Text("Status")
+                }
+                
+                Section {
+                    HStack {
+                        IconFrame(icon: Ph.star.bold, color: Color.purple)
+                        Text("Special")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("Special Properties", text: $special)
+                    }
+                } header: {
+                    Text("Special")
+                }
+            }
+            .navigationTitle(editingWeapon == nil ? "Add Weapon" : "Edit Weapon")
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    isPresented = false
+                },
+                trailing: Button(editingWeapon == nil ? "Save" : "Update") {
+                    if let editingWeapon = editingWeapon {
+                        let updatedWeapon = Weapon(
+                            id: editingWeapon.id,
+                            name: name,
+                            damage: damage,
+                            weight: weight,
+                            range: range,
+                            rateOfFire: rateOfFire,
+                            special: special,
+                            isEquipped: isEquipped,
+                            isStashed: isStashed,
+                            isMagical: isMagical,
+                            isCursed: isCursed,
+                            bonus: bonus
+                        )
+                        if let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {
+                            weapons[index] = updatedWeapon
+                        }
+                    } else {
+                        let newWeapon = Weapon(
+                            name: name,
+                            damage: damage,
+                            weight: weight,
+                            range: range,
+                            rateOfFire: rateOfFire,
+                            special: special,
+                            isEquipped: false,
+                            isStashed: false,
+                            isMagical: isMagical,
+                            isCursed: isCursed,
+                            bonus: bonus
+                        )
+                        weapons.append(newWeapon)
+                    }
+                    isPresented = false
+                }
+                .disabled(name.isEmpty)
+            )
+        }
     }
 }
 
@@ -643,157 +1045,5 @@ struct WeaponDataRow: View {
             }
         }
         .padding(.vertical, 8)
-    }
-}
-
-struct CustomWeaponForm: View {
-    @Binding var weapons: [Weapon]
-    @Binding var isPresented: Bool
-    
-    @State private var name = ""
-    @State private var damage = ""
-    @State private var weight = ""
-    @State private var rateOfFire = ""
-    @State private var special = ""
-    @State private var range = ""
-    @State private var editingWeapon: Weapon?
-    
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "No size": return "No size (100/slot)"
-        case "Minor": return "Minor (2/slot)"
-        case "Regular": return "Regular (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
-        default: return weight
-        }
-    }
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    ForEach(weapons) { weapon in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(weapon.name)
-                                    .font(.headline)
-                                Text("Damage: \(weapon.damage)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            HStack(spacing: 12) {
-                                Button(action: {
-                                    editingWeapon = weapon
-                                    name = weapon.name
-                                    damage = weapon.damage
-                                    weight = weapon.weight
-                                    rateOfFire = weapon.rateOfFire
-                                    special = weapon.special
-                                    range = weapon.range
-                                }) {
-                                    Image(systemName: "pencil.circle.fill")
-                                        .foregroundColor(.blue)
-                                }
-                                Button(action: {
-                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                        weapons.remove(at: index)
-                                    }
-                                }) {
-                                    Image(systemName: "trash.circle.fill")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }
-                    }
-                } header: {
-                    if !weapons.isEmpty {
-                        Text("Existing Weapons")
-                    }
-                }
-                
-                Section {
-                    HStack {
-                        IconFrame(icon: Ph.textAa.bold, color: Color.blue)
-                        Text("Name")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("Weapon Name", text: $name)
-                    }
-                }
-                
-                Section {
-                    HStack {
-                        IconFrame(icon: Ph.target.bold, color: Color.red)
-                        Text("Damage")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("e.g., 1d6+1", text: $damage)
-                    }
-                    
-                    HStack {
-                        IconFrame(icon: Ph.scales.bold, color: Color.blue)
-                        Text("Weight")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("N, M, R, or H", text: $weight)
-                    }
-                    
-                    HStack {
-                        IconFrame(icon: Ph.timer.bold, color: Color.green)
-                        Text("Rate of Fire")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("e.g., 1, 1/2, or -", text: $rateOfFire)
-                    }
-                    
-                    HStack {
-                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: Color.purple)
-                        Text("Range")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("e.g., Close, Near, Far", text: $range)
-                    }
-                } header: {
-                    Text("Combat Stats")
-                }
-                
-                Section {
-                    HStack {
-                        IconFrame(icon: Ph.star.bold, color: Color.purple)
-                        Text("Special")
-                            .foregroundStyle(Color.secondary)
-                            .font(.caption)
-                        TextField("Special Properties", text: $special)
-                    }
-                } header: {
-                    Text("Special")
-                }
-            }
-            .navigationTitle(editingWeapon == nil ? "Add Weapon" : "Edit Weapon")
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    isPresented = false
-                },
-                trailing: Button(editingWeapon == nil ? "Save" : "Update") {
-                    let weapon = Weapon(
-                        name: name,
-                        damage: damage,
-                        weight: weight,
-                        rateOfFire: rateOfFire,
-                        special: special,
-                        range: range
-                    )
-                    if let editingWeapon = editingWeapon,
-                       let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {
-                        weapons[index] = weapon
-                    } else {
-                        weapons.append(weapon)
-                    }
-                    isPresented = false
-                }
-                .disabled(name.isEmpty)
-            )
-        }
     }
 }

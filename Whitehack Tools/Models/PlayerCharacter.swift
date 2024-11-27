@@ -454,36 +454,49 @@ struct FortunateOptions: Codable {
 }
 
 // MARK: - Weapon Types
-struct Weapon: Codable, Identifiable {
-    var id: String { name }  // Using name as id since weapons are unique by name
+struct Weapon: Codable, Identifiable, Hashable {
+    let id: UUID
     var name: String
     var damage: String
     var weight: String
+    var range: String
     var rateOfFire: String
     var special: String
-    var range: String
     var isEquipped: Bool
     var isStashed: Bool
+    var isMagical: Bool
+    var isCursed: Bool
+    var bonus: Int
     
-    init(name: String = "", damage: String = "", weight: String = "", rateOfFire: String = "", special: String = "", range: String = "", isEquipped: Bool = false, isStashed: Bool = false) {
+    init(id: UUID = UUID(), name: String = "", damage: String = "", weight: String = "", range: String = "", rateOfFire: String = "-", special: String = "", isEquipped: Bool = false, isStashed: Bool = false, isMagical: Bool = false, isCursed: Bool = false, bonus: Int = 0) {
+        self.id = id
         self.name = name
         self.damage = damage
         self.weight = weight
+        self.range = range
         self.rateOfFire = rateOfFire
         self.special = special
-        self.range = range
         self.isEquipped = isEquipped
         self.isStashed = isStashed
+        self.isMagical = isMagical
+        self.isCursed = isCursed
+        self.bonus = bonus
     }
     
     static func fromData(_ data: [String: String]) -> Weapon {
         Weapon(
+            id: UUID(),
             name: data["name"] ?? "",
             damage: data["damage"] ?? "",
             weight: data["weight"] ?? "",
-            rateOfFire: data["rateOfFire"] ?? "",
+            range: data["range"] ?? "",
+            rateOfFire: data["rateOfFire"] ?? "-",
             special: data["special"] ?? "",
-            range: data["range"] ?? ""
+            isEquipped: data["isEquipped"]?.lowercased() == "true",
+            isStashed: data["isStashed"]?.lowercased() == "true",
+            isMagical: data["isMagical"]?.lowercased() == "true",
+            isCursed: data["isCursed"]?.lowercased() == "true",
+            bonus: Int(data["bonus"] ?? "0") ?? 0
         )
     }
 }
