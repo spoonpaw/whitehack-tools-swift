@@ -5,6 +5,10 @@ struct DetailArmorSection: View {
     let armor: [Armor]
     let totalDefenseValue: Int
     
+    private func getWeightDisplayText(_ weight: Int) -> String {
+        return "\(weight) slot\(weight == 1 ? "" : "s")"
+    }
+    
     var body: some View {
         Section(header: SectionHeader(title: "Armor", icon: Ph.shield.bold)) {
             if armor.isEmpty {
@@ -50,6 +54,10 @@ struct DetailArmorSection: View {
 private struct ArmorDetailRow: View {
     let armor: Armor
     
+    private func getWeightDisplayText(_ weight: Int) -> String {
+        return "\(weight) slot\(weight == 1 ? "" : "s")"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Name and Quantity
@@ -58,7 +66,7 @@ private struct ArmorDetailRow: View {
                     Text(armor.name)
                         .font(.headline)
                 } icon: {
-                    IconFrame(icon: Ph.shield.bold, color: .blue)
+                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, color: .blue)
                 }
                 
                 Spacer()
@@ -107,6 +115,14 @@ private struct ArmorDetailRow: View {
             
             // Armor Stats
             VStack(alignment: .leading, spacing: 4) {
+                // Defense Factor
+                Label {
+                    Text(armor.isShield ? "+\(armor.df)" : "Defense: \(armor.df)")
+                        .font(.subheadline)
+                } icon: {
+                    IconFrame(icon: Ph.shieldCheck.bold, color: .blue)
+                }
+                
                 // Magical Status
                 if armor.isMagical {
                     Label {
@@ -143,40 +159,20 @@ private struct ArmorDetailRow: View {
                     .foregroundStyle(.purple)
                 }
                 
-                Label {
-                    Text("Defense Factor: \(armor.df)")
-                } icon: {
-                    IconFrame(icon: Ph.shield.bold, color: .blue)
+                // Special Properties
+                if !armor.special.isEmpty {
+                    Label {
+                        Text(armor.special)
+                            .font(.subheadline)
+                    } icon: {
+                        IconFrame(icon: Ph.star.bold, color: .yellow)
+                    }
+                    .foregroundStyle(.yellow)
                 }
-                .foregroundStyle(.blue)
-            }
-            .font(.subheadline)
-            
-            // Special Properties
-            if !armor.special.isEmpty {
-                Label {
-                    Text(armor.special)
-                        .italic()
-                } icon: {
-                    IconFrame(icon: Ph.star.bold, color: .purple)
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
             }
         }
         .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(radius: 2)
-    }
-    
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "No size": return "No size (100/slot)"
-        case "Minor": return "Minor (2/slot)"
-        case "Regular": return "Regular (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
-        default: return weight
-        }
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(10)
     }
 }

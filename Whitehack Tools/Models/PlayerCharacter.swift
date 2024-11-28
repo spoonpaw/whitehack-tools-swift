@@ -412,15 +412,16 @@ struct SignatureObject: Codable {
 struct Armor: Identifiable, Codable, Equatable {
     let id: UUID
     var name: String
-    var df: String  // Defense Factor
-    var weight: String
+    var df: Int      // Defense Factor (for shields this is the bonus)
+    var weight: Int  // Weight in slots
     var special: String
     var quantity: Int
     var isEquipped: Bool
     var isStashed: Bool
     var isMagical: Bool
     var isCursed: Bool
-    var bonus: Int
+    var bonus: Int   // Magical bonus/penalty
+    var isShield: Bool // Whether this is a shield (modifies defense) or armor (sets base defense)
     
     static func == (lhs: Armor, rhs: Armor) -> Bool {
         lhs.id == rhs.id
@@ -645,7 +646,7 @@ class PlayerCharacter: Identifiable, Codable {
     
     var totalDefenseValue: Int {
         let baseDF = armor.reduce(0) { total, armor in
-            total + armor.df.count
+            total + armor.df
         }
         return baseDF
     }
