@@ -524,24 +524,22 @@ struct ArmorEditRow: View {
                 }
             }
             
+            // Bonus Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Bonus/Penalty")
+                    .font(.subheadline)
+                TextField("Bonus", value: $bonus, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .keyboardType(.numberPad)
+                    .frame(width: 80)
+            }
+            
             // Magical Properties Section
             VStack(alignment: .leading, spacing: 8) {
                 // Magical Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
                     Toggle("Magical", isOn: $isMagical)
-                }
-                
-                if isMagical {
-                    // Bonus Section
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Magical Bonus/Penalty")
-                            .font(.subheadline)
-                        TextField("Bonus", value: $bonus, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .keyboardType(.numberPad)
-                            .frame(width: 80)
-                    }
                 }
                 
                 // Cursed Toggle with Icon
