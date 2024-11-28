@@ -30,17 +30,6 @@ struct DetailArmorSection: View {
                 .padding(.vertical, 20)
             } else {
                 VStack(alignment: .leading, spacing: 12) {
-                    // Total Defense Value
-                    HStack {
-                        Label {
-                            Text("Total Defense Value: \(totalDefenseValue)")
-                                .font(.headline)
-                        } icon: {
-                            IconFrame(icon: Ph.shieldCheckered.bold, color: .blue)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                    
                     ForEach(armor) { armorItem in
                         ArmorDetailRow(armor: armorItem)
                     }
@@ -66,7 +55,8 @@ private struct ArmorDetailRow: View {
                     Text(armor.name)
                         .font(.headline)
                 } icon: {
-                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, color: .blue)
+                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
+                            color: armor.isShield ? .blue : .purple)
                 }
                 
                 Spacer()
@@ -115,64 +105,64 @@ private struct ArmorDetailRow: View {
             
             // Armor Stats
             VStack(alignment: .leading, spacing: 4) {
-                // Defense Factor
-                Label {
-                    Text(armor.isShield ? "+\(armor.df)" : "Defense: \(armor.df)")
-                        .font(.subheadline)
-                } icon: {
-                    IconFrame(icon: Ph.shieldCheck.bold, color: .blue)
-                }
-                
                 // Magical Status
                 if armor.isMagical {
                     Label {
                         Text("Magical")
-                            .font(.subheadline)
+                            .foregroundColor(.purple)
                     } icon: {
                         IconFrame(icon: Ph.sparkle.bold, color: .purple)
                     }
-                    .foregroundStyle(.purple)
+                    .font(.callout)
                 }
                 
                 // Cursed Status
                 if armor.isCursed {
                     Label {
                         Text("Cursed")
-                            .font(.subheadline)
+                            .foregroundColor(.red)
                     } icon: {
                         IconFrame(icon: Ph.skull.bold, color: .red)
                     }
-                    .foregroundStyle(.red)
+                    .font(.callout)
                 }
+                
+                // Defense Value
+                Label {
+                    Text("Defense: \(armor.isShield ? "+\(armor.df)" : "\(armor.df)")")
+                        .foregroundColor(.blue)
+                } icon: {
+                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
+                }
+                .font(.callout)
                 
                 // Bonus/Penalty
                 if armor.bonus != 0 {
                     Label {
-                        HStack(spacing: 4) {
-                            Text(armor.bonus >= 0 ? "Bonus" : "Penalty")
-                            Text("\(abs(armor.bonus))")
-                        }
-                        .font(.subheadline)
+                        Text("\(armor.bonus >= 0 ? "+" : "-")\(abs(armor.bonus))")
+                            .foregroundColor(armor.bonus >= 0 ? .green : .red)
                     } icon: {
-                        IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                        IconFrame(icon: armor.bonus >= 0 ? Ph.plus.bold : Ph.minus.bold,
+                                color: armor.bonus >= 0 ? .green : .red)
                     }
-                    .foregroundStyle(.purple)
+                    .font(.callout)
                 }
                 
                 // Special Properties
                 if !armor.special.isEmpty {
                     Label {
                         Text(armor.special)
-                            .font(.subheadline)
+                            .foregroundColor(.yellow)
                     } icon: {
                         IconFrame(icon: Ph.star.bold, color: .yellow)
                     }
-                    .foregroundStyle(.yellow)
+                    .font(.callout)
                 }
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(10)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
