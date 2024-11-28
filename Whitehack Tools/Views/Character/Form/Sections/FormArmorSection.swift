@@ -693,9 +693,7 @@ struct ArmorEditRow: View {
             Divider()
             
             // Save/Cancel Buttons
-            HStack(spacing: 20) {
-                Spacer()
-                
+            HStack(spacing: 20) {  // Match weapon spacing
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
@@ -736,6 +734,7 @@ struct ArmorEditRow: View {
                         bonus: bonus,
                         isShield: isShield
                     )
+                    
                     onSave(updatedArmor)
                     DispatchQueue.main.async {
                         isProcessingAction = false
@@ -751,8 +750,6 @@ struct ArmorEditRow: View {
                 }
                 .buttonStyle(.borderless)
                 .disabled(name.isEmpty || df < 1)
-                
-                Spacer()
             }
             .padding(.horizontal)
             .padding(.top, 16)
