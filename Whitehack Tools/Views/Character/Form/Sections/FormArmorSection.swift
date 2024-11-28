@@ -426,7 +426,7 @@ struct ArmorEditRow: View {
     // Basic Properties
     @State private var name: String
     @State private var df: Int
-    @State private var weight: String
+    @State private var weight: Int
     @State private var special: String
     @State private var quantity: Int
     @State private var isEquipped: Bool
@@ -438,6 +438,7 @@ struct ArmorEditRow: View {
     @State private var isBonus: Bool
     @State private var bonusString: String
     @State private var quantityString: String
+    @State private var weightString: String
     
     // Button state tracking
     @State private var isProcessingAction = false
@@ -451,7 +452,8 @@ struct ArmorEditRow: View {
         // Initialize state properties
         _name = State(initialValue: armor.name)
         _df = State(initialValue: armor.df)
-        _weight = State(initialValue: "\(armor.weight)")
+        _weight = State(initialValue: armor.weight)
+        _weightString = State(initialValue: "\(armor.weight)")
         _special = State(initialValue: armor.special)
         _quantity = State(initialValue: armor.quantity)
         _isEquipped = State(initialValue: armor.isEquipped)
@@ -463,15 +465,6 @@ struct ArmorEditRow: View {
         _isBonus = State(initialValue: armor.bonus >= 0)
         _bonusString = State(initialValue: "\(abs(armor.bonus))")
         _quantityString = State(initialValue: "\(armor.quantity)")
-    }
-    
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "Minor": return "Minor (2/slot)"
-        case "Light": return "Light (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
-        default: return weight
-        }
     }
     
     private func validateQuantityInput(_ input: String) {
@@ -494,6 +487,19 @@ struct ArmorEditRow: View {
             bonusString = "\(absValue)"
         } else if !input.isEmpty {
             bonusString = "\(abs(bonus))"
+        }
+    }
+    
+    private func validateWeightInput(_ input: String) {
+        if let newValue = Int(input) {
+            if newValue < 0 {
+                weightString = "0"
+                weight = 0
+            } else {
+                weight = newValue
+            }
+        } else if !input.isEmpty {
+            weightString = "\(weight)"
         }
     }
     
@@ -533,17 +539,22 @@ struct ArmorEditRow: View {
             
             // Weight Section
             VStack(alignment: .leading, spacing: 4) {
-                Text("Weight")
+                Text("Weight (Slots)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Picker("", selection: $weight) {
-                        Text("Minor (2/slot)").tag("Minor")
-                        Text("Light (1 slot)").tag("Light")
-                        Text("Heavy (2 slots)").tag("Heavy")
+                    HStack {
+                        TextField("Weight", text: $weightString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numberPad)
+                            .onChange(of: weightString) { newValue in
+                                validateWeightInput(newValue)
+                            }
+                        Stepper("", value: $weight, in: 0...Int.max) { _ in
+                            weightString = "\(weight)"
+                        }
+                        .labelsHidden()
                     }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .orange)
                 }
@@ -687,7 +698,7 @@ struct ArmorEditRow: View {
                         id: armor.id,
                         name: name,
                         df: df,
-                        weight: Int(weight) ?? 1,
+                        weight: weight,
                         special: special,
                         quantity: quantity,
                         isEquipped: isEquipped,
