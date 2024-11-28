@@ -16,7 +16,11 @@ struct FormArmorSection: View {
             }
         }
     }
-    @State private var editingNewArmor: Armor?
+    @State private var editingNewArmor: Armor? {
+        didSet {
+            print("🛡️ editingNewArmor changed: \(String(describing: oldValue?.name)) -> \(String(describing: editingNewArmor?.name))")
+        }
+    }
     @State private var selectedArmorName: String? {
         didSet {
             print("🎯 selectedArmorName changed: \(String(describing: oldValue)) -> \(String(describing: selectedArmorName))")
@@ -102,13 +106,23 @@ struct FormArmorSection: View {
                 if isAddingNew {
                     if let editingArmor = editingNewArmor {
                         ArmorEditRow(armor: editingArmor) { newArmor in
+                            print("🟢 [FormArmorSection] Save action received for: \(newArmor.name)")
                             armor.append(newArmor)
-                            editingNewArmor = nil
-                            isAddingNew = false
+                            print("✅ [FormArmorSection] Armor added to array")
+                            withAnimation {
+                                print("🔄 [FormArmorSection] Resetting form state after save")
+                                isAddingNew = false
+                            }
                         } onCancel: {
-                            editingNewArmor = nil
-                            isAddingNew = false
+                            print("🔴 [FormArmorSection] Cancel action received")
+                            withAnimation {
+                                print("🔄 [FormArmorSection] Resetting form state after cancel")
+                                selectedArmorName = nil
+                                editingNewArmor = nil
+                                isAddingNew = false
+                            }
                         }
+                        .id("\(editingArmor.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
                     } else {
                         VStack(spacing: 12) {
                             Text("Select Armor Type")
