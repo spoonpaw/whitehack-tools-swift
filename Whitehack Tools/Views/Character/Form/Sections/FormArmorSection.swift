@@ -221,7 +221,7 @@ struct ArmorDataRow: View {
                 
                 Spacer()
                 
-                Text(armorData.isShield ? "+\(armorData.df)" : "Defense: \(armorData.df)")
+                Text(armorData.isShield ? "+\(armorData.df)" : "\(armorData.df)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -787,7 +787,8 @@ struct ArmorRow: View {
                     Label {
                         Text(armor.name)
                     } icon: {
-                        IconFrame(icon: Ph.shield.bold, color: .purple)
+                        IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
+                                color: armor.isShield ? .blue : .purple)
                     }
                 }
                 
@@ -797,9 +798,9 @@ struct ArmorRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text("\(armor.df)")
+                        Text(armor.isShield ? "+\(armor.df)" : "\(armor.df)")
                     } icon: {
-                        IconFrame(icon: Ph.shieldCheck.bold, color: .blue)
+                        IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                     }
                 }
                 
@@ -811,7 +812,7 @@ struct ArmorRow: View {
                     Label {
                         Text("\(armor.weight) slot\(armor.weight != 1 ? "s" : "")")
                     } icon: {
-                        IconFrame(icon: Ph.scales.bold, color: .blue)
+                        IconFrame(icon: Ph.scales.bold, color: .orange)
                     }
                 }
                 
@@ -829,6 +830,26 @@ struct ArmorRow: View {
                     }
                 }
                 
+                // Status Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Status")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        Label {
+                            Text(armor.isEquipped ? "Equipped" : "Unequipped")
+                        } icon: {
+                            IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
+                        }
+                        Label {
+                            Text(armor.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: armor.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: armor.isStashed ? .orange : .gray)
+                        }
+                    }
+                }
+                
                 // Magical Properties Section
                 if armor.isMagical || armor.isCursed {
                     VStack(alignment: .leading, spacing: 4) {
@@ -840,7 +861,7 @@ struct ArmorRow: View {
                                 Label {
                                     Text("Magical")
                                 } icon: {
-                                    IconFrame(icon: Ph.sparkle.bold, color: .yellow)
+                                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
                                 }
                             }
                             if armor.isCursed {
@@ -861,19 +882,20 @@ struct ArmorRow: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         Label {
-                            Text("\(armor.bonus > 0 ? "+" : "")\(armor.bonus)")
+                            Text("\(abs(armor.bonus))")
                         } icon: {
-                            IconFrame(icon: Ph.plus.bold, color: armor.bonus > 0 ? .green : .red)
+                            IconFrame(icon: armor.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                    color: armor.bonus > 0 ? .green : .red)
                         }
                     }
                 }
             }
             .allowsHitTesting(false)  // Disable touch interaction for content area only
             
+            Divider()
+            
             // Action Buttons
             HStack(spacing: 20) {
-                Spacer()
-                
                 Button(action: onEdit) {
                     Label {
                         Text("Edit")
@@ -883,7 +905,6 @@ struct ArmorRow: View {
                     }
                     .foregroundColor(.blue)
                 }
-                .buttonStyle(.plain)
                 
                 Spacer()
                 
@@ -896,13 +917,10 @@ struct ArmorRow: View {
                     }
                     .foregroundColor(.red)
                 }
-                .buttonStyle(.plain)
-                
-                Spacer()
             }
+            .buttonStyle(.plain)
+            .padding(.horizontal)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(10)
     }
 }
