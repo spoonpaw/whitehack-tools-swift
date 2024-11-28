@@ -860,18 +860,28 @@ struct ArmorRow: View {
             Divider()
             
             // Action Buttons
-            HStack {
-                Spacer()
-                
+            HStack(spacing: 20) {
                 Button(action: onEdit) {
-                    Label("Edit", systemImage: "pencil.circle.fill")
-                        .foregroundColor(.blue)
+                    Label {
+                        Text("Edit")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                    }
+                    .foregroundColor(.blue)
                 }
                 .buttonStyle(.plain)
                 
+                Spacer()
+                
                 Button(action: onDelete) {
-                    Label("Delete", systemImage: "trash.circle.fill")
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Delete")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
             }
