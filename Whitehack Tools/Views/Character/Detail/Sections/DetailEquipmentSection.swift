@@ -114,11 +114,11 @@ private struct GearDetailRow: View {
                 // Location Status
                 Label {
                     Text(gear.isStashed ? "Stashed" : "On Person")
-                        .foregroundColor(gear.isStashed ? .orange : .secondary)
+                        .font(.subheadline)
                 } icon: {
-                    IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: gear.isStashed ? .orange : .gray)
+                    IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold, color: gear.isStashed ? .orange : .secondary)
                 }
+                .foregroundColor(gear.isStashed ? .orange : .secondary)
             }
             .font(.callout)
             

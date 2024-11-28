@@ -250,10 +250,10 @@ struct FormEquipmentSection: View {
                         
                         // Stashed Status
                         Label {
-                            Text(gear.isStashed ? "Stashed" : "Not Stashed")
+                            Text(gear.isStashed ? "Stashed" : "On Person")
                                 .font(.subheadline)
                         } icon: {
-                            IconFrame(icon: Ph.warehouse.bold, color: gear.isStashed ? .orange : .secondary)
+                            IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold, color: gear.isStashed ? .orange : .secondary)
                         }
                         .foregroundColor(gear.isStashed ? .orange : .secondary)
                     }
