@@ -760,18 +760,6 @@ struct ArmorRow: View {
     let onEdit: () -> Void
     let onDelete: () -> Void
     
-    private var magicalPropertyText: String {
-        var properties: [String] = []
-        if armor.isMagical {
-            properties.append("Magical")
-            if armor.bonus != 0 {
-                properties.append(armor.bonus > 0 ? "+\(armor.bonus)" : "\(armor.bonus)")
-            }
-        }
-        if armor.isCursed { properties.append("Cursed") }
-        return properties.joined(separator: ", ")
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Content Area
@@ -781,72 +769,83 @@ struct ArmorRow: View {
                     Text("Armor Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    HStack {
-                        if armor.isShield {
-                            IconFrame(icon: Ph.shieldCheck.bold, color: .blue)
-                        } else {
-                            IconFrame(icon: Ph.shield.bold, color: .purple)
-                        }
+                    Label {
                         Text(armor.name)
-                            .font(.headline)
+                    } icon: {
+                        IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold,
+                                color: armor.isShield ? .blue : .purple)
                     }
                 }
                 
-                // Stats Section
-                HStack(spacing: 16) {
-                    // Defense
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Defense")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                // Defense Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Defense")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
                         Text("\(armor.df)")
-                            .font(.headline)
-                    }
-                    
-                    // Weight
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Weight")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Text("\(armor.weight)")
-                            .font(.headline)
-                    }
-                    
-                    // Quantity
-                    if armor.quantity > 1 {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Quantity")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Text("\(armor.quantity)")
-                                .font(.headline)
-                        }
+                    } icon: {
+                        IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                     }
                 }
                 
-                // Special Properties
+                // Weight Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Weight (Slots)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(armor.weight)")
+                    } icon: {
+                        IconFrame(icon: Ph.scales.bold, color: .orange)
+                    }
+                }
+                
+                // Special Section
                 if !armor.special.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Special Properties")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        Text(armor.special)
-                            .font(.headline)
+                        Label {
+                            Text(armor.special)
+                        } icon: {
+                            IconFrame(icon: Ph.star.bold, color: .yellow)
+                        }
                     }
                 }
                 
-                // Status Icons
-                HStack(spacing: 12) {
-                    // Equipped Status
-                    IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
-                    Text(armor.isEquipped ? "Equipped" : "Unequipped")
-                        .foregroundColor(armor.isEquipped ? .green : .gray)
-                    
-                    // Stashed Status
-                    if armor.isStashed {
-                        IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                        Text("Stashed")
-                            .foregroundColor(.orange)
+                // Quantity Section
+                if armor.quantity > 1 {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Quantity")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("\(armor.quantity)")
+                        } icon: {
+                            IconFrame(icon: Ph.stack.bold, color: .gray)
+                        }
+                    }
+                }
+                
+                // Status Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Status")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        Label {
+                            Text(armor.isEquipped ? "Equipped" : "Unequipped")
+                        } icon: {
+                            IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
+                        }
+                        Label {
+                            Text(armor.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: armor.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: armor.isStashed ? .orange : .gray)
+                        }
                     }
                 }
                 
@@ -856,8 +855,37 @@ struct ArmorRow: View {
                         Text("Magical Properties")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        Text(magicalPropertyText)
-                            .font(.headline)
+                        HStack(spacing: 16) {
+                            if armor.isMagical {
+                                Label {
+                                    Text("Magical")
+                                } icon: {
+                                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                                }
+                            }
+                            if armor.isCursed {
+                                Label {
+                                    Text("Cursed")
+                                } icon: {
+                                    IconFrame(icon: Ph.skull.bold, color: .red)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Bonus/Penalty Section
+                if armor.bonus != 0 {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(armor.bonus > 0 ? "Bonus" : "Penalty")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("\(abs(armor.bonus))")
+                        } icon: {
+                            IconFrame(icon: armor.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                    color: armor.bonus > 0 ? .green : .red)
+                        }
                     }
                 }
             }
@@ -866,19 +894,28 @@ struct ArmorRow: View {
             Divider()
             
             // Action Buttons
-            HStack {
+            HStack(spacing: 20) {
+                Button(action: onEdit) {
+                    Label {
+                        Text("Edit")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                    }
+                    .foregroundColor(.blue)
+                }
+                
                 Spacer()
                 
-                Button(action: onEdit) {
-                    Label("Edit", systemImage: "pencil")
-                }
-                .buttonStyle(.borderless)
-                
                 Button(action: onDelete) {
-                    Label("Delete", systemImage: "trash")
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Delete")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
-                .buttonStyle(.borderless)
             }
         }
         .padding()
