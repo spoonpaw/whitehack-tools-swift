@@ -307,13 +307,11 @@ struct CustomArmorForm: View {
                     }
                 }
                 
-                if isMagical {
-                    Toggle(isOn: $isCursed) {
-                        Label {
-                            Text("Cursed")
-                        } icon: {
-                            IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                        }
+                Toggle(isOn: $isCursed) {
+                    Label {
+                        Text("Cursed")
+                    } icon: {
+                        IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
                     }
                 }
                 
@@ -647,12 +645,10 @@ struct ArmorEditRow: View {
                     Toggle("Magical", isOn: $isMagical)
                 }
                 
-                // Cursed Toggle (only shown if magical)
-                if isMagical {
-                    HStack {
-                        IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                        Toggle("Cursed", isOn: $isCursed)
-                    }
+                // Cursed Toggle
+                HStack {
+                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                    Toggle("Cursed", isOn: $isCursed)
                 }
             }
             
