@@ -864,13 +864,13 @@ struct ArmorRow: View {
                 Spacer()
                 
                 Button(action: onEdit) {
-                    Label("Edit", systemImage: "pencil")
+                    Label("Edit", systemImage: "pencil.circle.fill")
                         .foregroundColor(.blue)
                 }
                 .buttonStyle(.plain)
                 
                 Button(action: onDelete) {
-                    Label("Delete", systemImage: "trash")
+                    Label("Delete", systemImage: "trash.circle.fill")
                         .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
