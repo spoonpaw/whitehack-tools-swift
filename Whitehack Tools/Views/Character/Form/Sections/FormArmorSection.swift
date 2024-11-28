@@ -690,8 +690,6 @@ struct ArmorEditRow: View {
                 Text("Bonus/Penalty")
             }
             
-            Divider()
-            
             // Save/Cancel Buttons
             HStack(spacing: 20) {  // Match weapon spacing
                 Button {
@@ -857,8 +855,6 @@ struct ArmorRow: View {
                 }
             }
             .allowsHitTesting(false)  // Disable touch interaction for content area only
-            
-            Divider()
             
             // Action Buttons
             HStack(spacing: 20) {
