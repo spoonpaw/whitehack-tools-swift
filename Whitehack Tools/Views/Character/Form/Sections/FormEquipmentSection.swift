@@ -377,8 +377,14 @@ struct GearEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    TextField("Weight", text: $weight)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Picker("", selection: $weight) {
+                        Text("No size (100/slot)").tag("No size")
+                        Text("Minor (2/slot)").tag("Minor")
+                        Text("Regular (1 slot)").tag("Regular")
+                        Text("Heavy (2 slots)").tag("Heavy")
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .orange)
                 }
