@@ -253,7 +253,7 @@ struct CustomArmorForm: View {
                     TextField("Defense", value: $df, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.numberPad)
-                    Stepper("", value: $df)
+                    Stepper("", value: $df, in: 1...Int.max)
                         .labelsHidden()
                 }
             }
@@ -513,7 +513,7 @@ struct ArmorEditRow: View {
                         TextField("Defense", value: $df, format: .number)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .keyboardType(.numberPad)
-                        Stepper("", value: $df)
+                        Stepper("", value: $df, in: 1...Int.max)
                             .labelsHidden()
                     }
                 } icon: {
