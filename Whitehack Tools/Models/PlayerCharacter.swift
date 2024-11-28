@@ -409,6 +409,42 @@ struct SignatureObject: Codable {
     var name: String
 }
 
+struct Gear: Identifiable, Codable, Equatable {
+    let id: UUID
+    var name: String
+    var weight: String
+    var special: String
+    var quantity: Int
+    var isEquipped: Bool
+    var isStashed: Bool
+    var isMagical: Bool
+    var isCursed: Bool
+    
+    init(id: UUID = UUID(), 
+         name: String = "", 
+         weight: String = "Minor",
+         special: String = "",
+         quantity: Int = 1,
+         isEquipped: Bool = false,
+         isStashed: Bool = false,
+         isMagical: Bool = false,
+         isCursed: Bool = false) {
+        self.id = id
+        self.name = name
+        self.weight = weight
+        self.special = special
+        self.quantity = quantity
+        self.isEquipped = isEquipped
+        self.isStashed = isStashed
+        self.isMagical = isMagical
+        self.isCursed = isCursed
+    }
+    
+    static func == (lhs: Gear, rhs: Gear) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 struct Armor: Identifiable, Codable, Equatable {
     let id: UUID
     var name: String
@@ -609,6 +645,29 @@ class PlayerCharacter: Identifiable, Codable {
     var languages: [String]
     var notes: String
     var experience: Int
+    var coins: Int
+    var gear: [Gear]  // New gear array
+    
+    // Computed Properties
+    var currentEncumbrance: Int {
+        var total = 0
+        // Add encumbrance from gear
+        for item in gear {
+            if !item.isStashed {
+                switch item.weight.lowercased() {
+                case "no size": total += item.quantity
+                case "minor": total += item.quantity * 2
+                case "regular": total += item.quantity * 10
+                case "heavy": total += item.quantity * 20
+                default: break
+                }
+            }
+        }
+        return total
+    }
+    
+    var maxEncumbrance: Int
+    var inventory: [String]
     
     // Computed XP properties
     var xpForNextLevel: Int {
@@ -637,10 +696,6 @@ class PlayerCharacter: Identifiable, Codable {
     var corruption: Int
     
     // Equipment Tracking
-    var inventory: [String]
-    var currentEncumbrance: Int
-    var maxEncumbrance: Int
-    var coins: Int
     var weapons: [Weapon]
     var armor: [Armor]
     
@@ -750,9 +805,9 @@ class PlayerCharacter: Identifiable, Codable {
         experience: Int = 0,
         corruption: Int = 0,
         inventory: [String] = [],
-        currentEncumbrance: Int = 0,
         maxEncumbrance: Int = 15,
         coins: Int = 0,
+        gear: [Gear] = [],
         weapons: [Weapon] = [],
         armor: [Armor] = [],
         hasUsedAttunementToday: Bool = false) {
@@ -792,9 +847,9 @@ class PlayerCharacter: Identifiable, Codable {
         self.experience = experience
         self.corruption = corruption
         self.inventory = inventory
-        self.currentEncumbrance = currentEncumbrance
         self.maxEncumbrance = maxEncumbrance
         self.coins = coins
+        self.gear = gear
         self.weapons = weapons
         self.armor = armor
         self.hasUsedAttunementToday = hasUsedAttunementToday
@@ -830,7 +885,6 @@ extension PlayerCharacter {
             affiliationGroups: affiliationGroups,
             corruption: corruption,
             inventory: inventory,
-            currentEncumbrance: currentEncumbrance,
             maxEncumbrance: maxEncumbrance,
             coins: coins
         )

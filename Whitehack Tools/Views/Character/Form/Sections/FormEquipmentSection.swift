@@ -1,22 +1,22 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormEquipmentSection: View {
-    @Binding var inventory: [String]
-    @Binding var newInventoryItem: String
+    @Binding var gear: [Gear]
     @Binding var coins: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     @State private var isAddingItem = false
-    @State private var editingItemIndex: Int? = nil
-    @State private var tempItemText = ""
+    @State private var editingItemId: UUID? = nil
+    @State private var tempGear = Gear()
     
     var body: some View {
         Section(header: Text("Equipment").font(.headline)) {
             VStack(spacing: 16) {
-                // Inventory Items
+                // Gear Items
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Inventory")
+                        Text("Gear")
                             .font(.system(.subheadline, design: .rounded))
                             .fontWeight(.medium)
                             .foregroundColor(.secondary)
@@ -24,6 +24,7 @@ struct FormEquipmentSection: View {
                         if !isAddingItem {
                             Button {
                                 isAddingItem = true
+                                tempGear = Gear()
                             } label: {
                                 Image(systemName: "plus.circle.fill")
                                     .imageScale(.large)
@@ -35,101 +36,43 @@ struct FormEquipmentSection: View {
                     }
                     
                     if isAddingItem {
-                        HStack {
-                            TextField("Add Inventory Item", text: $newInventoryItem)
-                                .textInputAutocapitalization(.words)
-                                .focused($focusedField, equals: .newInventoryItem)
-                                .textFieldStyle(.roundedBorder)
-                            
-                            Button {
-                                newInventoryItem = ""
+                        GearEditForm(gear: $tempGear) {
+                            withAnimation {
+                                gear.append(tempGear)
                                 isAddingItem = false
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.red)
                             }
-                            .buttonStyle(BorderlessButtonStyle())
-                            
-                            Button {
-                                addInventoryItem()
+                        } onCancel: {
+                            withAnimation {
                                 isAddingItem = false
-                            } label: {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.green)
                             }
-                            .buttonStyle(BorderlessButtonStyle())
                         }
                     }
                     
-                    if !inventory.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(Array(inventory.enumerated()), id: \.element) { index, item in
-                                HStack {
-                                    if editingItemIndex == index {
-                                        TextField("Edit Item", text: $tempItemText)
-                                            .textFieldStyle(.roundedBorder)
-                                            .onAppear { tempItemText = item }
-                                        Button {
-                                            withAnimation {
-                                                editingItemIndex = nil
-                                            }
-                                        } label: {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .imageScale(.medium)
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(.red)
-                                        }
-                                        .buttonStyle(BorderlessButtonStyle())
-                                        Button {
-                                            withAnimation {
-                                                let trimmed = tempItemText.trimmingCharacters(in: .whitespaces)
-                                                if !trimmed.isEmpty {
-                                                    inventory[index] = trimmed
-                                                }
-                                                editingItemIndex = nil
-                                            }
-                                        } label: {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .imageScale(.medium)
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(.green)
-                                        }
-                                        .buttonStyle(BorderlessButtonStyle())
-                                    } else {
-                                        Text(item)
-                                            .foregroundColor(.primary)
-                                        Spacer()
-                                        Button {
-                                            withAnimation {
-                                                editingItemIndex = index
-                                            }
-                                        } label: {
-                                            Image(systemName: "pencil.circle.fill")
-                                                .imageScale(.medium)
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(.blue)
-                                        }
-                                        .buttonStyle(BorderlessButtonStyle())
-                                        Button {
-                                            withAnimation {
-                                                removeInventoryItem(item)
-                                            }
-                                        } label: {
-                                            Image(systemName: "trash.circle.fill")
-                                                .imageScale(.medium)
-                                                .symbolRenderingMode(.hierarchical)
-                                                .foregroundColor(.red)
-                                        }
-                                        .buttonStyle(BorderlessButtonStyle())
+                    ForEach(gear) { item in
+                        if editingItemId == item.id {
+                            GearEditForm(gear: Binding(
+                                get: { tempGear },
+                                set: { tempGear = $0 }
+                            )) {
+                                withAnimation {
+                                    if let index = gear.firstIndex(where: { $0.id == item.id }) {
+                                        gear[index] = tempGear
                                     }
+                                    editingItemId = nil
                                 }
-                                .padding(10)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
+                            } onCancel: {
+                                withAnimation {
+                                    editingItemId = nil
+                                }
+                            }
+                        } else {
+                            GearRow(gear: item) {
+                                tempGear = item
+                                editingItemId = item.id
+                            } onDelete: {
+                                withAnimation {
+                                    gear.removeAll { $0.id == item.id }
+                                }
                             }
                         }
                     }
@@ -141,35 +84,161 @@ struct FormEquipmentSection: View {
                         .font(.system(.subheadline, design: .rounded))
                         .fontWeight(.medium)
                         .foregroundColor(.secondary)
-                    
-                    HStack {
-                        TextField("Enter coins", text: $coins)
-                            .keyboardType(.numberPad)
-                            .focused($focusedField, equals: .coins)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
+                    TextField("0", text: $coins)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.roundedBorder)
                 }
             }
             .padding(.vertical, 8)
         }
     }
+}
+
+struct GearRow: View {
+    let gear: Gear
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     
-    private func addInventoryItem() {
-        let trimmed = newInventoryItem.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-        withAnimation {
-            inventory.append(trimmed)
-            newInventoryItem = ""
-            focusedField = nil
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Name and Properties Row
+            HStack {
+                Text(gear.name)
+                    .fontWeight(.medium)
+                Spacer()
+                if gear.isEquipped {
+                    Text("Equipped")
+                        .font(.caption)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(4)
+                }
+                if gear.isStashed {
+                    Text("Stashed")
+                        .font(.caption)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(4)
+                }
+            }
+            
+            // Weight and Quantity
+            HStack {
+                Label {
+                    Text(gear.weight)
+                } icon: {
+                    Ph.scales.bold
+                        .foregroundColor(.blue)
+                }
+                Spacer()
+                if gear.quantity > 1 {
+                    Label {
+                        Text("x\(gear.quantity)")
+                    } icon: {
+                        Ph.stack.bold
+                            .foregroundColor(.orange)
+                    }
+                }
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            
+            // Special Properties
+            if !gear.special.isEmpty {
+                Text(gear.special)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            // Magical/Cursed Indicators
+            if gear.isMagical || gear.isCursed {
+                HStack(spacing: 8) {
+                    if gear.isMagical {
+                        Label {
+                            Text("Magical")
+                        } icon: {
+                            Ph.sparkle.bold
+                                .foregroundColor(.purple)
+                        }
+                    }
+                    if gear.isCursed {
+                        Label {
+                            Text("Cursed")
+                        } icon: {
+                            Ph.skull.bold
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+                .font(.caption)
+            }
+            
+            // Edit/Delete Buttons
+            HStack {
+                Spacer()
+                Button(action: onEdit) {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .buttonStyle(.borderless)
+                Button(action: onDelete) {
+                    Label("Delete", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(.borderless)
+            }
         }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(8)
     }
+}
+
+struct GearEditForm: View {
+    @Binding var gear: Gear
+    let onSave: () -> Void
+    let onCancel: () -> Void
     
-    private func removeInventoryItem(_ item: String) {
-        withAnimation {
-            inventory.removeAll { $0 == item }
+    private let weightOptions = ["No size", "Minor", "Regular", "Heavy"]
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Name
+            TextField("Name", text: $gear.name)
+                .textFieldStyle(.roundedBorder)
+            
+            // Weight
+            Picker("Weight", selection: $gear.weight) {
+                ForEach(weightOptions, id: \.self) { option in
+                    Text(option).tag(option)
+                }
+            }
+            
+            // Special Properties
+            TextField("Special Properties", text: $gear.special)
+                .textFieldStyle(.roundedBorder)
+            
+            // Quantity
+            Stepper("Quantity: \(gear.quantity)", value: $gear.quantity, in: 1...99)
+            
+            // Toggles
+            Toggle("Equipped", isOn: $gear.isEquipped)
+            Toggle("Stashed", isOn: $gear.isStashed)
+            Toggle("Magical", isOn: $gear.isMagical)
+            Toggle("Cursed", isOn: $gear.isCursed)
+            
+            // Save/Cancel Buttons
+            HStack {
+                Button("Cancel", action: onCancel)
+                    .foregroundColor(.red)
+                Spacer()
+                Button("Save", action: onSave)
+                    .disabled(gear.name.isEmpty)
+            }
         }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(8)
     }
 }

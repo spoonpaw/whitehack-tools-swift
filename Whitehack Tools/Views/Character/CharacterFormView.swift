@@ -23,7 +23,7 @@ struct CharacterFormView: View {
         case currentHP, maxHP, defenseValue, movement, saveColor
         case speciesGroup, vocationGroup, newAffiliationGroup
         case newLanguage
-        case newInventoryItem, coins
+        case newGearItem, coins
         case currentEncumbrance, maxEncumbrance
         case notes
         case experience, corruption
@@ -80,14 +80,8 @@ struct CharacterFormView: View {
                 focusedField: $focusedField
             )
             FormEquipmentSection(
-                inventory: $formData.inventory,
-                newInventoryItem: $formData.newInventoryItem,
+                gear: $formData.gear,
                 coins: $formData.coins,
-                focusedField: $focusedField
-            )
-            FormEncumbranceSection(
-                currentEncumbrance: $formData.currentEncumbrance,
-                maxEncumbrance: $formData.maxEncumbrance,
                 focusedField: $focusedField
             )
             FormDeftAttunementSection(
@@ -188,10 +182,8 @@ struct CharacterFormView: View {
         
         formData.languages = character.languages
         
-        formData.inventory = character.inventory
+        formData.gear = character.gear
         formData.coins = String(character.coins)
-        
-        formData.currentEncumbrance = String(character.currentEncumbrance)
         formData.maxEncumbrance = String(character.maxEncumbrance)
         
         formData.notes = character.notes
@@ -247,12 +239,9 @@ struct CharacterFormView: View {
         newCharacter.languages = formData.languages
         
         // Equipment
-        newCharacter.inventory = formData.inventory
+        newCharacter.gear = formData.gear
         newCharacter.coins = Int(formData.coins) ?? 0
-        
-        // Encumbrance
-        newCharacter.currentEncumbrance = Int(formData.currentEncumbrance) ?? 0
-        newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 0
+        newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
         
         // Notes
         newCharacter.notes = formData.notes
@@ -322,11 +311,8 @@ private class FormData: ObservableObject {
     @Published var languages: [String] = ["Common"]
     @Published var newLanguage = ""
     
-    @Published var inventory: [String] = []
-    @Published var newInventoryItem = ""
+    @Published var gear: [Gear] = []
     @Published var coins = "0"
-    
-    @Published var currentEncumbrance = "0"
     @Published var maxEncumbrance = "15"
     
     @Published var notes = ""
