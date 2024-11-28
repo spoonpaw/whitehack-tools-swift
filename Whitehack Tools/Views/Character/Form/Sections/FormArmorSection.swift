@@ -697,10 +697,17 @@ struct ArmorEditRow: View {
                     isProcessingAction = true
                     print("🔴 Cancel action starting")
                     onCancel()
-                    isProcessingAction = false
+                    DispatchQueue.main.async {
+                        isProcessingAction = false
+                    }
                 } label: {
-                    Label("Cancel", systemImage: "xmark.circle.fill")
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
                 .buttonStyle(.borderless)
                 
@@ -709,7 +716,7 @@ struct ArmorEditRow: View {
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
-                    print("💾 Save action starting")
+                    print("🟢 Save action starting")
                     
                     let updatedArmor = Armor(
                         id: armor.id,
@@ -725,16 +732,24 @@ struct ArmorEditRow: View {
                         bonus: bonus,
                         isShield: isShield
                     )
-                    
                     onSave(updatedArmor)
-                    isProcessingAction = false
+                    DispatchQueue.main.async {
+                        isProcessingAction = false
+                    }
                 } label: {
-                    Label("Save", systemImage: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                    Label {
+                        Text("Save")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    .foregroundColor(.blue)
                 }
                 .buttonStyle(.borderless)
                 .disabled(name.isEmpty || df < 1)
             }
+            .padding(.horizontal)
+            .padding(.top, 16)
         }
         .padding()
     }
