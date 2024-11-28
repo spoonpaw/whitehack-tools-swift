@@ -694,6 +694,8 @@ struct ArmorEditRow: View {
             
             // Save/Cancel Buttons
             HStack(spacing: 20) {
+                Spacer()
+                
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
@@ -749,6 +751,8 @@ struct ArmorEditRow: View {
                 }
                 .buttonStyle(.borderless)
                 .disabled(name.isEmpty || df < 1)
+                
+                Spacer()
             }
             .padding(.horizontal)
             .padding(.top, 16)
@@ -861,6 +865,8 @@ struct ArmorRow: View {
             
             // Action Buttons
             HStack(spacing: 20) {
+                Spacer()
+                
                 Button(action: onEdit) {
                     Label {
                         Text("Edit")
@@ -884,6 +890,8 @@ struct ArmorRow: View {
                     .foregroundColor(.red)
                 }
                 .buttonStyle(.plain)
+                
+                Spacer()
             }
         }
         .padding()
