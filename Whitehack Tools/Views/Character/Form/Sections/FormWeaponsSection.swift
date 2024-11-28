@@ -1227,9 +1227,7 @@ struct FormWeaponsSection: View {
                 }
             }
         } header: {
-            if !weapons.isEmpty {
-                Label("Weapons", systemImage: "shield.lefthalf.filled")
-            }
+            Label("Weapons", systemImage: "shield.lefthalf.filled")
         }
     }
 }
