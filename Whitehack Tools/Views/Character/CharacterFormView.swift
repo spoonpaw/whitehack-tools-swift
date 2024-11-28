@@ -79,11 +79,7 @@ struct CharacterFormView: View {
                 newLanguage: $formData.newLanguage,
                 focusedField: $focusedField
             )
-            FormEquipmentSection(
-                gear: $formData.gear,
-                coins: $formData.coins,
-                focusedField: $focusedField
-            )
+            FormEquipmentSection(gear: $formData.gear)
             FormDeftAttunementSection(
                 characterClass: formData.selectedClass,
                 level: Int(formData.level) ?? 1,
