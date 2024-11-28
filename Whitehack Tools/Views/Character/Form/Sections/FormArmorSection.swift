@@ -423,18 +423,79 @@ struct ArmorEditRow: View {
     let onSave: (Armor) -> Void
     let onCancel: () -> Void
     
-    @State private var name = ""
-    @State private var df = 1
-    @State private var weight = 1
-    @State private var special = ""
-    @State private var quantity = 1
-    @State private var isEquipped = false
-    @State private var isStashed = false
-    @State private var isMagical = false
-    @State private var isCursed = false
-    @State private var bonus = 0
-    @State private var isShield = false
+    // Basic Properties
+    @State private var name: String
+    @State private var df: Int
+    @State private var weight: String
+    @State private var special: String
+    @State private var quantity: Int
+    @State private var isEquipped: Bool
+    @State private var isStashed: Bool
+    @State private var isMagical: Bool
+    @State private var isCursed: Bool
+    @State private var bonus: Int
+    @State private var isShield: Bool
+    @State private var isBonus: Bool
+    @State private var bonusString: String
+    @State private var quantityString: String
+    
+    // Button state tracking
     @State private var isProcessingAction = false
+    
+    // Initialize with an armor
+    init(armor: Armor, onSave: @escaping (Armor) -> Void, onCancel: @escaping () -> Void) {
+        self.armor = armor
+        self.onSave = onSave
+        self.onCancel = onCancel
+        
+        // Initialize state properties
+        _name = State(initialValue: armor.name)
+        _df = State(initialValue: armor.df)
+        _weight = State(initialValue: "\(armor.weight)")
+        _special = State(initialValue: armor.special)
+        _quantity = State(initialValue: armor.quantity)
+        _isEquipped = State(initialValue: armor.isEquipped)
+        _isStashed = State(initialValue: armor.isStashed)
+        _isMagical = State(initialValue: armor.isMagical)
+        _isCursed = State(initialValue: armor.isCursed)
+        _bonus = State(initialValue: armor.bonus)
+        _isShield = State(initialValue: armor.isShield)
+        _isBonus = State(initialValue: armor.bonus >= 0)
+        _bonusString = State(initialValue: "\(abs(armor.bonus))")
+        _quantityString = State(initialValue: "\(armor.quantity)")
+    }
+    
+    private func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "Minor": return "Minor (2/slot)"
+        case "Light": return "Light (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
+    private func validateQuantityInput(_ input: String) {
+        if let newValue = Int(input) {
+            if newValue < 1 {
+                quantityString = "1"
+                quantity = 1
+            } else {
+                quantity = newValue
+            }
+        } else if !input.isEmpty {
+            quantityString = "\(quantity)"
+        }
+    }
+    
+    private func validateBonusInput(_ input: String) {
+        if let newValue = Int(input) {
+            let absValue = max(0, abs(newValue))
+            bonus = isBonus ? absValue : -absValue
+            bonusString = "\(absValue)"
+        } else if !input.isEmpty {
+            bonusString = "\(abs(bonus))"
+        }
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -442,30 +503,49 @@ struct ArmorEditRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Armor Name")
                     .font(.subheadline)
-                TextField("Enter armor name", text: $name)
-                    .textFieldStyle(.roundedBorder)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Armor Name", text: $name)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
+                            color: armor.isShield ? .blue : .purple)
+                }
             }
             
-            // Stats Section
-            HStack(spacing: 16) {
-                // Defense
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Defense")
-                        .font(.subheadline)
-                    TextField("Defense", value: $df, format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numberPad)
-                        .frame(width: 80)
+            // Defense Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Defense")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Defense", value: $df, format: .number)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numberPad)
+                        Stepper("", value: $df, in: 1...Int.max)
+                            .labelsHidden()
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                 }
-                
-                // Weight
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Weight")
-                        .font(.subheadline)
-                    TextField("Weight", value: $weight, format: .number)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numberPad)
-                        .frame(width: 80)
+            }
+            
+            // Weight Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Picker("", selection: $weight) {
+                        Text("Minor (2/slot)").tag("Minor")
+                        Text("Light (1 slot)").tag("Light")
+                        Text("Heavy (2 slots)").tag("Heavy")
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .orange)
                 }
             }
             
@@ -473,22 +553,72 @@ struct ArmorEditRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Special Properties")
                     .font(.subheadline)
-                TextField("Special Properties", text: $special)
-                    .textFieldStyle(.roundedBorder)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Special Properties", text: $special)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .yellow)
+                }
             }
             
             // Quantity Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Quantity")
                     .font(.subheadline)
-                TextField("Quantity", value: $quantity, format: .number)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numberPad)
-                    .frame(width: 80)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numberPad)
+                            .onChange(of: quantityString) { newValue in
+                                validateQuantityInput(newValue)
+                            }
+                        Stepper("", value: $quantity, in: 1...Int.max) { _ in
+                            quantityString = "\(quantity)"
+                        }
+                        .labelsHidden()
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .gray)
+                }
+            }
+            
+            // Bonus Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Bonus/Penalty")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                HStack {
+                    Picker("", selection: $isBonus) {
+                        Text("+").tag(true)
+                        Text("-").tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 100)
+                    
+                    Label {
+                        TextField("0", text: $bonusString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.numberPad)
+                            .onChange(of: bonusString) { newValue in
+                                validateBonusInput(newValue)
+                            }
+                    } icon: {
+                        IconFrame(icon: Ph.plusMinus.bold, color: isBonus ? .green : .red)
+                    }
+                }
             }
             
             // Status Section
             VStack(alignment: .leading, spacing: 8) {
+                // Shield Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.shieldCheck.bold, color: isShield ? .blue : .gray)
+                    Toggle("Shield", isOn: $isShield)
+                }
+                
                 // Equipped Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
@@ -517,25 +647,6 @@ struct ArmorEditRow: View {
                     ))
                 }
                 
-                // Shield Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.shieldCheck.bold, color: isShield ? .blue : .gray)
-                    Toggle("Shield", isOn: $isShield)
-                }
-            }
-            
-            // Bonus Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Bonus/Penalty")
-                    .font(.subheadline)
-                TextField("Bonus", value: $bonus, format: .number)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numberPad)
-                    .frame(width: 80)
-            }
-            
-            // Magical Properties Section
-            VStack(alignment: .leading, spacing: 8) {
                 // Magical Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
@@ -552,7 +663,7 @@ struct ArmorEditRow: View {
             Divider()
             
             // Action Buttons
-            HStack(spacing: 20) {  // Added explicit spacing
+            HStack(spacing: 20) {
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
@@ -576,7 +687,7 @@ struct ArmorEditRow: View {
                         id: armor.id,
                         name: name,
                         df: df,
-                        weight: weight,
+                        weight: Int(weight) ?? 1,
                         special: special,
                         quantity: quantity,
                         isEquipped: isEquipped,
@@ -598,20 +709,6 @@ struct ArmorEditRow: View {
             }
         }
         .padding()
-        .onAppear {
-            // Reset state to match the input armor
-            name = armor.name
-            df = armor.df
-            weight = armor.weight
-            special = armor.special
-            quantity = armor.quantity
-            isEquipped = armor.isEquipped
-            isStashed = armor.isStashed
-            isMagical = armor.isMagical
-            isCursed = armor.isCursed
-            bonus = armor.bonus
-            isShield = armor.isShield
-        }
     }
 }
 
