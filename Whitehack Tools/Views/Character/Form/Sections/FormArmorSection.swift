@@ -731,13 +731,9 @@ struct ArmorRow: View {
             VStack(alignment: .leading, spacing: 12) {
                 // Name Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Label {
-                        Text("Armor Name")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } icon: {
-                        IconFrame(icon: Ph.shield.bold, color: .purple)
-                    }
+                    Text("Armor Name")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     Label {
                         Text(armor.name)
                     } icon: {
@@ -747,13 +743,9 @@ struct ArmorRow: View {
                 
                 // Defense Factor Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Label {
-                        Text("Defense")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } icon: {
-                        IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
-                    }
+                    Text("Defense")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     Label {
                         Text("\(armor.df)")
                     } icon: {
@@ -763,13 +755,9 @@ struct ArmorRow: View {
                 
                 // Weight Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Label {
-                        Text("Weight")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    } icon: {
-                        IconFrame(icon: Ph.scales.bold, color: .orange)
-                    }
+                    Text("Weight")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     Label {
                         Text("\(armor.weight)")
                     } icon: {
@@ -780,13 +768,9 @@ struct ArmorRow: View {
                 // Special Section
                 if !armor.special.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label {
-                            Text("Special Properties")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } icon: {
-                            IconFrame(icon: Ph.star.bold, color: .yellow)
-                        }
+                        Text("Special Properties")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                         Label {
                             Text(armor.special)
                         } icon: {
@@ -798,13 +782,9 @@ struct ArmorRow: View {
                 // Quantity Section
                 if armor.quantity > 1 {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label {
-                            Text("Quantity")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } icon: {
-                            IconFrame(icon: Ph.stack.bold, color: .gray)
-                        }
+                        Text("Quantity")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                         Label {
                             Text("\(armor.quantity)")
                         } icon: {
@@ -824,6 +804,7 @@ struct ArmorRow: View {
                         } icon: {
                             IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
                         }
+                        
                         Label {
                             Text(armor.isStashed ? "Stashed" : "On Person")
                         } icon: {
@@ -836,13 +817,9 @@ struct ArmorRow: View {
                 // Magical Properties Section
                 if armor.isMagical || armor.isCursed {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label {
-                            Text("Magical Properties")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } icon: {
-                            IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                        }
+                        Text("Magical Properties")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                         HStack(spacing: 16) {
                             if armor.isMagical {
                                 Label {
@@ -851,6 +828,7 @@ struct ArmorRow: View {
                                     IconFrame(icon: Ph.sparkle.bold, color: .purple)
                                 }
                             }
+                            
                             if armor.isCursed {
                                 Label {
                                     Text("Cursed")
@@ -865,14 +843,9 @@ struct ArmorRow: View {
                 // Bonus/Penalty Section
                 if armor.bonus != 0 {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label {
-                            Text(armor.bonus > 0 ? "Bonus" : "Penalty")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        } icon: {
-                            IconFrame(icon: armor.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
-                                    color: armor.bonus > 0 ? .green : .red)
-                        }
+                        Text(armor.bonus > 0 ? "Bonus" : "Penalty")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                         Label {
                             Text("\(abs(armor.bonus))")
                         } icon: {

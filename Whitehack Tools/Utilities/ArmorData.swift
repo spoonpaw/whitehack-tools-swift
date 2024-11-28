@@ -16,7 +16,7 @@ struct ArmorData {
     static let WEIGHT_HEAVY = 4
     
     static let armors: [ArmorItem] = [
-        ArmorItem(name: "Shields", df: 1, weight: WEIGHT_MINOR, special: "", isShield: true),
+        ArmorItem(name: "Shield", df: 1, weight: WEIGHT_MINOR, special: "", isShield: true),
         ArmorItem(name: "Cloth", df: 1, weight: WEIGHT_MINOR, special: "", isShield: false),
         ArmorItem(name: "Leather", df: 2, weight: WEIGHT_MINOR, special: "", isShield: false),
         ArmorItem(name: "Hard leather", df: 3, weight: WEIGHT_LIGHT, special: "", isShield: false),
