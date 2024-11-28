@@ -8,10 +8,15 @@ struct FormArmorSection: View {
     @State private var newArmor = Armor(
         id: UUID(),
         name: "",
-        defenseValue: 0,
-        cost: 0,
+        df: "0",
+        weight: "",
+        special: "",
+        quantity: 1,
+        isEquipped: false,
+        isStashed: false,
         isMagical: false,
-        magicalBonus: 0
+        isCursed: false,
+        bonus: 0
     )
     
     var body: some View {
@@ -44,10 +49,15 @@ struct FormArmorSection: View {
                             newArmor = Armor(
                                 id: UUID(),
                                 name: "",
-                                defenseValue: 0,
-                                cost: 0,
+                                df: "0",
+                                weight: "",
+                                special: "",
+                                quantity: 1,
+                                isEquipped: false,
+                                isStashed: false,
                                 isMagical: false,
-                                magicalBonus: 0
+                                isCursed: false,
+                                bonus: 0
                             )
                         }
                     }
@@ -86,18 +96,32 @@ struct ArmorFormView: View {
                 .textFieldStyle(.roundedBorder)
             
             HStack {
-                Stepper("Defense Value: \(armor.defenseValue)", value: $armor.defenseValue, in: 0...6)
-                
-                TextField("Cost", value: $armor.cost, format: .number)
+                TextField("Defense Factor", text: $armor.df)
                     .textFieldStyle(.roundedBorder)
+                
+                TextField("Weight", text: $armor.weight)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            TextField("Special Properties", text: $armor.special)
+                .textFieldStyle(.roundedBorder)
+            
+            HStack {
+                Stepper("Quantity: \(armor.quantity)", value: $armor.quantity, in: 1...99)
+            }
+            
+            HStack {
+                Toggle("Equipped", isOn: $armor.isEquipped)
+                Toggle("Stashed", isOn: $armor.isStashed)
             }
             
             HStack {
                 Toggle("Magical", isOn: $armor.isMagical)
-                
-                if armor.isMagical {
-                    Stepper("Bonus: +\(armor.magicalBonus)", value: $armor.magicalBonus, in: 1...6)
-                }
+                Toggle("Cursed", isOn: $armor.isCursed)
+            }
+            
+            if armor.isMagical {
+                Stepper("Bonus: \(armor.bonus > 0 ? "+" : "")\(armor.bonus)", value: $armor.bonus, in: -6...6)
             }
             
             Button("Save") {
@@ -120,22 +144,54 @@ struct ArmorRowView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(armor.name)
-                    .font(.headline)
+                HStack {
+                    Text(armor.name)
+                        .font(.headline)
+                    
+                    if armor.isMagical {
+                        Text(armor.bonus > 0 ? "+\(armor.bonus)" : "\(armor.bonus)")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                    }
+                }
                 
                 HStack(spacing: 12) {
-                    Label("DF \(armor.defenseValue)", systemImage: "shield.fill")
+                    Label("DF: \(armor.df)", systemImage: "shield.fill")
                         .font(.caption)
                     
-                    Text("\(armor.cost) GP")
+                    Text(armor.weight)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 
-                if armor.isMagical {
-                    Text("+\(armor.magicalBonus) Magical")
+                if !armor.special.isEmpty {
+                    Text(armor.special)
                         .font(.caption)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.secondary)
+                }
+                
+                if armor.quantity > 1 {
+                    Text("Quantity: \(armor.quantity)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                HStack {
+                    if armor.isEquipped {
+                        Text("Equipped")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
+                    if armor.isStashed {
+                        Text("Stashed")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    if armor.isCursed {
+                        Text("Cursed")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
                 }
             }
             

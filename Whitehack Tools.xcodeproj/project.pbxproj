@@ -16,6 +16,7 @@
 		A93E172E2CF20285007114C7 /* FormCleverKnacksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */; };
 		A93E17302CF20A88007114C7 /* DetailFortunateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E172F2CF20A88007114C7 /* DetailFortunateSection.swift */; };
 		A93E17322CF20A99007114C7 /* FormFortunateSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93E17312CF20A99007114C7 /* FormFortunateSection.swift */; };
+		A944E7E62CF8111E00870790 /* ArmorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A944E7E52CF8111E00870790 /* ArmorData.swift */; };
 		A959EC792CF1A99E0051DCEC /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A959EC782CF1A99E0051DCEC /* PhosphorSwift */; };
 		A9807D0C2CF416210082D624 /* CharacterExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9807D092CF416210082D624 /* CharacterExportView.swift */; };
 		A9807D0D2CF416210082D624 /* CharacterImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9807D0B2CF416210082D624 /* CharacterImportView.swift */; };
@@ -76,6 +77,7 @@
 		A93E172D2CF20285007114C7 /* FormCleverKnacksSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormCleverKnacksSection.swift; sourceTree = "<group>"; };
 		A93E172F2CF20A88007114C7 /* DetailFortunateSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailFortunateSection.swift; sourceTree = "<group>"; };
 		A93E17312CF20A99007114C7 /* FormFortunateSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormFortunateSection.swift; sourceTree = "<group>"; };
+		A944E7E52CF8111E00870790 /* ArmorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArmorData.swift; sourceTree = "<group>"; };
 		A9807D092CF416210082D624 /* CharacterExportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterExportView.swift; sourceTree = "<group>"; };
 		A9807D0B2CF416210082D624 /* CharacterImportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterImportView.swift; sourceTree = "<group>"; };
 		A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancementTables.swift; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 		A99CAAB52CE859B3004163DA /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A944E7E52CF8111E00870790 /* ArmorData.swift */,
 				A9B446782CF5CBDC00FD50E5 /* WeaponData.swift */,
 				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
 				A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */,
@@ -442,6 +445,7 @@
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
 				A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */,
 				A98489212CF1673000A7CD7B /* DetailNotesSection.swift in Sources */,
+				A944E7E62CF8111E00870790 /* ArmorData.swift in Sources */,
 				A98489242CF1673000A7CD7B /* DetailGroupsSection.swift in Sources */,
 				A93E172E2CF20285007114C7 /* FormCleverKnacksSection.swift in Sources */,
 				A98489312CF174F200A7CD7B /* FormAttributeGroupPairsView.swift in Sources */,

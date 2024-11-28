@@ -409,6 +409,24 @@ struct SignatureObject: Codable {
     var name: String
 }
 
+struct Armor: Identifiable, Codable, Equatable {
+    let id: UUID
+    var name: String
+    var df: String  // Defense Factor
+    var weight: String
+    var special: String
+    var quantity: Int
+    var isEquipped: Bool
+    var isStashed: Bool
+    var isMagical: Bool
+    var isCursed: Bool
+    var bonus: Int
+    
+    static func == (lhs: Armor, rhs: Armor) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 struct Retainer: Codable, Identifiable {
     let id: UUID
     var name: String
@@ -504,16 +522,7 @@ struct Weapon: Codable, Identifiable, Hashable {
     }
 }
 
-// MARK: - Armor Types
-struct Armor: Codable, Identifiable {
-    let id: UUID
-    var name: String
-    var defenseValue: Int
-    var cost: Int
-    var isMagical: Bool
-    var magicalBonus: Int
-}
-
+// MARK: - Player Character
 class PlayerCharacter: Identifiable, Codable {
     // MARK: - Properties
     let id: UUID
@@ -636,7 +645,7 @@ class PlayerCharacter: Identifiable, Codable {
     
     var totalDefenseValue: Int {
         let baseDF = armor.reduce(0) { total, armor in
-            total + armor.defenseValue + (armor.isMagical ? armor.magicalBonus : 0)
+            total + armor.df.count
         }
         return baseDF
     }
