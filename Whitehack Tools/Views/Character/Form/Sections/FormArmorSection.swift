@@ -596,32 +596,6 @@ struct ArmorEditRow: View {
                 }
             }
             
-            // Bonus Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Bonus/Penalty")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    Picker("", selection: $isBonus) {
-                        Text("+").tag(true)
-                        Text("-").tag(false)
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 100)
-                    
-                    Label {
-                        TextField("0", text: $bonusString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .keyboardType(.numberPad)
-                            .onChange(of: bonusString) { newValue in
-                                validateBonusInput(newValue)
-                            }
-                    } icon: {
-                        IconFrame(icon: Ph.plusMinus.bold, color: isBonus ? .green : .red)
-                    }
-                }
-            }
-            
             // Status Section
             VStack(alignment: .leading, spacing: 8) {
                 // Shield Toggle with Icon
@@ -636,28 +610,34 @@ struct ArmorEditRow: View {
                     Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
-                            if newValue && isStashed {
+                            print("🔄 Equipped status changed to: \(newValue)")
+                            isEquipped = newValue
+                            if newValue {
                                 isStashed = false
                             }
-                            isEquipped = newValue
                         }
                     ))
                 }
                 
-                // Stashed Toggle with Icon
+                // Location Toggle with Icon
                 HStack {
-                    IconFrame(icon: Ph.warehouse.bold, color: isStashed ? .orange : .gray)
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                            color: isStashed ? .orange : .gray)
                     Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
-                            if newValue && isEquipped {
+                            print("🔄 Stashed status changed to: \(newValue)")
+                            isStashed = newValue
+                            if newValue {
                                 isEquipped = false
                             }
-                            isStashed = newValue
                         }
                     ))
                 }
-                
+            }
+            
+            // Magical Properties Section
+            VStack(alignment: .leading, spacing: 8) {
                 // Magical Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
@@ -671,9 +651,46 @@ struct ArmorEditRow: View {
                 }
             }
             
-            Divider()
+            // Bonus/Penalty Section
+            Section {
+                // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
+                Toggle(isOn: $isBonus) {
+                    Text(isBonus ? "Bonus" : "Penalty")
+                        .foregroundColor(isBonus ? .green : .red)
+                }
+                .onChange(of: isBonus) { newValue in
+                    bonus = newValue ? abs(bonus) : -abs(bonus)
+                }
+                
+                // Value Control
+                HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
+                    TextField("", text: $bonusString)
+                        .keyboardType(.numberPad)
+                        .frame(width: 60)
+                        .multilineTextAlignment(.leading)
+                        .onChange(of: bonusString) { newValue in
+                            validateBonusInput(newValue)
+                        }
+                        .onChange(of: bonus) { newValue in
+                            bonusString = "\(abs(newValue))"
+                        }
+                    Spacer()
+                    Stepper("", value: Binding(
+                        get: { abs(bonus) },
+                        set: { newValue in
+                            let value = max(0, newValue)  // Prevent negative values
+                            bonus = isBonus ? value : -value
+                        }
+                    ), in: 0...Int.max)  // Add range constraint
+                    .labelsHidden()
+                }
+            } header: {
+                Text("Bonus/Penalty")
+            }
             
-            // Action Buttons
+            // Save/Cancel Buttons
             HStack(spacing: 20) {
                 Button {
                     guard !isProcessingAction else { return }
