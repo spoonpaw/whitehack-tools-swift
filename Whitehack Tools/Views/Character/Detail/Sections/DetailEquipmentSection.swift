@@ -54,29 +54,19 @@ struct DetailEquipmentSection: View {
                     .padding(.vertical, 20)
                 } else {
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(character.gear) { item in
-                            GearDetailRow(gear: item)
+                        ForEach(character.gear) { gearItem in
+                            GearDetailRow(gear: gearItem)
                         }
                     }
+                    .padding(.vertical, 8)
                 }
             }
-            .padding(.vertical, 8)
         }
     }
 }
 
 private struct GearDetailRow: View {
     let gear: Gear
-    
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "No size": return "No size (100/slot)"
-        case "Minor": return "Minor (2/slot)"
-        case "Regular": return "Regular (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
-        default: return weight
-        }
-    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -86,16 +76,14 @@ private struct GearDetailRow: View {
                     Text(gear.name)
                         .font(.headline)
                 } icon: {
-                    IconFrame(icon: Ph.package.bold, color: .blue)
+                    IconFrame(icon: Ph.bagSimple.bold, color: .blue)
                 }
                 
                 Spacer()
                 
-                if gear.quantity > 1 {
-                    Text("×\(gear.quantity)")
-                        .foregroundColor(.secondary)
-                        .font(.callout)
-                }
+                Text("×\(gear.quantity)")
+                    .foregroundColor(.secondary)
+                    .font(.callout)
             }
             
             // Status Section
@@ -105,7 +93,7 @@ private struct GearDetailRow: View {
                     Text(gear.isEquipped ? "Equipped" : "Unequipped")
                         .foregroundColor(gear.isEquipped ? .green : .secondary)
                 } icon: {
-                    IconFrame(icon: gear.isEquipped ? Ph.bagSimple.bold : Ph.bag.bold,
+                    IconFrame(icon: gear.isEquipped ? Ph.bagSimple.bold : Ph.bagSimple.bold,
                             color: gear.isEquipped ? .green : .gray)
                 }
                 
@@ -125,7 +113,7 @@ private struct GearDetailRow: View {
             // Weight and Slots
             HStack {
                 Label {
-                    Text(getWeightDisplayText(gear.weight))
+                    Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
@@ -133,49 +121,47 @@ private struct GearDetailRow: View {
                 .font(.callout)
             }
             
-            if !gear.special.isEmpty {
-                Divider()
+            Divider()
+            
+            // Special Properties Section
+            VStack(alignment: .leading, spacing: 4) {
+                // Magical Status
+                if gear.isMagical {
+                    Label {
+                        Text("Magical")
+                            .foregroundColor(.purple)
+                    } icon: {
+                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                    }
+                    .font(.callout)
+                }
+                
+                // Cursed Status
+                if gear.isCursed {
+                    Label {
+                        Text("Cursed")
+                            .foregroundColor(.red)
+                    } icon: {
+                        IconFrame(icon: Ph.skull.bold, color: .red)
+                    }
+                    .font(.callout)
+                }
                 
                 // Special Properties
-                VStack(alignment: .leading, spacing: 4) {
+                if !gear.special.isEmpty {
                     Label {
                         Text(gear.special)
-                            .foregroundColor(.secondary)
-                            .font(.callout)
+                            .foregroundColor(.yellow)
                     } icon: {
-                        IconFrame(icon: Ph.textT.bold, color: .purple)
+                        IconFrame(icon: Ph.star.bold, color: .yellow)
                     }
+                    .font(.callout)
                 }
-            }
-            
-            if gear.isMagical || gear.isCursed {
-                Divider()
-                
-                // Magical/Cursed Status
-                VStack(alignment: .leading, spacing: 4) {
-                    if gear.isMagical {
-                        Label {
-                            Text("Magical")
-                                .foregroundColor(.purple)
-                        } icon: {
-                            IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                        }
-                    }
-                    
-                    if gear.isCursed {
-                        Label {
-                            Text("Cursed")
-                                .foregroundColor(.red)
-                        } icon: {
-                            IconFrame(icon: Ph.skull.bold, color: .red)
-                        }
-                    }
-                }
-                .font(.callout)
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(10)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(radius: 2)
     }
 }
