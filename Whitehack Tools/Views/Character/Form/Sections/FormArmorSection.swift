@@ -922,5 +922,7 @@ struct ArmorRow: View {
             .padding(.horizontal)
         }
         .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(10)
     }
 }
