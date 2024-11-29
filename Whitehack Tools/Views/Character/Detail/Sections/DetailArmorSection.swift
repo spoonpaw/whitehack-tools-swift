@@ -9,6 +9,24 @@ struct DetailArmorSection: View {
         return "\(weight) slot\(weight == 1 ? "" : "s")"
     }
     
+    private func logArmorDetails() {
+        if armor.isEmpty {
+            print("🛡️ [DetailArmorSection] Rendering empty state")
+        } else {
+            print("🛡️ [DetailArmorSection] Rendering \(armor.count) armor items")
+            print("🛡️ [DetailArmorSection] Total Defense Value: \(totalDefenseValue)")
+            let armorDetails = armor.map { "[\($0.name) - DF:\($0.df) Weight:\($0.weight) Shield:\($0.isShield)]" }
+            print("🛡️ [DetailArmorSection] Items: \(armorDetails.joined(separator: ", "))")
+            
+            armor.forEach { armorItem in
+                print("🛡️ [DetailArmorSection] Rendering armor: \(armorItem.name)")
+                print("🛡️ [DetailArmorSection] Properties - DF: \(armorItem.df), Weight: \(armorItem.weight), Shield: \(armorItem.isShield)")
+                print("🛡️ [DetailArmorSection] Status - Equipped: \(armorItem.isEquipped), Stashed: \(armorItem.isStashed)")
+                print("🛡️ [DetailArmorSection] Magic - Magical: \(armorItem.isMagical), Cursed: \(armorItem.isCursed), Bonus: \(armorItem.bonus)")
+            }
+        }
+    }
+    
     var body: some View {
         Section(header: SectionHeader(title: "Armor", icon: Ph.shield.bold)) {
             if armor.isEmpty {
@@ -36,6 +54,9 @@ struct DetailArmorSection: View {
                 }
                 .padding(.vertical, 8)
             }
+        }
+        .onAppear {
+            logArmorDetails()
         }
     }
 }

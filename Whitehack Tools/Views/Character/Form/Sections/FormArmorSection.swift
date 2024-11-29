@@ -4,7 +4,11 @@ import PhosphorSwift
 typealias ArmorItem = ArmorData.ArmorItem
 
 struct FormArmorSection: View {
-    @Binding var armor: [Armor]
+    @Binding var armor: [Armor] {
+        didSet {
+            logArmorArrayUpdate()
+        }
+    }
     @State private var editingArmorId: UUID?
     @State private var isAddingNew = false {
         didSet {
@@ -29,6 +33,31 @@ struct FormArmorSection: View {
                 editingNewArmor = nil
             }
         }
+    }
+    
+    private func logArmorArrayUpdate() {
+        print("🛡️ [FormArmorSection] Armor array updated")
+        print("🛡️ [FormArmorSection] New count: \(armor.count)")
+        let armorDetails = armor.map { "[\($0.name) - DF:\($0.df) Weight:\($0.weight) Shield:\($0.isShield)]" }
+        print("🛡️ [FormArmorSection] Items: \(armorDetails.joined(separator: ", "))")
+    }
+    
+    private func logNewArmorCreation(_ newArmor: Armor) {
+        print("🛡️ [FormArmorSection] Save action received")
+        print("🛡️ [FormArmorSection] New armor: \(newArmor.name)")
+        print("🛡️ [FormArmorSection] Properties - DF: \(newArmor.df), Weight: \(newArmor.weight), Shield: \(newArmor.isShield)")
+        print("🛡️ [FormArmorSection] Status - Equipped: \(newArmor.isEquipped), Stashed: \(newArmor.isStashed)")
+        print("🛡️ [FormArmorSection] Magic - Magical: \(newArmor.isMagical), Cursed: \(newArmor.isCursed), Bonus: \(newArmor.bonus)")
+    }
+    
+    private func logArmorEdit(original: Armor, updated: Armor) {
+        print("🛡️ [FormArmorSection] Editing existing armor")
+        print("🛡️ [FormArmorSection] Original: \(original.name) -> New: \(updated.name)")
+        print("🛡️ [FormArmorSection] DF change: \(original.df) -> \(updated.df)")
+        print("🛡️ [FormArmorSection] Weight change: \(original.weight) -> \(updated.weight)")
+        print("🛡️ [FormArmorSection] Shield status: \(original.isShield) -> \(updated.isShield)")
+        print("🛡️ [FormArmorSection] Equipment status: Equipped(\(original.isEquipped)->\(updated.isEquipped)) Stashed(\(original.isStashed)->\(updated.isStashed))")
+        print("🛡️ [FormArmorSection] Magic changes: Magical(\(original.isMagical)->\(updated.isMagical)) Cursed(\(original.isCursed)->\(updated.isCursed)) Bonus(\(original.bonus)->\(updated.bonus))")
     }
     
     private func createArmorFromSelection(_ armorName: String) {
@@ -106,23 +135,18 @@ struct FormArmorSection: View {
                 if isAddingNew {
                     if let editingArmor = editingNewArmor {
                         ArmorEditRow(armor: editingArmor) { newArmor in
-                            print("🟢 [FormArmorSection] Save action received for: \(newArmor.name)")
-                            armor.append(newArmor)
-                            print("✅ [FormArmorSection] Armor added to array")
+                            logNewArmorCreation(newArmor)
                             withAnimation {
-                                print("🔄 [FormArmorSection] Resetting form state after save")
+                                armor.append(newArmor)
                                 isAddingNew = false
+                                print("🛡️ [FormArmorSection] Added to armor array, total count: \(armor.count)")
                             }
                         } onCancel: {
-                            print("🔴 [FormArmorSection] Cancel action received")
+                            print("🛡️ [FormArmorSection] Add armor cancelled")
                             withAnimation {
-                                print("🔄 [FormArmorSection] Resetting form state after cancel")
-                                selectedArmorName = nil
-                                editingNewArmor = nil
                                 isAddingNew = false
                             }
                         }
-                        .id("\(editingArmor.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
                     } else {
                         VStack(spacing: 12) {
                             Text("Select Armor Type")
@@ -164,15 +188,19 @@ struct FormArmorSection: View {
                     Group {
                         if editingArmorId == armorItem.id {
                             ArmorEditRow(armor: armorItem) { updatedArmor in
-                                print("💾 Saving updated armor: \(updatedArmor.name)")
+                                logArmorEdit(original: armorItem, updated: updatedArmor)
                                 if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
-                                    print("🔄 Updating armor at index: \(index)")
-                                    armor[index] = updatedArmor
+                                    withAnimation {
+                                        armor[index] = updatedArmor
+                                        editingArmorId = nil
+                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
+                                    }
                                 }
-                                editingArmorId = nil
                             } onCancel: {
-                                print("❌ Canceling armor edit - reverting to original state")
-                                editingArmorId = nil
+                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
+                                withAnimation {
+                                    editingArmorId = nil
+                                }
                             }
                             .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
                         } else {

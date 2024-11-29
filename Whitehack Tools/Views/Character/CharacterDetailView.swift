@@ -2,9 +2,18 @@ import SwiftUI
 import PhosphorSwift
 
 struct CharacterDetailView: View {
-    let character: PlayerCharacter
+    let characterId: UUID
     @ObservedObject var characterStore: CharacterStore
     @State private var showingEditSheet = false
+    @State private var refreshTrigger = false
+    
+    private var character: PlayerCharacter {
+        // Get latest character data from store
+        guard let latest = characterStore.characters.first(where: { $0.id == characterId }) else {
+            fatalError("Character not found in store")
+        }
+        return latest
+    }
     
     var body: some View {
         List {
@@ -44,9 +53,16 @@ struct CharacterDetailView: View {
         }
         .sheet(isPresented: $showingEditSheet) {
             NavigationView {
-                CharacterFormView(characterStore: characterStore, character: character)
+                CharacterFormView(characterStore: characterStore, characterId: characterId)
             }
         }
+        .onChange(of: showingEditSheet) { newValue in
+            if !newValue {  // Sheet was dismissed
+                print(" [CHARACTER DETAIL] Sheet dismissed, triggering view refresh")
+                refreshTrigger.toggle()  // Force view refresh
+            }
+        }
+        .id(refreshTrigger)  // Force view to recreate when trigger changes
     }
 }
 

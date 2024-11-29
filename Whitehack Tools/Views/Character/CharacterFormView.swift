@@ -3,16 +3,26 @@ import SwiftUI
 struct CharacterFormView: View {
     @Environment(\.dismiss) var dismiss
     @ObservedObject var characterStore: CharacterStore
-    let character: PlayerCharacter?
+    let characterId: UUID?  // Change to optional ID
+    
+    private var character: PlayerCharacter? {
+        guard let id = characterId else { return nil }
+        return characterStore.characters.first(where: { $0.id == id })
+    }
     
     // MARK: - Form Data Model
     // Holds all form state separate from the store
     @StateObject private var formData: FormData
     @FocusState private var focusedField: Field?
     
-    init(characterStore: CharacterStore, character: PlayerCharacter? = nil) {
+    init(characterStore: CharacterStore, characterId: UUID? = nil) {
         self.characterStore = characterStore
-        self.character = character
+        self.characterId = characterId
+        
+        // Initialize formData with character from store
+        let character = characterId.flatMap { id in
+            characterStore.characters.first(where: { $0.id == id })
+        }
         _formData = StateObject(wrappedValue: FormData(character: character))
     }
     
@@ -204,11 +214,18 @@ struct CharacterFormView: View {
     }
     
     private func saveCharacter() {
+        print("\n💾 [CHARACTER FORM] Starting character save")
+        print("💾 [CHARACTER FORM] Creating new character object")
+        
         let newCharacter = PlayerCharacter(id: character?.id ?? UUID())
+        print("💾 [CHARACTER FORM] Character ID: \(newCharacter.id)")
+        
+        // Basic Info
         newCharacter.name = formData.name
         newCharacter.playerName = formData.playerName
         newCharacter.characterClass = formData.selectedClass
         newCharacter.level = Int(formData.level) ?? 1
+        print("💾 [CHARACTER FORM] Basic Info - Name: \(newCharacter.name), Class: \(newCharacter.characterClass), Level: \(newCharacter.level)")
         
         // Attributes
         newCharacter.strength = Int(formData.strength) ?? 10
@@ -217,6 +234,7 @@ struct CharacterFormView: View {
         newCharacter.intelligence = Int(formData.intelligence) ?? 10
         newCharacter.willpower = Int(formData.willpower) ?? 10
         newCharacter.charisma = Int(formData.charisma) ?? 10
+        print("💾 [CHARACTER FORM] Attributes set - STR:\(newCharacter.strength) AGI:\(newCharacter.agility) TOU:\(newCharacter.toughness) INT:\(newCharacter.intelligence) WIL:\(newCharacter.willpower) CHA:\(newCharacter.charisma)")
         
         // Combat Stats
         newCharacter.currentHP = Int(formData.currentHP) ?? 0
@@ -224,31 +242,39 @@ struct CharacterFormView: View {
         newCharacter.defenseValue = Int(formData.defenseValue) ?? 0
         newCharacter.movement = Int(formData.movement) ?? 30
         newCharacter.saveColor = formData.saveColor
+        print("💾 [CHARACTER FORM] Combat Stats - HP:\(newCharacter.currentHP)/\(newCharacter.maxHP) DV:\(newCharacter.defenseValue) MV:\(newCharacter.movement)")
         
         // Groups
         newCharacter.speciesGroup = formData.speciesGroup.trimmingCharacters(in: .whitespaces)
         newCharacter.vocationGroup = formData.vocationGroup.trimmingCharacters(in: .whitespaces)
         newCharacter.affiliationGroups = formData.affiliationGroups
         newCharacter.attributeGroupPairs = formData.attributeGroupPairs
-        
-        // Languages
-        newCharacter.languages = formData.languages
+        print("💾 [CHARACTER FORM] Groups - Species:\(newCharacter.speciesGroup ?? "none") Vocation:\(newCharacter.vocationGroup ?? "none") Affiliations:\(newCharacter.affiliationGroups.count)")
         
         // Equipment
+        print("\n💾 [CHARACTER FORM] Setting equipment")
+        print("💾 [CHARACTER FORM] Weapons before assignment: \(formData.weapons.count)")
+        print("💾 [CHARACTER FORM] Armor before assignment: \(formData.armor.count)")
+        for (index, armor) in formData.armor.enumerated() {
+            print("💾 [CHARACTER FORM] Pre-save Armor \(index): \(armor.name) - DF:\(armor.df) Weight:\(armor.weight) Shield:\(armor.isShield)")
+        }
+        
+        newCharacter.weapons = formData.weapons
+        newCharacter.armor = formData.armor
+        print("💾 [CHARACTER FORM] Weapons count after assignment: \(newCharacter.weapons.count)")
+        print("💾 [CHARACTER FORM] Armor count after assignment: \(newCharacter.armor.count)")
+        for (index, armor) in newCharacter.armor.enumerated() {
+            print("💾 [CHARACTER FORM] Post-save Armor \(index): \(armor.name) - DF:\(armor.df) Weight:\(armor.weight) Shield:\(armor.isShield)")
+        }
+        
         newCharacter.gear = formData.gear
         newCharacter.coins = Int(formData.coins) ?? 0
         newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
+        print("💾 [CHARACTER FORM] Gear count: \(formData.gear.count), Coins: \(newCharacter.coins), Max Encumbrance: \(newCharacter.maxEncumbrance)")
         
-        // Notes
-        newCharacter.notes = formData.notes
-        
-        // Additional Info
-        newCharacter.experience = Int(formData.experience) ?? 0
-        newCharacter.corruption = Int(formData.corruption) ?? 0
-        
+        // Class Features
         newCharacter.attunementSlots = formData.attunementSlots
         newCharacter.hasUsedAttunementToday = formData.hasUsedAttunementToday
-        
         newCharacter.currentConflictLoot = formData.currentConflictLoot
         newCharacter.strongCombatOptions = formData.strongCombatOptions
         newCharacter.wiseMiracleSlots = formData.wiseMiracleSlots
@@ -257,15 +283,19 @@ struct CharacterFormView: View {
         newCharacter.hasUsedSayNo = formData.hasUsedSayNo
         newCharacter.cleverKnackOptions = formData.cleverKnackOptions
         newCharacter.fortunateOptions = formData.fortunateOptions
+        print("💾 [CHARACTER FORM] Class features set")
         
-        newCharacter.weapons = formData.weapons
-        newCharacter.armor = formData.armor
-        
+        // Save to store
+        print("\n💾 [CHARACTER FORM] Saving to character store")
         if character != nil {
+            print("💾 [CHARACTER FORM] Updating existing character")
             characterStore.updateCharacter(newCharacter)
         } else {
+            print("💾 [CHARACTER FORM] Adding new character")
             characterStore.addCharacter(newCharacter)
         }
+        print("💾 [CHARACTER FORM] Save complete")
+        
         dismiss()
     }
 }

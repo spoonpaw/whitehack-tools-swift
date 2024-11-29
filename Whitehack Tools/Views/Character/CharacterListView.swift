@@ -14,7 +14,7 @@ struct CharacterListView: View {
             List {
                 ForEach(characterStore.characters) { character in
                     ZStack {
-                        NavigationLink(destination: CharacterDetailView(character: character, characterStore: characterStore)) {
+                        NavigationLink(destination: CharacterDetailView(characterId: character.id, characterStore: characterStore)) {
                             EmptyView()
                         }
                         .opacity(0)
