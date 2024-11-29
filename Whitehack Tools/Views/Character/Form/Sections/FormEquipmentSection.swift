@@ -294,22 +294,25 @@ struct FormEquipmentSection: View {
                             Text("Edit")
                                 .fontWeight(.medium)
                         } icon: {
-                            IconFrame(icon: Ph.pencilSimple.bold, color: .blue)
+                            Image(systemName: "pencil.circle.fill")
                         }
+                        .foregroundColor(.blue)
                     }
-                    .buttonStyle(.borderless)
+                    
+                    Spacer()
                     
                     Button(action: onDelete) {
                         Label {
                             Text("Delete")
                                 .fontWeight(.medium)
                         } icon: {
-                            IconFrame(icon: Ph.trash.bold, color: .red)
+                            Image(systemName: "trash.circle.fill")
                         }
+                        .foregroundColor(.red)
                     }
-                    .buttonStyle(.borderless)
-                    .foregroundColor(.red)
                 }
+                .buttonStyle(.plain)
+                .padding(.horizontal)
             }
             .padding()
             .background(Color(.secondarySystemBackground))
