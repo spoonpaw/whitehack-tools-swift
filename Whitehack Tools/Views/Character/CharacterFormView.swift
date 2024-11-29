@@ -89,6 +89,7 @@ struct CharacterFormView: View {
                 newLanguage: $formData.newLanguage,
                 focusedField: $focusedField
             )
+            FormGoldSection(coins: $formData.coins)
             FormEquipmentSection(gear: $formData.gear)
             FormDeftAttunementSection(
                 characterClass: formData.selectedClass,
@@ -189,7 +190,7 @@ struct CharacterFormView: View {
         formData.languages = character.languages
         
         formData.gear = character.gear
-        formData.coins = String(character.coins)
+        formData.coins = character.coins
         formData.maxEncumbrance = String(character.maxEncumbrance)
         
         formData.notes = character.notes
@@ -268,7 +269,7 @@ struct CharacterFormView: View {
         }
         
         newCharacter.gear = formData.gear
-        newCharacter.coins = Int(formData.coins) ?? 0
+        newCharacter.coins = formData.coins
         newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
         print("💾 [CHARACTER FORM] Gear count: \(formData.gear.count), Coins: \(newCharacter.coins), Max Encumbrance: \(newCharacter.maxEncumbrance)")
         
@@ -338,7 +339,7 @@ private class FormData: ObservableObject {
     @Published var newLanguage = ""
     
     @Published var gear: [Gear] = []
-    @Published var coins = "0"
+    @Published var coins = 0
     @Published var maxEncumbrance = "15"
     
     @Published var notes = ""

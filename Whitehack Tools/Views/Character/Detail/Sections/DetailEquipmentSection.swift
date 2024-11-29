@@ -24,16 +24,6 @@ struct DetailEquipmentSection: View {
                     )
                 }
                 
-                // Coins
-                HStack {
-                    Label {
-                        Text("\(character.coins) GP")
-                            .fontWeight(.medium)
-                    } icon: {
-                        IconFrame(icon: Ph.coins.bold, color: .yellow)
-                    }
-                }
-                
                 // Gear Items
                 if character.gear.isEmpty {
                     VStack(spacing: 12) {
