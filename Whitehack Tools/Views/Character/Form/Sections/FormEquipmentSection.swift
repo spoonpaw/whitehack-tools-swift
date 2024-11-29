@@ -213,7 +213,6 @@ struct FormEquipmentSection: View {
                         HStack {
                             Label {
                                 Text(gear.name)
-                                    .font(.headline)
                             } icon: {
                                 IconFrame(icon: Ph.bagSimple.bold, color: .blue)
                             }
