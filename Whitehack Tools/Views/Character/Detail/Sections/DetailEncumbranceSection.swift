@@ -60,10 +60,10 @@ struct DetailEncumbranceSection: View {
         }
         
         // Add coins (100 coins = 1 slot)
-        let coinSlots = Double(character.coins) / 100.0
+        let coinSlots = Double(character.coinsOnHand) / 100.0
         if coinSlots > 0 {
             total += coinSlots
-            calculations.append(SlotCalculation(name: "Coins", weight: "no size", quantity: character.coins, slots: coinSlots))
+            calculations.append(SlotCalculation(name: "Coins", weight: "no size", quantity: character.coinsOnHand, slots: coinSlots))
         }
         
         return (total, calculations)

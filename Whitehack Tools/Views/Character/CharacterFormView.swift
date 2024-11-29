@@ -89,7 +89,10 @@ struct CharacterFormView: View {
                 newLanguage: $formData.newLanguage,
                 focusedField: $focusedField
             )
-            FormGoldSection(coins: $formData.coins)
+            FormGoldSection(
+                coinsOnHand: $formData.coinsOnHand,
+                stashedCoins: $formData.stashedCoins
+            )
             FormEquipmentSection(gear: $formData.gear)
             FormDeftAttunementSection(
                 characterClass: formData.selectedClass,
@@ -190,7 +193,8 @@ struct CharacterFormView: View {
         formData.languages = character.languages
         
         formData.gear = character.gear
-        formData.coins = character.coins
+        formData.coinsOnHand = character.coinsOnHand
+        formData.stashedCoins = character.stashedCoins
         formData.maxEncumbrance = String(character.maxEncumbrance)
         
         formData.notes = character.notes
@@ -269,9 +273,10 @@ struct CharacterFormView: View {
         }
         
         newCharacter.gear = formData.gear
-        newCharacter.coins = formData.coins
+        newCharacter.coinsOnHand = formData.coinsOnHand
+        newCharacter.stashedCoins = formData.stashedCoins
         newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
-        print("💾 [CHARACTER FORM] Gear count: \(formData.gear.count), Coins: \(newCharacter.coins), Max Encumbrance: \(newCharacter.maxEncumbrance)")
+        print("💾 [CHARACTER FORM] Gear count: \(formData.gear.count), Coins On Hand: \(newCharacter.coinsOnHand), Stashed Coins: \(newCharacter.stashedCoins), Max Encumbrance: \(newCharacter.maxEncumbrance)")
         
         // Class Features
         newCharacter.attunementSlots = formData.attunementSlots
@@ -339,7 +344,8 @@ private class FormData: ObservableObject {
     @Published var newLanguage = ""
     
     @Published var gear: [Gear] = []
-    @Published var coins = 0
+    @Published var coinsOnHand = 0
+    @Published var stashedCoins = 0
     @Published var maxEncumbrance = "15"
     
     @Published var notes = ""

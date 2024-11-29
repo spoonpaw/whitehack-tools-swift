@@ -648,7 +648,8 @@ class PlayerCharacter: Identifiable, Codable {
     var languages: [String]
     var notes: String
     var experience: Int
-    var coins: Int
+    var coinsOnHand: Int
+    var stashedCoins: Int
     var gear: [Gear]  // New gear array
     
     // Computed Properties
@@ -809,7 +810,8 @@ class PlayerCharacter: Identifiable, Codable {
         corruption: Int = 0,
         inventory: [String] = [],
         maxEncumbrance: Int = 15,
-        coins: Int = 0,
+        coinsOnHand: Int = 0,
+        stashedCoins: Int = 0,
         gear: [Gear] = [],
         weapons: [Weapon] = [],
         armor: [Armor] = [],
@@ -851,7 +853,8 @@ class PlayerCharacter: Identifiable, Codable {
         self.corruption = corruption
         self.inventory = inventory
         self.maxEncumbrance = maxEncumbrance
-        self.coins = coins
+        self.coinsOnHand = coinsOnHand
+        self.stashedCoins = stashedCoins
         self.gear = gear
         self.weapons = weapons
         self.armor = armor
@@ -889,7 +892,8 @@ extension PlayerCharacter {
             corruption: corruption,
             inventory: inventory,
             maxEncumbrance: maxEncumbrance,
-            coins: coins
+            coinsOnHand: coinsOnHand,
+            stashedCoins: stashedCoins
         )
         
         // Copy attribute group pairs with new IDs
