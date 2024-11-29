@@ -158,8 +158,7 @@ private struct WiseSectionHeader: View {
                 .font(.headline)
                 .foregroundColor(.primary)
         } icon: {
-            Image(systemName: "sparkles")
-                .foregroundColor(.yellow)
+            IconFrame(icon: Ph.sparkle.bold, color: .yellow)
         }
     }
 }
@@ -169,8 +168,7 @@ private struct ClassInfoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "sparkles.square.filled.on.square")
-                    .foregroundColor(.yellow)
+                IconFrame(icon: Ph.sparkle.bold, color: .yellow)
                 Text("Class Overview")
                     .font(.headline)
                     .foregroundColor(.primary)
@@ -191,32 +189,66 @@ private struct ClassFeaturesCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "star.fill")
-                    .foregroundColor(.yellow)
+                IconFrame(icon: Ph.star.bold, color: .yellow)
                 Text("Class Features")
                     .font(.headline)
                     .foregroundColor(.primary)
             }
             
             WiseMiracleFeatureRow(
-                icon: "wand.and.stars",
-                color: .yellow,
-                title: "Miracles",
-                description: "Can perform miracles by spending HP. Each miracle slot can hold multiple miracles, but only one can be active at a time."
-            )
-            
-            WiseMiracleFeatureRow(
-                icon: "sparkles",
+                icon: "Sparkles",
                 color: .yellow,
                 title: "Miracle Slots",
-                description: "Gain additional miracle slots at higher levels. Level 3 slot can alternatively hold a magic item."
+                description: "Each slot holds two miracles—one active, one inactive. Switching takes a day of preparation."
             )
             
             WiseMiracleFeatureRow(
-                icon: "brain.head.profile",
+                icon: "Brain",
                 color: .yellow,
                 title: "Willpower Bonus",
-                description: "High Willpower grants additional inactive miracles in the level 1 slot."
+                description: "Level 1 slot gets +1 inactive miracle at WP 13+, +2 at WP 16+."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Heart",
+                color: .green,
+                title: "Supernatural Healing",
+                description: "Recover HP at 2× natural rate. Requires treatment to heal beyond 1 HP or for other conditions."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Sparkles",
+                color: .red,
+                title: "Magick Interference",
+                description: "Cannot benefit from direct HP restoration (potions, miracles, medicine). Still need treatment for bleeding, illness, poison, etc."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Scroll",
+                color: .purple,
+                title: "Scroll Mastery",
+                description: "Can slot scroll effects with trained INT roll. Level must exceed HP cost, glyphs must be 10+ years old."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Sword",
+                color: .red,
+                title: "Combat Penalties",
+                description: "-2 AV with non-slotted two-handed weapons."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Shield",
+                color: .green,
+                title: "Magical Defense",
+                description: "+2 SV vs magick and mind influencing abilities."
+            )
+            
+            WiseMiracleFeatureRow(
+                icon: "Heart",
+                color: .red,
+                title: "Equipment Cost",
+                description: "+2 HP costs when using shields or armor heavier than leather (before doubling)."
             )
         }
         .padding(12)
@@ -230,8 +262,7 @@ private struct MiracleGuidelinesCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "book.closed.fill")
-                    .foregroundColor(.yellow)
+                IconFrame(icon: Ph.book.bold, color: .yellow)
                 Text("Miracle Guidelines")
                     .font(.headline)
                     .foregroundColor(.primary)
@@ -242,14 +273,33 @@ private struct MiracleGuidelinesCard: View {
                 .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
-                ForEach([
-                    (title: "HP Cost", text: "Cannot attempt miracles with an initial maximum cost > current HP", icon: "heart.fill", color: Color.red),
-                    (title: "Level Check", text: "Must save or double cost if HP cost > level", icon: "exclamationmark.triangle.fill", color: Color.orange),
-                    (title: "Energy Detection", text: "Save once/day (10min) to reduce magnitude by 1", icon: "bolt.fill", color: Color.yellow),
-                    (title: "Crafting", text: "First charge costs 2×, permanent items cost 2× permanent HP", icon: "hammer.fill", color: Color.purple)
-                ], id: \.title) { rule in
-                    MiracleRuleCard(title: rule.title, text: rule.text, icon: rule.icon, color: rule.color)
-                }
+                MiracleRuleCard(
+                    title: "HP Cost",
+                    text: "Cannot attempt miracles with an initial maximum cost > current HP",
+                    icon: "ExclamationMarkTriangle",
+                    color: Color.orange
+                )
+                
+                MiracleRuleCard(
+                    title: "Level Check",
+                    text: "Must save or double cost if HP cost > level",
+                    icon: "ExclamationMarkTriangle",
+                    color: Color.orange
+                )
+                
+                MiracleRuleCard(
+                    title: "Energy Detection",
+                    text: "Save once/day (10min) to reduce magnitude by 1",
+                    icon: "Bolt",
+                    color: Color.yellow
+                )
+                
+                MiracleRuleCard(
+                    title: "Crafting",
+                    text: "First charge costs 2×, permanent items cost permanent HP",
+                    icon: "Hammer",
+                    color: Color.purple
+                )
             }
         }
         .padding(12)
@@ -263,8 +313,7 @@ private struct CostModifiersCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "plusminus.circle.fill")
-                    .foregroundColor(.yellow)
+                IconFrame(icon: Ph.plusMinus.bold, color: .yellow)
                 Text("Cost Modifiers")
                     .font(.headline)
                     .foregroundColor(.primary)
@@ -278,8 +327,7 @@ private struct CostModifiersCard: View {
                 // Increased Cost Factors
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .foregroundColor(.red)
+                        IconFrame(icon: Ph.arrowUp.bold, color: .red)
                         Text("Increases Cost")
                             .font(.subheadline)
                             .foregroundColor(.primary)
@@ -309,8 +357,7 @@ private struct CostModifiersCard: View {
                 // Decreased Cost Factors
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .foregroundColor(.green)
+                        IconFrame(icon: Ph.arrowDown.bold, color: .green)
                         Text("Decreases Cost")
                             .font(.subheadline)
                             .foregroundColor(.primary)
@@ -350,8 +397,7 @@ private struct HPCostReferenceCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Image(systemName: "gauge.with.dots.needle.bottom.50percent")
-                    .foregroundColor(.yellow)
+                IconFrame(icon: Ph.gauge.bold, color: .yellow)
                 Text("HP Cost Magnitudes")
                     .font(.headline)
                     .foregroundColor(.primary)
@@ -447,17 +493,14 @@ private struct MiracleSlotCard: View {
             
             Spacer()
             if index == 2 {
-                Image(systemName: "sparkles")
-                    .foregroundColor(.purple)
-                    .font(.caption)
+                IconFrame(icon: Ph.sparkle.bold, color: .purple)
             }
         }
     }
     
     private func magickItemView() -> some View {
         HStack(spacing: 12) {
-            Image(systemName: "wand.and.stars")
-                .foregroundColor(.yellow)
+            IconFrame(icon: Ph.magicWand.bold, color: .yellow)
                 .imageScale(.large)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -503,8 +546,7 @@ private struct MiracleSlotCard: View {
     
     private func miracleView(_ miracle: WiseMiracle) -> some View {
         HStack(spacing: 12) {
-            Image(systemName: miracle.isActive ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(miracle.isActive ? .green : .secondary)
+            IconFrame(icon: miracle.isActive ? Ph.checkCircle.bold : Ph.circle.bold, color: miracle.isActive ? .green : .secondary)
                 .imageScale(.large)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -532,20 +574,14 @@ private struct MiracleSlotCard: View {
     
     private func emptyMiracleView() -> some View {
         HStack(spacing: 12) {
-            Image(systemName: "circle")
+            IconFrame(icon: Ph.circle.bold, color: .secondary)
+                .font(.system(size: 4))
+            Text("Empty Miracle")
                 .foregroundColor(.secondary)
-                .imageScale(.large)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Empty Miracle")
-                    .foregroundColor(.secondary)
-                Text("No miracle assigned")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            
-            Spacer()
+            Text("No miracle assigned")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -566,10 +602,8 @@ struct WiseMiracleFeatureRow: View {
     let description: String
     
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Image(systemName: icon)
-                .foregroundColor(color)
-                .imageScale(.medium)
+        HStack(alignment: .center, spacing: 8) {
+            IconFrame(icon: getPhosphorIcon(for: icon), color: color)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -580,13 +614,28 @@ struct WiseMiracleFeatureRow: View {
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            Spacer(minLength: 0)
         }
-        .padding(.vertical, 4)
+    }
+    
+    private func getPhosphorIcon(for name: String) -> some View {
+        switch name {
+        case "Heart": return Ph.heart.bold
+        case "Sparkles": return Ph.sparkle.bold
+        case "Brain": return Ph.brain.bold
+        case "Sword": return Ph.sword.bold
+        case "Scroll": return Ph.scroll.bold
+        case "Shield": return Ph.shield.bold
+        case "ExclamationMarkTriangle": return Ph.warning.bold
+        case "Bolt": return Ph.lightning.bold
+        case "Hammer": return Ph.hammer.bold
+        default: return Ph.info.bold
+        }
     }
 }
 
 // MARK: - Miracle Rule Card
-struct MiracleRuleCard: View {
+private struct MiracleRuleCard: View {
     let title: String
     let text: String
     let icon: String
@@ -595,13 +644,13 @@ struct MiracleRuleCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Image(systemName: icon)
-                    .foregroundColor(color)
+                IconFrame(icon: getPhosphorIcon(for: icon), color: color)
                 Text(title)
                     .font(.subheadline)
                     .foregroundColor(.primary)
                 Spacer()
             }
+            
             Text(text)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -612,6 +661,16 @@ struct MiracleRuleCard: View {
         .background(color.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
+    
+    private func getPhosphorIcon(for name: String) -> some View {
+        switch name {
+        case "Heart": return Ph.heart.bold
+        case "ExclamationMarkTriangle": return Ph.warning.bold
+        case "Bolt": return Ph.lightning.bold
+        case "Hammer": return Ph.hammer.bold
+        default: return Ph.info.bold
+        }
+    }
 }
 
 // MARK: - Cost Modifier Row
@@ -621,9 +680,8 @@ struct CostModifierRow: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 6) {
-            Image(systemName: "circle.fill")
+            IconFrame(icon: Ph.circle.bold, color: color.opacity(0.5))
                 .font(.system(size: 4))
-                .foregroundColor(color.opacity(0.5))
             Text(text)
                 .font(.caption)
                 .foregroundColor(.secondary)
