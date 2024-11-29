@@ -205,7 +205,7 @@ struct FormEquipmentSection: View {
                 // Content Area
                 VStack(alignment: .leading, spacing: 12) {
                     // Name Section
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("Item Name")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
@@ -217,7 +217,10 @@ struct FormEquipmentSection: View {
                                 IconFrame(icon: Ph.bagSimple.bold, color: .blue)
                             }
                         }
-                        
+                    }
+                    
+                    // Weight Section
+                    VStack(alignment: .leading, spacing: 12) {
                         Label {
                             Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
                                 .font(.subheadline)
@@ -229,13 +232,15 @@ struct FormEquipmentSection: View {
                     
                     // Special Section
                     if !gear.special.isEmpty {
-                        Label {
-                            Text(gear.special)
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.star.bold, color: .yellow)
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label {
+                                Text(gear.special)
+                                    .font(.subheadline)
+                            } icon: {
+                                IconFrame(icon: Ph.star.bold, color: .yellow)
+                            }
+                            .foregroundColor(.secondary)
                         }
-                        .foregroundColor(.secondary)
                     }
                     
                     // Status Flags
@@ -361,7 +366,7 @@ struct FormEquipmentSection: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 12) {
                 // Name Section
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Item Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -374,7 +379,7 @@ struct FormEquipmentSection: View {
                 }
                 
                 // Weight Section
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Weight")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -388,7 +393,7 @@ struct FormEquipmentSection: View {
                 }
                 
                 // Special Section
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Special Properties")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -432,7 +437,7 @@ struct FormEquipmentSection: View {
                 }
                 
                 // Quantity Section
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text("Quantity")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
