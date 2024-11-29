@@ -18,7 +18,7 @@ struct DetailEncumbranceSection: View {
         }
     }
     
-    private func calculateSlots() -> (total: Int, calculations: [SlotCalculation]) {
+    private func calculateSlots() -> (total: Double, calculations: [SlotCalculation]) {
         var total: Double = 0
         var calculations: [SlotCalculation] = []
         
@@ -66,11 +66,11 @@ struct DetailEncumbranceSection: View {
             calculations.append(SlotCalculation(name: "Coins", weight: "no size", quantity: character.coins, slots: coinSlots))
         }
         
-        return (Int(ceil(total)), calculations)
+        return (total, calculations)
     }
     
     private var isOverEncumbered: Bool {
-        calculateSlots().total > character.maxEncumbrance
+        calculateSlots().total > Double(character.maxEncumbrance)
     }
     
     var body: some View {
@@ -140,7 +140,9 @@ struct DetailEncumbranceSection: View {
                             .foregroundColor(.gray)
                             .frame(width: 140, alignment: .leading)
                         Spacer()
-                        Text("\(slots.total)")
+                        Text(slots.total.truncatingRemainder(dividingBy: 1) == 0 ? 
+                             String(format: "%.0f", slots.total) : 
+                             String(format: "%.1f", slots.total))
                             .font(.title3.bold())
                             .foregroundColor(isOverEncumbered ? .red : .primary)
                             .frame(width: 50, alignment: .trailing)
