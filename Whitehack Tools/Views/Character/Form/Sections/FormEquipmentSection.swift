@@ -43,7 +43,8 @@ struct FormEquipmentSection: View {
                 isEquipped: false,
                 isStashed: false,
                 isMagical: false,
-                isCursed: false
+                isCursed: false,
+                isContainer: false
             )
             editingNewGear = gear
         } else if let gearItem = GearData.gear.first(where: { $0.name == gearName }) {
@@ -57,11 +58,13 @@ struct FormEquipmentSection: View {
                 isEquipped: false,
                 isStashed: false,
                 isMagical: false,
-                isCursed: false
+                isCursed: false,
+                isContainer: gearItem.isContainer
             )
             print("🛠️ Created gear:")
             print("   Name: \(newGear.name)")
             print("   Weight: \(newGear.weight)")
+            print("   Container: \(newGear.isContainer)")
             
             withAnimation {
                 editingNewGear = newGear
@@ -341,6 +344,7 @@ struct FormEquipmentSection: View {
         @State private var isStashed: Bool
         @State private var isMagical: Bool
         @State private var isCursed: Bool
+        @State private var isContainer: Bool
         @State private var quantity: Int
         
         // Button state tracking
@@ -360,6 +364,7 @@ struct FormEquipmentSection: View {
             _isStashed = State(initialValue: gear.isStashed)
             _isMagical = State(initialValue: gear.isMagical)
             _isCursed = State(initialValue: gear.isCursed)
+            _isContainer = State(initialValue: gear.isContainer)
             _quantity = State(initialValue: gear.quantity)
         }
         
@@ -432,7 +437,17 @@ struct FormEquipmentSection: View {
                     // Cursed Toggle with Icon
                     HStack {
                         IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                        Toggle("Cursed", isOn: $isCursed)
+                        Toggle(isOn: $isCursed) {
+                            Text("Cursed")
+                        }
+                    }
+                    
+                    // Container Toggle with Icon
+                    HStack {
+                        IconFrame(icon: Ph.package.bold, color: isContainer ? .blue : .gray)
+                        Toggle(isOn: $isContainer) {
+                            Text("Container")
+                        }
                     }
                 }
                 
@@ -487,7 +502,8 @@ struct FormEquipmentSection: View {
                             isEquipped: isEquipped,
                             isStashed: isStashed,
                             isMagical: isMagical,
-                            isCursed: isCursed
+                            isCursed: isCursed,
+                            isContainer: isContainer
                         )
                         
                         onSave(updatedGear)
@@ -517,6 +533,7 @@ struct FormEquipmentSection: View {
                 isStashed = gear.isStashed
                 isMagical = gear.isMagical
                 isCursed = gear.isCursed
+                isContainer = gear.isContainer
                 quantity = gear.quantity
             }
         }

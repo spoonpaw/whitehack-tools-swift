@@ -419,6 +419,7 @@ struct Gear: Identifiable, Codable, Equatable {
     var isStashed: Bool
     var isMagical: Bool
     var isCursed: Bool
+    var isContainer: Bool
     
     init(id: UUID = UUID(), 
          name: String = "", 
@@ -428,7 +429,8 @@ struct Gear: Identifiable, Codable, Equatable {
          isEquipped: Bool = false,
          isStashed: Bool = false,
          isMagical: Bool = false,
-         isCursed: Bool = false) {
+         isCursed: Bool = false,
+         isContainer: Bool = false) {
         self.id = id
         self.name = name
         self.weight = weight
@@ -438,6 +440,7 @@ struct Gear: Identifiable, Codable, Equatable {
         self.isStashed = isStashed
         self.isMagical = isMagical
         self.isCursed = isCursed
+        self.isContainer = isContainer
     }
     
     static func == (lhs: Gear, rhs: Gear) -> Bool {

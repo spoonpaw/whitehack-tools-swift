@@ -109,16 +109,16 @@ private struct GearDetailRow: View {
                     .font(.callout)
                 }
                 
-                // Cursed Status
-                if gear.isCursed {
-                    Label {
-                        Text("Cursed")
-                            .foregroundColor(.red)
-                    } icon: {
+                // Cursed and Container Status
+                HStack(spacing: 8) {
+                    if gear.isCursed {
                         IconFrame(icon: Ph.skull.bold, color: .red)
                     }
-                    .font(.callout)
+                    if gear.isContainer {
+                        IconFrame(icon: Ph.package.bold, color: .blue)
+                    }
                 }
+                .font(.callout)
                 
                 // Special Properties
                 if !gear.special.isEmpty {
