@@ -112,10 +112,20 @@ private struct GearDetailRow: View {
                 // Cursed and Container Status
                 HStack(spacing: 8) {
                     if gear.isCursed {
-                        IconFrame(icon: Ph.skull.bold, color: .red)
+                        Label {
+                            Text("Cursed")
+                                .foregroundColor(.red)
+                        } icon: {
+                            IconFrame(icon: Ph.skull.bold, color: .red)
+                        }
                     }
                     if gear.isContainer {
-                        IconFrame(icon: Ph.package.bold, color: .blue)
+                        Label {
+                            Text("Container")
+                                .foregroundColor(.blue)
+                        } icon: {
+                            IconFrame(icon: Ph.package.bold, color: .blue)
+                        }
                     }
                 }
                 .font(.callout)

@@ -267,6 +267,17 @@ struct FormEquipmentSection: View {
                         .foregroundColor(gear.isStashed ? .orange : .secondary)
                     }
                     
+                    // Container Status
+                    if gear.isContainer {
+                        Label {
+                            Text("Container")
+                                .font(.subheadline)
+                        } icon: {
+                            IconFrame(icon: Ph.package.bold, color: .blue)
+                        }
+                        .foregroundColor(.blue)
+                    }
+                    
                     // Magical and Cursed Status
                     if gear.isMagical || gear.isCursed {
                         HStack(spacing: 16) {
