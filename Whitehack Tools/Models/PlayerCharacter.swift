@@ -889,11 +889,92 @@ extension PlayerCharacter {
             speciesGroup: speciesGroup,
             vocationGroup: vocationGroup,
             affiliationGroups: affiliationGroups,
+            attributeGroupPairs: attributeGroupPairs.map { pair in
+                AttributeGroupPair(
+                    id: UUID(),
+                    attribute: pair.attribute,
+                    group: pair.group
+                )
+            },
+            attunementSlots: attunementSlots.map { slot in
+                AttunementSlot(
+                    id: UUID(),
+                    primaryAttunement: Attunement(
+                        id: UUID(),
+                        name: slot.primaryAttunement.name,
+                        isActive: slot.primaryAttunement.isActive,
+                        type: slot.primaryAttunement.type,
+                        isLost: slot.primaryAttunement.isLost
+                    ),
+                    secondaryAttunement: Attunement(
+                        id: UUID(),
+                        name: slot.secondaryAttunement.name,
+                        isActive: slot.secondaryAttunement.isActive,
+                        type: slot.secondaryAttunement.type,
+                        isLost: slot.secondaryAttunement.isLost
+                    ),
+                    tertiaryAttunement: Attunement(
+                        id: UUID(),
+                        name: slot.tertiaryAttunement.name,
+                        isActive: slot.tertiaryAttunement.isActive,
+                        type: slot.tertiaryAttunement.type,
+                        isLost: slot.tertiaryAttunement.isLost
+                    ),
+                    quaternaryAttunement: Attunement(
+                        id: UUID(),
+                        name: slot.quaternaryAttunement.name,
+                        isActive: slot.quaternaryAttunement.isActive,
+                        type: slot.quaternaryAttunement.type,
+                        isLost: slot.quaternaryAttunement.isLost
+                    ),
+                    hasTertiaryAttunement: slot.hasTertiaryAttunement,
+                    hasQuaternaryAttunement: slot.hasQuaternaryAttunement,
+                    hasUsedDailyPower: slot.hasUsedDailyPower
+                )
+            },
+            currentConflictLoot: currentConflictLoot,
+            strongCombatOptions: strongCombatOptions,
+            wiseMiracleSlots: wiseMiracleSlots.map { slot in
+                WiseMiracleSlot(
+                    id: UUID(),
+                    baseMiracles: slot.baseMiracles.map { miracle in
+                        WiseMiracle(
+                            id: UUID(),
+                            name: miracle.name,
+                            isActive: miracle.isActive,
+                            isAdditional: miracle.isAdditional
+                        )
+                    },
+                    additionalMiracles: slot.additionalMiracles.map { miracle in
+                        WiseMiracle(
+                            id: UUID(),
+                            name: miracle.name,
+                            isActive: miracle.isActive,
+                            isAdditional: miracle.isAdditional
+                        )
+                    },
+                    isMagicItem: slot.isMagicItem,
+                    magicItemName: slot.magicItemName,
+                    additionalMiracleCount: slot.additionalMiracleCount
+                )
+            },
+            braveQuirkOptions: BraveQuirkOptions(),
+            cleverKnackOptions: CleverKnackOptions(),
+            fortunateOptions: FortunateOptions(),
+            comebackDice: comebackDice,
+            hasUsedSayNo: hasUsedSayNo,
+            languages: languages,
+            notes: notes,
+            experience: experience,
             corruption: corruption,
             inventory: inventory,
             maxEncumbrance: maxEncumbrance,
             coinsOnHand: coinsOnHand,
-            stashedCoins: stashedCoins
+            stashedCoins: stashedCoins,
+            gear: gear.map { $0 },
+            weapons: weapons.map { $0 },
+            armor: armor.map { $0 },
+            hasUsedAttunementToday: hasUsedAttunementToday
         )
         
         // Copy attribute group pairs with new IDs
