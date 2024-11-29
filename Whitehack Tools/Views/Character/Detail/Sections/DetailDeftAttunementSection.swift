@@ -256,7 +256,7 @@ private struct EmptySlotView: View {
     let slotNumber: Int
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             Text("Slot \(slotNumber)")
                 .font(.headline)
                 .foregroundColor(.purple)
@@ -264,8 +264,8 @@ private struct EmptySlotView: View {
             Text("Empty Slot")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-                .padding(.leading, 4)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(12)
         .background(Color.purple.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))

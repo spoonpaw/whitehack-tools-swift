@@ -115,6 +115,7 @@ struct DetailEncumbranceSection: View {
                                 IconFrame(icon: Ph.package.bold, color: .blue)
                             }
                             .foregroundColor(.blue)
+                            Spacer()
                         }
                         .padding(.horizontal)
                         
@@ -125,12 +126,14 @@ struct DetailEncumbranceSection: View {
                                     .frame(width: 120, alignment: .leading)
                                 Text("\(String(format: "%.1f", movement.maxSlots))")
                                     .foregroundColor(.blue)
+                                Spacer()
                             }
                             HStack {
                                 Text("Current Slots:")
                                     .frame(width: 120, alignment: .leading)
                                 Text("\(String(format: "%.1f", slots.total))")
                                     .foregroundColor(slots.total > movement.maxSlots ? .red : .blue)
+                                Spacer()
                             }
                             if movement.excessSlots > 0 {
                                 HStack {
@@ -138,6 +141,7 @@ struct DetailEncumbranceSection: View {
                                         .frame(width: 120, alignment: .leading)
                                     Text("\(String(format: "%.1f", movement.excessSlots))")
                                         .foregroundColor(.red)
+                                    Spacer()
                                 }
                             }
                         }
@@ -151,6 +155,7 @@ struct DetailEncumbranceSection: View {
                                     IconFrame(icon: Ph.warning.bold, color: .red)
                                 }
                                 .foregroundColor(.red)
+                                Spacer()
                             }
                             .padding(.horizontal)
                         }
@@ -175,6 +180,7 @@ struct DetailEncumbranceSection: View {
                                 .frame(width: 120, alignment: .leading)
                             Text("\(character.movement) ft")
                                 .foregroundColor(.blue)
+                            Spacer()
                         }
                         .padding(.horizontal)
                         
@@ -188,6 +194,7 @@ struct DetailEncumbranceSection: View {
                                     .frame(width: 80, alignment: .leading)
                                 Text("NOTES")
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                Spacer()
                             }
                             .font(.caption2)
                             .foregroundColor(.gray)
@@ -213,6 +220,7 @@ struct DetailEncumbranceSection: View {
                                     Text(moveType.note)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .foregroundColor(.gray)
+                                    Spacer()
                                 }
                                 .padding(.horizontal)
                             }
