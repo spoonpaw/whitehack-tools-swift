@@ -216,13 +216,15 @@ struct FormEquipmentSection: View {
                             } icon: {
                                 IconFrame(icon: Ph.bagSimple.bold, color: .blue)
                             }
-                            
-                            Spacer()
-                            
+                        }
+                        
+                        Label {
                             Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                        } icon: {
+                            IconFrame(icon: Ph.scales.bold, color: .secondary)
                         }
+                        .foregroundColor(.secondary)
                     }
                     
                     // Special Section
