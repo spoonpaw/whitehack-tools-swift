@@ -4,11 +4,18 @@ import PhosphorSwift
 struct DetailEncumbranceSection: View {
     let character: PlayerCharacter
     
-    private struct SlotCalculation {
+    private struct SlotCalculation: Identifiable {
+        let id = UUID()
         let name: String
         let weight: String
         let quantity: Int
         let slots: Double
+        
+        var formattedSlots: String {
+            slots.truncatingRemainder(dividingBy: 1) == 0 ? 
+                String(format: "%.0f", slots) : 
+                String(format: "%.1f", slots)
+        }
     }
     
     private func calculateSlots() -> (total: Int, calculations: [SlotCalculation]) {
@@ -70,56 +77,74 @@ struct DetailEncumbranceSection: View {
         Section(header: SectionHeader(title: "Encumbrance", icon: Ph.scales.bold)) {
             let slots = calculateSlots()
             
-            VStack(alignment: .leading, spacing: 4) {
-                // Header row
-                HStack {
-                    Text("Item")
-                        .frame(width: 120, alignment: .leading)
-                    Text("Weight")
-                        .frame(width: 70, alignment: .leading)
-                    Text("Qty")
-                        .frame(width: 40, alignment: .trailing)
-                    Text("Slots")
-                        .frame(width: 40, alignment: .trailing)
-                }
-                .font(.caption)
-                .foregroundColor(.gray)
-                
+            VStack(spacing: 12) {
                 if slots.calculations.isEmpty {
-                    Text("No carried items")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .padding(.top, 4)
+                    HStack {
+                        IconFrame(icon: Ph.bagSimple.bold, color: .gray)
+                        Text("No carried items")
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.vertical, 8)
                 } else {
-                    // Item rows (non-stashed items only)
-                    ForEach(slots.calculations, id: \.name) { calc in
-                        HStack {
-                            Text(calc.name)
-                                .lineLimit(1)
-                                .frame(width: 120, alignment: .leading)
-                            Text(calc.weight)
-                                .frame(width: 70, alignment: .leading)
-                            Text("\(calc.quantity)")
-                                .frame(width: 40, alignment: .trailing)
-                            Text(String(format: "%.1f", calc.slots))
-                                .frame(width: 40, alignment: .trailing)
+                    // Categories
+                    HStack(spacing: 0) {
+                        Text("ITEM")
+                            .frame(width: 140, alignment: .leading)
+                        Text("WEIGHT")
+                            .frame(width: 70, alignment: .leading)
+                        Text("QTY")
+                            .frame(width: 40, alignment: .trailing)
+                        Text("SLOTS")
+                            .frame(width: 50, alignment: .trailing)
+                    }
+                    .font(.caption2)
+                    .foregroundColor(.gray)
+                    .textCase(.uppercase)
+                    
+                    // Divider
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 1)
+                    
+                    // Items
+                    VStack(spacing: 8) {
+                        ForEach(slots.calculations) { calc in
+                            HStack(spacing: 0) {
+                                Text(calc.name)
+                                    .lineLimit(1)
+                                    .frame(width: 140, alignment: .leading)
+                                Text(calc.weight)
+                                    .frame(width: 70, alignment: .leading)
+                                Text("\(calc.quantity)")
+                                    .frame(width: 40, alignment: .trailing)
+                                    .foregroundColor(.gray)
+                                Text(calc.formattedSlots)
+                                    .frame(width: 50, alignment: .trailing)
+                                    .foregroundColor(.blue)
+                            }
+                            .font(.callout)
                         }
-                        .font(.caption)
                     }
                     
-                    // Total row (carried items only)
-                    HStack {
-                        Text("Total")
-                            .bold()
-                            .frame(width: 120, alignment: .leading)
+                    // Divider
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 1)
+                        .padding(.top, 4)
+                    
+                    // Total
+                    HStack(spacing: 0) {
+                        Text("TOTAL SLOTS")
+                            .font(.caption)
+                            .textCase(.uppercase)
+                            .foregroundColor(.gray)
+                            .frame(width: 140, alignment: .leading)
                         Spacer()
                         Text("\(slots.total)")
-                            .bold()
-                            .frame(width: 40, alignment: .trailing)
+                            .font(.title3.bold())
+                            .foregroundColor(isOverEncumbered ? .red : .primary)
+                            .frame(width: 50, alignment: .trailing)
                     }
-                    .font(.subheadline)
-                    .padding(.top, 4)
-                    .foregroundColor(isOverEncumbered ? .red : nil)
                 }
             }
             .padding(.vertical, 8)
