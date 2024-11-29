@@ -4,26 +4,9 @@ import PhosphorSwift
 struct DetailEquipmentSection: View {
     let character: PlayerCharacter
     
-    private var isOverEncumbered: Bool {
-        character.currentEncumbrance > character.maxEncumbrance
-    }
-    
     var body: some View {
         Section(header: SectionHeader(title: "Equipment", icon: Ph.briefcase.bold)) {
             VStack(alignment: .leading, spacing: 16) {
-                // Encumbrance Bar
-                VStack(alignment: .leading, spacing: 4) {
-                    ProgressBar(
-                        value: Double(character.currentEncumbrance),
-                        maxValue: Double(character.maxEncumbrance),
-                        label: "Encumbrance",
-                        foregroundColor: isOverEncumbered ? .red : .blue,
-                        showPercentage: true,
-                        isComplete: isOverEncumbered,
-                        completionMessage: isOverEncumbered ? "Over encumbered!" : nil
-                    )
-                }
-                
                 // Gear Items
                 if character.gear.isEmpty {
                     VStack(spacing: 12) {

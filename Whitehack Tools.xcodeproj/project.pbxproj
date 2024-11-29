@@ -58,6 +58,7 @@
 		A9B679C42CE8791E000ACE9E /* PhosphorSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A9B679C32CE8791E000ACE9E /* PhosphorSwift */; };
 		A9ED71212CF9A2F800E8E409 /* DetailGoldSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9ED71202CF9A2F700E8E409 /* DetailGoldSection.swift */; };
 		A9ED71232CF9A30400E8E409 /* FormGoldSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9ED71222CF9A30300E8E409 /* FormGoldSection.swift */; };
+		A9ED71252CF9A56600E8E409 /* DetailEncumbranceSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9ED71242CF9A56600E8E409 /* DetailEncumbranceSection.swift */; };
 		A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */; };
 		A9F072942CE75169005033F2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072932CE75169005033F2 /* Assets.xcassets */; };
 		A9F072982CE75169005033F2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9F072972CE75169005033F2 /* Preview Assets.xcassets */; };
@@ -119,6 +120,7 @@
 		A9B5F7B52CF92E070009F05E /* GearData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GearData.swift; sourceTree = "<group>"; };
 		A9ED71202CF9A2F700E8E409 /* DetailGoldSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailGoldSection.swift; sourceTree = "<group>"; };
 		A9ED71222CF9A30300E8E409 /* FormGoldSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormGoldSection.swift; sourceTree = "<group>"; };
+		A9ED71242CF9A56600E8E409 /* DetailEncumbranceSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailEncumbranceSection.swift; sourceTree = "<group>"; };
 		A9F0728C2CE75166005033F2 /* Whitehack Tools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Whitehack Tools.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Whitehack_ToolsApp.swift; sourceTree = "<group>"; };
 		A9F072932CE75169005033F2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 		A98488F52CF160D000A7CD7B /* Sections */ = {
 			isa = PBXGroup;
 			children = (
+				A9ED71242CF9A56600E8E409 /* DetailEncumbranceSection.swift */,
 				A9ED71202CF9A2F700E8E409 /* DetailGoldSection.swift */,
 				A988F75B2CF4E1D500D879BA /* DetailArmorSection.swift */,
 				A988F75C2CF4E1D500D879BA /* DetailWeaponsSection.swift */,
@@ -471,6 +474,7 @@
 				A9F072B72CE75ABE005033F2 /* WhitehackTypes.swift in Sources */,
 				A98489282CF1673000A7CD7B /* DetailHeaderSection.swift in Sources */,
 				A9F072B52CE75A06005033F2 /* PlayerCharacter.swift in Sources */,
+				A9ED71252CF9A56600E8E409 /* DetailEncumbranceSection.swift in Sources */,
 				A988F75D2CF4E1D500D879BA /* DetailArmorSection.swift in Sources */,
 				A98489322CF174F200A7CD7B /* FormSpeciesGroupView.swift in Sources */,
 				A98489292CF1673000A7CD7B /* DetailStatsSection.swift in Sources */,
