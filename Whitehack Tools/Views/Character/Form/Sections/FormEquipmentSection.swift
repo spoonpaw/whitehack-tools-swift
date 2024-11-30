@@ -217,7 +217,12 @@ struct FormEquipmentSection: View {
                             Label {
                                 Text(gear.name)
                             } icon: {
-                                IconFrame(icon: Ph.bagSimple.bold, color: .blue)
+                                IconFrame(icon: Ph.package.bold, color: .blue)
+                            }
+                            if gear.quantity > 1 {
+                                Text("× \(gear.quantity)")
+                                    .foregroundColor(.secondary)
+                                    .font(.subheadline)
                             }
                         }
                     }
@@ -253,7 +258,8 @@ struct FormEquipmentSection: View {
                             Text(gear.isEquipped ? "Equipped" : "Not Equipped")
                                 .font(.subheadline)
                         } icon: {
-                            IconFrame(icon: Ph.bagSimple.bold, color: gear.isEquipped ? .green : .secondary)
+                            IconFrame(icon: gear.isEquipped ? Ph.checkCircle.bold : Ph.circle.bold,
+                                    color: gear.isEquipped ? .green : .secondary)
                         }
                         .foregroundColor(gear.isEquipped ? .green : .secondary)
                         
@@ -390,7 +396,7 @@ struct FormEquipmentSection: View {
                         TextField("Item Name", text: $name)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                     } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: .blue)
+                        IconFrame(icon: Ph.package.bold, color: .blue)
                     }
                 }
                 
