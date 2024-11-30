@@ -10,62 +10,136 @@ struct CharacterImportView: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var showingFilePicker = false
+    @State private var decodedCharacters: [PlayerCharacter] = []
+    @State private var selectedCharacters: Set<UUID> = []
+    @State private var showingPreview = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Import Options
-                HStack(spacing: 16) {
-                    Button(action: { showingFilePicker = true }) {
-                        VStack(spacing: 8) {
-                            Ph.fileText.bold
-                                .frame(width: 32, height: 32)
-                            Text("Import File")
-                                .font(.subheadline.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Button(action: pasteFromClipboard) {
-                        VStack(spacing: 8) {
-                            Ph.clipboard.bold
-                                .frame(width: 32, height: 32)
-                            Text("Paste")
-                                .font(.subheadline.weight(.medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .foregroundColor(.primary)
-                
-                // Preview Area
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Character Data:")
-                        .font(.headline)
-                    
-                    TextEditor(text: $importText)
-                        .font(.system(.body, design: .monospaced))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
-                }
-                
-                // Import Button
-                Button(action: importCharacters) {
+                if showingPreview {
+                    // Selection Header
                     HStack {
-                        Ph.arrowDown.bold
-                            .frame(width: 20, height: 20)
-                        Text("Import")
-                            .fontWeight(.semibold)
+                        HStack(spacing: 16) {
+                            Button(action: selectAll) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 22))
+                                        .foregroundColor(selectedCharacters.count == decodedCharacters.count ? .secondary : .accentColor)
+                                    Text("Select All")
+                                        .foregroundColor(selectedCharacters.count == decodedCharacters.count ? .secondary : .primary)
+                                }
+                                .font(.system(.body, design: .rounded).weight(.medium))
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(selectedCharacters.count == decodedCharacters.count)
+                            
+                            Button(action: deselectAll) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "circle")
+                                        .font(.system(size: 22))
+                                        .foregroundColor(selectedCharacters.isEmpty ? .secondary : .accentColor)
+                                    Text("Deselect All")
+                                        .foregroundColor(selectedCharacters.isEmpty ? .secondary : .primary)
+                                }
+                                .font(.system(.body, design: .rounded).weight(.medium))
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(selectedCharacters.isEmpty)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
+                        
+                        Spacer()
+                        
+                        if !selectedCharacters.isEmpty {
+                            Text("\(selectedCharacters.count) selected")
+                                .foregroundColor(.secondary)
+                                .font(.subheadline.weight(.medium))
+                                .padding(.trailing)
+                        }
+                    }
+                    .background(.thinMaterial)
+                    
+                    List {
+                        ForEach(decodedCharacters) { character in
+                            CharacterImportRow(character: character, isSelected: selectedCharacters.contains(character.id))
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation {
+                                        if selectedCharacters.contains(character.id) {
+                                            selectedCharacters.remove(character.id)
+                                        } else {
+                                            selectedCharacters.insert(character.id)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                    .listStyle(.plain)
+                } else {
+                    // Import Options
+                    HStack(spacing: 16) {
+                        Button(action: { showingFilePicker = true }) {
+                            VStack(spacing: 8) {
+                                Ph.fileText.bold
+                                    .frame(width: 32, height: 32)
+                                Text("Import File")
+                                    .font(.subheadline.weight(.medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button(action: pasteFromClipboard) {
+                            VStack(spacing: 8) {
+                                Ph.clipboard.bold
+                                    .frame(width: 32, height: 32)
+                                Text("Paste")
+                                    .font(.subheadline.weight(.medium))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .foregroundColor(.primary)
+                    
+                    // Preview Area
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Character Data:")
+                            .font(.headline)
+                        
+                        TextEditor(text: $importText)
+                            .font(.system(.body, design: .monospaced))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(12)
+                    }
+                }
+                
+                // Import/Preview Button
+                Button(action: showingPreview ? importSelectedCharacters : previewCharacters) {
+                    HStack {
+                        if showingPreview {
+                            Ph.arrowDown.bold
+                                .frame(width: 20, height: 20)
+                            Text("Import Selected")
+                                .fontWeight(.semibold)
+                        } else {
+                            Ph.eye.bold
+                                .frame(width: 20, height: 20)
+                            Text("Preview")
+                                .fontWeight(.semibold)
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -73,15 +147,21 @@ struct CharacterImportView: View {
                     .foregroundColor(.white)
                     .cornerRadius(12)
                 }
-                .disabled(importText.isEmpty)
+                .disabled(importText.isEmpty || (showingPreview && selectedCharacters.isEmpty))
             }
             .padding()
             .navigationTitle("Import Characters")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                    Button(showingPreview ? "Back" : "Cancel") {
+                        if showingPreview {
+                            showingPreview = false
+                            decodedCharacters = []
+                            selectedCharacters = []
+                        } else {
+                            dismiss()
+                        }
                     }
                 }
             }
@@ -135,7 +215,7 @@ struct CharacterImportView: View {
         }
     }
     
-    private func importCharacters() {
+    private func previewCharacters() {
         guard !importText.isEmpty else {
             showAlert(title: "Error", message: "Please enter character data")
             return
@@ -147,24 +227,42 @@ struct CharacterImportView: View {
             
             // Try to decode as array first
             if let characters = try? decoder.decode([PlayerCharacter].self, from: characterData) {
-                // Create copies with new IDs for each character before adding
-                characters.forEach { character in
-                    let newCharacter = character.copyWithNewIDs()
-                    characterStore.addCharacter(newCharacter)
-                }
-                showSuccess(count: characters.count)
+                decodedCharacters = characters
+                selectedCharacters = Set(characters.map { $0.id }) // Select all by default
+                showingPreview = true
             }
             // If that fails, try single character
             else if let character = try? decoder.decode(PlayerCharacter.self, from: characterData) {
-                let newCharacter = character.copyWithNewIDs()
-                characterStore.addCharacter(newCharacter)
-                showSuccess(count: 1)
+                decodedCharacters = [character]
+                selectedCharacters = [character.id] // Select the single character
+                showingPreview = true
             }
             else {
                 throw NSError(domain: "", code: -1)
             }
         } catch {
             showAlert(title: "Error", message: "Invalid character data format")
+        }
+    }
+    
+    private func importSelectedCharacters() {
+        let selectedChars = decodedCharacters.filter { selectedCharacters.contains($0.id) }
+        selectedChars.forEach { character in
+            let newCharacter = character.copyWithNewIDs()
+            characterStore.addCharacter(newCharacter)
+        }
+        showSuccess(count: selectedChars.count)
+    }
+    
+    private func selectAll() {
+        withAnimation {
+            selectedCharacters = Set(decodedCharacters.map { $0.id })
+        }
+    }
+    
+    private func deselectAll() {
+        withAnimation {
+            selectedCharacters = []
         }
     }
     
@@ -179,5 +277,32 @@ struct CharacterImportView: View {
         alertTitle = title
         alertMessage = message
         showingAlert = true
+    }
+}
+
+struct CharacterImportRow: View {
+    let character: PlayerCharacter
+    let isSelected: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 22))
+                .foregroundColor(isSelected ? .accentColor : .secondary)
+            
+            CharacterClassIcon(characterClass: character.characterClass)
+                .frame(width: 50, height: 50)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(character.name)
+                    .font(.headline)
+                
+                Text(character.characterClass.rawValue)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
