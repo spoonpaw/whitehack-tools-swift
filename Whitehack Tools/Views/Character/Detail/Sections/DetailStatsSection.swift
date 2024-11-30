@@ -9,8 +9,6 @@ struct DetailStatsSection: View {
             VStack(spacing: 16) {
                 GeometryReader { geometry in
                     VStack(spacing: 16) {
-                        Spacer(minLength: 16)
-                        
                         // Row 1
                         HStack(spacing: 16) {
                             AttributeCard(
@@ -67,15 +65,13 @@ struct DetailStatsSection: View {
                             )
                             .frame(width: (geometry.size.width - 48) / 2)
                         }
-                        
-                        Spacer(minLength: 16)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.horizontal, 16)
                 }
                 .frame(height: 800)
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, 8)
         }
     }
 }
