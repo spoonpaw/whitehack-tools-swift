@@ -92,6 +92,19 @@ private struct GearDetailRow: View {
                 }
                 .foregroundColor(.secondary)
                 .font(.callout)
+                
+                Spacer()
+                
+                // Container Status
+                if gear.isContainer {
+                    Label {
+                        Text("Container")
+                            .foregroundColor(.blue)
+                    } icon: {
+                        IconFrame(icon: Ph.package.bold, color: .blue)
+                    }
+                    .font(.callout)
+                }
             }
             
             if gear.isMagical || gear.isCursed || !gear.special.isEmpty {
@@ -110,26 +123,16 @@ private struct GearDetailRow: View {
                         .font(.callout)
                     }
                     
-                    // Cursed and Container Status
-                    HStack(spacing: 8) {
-                        if gear.isCursed {
-                            Label {
-                                Text("Cursed")
-                                    .foregroundColor(.red)
-                            } icon: {
-                                IconFrame(icon: Ph.skull.bold, color: .red)
-                            }
+                    // Cursed Status
+                    if gear.isCursed {
+                        Label {
+                            Text("Cursed")
+                                .foregroundColor(.red)
+                        } icon: {
+                            IconFrame(icon: Ph.skull.bold, color: .red)
                         }
-                        if gear.isContainer {
-                            Label {
-                                Text("Container")
-                                    .foregroundColor(.blue)
-                            } icon: {
-                                IconFrame(icon: Ph.package.bold, color: .blue)
-                            }
-                        }
+                        .font(.callout)
                     }
-                    .font(.callout)
                     
                     // Special Properties
                     if !gear.special.isEmpty {
