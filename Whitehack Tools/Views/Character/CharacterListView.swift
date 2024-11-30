@@ -3,6 +3,7 @@ import PhosphorSwift
 
 struct CharacterListView: View {
     @EnvironmentObject private var characterStore: CharacterStore
+    @EnvironmentObject private var importViewModel: CharacterImportViewModel
     @State private var showingAddSheet = false
     @State private var showingImportSheet = false
     @State private var showingExportSheet = false
@@ -81,6 +82,7 @@ struct CharacterListView: View {
             }
             .sheet(isPresented: $showingImportSheet) {
                 CharacterImportView(characterStore: characterStore)
+                    .environmentObject(importViewModel)
             }
             .sheet(isPresented: $showingExportSheet) {
                 CharacterExportView(characters: characterStore.characters)

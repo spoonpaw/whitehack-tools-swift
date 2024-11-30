@@ -72,6 +72,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A93594AE2CFB46EB00FDB292 /* Whitehack-Tools-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Whitehack-Tools-Info.plist"; sourceTree = SOURCE_ROOT; };
 		A93E17192CF1E73B007114C7 /* FormAttributesSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormAttributesSection.swift; sourceTree = "<group>"; };
 		A93E171F2CF1F05C007114C7 /* DetailWiseMiracleSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailWiseMiracleSection.swift; sourceTree = "<group>"; };
 		A93E17212CF1F068007114C7 /* FormWiseMiracleSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormWiseMiracleSection.swift; sourceTree = "<group>"; };
@@ -324,6 +325,7 @@
 		A9F0728E2CE75166005033F2 /* Whitehack Tools */ = {
 			isa = PBXGroup;
 			children = (
+				A93594AE2CFB46EB00FDB292 /* Whitehack-Tools-Info.plist */,
 				A9F0728F2CE75166005033F2 /* Whitehack_ToolsApp.swift */,
 				A9F072932CE75169005033F2 /* Assets.xcassets */,
 				A9F072952CE75169005033F2 /* Whitehack_Tools.entitlements */,
@@ -612,6 +614,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Whitehack-Tools-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -650,6 +653,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Whitehack-Tools-Info.plist";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
