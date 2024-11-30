@@ -12,9 +12,7 @@ struct DetailEncumbranceSection: View {
         let slots: Double
         
         var formattedSlots: String {
-            slots.truncatingRemainder(dividingBy: 1) == 0 ? 
-                String(format: "%.0f", slots) : 
-                String(format: "%.1f", slots)
+            String(format: "%.2f", slots)
         }
     }
     
@@ -124,14 +122,14 @@ struct DetailEncumbranceSection: View {
                             HStack {
                                 Text("Maximum Slots:")
                                     .frame(width: 120, alignment: .leading)
-                                Text("\(String(format: "%.1f", movement.maxSlots))")
+                                Text("\(String(format: "%.2f", movement.maxSlots))")
                                     .foregroundColor(.blue)
                                 Spacer()
                             }
                             HStack {
                                 Text("Current Slots:")
                                     .frame(width: 120, alignment: .leading)
-                                Text("\(String(format: "%.1f", slots.total))")
+                                Text("\(String(format: "%.2f", slots.total))")
                                     .foregroundColor(slots.total > movement.maxSlots ? .red : .blue)
                                 Spacer()
                             }
@@ -139,7 +137,7 @@ struct DetailEncumbranceSection: View {
                                 HStack {
                                     Text("Excess Slots:")
                                         .frame(width: 120, alignment: .leading)
-                                    Text("\(String(format: "%.1f", movement.excessSlots))")
+                                    Text("\(String(format: "%.2f", movement.excessSlots))")
                                         .foregroundColor(.red)
                                     Spacer()
                                 }
@@ -271,7 +269,7 @@ struct DetailEncumbranceSection: View {
                             Image(systemName: "backpack")
                                 .foregroundColor(.secondary)
                             Text("""
-                                Carrying \(String(format: "%.1f", slots.total)) slots\
+                                Carrying \(String(format: "%.2f", slots.total)) slots\
                                 \(character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 
                                 " / 15 (with container)" : 
                                 " / 10 (no container)")
@@ -285,7 +283,7 @@ struct DetailEncumbranceSection: View {
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "arrow.up.forward")
                                     .foregroundColor(burdenCategory.color)
-                                Text("\(String(format: "%.1f", excessSlots)) slots over (\(Int(excessSlots)) completed uneven)")
+                                Text("\(String(format: "%.2f", excessSlots)) slots over (\(Int(excessSlots)) completed uneven)")
                                     .fixedSize(horizontal: false, vertical: true)
                                 Spacer(minLength: 0)
                             }
