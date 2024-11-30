@@ -94,51 +94,53 @@ private struct GearDetailRow: View {
                 .font(.callout)
             }
             
-            Divider()
-            
-            // Special Properties Section
-            VStack(alignment: .leading, spacing: 4) {
-                // Magical Status
-                if gear.isMagical {
-                    Label {
-                        Text("Magical")
-                            .foregroundColor(.purple)
-                    } icon: {
-                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                    }
-                    .font(.callout)
-                }
+            if gear.isMagical || gear.isCursed || !gear.special.isEmpty {
+                Divider()
                 
-                // Cursed and Container Status
-                HStack(spacing: 8) {
-                    if gear.isCursed {
+                // Special Properties Section
+                VStack(alignment: .leading, spacing: 4) {
+                    // Magical Status
+                    if gear.isMagical {
                         Label {
-                            Text("Cursed")
-                                .foregroundColor(.red)
+                            Text("Magical")
+                                .foregroundColor(.purple)
                         } icon: {
-                            IconFrame(icon: Ph.skull.bold, color: .red)
+                            IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                        }
+                        .font(.callout)
+                    }
+                    
+                    // Cursed and Container Status
+                    HStack(spacing: 8) {
+                        if gear.isCursed {
+                            Label {
+                                Text("Cursed")
+                                    .foregroundColor(.red)
+                            } icon: {
+                                IconFrame(icon: Ph.skull.bold, color: .red)
+                            }
+                        }
+                        if gear.isContainer {
+                            Label {
+                                Text("Container")
+                                    .foregroundColor(.blue)
+                            } icon: {
+                                IconFrame(icon: Ph.package.bold, color: .blue)
+                            }
                         }
                     }
-                    if gear.isContainer {
-                        Label {
-                            Text("Container")
-                                .foregroundColor(.blue)
-                        } icon: {
-                            IconFrame(icon: Ph.package.bold, color: .blue)
-                        }
-                    }
-                }
-                .font(.callout)
-                
-                // Special Properties
-                if !gear.special.isEmpty {
-                    Label {
-                        Text(gear.special)
-                            .foregroundColor(.yellow)
-                    } icon: {
-                        IconFrame(icon: Ph.star.bold, color: .yellow)
-                    }
                     .font(.callout)
+                    
+                    // Special Properties
+                    if !gear.special.isEmpty {
+                        Label {
+                            Text(gear.special)
+                                .foregroundColor(.yellow)
+                        } icon: {
+                            IconFrame(icon: Ph.star.bold, color: .yellow)
+                        }
+                        .font(.callout)
+                    }
                 }
             }
         }
