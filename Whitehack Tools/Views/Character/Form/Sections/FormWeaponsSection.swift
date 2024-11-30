@@ -1128,6 +1128,38 @@ struct FormWeaponsSection: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
             } else {
+                ForEach(weapons) { weapon in
+                    if editingWeaponId == weapon.id {
+                        Group {
+                            WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
+                                print("💾 Saving updated weapon: \(updatedWeapon.name)")
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    print("🔄 Updating weapon at index: \(index)")
+                                    weapons[index] = updatedWeapon
+                                }
+                                editingWeaponId = nil
+                            }, onCancel: {
+                                print("❌ Canceling weapon edit - reverting to original state")
+                                editingWeaponId = nil
+                            })
+                            .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
+                        }
+                    } else {
+                        WeaponRow(weapon: weapon, onEdit: {
+                            editingWeaponId = weapon.id
+                        }, onDelete: {
+                            withAnimation {
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    print("🔄 Removing weapon at index: \(index)")
+                                    weapons.remove(at: index)
+                                }
+                            }
+                        })
+                        .buttonStyle(PlainButtonStyle())  // Prevent button-like behavior
+                    }
+                }
+                .onDelete(perform: nil)
+                
                 if isAddingNew {
                     if let weapon = editingNewWeapon {
                         WeaponEditRow(weapon: weapon, onSave: { newWeapon in
@@ -1184,38 +1216,6 @@ struct FormWeaponsSection: View {
                         .padding(.vertical, 8)
                     }
                 }
-                
-                ForEach(weapons) { weapon in
-                    if editingWeaponId == weapon.id {
-                        Group {
-                            WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
-                                print("💾 Saving updated weapon: \(updatedWeapon.name)")
-                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                    print("🔄 Updating weapon at index: \(index)")
-                                    weapons[index] = updatedWeapon
-                                }
-                                editingWeaponId = nil
-                            }, onCancel: {
-                                print("❌ Canceling weapon edit - reverting to original state")
-                                editingWeaponId = nil
-                            })
-                            .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
-                        }
-                    } else {
-                        WeaponRow(weapon: weapon, onEdit: {
-                            editingWeaponId = weapon.id
-                        }, onDelete: {
-                            withAnimation {
-                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                    print("🔄 Removing weapon at index: \(index)")
-                                    weapons.remove(at: index)
-                                }
-                            }
-                        })
-                        .buttonStyle(PlainButtonStyle())  // Prevent button-like behavior
-                    }
-                }
-                .onDelete(perform: nil)
                 
                 if !isAddingNew {
                     Button(action: {
