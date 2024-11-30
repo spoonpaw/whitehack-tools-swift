@@ -396,8 +396,8 @@ private struct AttunementSlotView: View {
                         .font(.subheadline)
                         .foregroundColor(.orange)
                     Text(attunementSlots[index].hasUsedDailyPower ? 
-                        "This attunement's daily power has been used and cannot be used again until tomorrow" : 
-                        "This attunement's daily power is available to use")
+                        "This slot's daily power has been used and cannot be used again until tomorrow" : 
+                        "This slot's daily power is available to use")
                         .font(.caption)
                         .foregroundColor(attunementSlots[index].hasUsedDailyPower ? .secondary : .green)
                         .fixedSize(horizontal: false, vertical: true)
