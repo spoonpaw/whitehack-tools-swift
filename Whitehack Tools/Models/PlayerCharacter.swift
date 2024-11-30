@@ -958,11 +958,11 @@ extension PlayerCharacter {
                     additionalMiracleCount: slot.additionalMiracleCount
                 )
             },
-            braveQuirkOptions: BraveQuirkOptions(),
-            cleverKnackOptions: CleverKnackOptions(),
-            fortunateOptions: FortunateOptions(),
+            braveQuirkOptions: braveQuirkOptions,
             comebackDice: comebackDice,
             hasUsedSayNo: hasUsedSayNo,
+            cleverKnackOptions: cleverKnackOptions,
+            fortunateOptions: fortunateOptions,
             languages: languages,
             notes: notes,
             experience: experience,
@@ -971,9 +971,21 @@ extension PlayerCharacter {
             maxEncumbrance: maxEncumbrance,
             coinsOnHand: coinsOnHand,
             stashedCoins: stashedCoins,
-            gear: gear.map { $0 },
-            weapons: weapons.map { $0 },
-            armor: armor.map { $0 },
+            gear: gear.map { gear in
+                var newGear = gear
+                newGear.id = UUID()
+                return newGear
+            },
+            weapons: weapons.map { weapon in
+                var newWeapon = weapon
+                newWeapon.id = UUID()
+                return newWeapon
+            },
+            armor: armor.map { armor in
+                var newArmor = armor
+                newArmor.id = UUID()
+                return newArmor
+            },
             hasUsedAttunementToday: hasUsedAttunementToday
         )
         
