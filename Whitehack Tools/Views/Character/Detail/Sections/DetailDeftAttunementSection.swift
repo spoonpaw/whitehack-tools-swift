@@ -186,10 +186,14 @@ private struct AttunementSlotsCard: View {
                 Text(type)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                if isActive {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                }
+                Spacer()
+                Text(isActive ? "ACTIVE" : "INACTIVE")
+                    .font(.caption.bold())
+                    .foregroundColor(isActive ? .green : .secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(isActive ? Color.green.opacity(0.15) : Color.gray.opacity(0.1))
+                    .clipShape(Capsule())
             }
             
             if attunement.name.isEmpty {
@@ -197,12 +201,14 @@ private struct AttunementSlotsCard: View {
                     .italic()
                     .foregroundColor(.secondary)
             } else {
-                Text(attunement.name)
-                    .fontWeight(.medium)
-                if attunement.isLost {
-                    Text("(Lost)")
-                        .foregroundColor(.red)
-                        .italic()
+                HStack {
+                    Text(attunement.name)
+                        .fontWeight(.medium)
+                    if attunement.isLost {
+                        Text("(Lost)")
+                            .foregroundColor(.red)
+                            .italic()
+                    }
                 }
             }
             
@@ -211,6 +217,9 @@ private struct AttunementSlotsCard: View {
                 .foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(isActive ? Color.green.opacity(0.05) : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     
     private func typeIcon(for type: AttunementType) -> String {
