@@ -285,7 +285,8 @@ struct CharacterFormView: View {
         // Other Information
         newCharacter.experience = Int(formData.experience) ?? 0
         newCharacter.corruption = Int(formData.corruption) ?? 0
-        print("💾 [CHARACTER FORM] Other Info - XP:\(newCharacter.experience) Corruption:\(newCharacter.corruption)")
+        newCharacter.notes = formData.notes
+        print("💾 [CHARACTER FORM] Other Info - XP:\(newCharacter.experience) Corruption:\(newCharacter.corruption) Notes length:\(newCharacter.notes.count)")
         
         // Class Features
         newCharacter.attunementSlots = formData.attunementSlots
