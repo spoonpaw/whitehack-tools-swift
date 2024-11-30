@@ -282,6 +282,11 @@ struct CharacterFormView: View {
         newCharacter.languages = formData.languages
         print("💾 [CHARACTER FORM] Languages count: \(formData.languages.count)")
         
+        // Other Information
+        newCharacter.experience = Int(formData.experience) ?? 0
+        newCharacter.corruption = Int(formData.corruption) ?? 0
+        print("💾 [CHARACTER FORM] Other Info - XP:\(newCharacter.experience) Corruption:\(newCharacter.corruption)")
+        
         // Class Features
         newCharacter.attunementSlots = formData.attunementSlots
         newCharacter.hasUsedAttunementToday = formData.hasUsedAttunementToday
