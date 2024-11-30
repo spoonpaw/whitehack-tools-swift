@@ -92,11 +92,24 @@ struct SectionHeader: View {
     }
 }
 
-struct AttributeCard: View {
+private struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        value = nextValue()
+    }
+}
+
+struct AttributeCard: View, Equatable {
     let label: String
     let value: String
     let description: String
     let icon: Image
+    
+    static func == (lhs: AttributeCard, rhs: AttributeCard) -> Bool {
+        lhs.label == rhs.label &&
+        lhs.value == rhs.value &&
+        lhs.description == rhs.description
+    }
     
     init(label: String, value: String, icon: Image, description: String = "") {
         self.label = label
@@ -117,30 +130,36 @@ struct AttributeCard: View {
             Text(label)
                 .font(.headline)
                 .foregroundColor(.primary)
-                .fixedSize(horizontal: true, vertical: false)
             
             Text(value)
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(.blue)
-                .fixedSize(horizontal: true, vertical: false)
             
             if !description.isEmpty {
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            
-            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
+        .frame(height: 220.5)  // Force all cards to be the same height
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .background(
+            GeometryReader { geometry in
+                Color.clear
+                    .onAppear {
+                        print("📏 AttributeCard '\(label)' initial size - Width: \(geometry.size.width), Height: \(geometry.size.height)")
+                    }
+                    .onChange(of: geometry.size) { newSize in
+                        print("📐 AttributeCard '\(label)' size changed - Width: \(newSize.width), Height: \(newSize.height)")
+                    }
+            }
+        )
     }
 }
 
