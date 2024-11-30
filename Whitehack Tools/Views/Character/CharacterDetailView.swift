@@ -189,6 +189,39 @@ struct StatCard: View {
     }
 }
 
+struct SaveCard: View {
+    let value: Int
+    let color: String
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack {
+                Ph.diceFive.bold
+                    .frame(width: 16, height: 16)
+                Text("Save")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            
+            VStack(spacing: 2) {
+                Text("\(value)")
+                    .font(.title2)
+                    .fontWeight(.medium)
+                
+                if !color.isEmpty {
+                    Text(color.capitalized)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(Color.purple.opacity(0.1))
+        .cornerRadius(12)
+    }
+}
+
 struct StatPill: View {
     let label: String
     let value: String

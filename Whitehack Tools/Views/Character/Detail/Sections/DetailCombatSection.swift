@@ -10,7 +10,8 @@ struct DetailCombatSection: View {
                 StatCard(label: "Attack", value: "\(character.attackValue)", icon: Ph.sword.bold)
                 StatCard(label: "Defense", value: "\(character.defenseValue)", icon: Ph.shield.bold)
                 StatCard(label: "Movement", value: "\(character.movement) ft", icon: Ph.personSimpleRun.bold)
-                StatCard(label: "Save", value: "\(character.saveValue)\(character.saveColor.isEmpty ? "" : " (\(character.saveColor))")", icon: Ph.diceFive.bold)
+                SaveCard(value: character.saveValue, color: character.saveColor)
+                StatCard(label: "Initiative", value: character.initiativeBonus > 0 ? "+\(character.initiativeBonus)" : "0", icon: Ph.lightning.bold)
             }
             .padding(.vertical, 8)
         }

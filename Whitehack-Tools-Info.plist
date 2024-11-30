@@ -69,6 +69,10 @@
 				<array>
 					<string>json</string>
 				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>application/json</string>
+				</array>
 			</dict>
 		</dict>
 	</array>

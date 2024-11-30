@@ -710,6 +710,15 @@ class PlayerCharacter: Identifiable, Codable {
         return baseDF
     }
     
+    var initiativeBonus: Int {
+        if agility >= 16 {
+            return 2
+        } else if agility >= 13 {
+            return 1
+        }
+        return 0
+    }
+    
     // MARK: - Deft Attunement Methods
     
     /// Tracks if the daily attunement power has been used
