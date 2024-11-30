@@ -596,6 +596,7 @@ struct WeaponEditRow: View {
             isCursed = weapon.isCursed
             bonus = weapon.bonus
             quantity = weapon.quantity
+            quantityString = "\(weapon.quantity)"  // Initialize quantityString
             isBonus = weapon.bonus >= 0
             bonusString = "\(abs(weapon.bonus))"
             isProcessingAction = false
@@ -607,6 +608,7 @@ struct WeaponEditRow: View {
             print("   Rate of Fire: \(rateOfFire)")
             print("   Range: \(range)")
             print("   Special: \(special)")
+            print("   Quantity: \(quantity)")  // Add quantity logging
         }
     }
 }
