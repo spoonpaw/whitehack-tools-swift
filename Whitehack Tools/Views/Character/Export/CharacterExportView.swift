@@ -191,7 +191,7 @@ struct CharacterExportRow: View {
                 .foregroundColor(isSelected ? .accentColor : .secondary)
             
             CharacterClassIcon(characterClass: character.characterClass)
-                .frame(width: 40, height: 40)
+                .frame(width: 50, height: 50)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(character.name)
@@ -247,7 +247,7 @@ struct CharacterClassIcon: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundColor(classColor)
-                .padding(16)
+                .frame(width: 24, height: 24)
         }
     }
 }
