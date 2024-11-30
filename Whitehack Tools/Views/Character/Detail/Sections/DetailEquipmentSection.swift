@@ -5,7 +5,7 @@ struct DetailEquipmentSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Equipment", icon: Ph.briefcase.bold)) {
+        Section(header: SectionHeader(title: "Equipment", icon: Ph.bagSimple.bold)) {
             VStack(alignment: .leading, spacing: 16) {
                 // Gear Items
                 if character.gear.isEmpty {
@@ -49,7 +49,7 @@ private struct GearDetailRow: View {
                     Text(gear.name)
                         .font(.headline)
                 } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: .blue)
+                    IconFrame(icon: Ph.package.bold, color: .blue)
                 }
                 
                 Spacer()
@@ -66,7 +66,7 @@ private struct GearDetailRow: View {
                     Text(gear.isEquipped ? "Equipped" : "Unequipped")
                         .foregroundColor(gear.isEquipped ? .green : .secondary)
                 } icon: {
-                    IconFrame(icon: gear.isEquipped ? Ph.bagSimple.bold : Ph.bagSimple.bold,
+                    IconFrame(icon: gear.isEquipped ? Ph.checkCircle.bold : Ph.circle.bold,
                             color: gear.isEquipped ? .green : .gray)
                 }
                 
