@@ -96,6 +96,35 @@ struct FormEquipmentSection: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
             } else {
+                ForEach(gear) { gearItem in
+                    Group {
+                        if editingGearId == gearItem.id {
+                            GearEditRow(gear: gearItem) { updatedGear in
+                                print("💾 Saving updated gear: \(updatedGear.name)")
+                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                    print("🔄 Updating gear at index: \(index)")
+                                    gear[index] = updatedGear
+                                }
+                                editingGearId = nil
+                            } onCancel: {
+                                print("❌ Canceling gear edit - reverting to original state")
+                                editingGearId = nil
+                            }
+                            .id("\(gearItem.id)-\(editingGearId != nil)")
+                        } else {
+                            GearRow(gear: gearItem,
+                                onEdit: {
+                                    print("✏️ Starting edit for gear: \(gearItem.name)")
+                                    editingGearId = gearItem.id
+                                },
+                                onDelete: {
+                                    gear.removeAll(where: { $0.id == gearItem.id })
+                                }
+                            )
+                        }
+                    }
+                }
+                
                 if isAddingNew {
                     if let editingGear = editingNewGear {
                         GearEditRow(gear: editingGear) { newGear in
@@ -150,35 +179,6 @@ struct FormEquipmentSection: View {
                             }
                         }
                         .padding(.vertical, 8)
-                    }
-                }
-                
-                ForEach(gear) { gearItem in
-                    Group {
-                        if editingGearId == gearItem.id {
-                            GearEditRow(gear: gearItem) { updatedGear in
-                                print("💾 Saving updated gear: \(updatedGear.name)")
-                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                    print("🔄 Updating gear at index: \(index)")
-                                    gear[index] = updatedGear
-                                }
-                                editingGearId = nil
-                            } onCancel: {
-                                print("❌ Canceling gear edit - reverting to original state")
-                                editingGearId = nil
-                            }
-                            .id("\(gearItem.id)-\(editingGearId != nil)")
-                        } else {
-                            GearRow(gear: gearItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for gear: \(gearItem.name)")
-                                    editingGearId = gearItem.id
-                                },
-                                onDelete: {
-                                    gear.removeAll(where: { $0.id == gearItem.id })
-                                }
-                            )
-                        }
                     }
                 }
                 
