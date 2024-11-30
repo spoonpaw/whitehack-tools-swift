@@ -150,7 +150,10 @@ private struct SpecialAbilitiesCard: View {
                 Text("No abilities selected")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .padding(.leading, 4)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(Array(character.strongCombatOptions.activeOptions.enumerated()), id: \.element) { index, option in
