@@ -555,10 +555,24 @@ struct ArmorEditRow: View {
                     .foregroundColor(.secondary)
                 Label {
                     Stepper(value: $weight, in: 0...10) {
-                        Text("\(weight) slot\(weight != 1 ? "s" : "")")
+                        Text("\(weight) slot\(weight == 1 ? "" : "s")")
                     }
                 } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .orange)
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+            }
+            
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    Stepper(value: $quantity, in: 1...99) {
+                        Text("\(quantity)")
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .blue)
                 }
             }
             
@@ -708,6 +722,7 @@ struct ArmorEditRow: View {
             bonus = armor.bonus
             isBonus = armor.bonus >= 0
             bonusString = "\(abs(armor.bonus))"
+            quantity = armor.quantity
         }
     }
 }
@@ -722,15 +737,24 @@ struct ArmorRow: View {
             // Content Area
             VStack(alignment: .leading, spacing: 12) {
                 // Name Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Armor Name")
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Item Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(armor.name)
-                    } icon: {
-                        IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
-                                color: armor.isShield ? .blue : .purple)
+                    
+                    HStack {
+                        Label {
+                            Text(armor.name)
+                        } icon: {
+                            IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold,
+                                    color: armor.isShield ? .blue : .purple)
+                        }
+                        
+                        if armor.quantity > 1 {
+                            Text("× \(armor.quantity)")
+                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                        }
                     }
                 }
                 
