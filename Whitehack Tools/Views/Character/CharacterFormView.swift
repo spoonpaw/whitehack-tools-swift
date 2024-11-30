@@ -278,6 +278,10 @@ struct CharacterFormView: View {
         newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
         print("💾 [CHARACTER FORM] Gear count: \(formData.gear.count), Coins On Hand: \(newCharacter.coinsOnHand), Stashed Coins: \(newCharacter.stashedCoins), Max Encumbrance: \(newCharacter.maxEncumbrance)")
         
+        // Languages
+        newCharacter.languages = formData.languages
+        print("💾 [CHARACTER FORM] Languages count: \(formData.languages.count)")
+        
         // Class Features
         newCharacter.attunementSlots = formData.attunementSlots
         newCharacter.hasUsedAttunementToday = formData.hasUsedAttunementToday
