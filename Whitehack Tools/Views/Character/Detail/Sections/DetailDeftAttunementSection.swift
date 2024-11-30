@@ -100,6 +100,13 @@ private struct DeftFeaturesCard: View {
                     title: "Light Armor",
                     description: "Cannot use slot abilities or swap for double damage when using shield or armor heavier than studded leather"
                 )
+                
+                DeftAttunementFeatureRow(
+                    icon: "star.circle.fill",
+                    color: .yellow,
+                    title: "Non-Combat Vocation",
+                    description: "Once per session, can save to turn a successful task roll into a critical success"
+                )
             }
         }
         .padding()
