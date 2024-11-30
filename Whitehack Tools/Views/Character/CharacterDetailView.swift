@@ -95,20 +95,52 @@ struct SectionHeader: View {
 struct AttributeCard: View {
     let label: String
     let value: String
+    let description: String
+    let icon: Image
+    
+    init(label: String, value: String, icon: Image, description: String = "") {
+        self.label = label
+        self.value = value
+        self.description = description
+        self.icon = icon
+    }
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .center, spacing: 8) {
+            icon
+                .font(.system(size: 20))
+                .foregroundColor(.blue)
+                .frame(width: 32, height: 32)
+                .background(Color.blue.opacity(0.1))
+                .cornerRadius(8)
+            
             Text(label)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.headline)
+                .foregroundColor(.primary)
+                .fixedSize(horizontal: true, vertical: false)
+            
             Text(value)
-                .font(.title2)
-                .fontWeight(.medium)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(.blue)
+                .fixedSize(horizontal: true, vertical: false)
+            
+            if !description.isEmpty {
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(Color.purple.opacity(0.1))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 
