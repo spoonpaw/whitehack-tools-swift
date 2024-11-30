@@ -132,6 +132,39 @@ struct FormArmorSection: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
             } else {
+                ForEach(armor) { armorItem in
+                    Group {
+                        if editingArmorId == armorItem.id {
+                            ArmorEditRow(armor: armorItem) { updatedArmor in
+                                logArmorEdit(original: armorItem, updated: updatedArmor)
+                                if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
+                                    withAnimation {
+                                        armor[index] = updatedArmor
+                                        editingArmorId = nil
+                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
+                                    }
+                                }
+                            } onCancel: {
+                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
+                                withAnimation {
+                                    editingArmorId = nil
+                                }
+                            }
+                            .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
+                        } else {
+                            ArmorRow(armor: armorItem,
+                                onEdit: {
+                                    print("✏️ Starting edit for armor: \(armorItem.name)")
+                                    editingArmorId = armorItem.id
+                                },
+                                onDelete: {
+                                    armor.removeAll(where: { $0.id == armorItem.id })
+                                }
+                            )
+                        }
+                    }
+                }
+                
                 if isAddingNew {
                     if let editingArmor = editingNewArmor {
                         ArmorEditRow(armor: editingArmor) { newArmor in
@@ -181,39 +214,6 @@ struct FormArmorSection: View {
                             }
                         }
                         .padding(.vertical, 8)
-                    }
-                }
-                
-                ForEach(armor) { armorItem in
-                    Group {
-                        if editingArmorId == armorItem.id {
-                            ArmorEditRow(armor: armorItem) { updatedArmor in
-                                logArmorEdit(original: armorItem, updated: updatedArmor)
-                                if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
-                                    withAnimation {
-                                        armor[index] = updatedArmor
-                                        editingArmorId = nil
-                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
-                                    }
-                                }
-                            } onCancel: {
-                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
-                                withAnimation {
-                                    editingArmorId = nil
-                                }
-                            }
-                            .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
-                        } else {
-                            ArmorRow(armor: armorItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for armor: \(armorItem.name)")
-                                    editingArmorId = armorItem.id
-                                },
-                                onDelete: {
-                                    armor.removeAll(where: { $0.id == armorItem.id })
-                                }
-                            )
-                        }
                     }
                 }
                 
