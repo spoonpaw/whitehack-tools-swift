@@ -26,7 +26,18 @@ struct CharacterListView: View {
                     .listRowBackground(Color.clear)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
-                            characterToDelete = IndexSet([characterStore.characters.firstIndex(where: { $0.id == character.id })!])
+                            print("\n [CHARACTER LIST] Delete button tapped for character")
+                            print(" [CHARACTER LIST] Character ID: \(character.id)")
+                            print(" [CHARACTER LIST] Character Name: \(character.name)")
+                            
+                            if let index = characterStore.characters.firstIndex(where: { $0.id == character.id }) {
+                                print(" [CHARACTER LIST] Found character at index: \(index)")
+                                characterToDelete = IndexSet([index])
+                                print(" [CHARACTER LIST] Set characterToDelete to: \(String(describing: characterToDelete))")
+                            } else {
+                                print(" [CHARACTER LIST] ERROR: Could not find character index!")
+                            }
+                            
                             showingDeleteConfirmation = true
                         } label: {
                             Label("Delete", systemImage: "trash")
@@ -76,11 +87,18 @@ struct CharacterListView: View {
             }
             .alert("Delete Character?", isPresented: $showingDeleteConfirmation) {
                 Button("Delete", role: .destructive) {
+                    print("\n [CHARACTER LIST] Delete confirmed in alert")
                     if let indexSet = characterToDelete {
+                        print(" [CHARACTER LIST] Deleting character at indices: \(indexSet)")
                         characterStore.deleteCharacter(at: indexSet)
+                    } else {
+                        print(" [CHARACTER LIST] ERROR: No character to delete!")
                     }
                 }
-                Button("Cancel", role: .cancel) {}
+                Button("Cancel", role: .cancel) {
+                    print("\n [CHARACTER LIST] Delete cancelled")
+                    characterToDelete = nil
+                }
             } message: {
                 Text("This action cannot be undone.")
             }

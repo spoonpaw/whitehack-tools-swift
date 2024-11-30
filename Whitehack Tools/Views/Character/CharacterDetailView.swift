@@ -6,51 +6,59 @@ struct CharacterDetailView: View {
     @ObservedObject var characterStore: CharacterStore
     @State private var showingEditSheet = false
     @State private var refreshTrigger = false
+    @Environment(\.presentationMode) var presentationMode
     
-    private var character: PlayerCharacter {
-        // Get latest character data from store
-        guard let latest = characterStore.characters.first(where: { $0.id == characterId }) else {
-            fatalError("Character not found in store")
-        }
-        return latest
+    private var character: PlayerCharacter? {
+        characterStore.characters.first(where: { $0.id == characterId })
     }
     
     var body: some View {
-        List {
-            DetailHeaderSection(character: character)
-            DetailStatsSection(character: character)
-            DetailCombatSection(character: character)
-            DetailWeaponsSection(weapons: character.weapons)
-            DetailArmorSection(armor: character.armor, totalDefenseValue: character.totalDefenseValue)
-            DetailGroupsSection(character: character)
-            DetailLanguagesSection(character: character)
-            DetailGoldSection(character: character)
-            DetailEncumbranceSection(character: character)
-            DetailEquipmentSection(character: character)
-            DetailDeftAttunementSection(character: character)
-            DetailStrongCombatSection(character: character)
-            DetailWiseMiracleSection(character: character)
-            DetailBraveQuirksSection(characterClass: character.characterClass,
-                                    level: character.level,
-                                    braveQuirkOptions: character.braveQuirkOptions,
-                                    comebackDice: character.comebackDice,
-                                    hasUsedSayNo: character.hasUsedSayNo)
-            DetailCleverKnacksSection(characterClass: character.characterClass,
-                                    level: character.level,
-                                    cleverKnackOptions: character.cleverKnackOptions)
-            if character.characterClass == .fortunate {
-                DetailFortunateSection(character: character)
-            }
-            DetailAdditionalInfoSection(character: character)
-            DetailNotesSection(character: character)
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            Button(action: {
-                showingEditSheet = true
-            }) {
-                Text("Edit")
+        Group {
+            if let character = character {
+                List {
+                    DetailHeaderSection(character: character)
+                    DetailStatsSection(character: character)
+                    DetailCombatSection(character: character)
+                    DetailWeaponsSection(weapons: character.weapons)
+                    DetailArmorSection(armor: character.armor, totalDefenseValue: character.totalDefenseValue)
+                    DetailGroupsSection(character: character)
+                    DetailLanguagesSection(character: character)
+                    DetailGoldSection(character: character)
+                    DetailEncumbranceSection(character: character)
+                    DetailEquipmentSection(character: character)
+                    DetailDeftAttunementSection(character: character)
+                    DetailStrongCombatSection(character: character)
+                    DetailWiseMiracleSection(character: character)
+                    DetailBraveQuirksSection(characterClass: character.characterClass,
+                                           level: character.level,
+                                           braveQuirkOptions: character.braveQuirkOptions,
+                                           comebackDice: character.comebackDice,
+                                           hasUsedSayNo: character.hasUsedSayNo)
+                    DetailCleverKnacksSection(characterClass: character.characterClass,
+                                           level: character.level,
+                                           cleverKnackOptions: character.cleverKnackOptions)
+                    if character.characterClass == .fortunate {
+                        DetailFortunateSection(character: character)
+                    }
+                    DetailAdditionalInfoSection(character: character)
+                    DetailNotesSection(character: character)
+                }
+                .listStyle(InsetGroupedListStyle())
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    Button(action: {
+                        showingEditSheet = true
+                    }) {
+                        Text("Edit")
+                    }
+                }
+            } else {
+                // Character was deleted
+                Text("Character no longer exists")
+                    .onAppear {
+                        print(" [CHARACTER DETAIL] Character \(characterId) no longer exists, dismissing view")
+                        presentationMode.wrappedValue.dismiss()
+                    }
             }
         }
         .sheet(isPresented: $showingEditSheet) {

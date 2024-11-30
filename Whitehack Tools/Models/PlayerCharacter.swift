@@ -502,12 +502,12 @@ struct FortunateOptions: Codable {
     var signatureObject: SignatureObject
     var newKeyword: String  // For temporary storage during keyword input
     
-    init() {
-        self.standing = ""
-        self.hasUsedFortune = false
-        self.retainers = []
-        self.signatureObject = SignatureObject(name: "")
-        self.newKeyword = ""
+    init(standing: String = "", hasUsedFortune: Bool = false, retainers: [Retainer] = [], signatureObject: SignatureObject = SignatureObject(name: ""), newKeyword: String = "") {
+        self.standing = standing
+        self.hasUsedFortune = hasUsedFortune
+        self.retainers = retainers
+        self.signatureObject = signatureObject
+        self.newKeyword = newKeyword
     }
 }
 
@@ -860,11 +860,8 @@ class PlayerCharacter: Identifiable, Codable {
         self.armor = armor
         self.hasUsedAttunementToday = hasUsedAttunementToday
     }
-}
-
-// MARK: - ID Regeneration Extension
-extension PlayerCharacter {
-    /// Creates a copy of the character with new UUIDs while maintaining relationships
+    
+    // MARK: - ID Regeneration Extension
     func copyWithNewIDs() -> PlayerCharacter {
         // Create a copy of the character with a new ID
         let newCharacter = PlayerCharacter(
@@ -959,10 +956,30 @@ extension PlayerCharacter {
                 )
             },
             braveQuirkOptions: braveQuirkOptions,
+            cleverKnackOptions: cleverKnackOptions,
+            fortunateOptions: FortunateOptions(
+                standing: fortunateOptions.standing,
+                hasUsedFortune: fortunateOptions.hasUsedFortune,
+                retainers: fortunateOptions.retainers.map { retainer in
+                    Retainer(
+                        id: UUID(),
+                        name: retainer.name,
+                        type: retainer.type,
+                        hitDice: retainer.hitDice,
+                        defenseFactor: retainer.defenseFactor,
+                        movement: retainer.movement,
+                        keywords: retainer.keywords,
+                        attitude: retainer.attitude,
+                        notes: retainer.notes,
+                        currentHP: retainer.currentHP,
+                        maxHP: retainer.maxHP
+                    )
+                },
+                signatureObject: SignatureObject(name: fortunateOptions.signatureObject.name),
+                newKeyword: fortunateOptions.newKeyword
+            ),
             comebackDice: comebackDice,
             hasUsedSayNo: hasUsedSayNo,
-            cleverKnackOptions: cleverKnackOptions,
-            fortunateOptions: fortunateOptions,
             languages: languages,
             notes: notes,
             experience: experience,
@@ -972,19 +989,51 @@ extension PlayerCharacter {
             coinsOnHand: coinsOnHand,
             stashedCoins: stashedCoins,
             gear: gear.map { gear in
-                var newGear = gear
-                newGear.id = UUID()
-                return newGear
+                Gear(
+                    id: UUID(),
+                    name: gear.name,
+                    weight: gear.weight,
+                    special: gear.special,
+                    quantity: gear.quantity,
+                    isEquipped: gear.isEquipped,
+                    isStashed: gear.isStashed,
+                    isMagical: gear.isMagical,
+                    isCursed: gear.isCursed,
+                    isContainer: gear.isContainer
+                )
             },
             weapons: weapons.map { weapon in
-                var newWeapon = weapon
-                newWeapon.id = UUID()
-                return newWeapon
+                Weapon(
+                    id: UUID(),
+                    name: weapon.name,
+                    damage: weapon.damage,
+                    weight: weapon.weight,
+                    range: weapon.range,
+                    rateOfFire: weapon.rateOfFire,
+                    special: weapon.special,
+                    isEquipped: weapon.isEquipped,
+                    isStashed: weapon.isStashed,
+                    isMagical: weapon.isMagical,
+                    isCursed: weapon.isCursed,
+                    bonus: weapon.bonus,
+                    quantity: weapon.quantity
+                )
             },
             armor: armor.map { armor in
-                var newArmor = armor
-                newArmor.id = UUID()
-                return newArmor
+                Armor(
+                    id: UUID(),
+                    name: armor.name,
+                    df: armor.df,
+                    weight: armor.weight,
+                    special: armor.special,
+                    quantity: armor.quantity,
+                    isEquipped: armor.isEquipped,
+                    isStashed: armor.isStashed,
+                    isMagical: armor.isMagical,
+                    isCursed: armor.isCursed,
+                    bonus: armor.bonus,
+                    isShield: armor.isShield
+                )
             },
             hasUsedAttunementToday: hasUsedAttunementToday
         )
@@ -1081,37 +1130,6 @@ extension PlayerCharacter {
             }
         }
         newCharacter.cleverKnackOptions = newCleverKnackOptions
-        
-        // Copy fortunate options
-        var newFortunateOptions = FortunateOptions()
-        newFortunateOptions.standing = fortunateOptions.standing
-        newFortunateOptions.hasUsedFortune = fortunateOptions.hasUsedFortune
-        newFortunateOptions.signatureObject = fortunateOptions.signatureObject
-        newFortunateOptions.newKeyword = fortunateOptions.newKeyword
-        newFortunateOptions.retainers = fortunateOptions.retainers.map { retainer in
-            Retainer(
-                id: UUID(),
-                name: retainer.name,
-                type: retainer.type,
-                hitDice: retainer.hitDice,
-                defenseFactor: retainer.defenseFactor,
-                movement: retainer.movement,
-                keywords: retainer.keywords,
-                attitude: retainer.attitude,
-                notes: retainer.notes,
-                currentHP: retainer.currentHP,
-                maxHP: retainer.maxHP
-            )
-        }
-        newCharacter.fortunateOptions = newFortunateOptions
-        
-        // Copy other properties
-        newCharacter.languages = languages
-        newCharacter.notes = notes
-        newCharacter.experience = experience
-        newCharacter.hasUsedAttunementToday = hasUsedAttunementToday
-        newCharacter.hasUsedSayNo = hasUsedSayNo
-        newCharacter.comebackDice = comebackDice
         
         return newCharacter
     }

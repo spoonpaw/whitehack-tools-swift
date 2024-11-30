@@ -34,7 +34,27 @@ class CharacterStore: ObservableObject {
     }
     
     func deleteCharacter(at offsets: IndexSet) {
+        print("\n [CHARACTER STORE] Deleting character(s)")
+        print(" [CHARACTER STORE] Current character count: \(characters.count)")
+        print(" [CHARACTER STORE] Offsets to delete: \(offsets)")
+        
+        // Log characters before deletion
+        for (index, character) in characters.enumerated() {
+            print(" [CHARACTER STORE] Character \(index): ID=\(character.id), Name=\(character.name)")
+        }
+        
+        // Get IDs of characters being deleted
+        let deletedIds = offsets.map { characters[$0].id }
+        print(" [CHARACTER STORE] IDs being deleted: \(deletedIds)")
+        
         characters.remove(atOffsets: offsets)
+        
+        // Log characters after deletion
+        print(" [CHARACTER STORE] Characters after deletion:")
+        for (index, character) in characters.enumerated() {
+            print(" [CHARACTER STORE] Character \(index): ID=\(character.id), Name=\(character.name)")
+        }
+        
         saveCharacters()
     }
     
