@@ -1229,7 +1229,12 @@ struct FormWeaponsSection: View {
                 }
             }
         } header: {
-            Label("Weapons", systemImage: "shield.lefthalf.filled")
+            HStack(spacing: 8) {
+                Ph.sword.bold
+                    .frame(width: 20, height: 20)
+                Text("Weapons")
+            }
+            .font(.headline)
         }
     }
 }
