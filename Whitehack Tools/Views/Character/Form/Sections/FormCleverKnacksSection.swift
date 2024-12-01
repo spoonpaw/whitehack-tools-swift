@@ -218,14 +218,7 @@ struct FormCleverKnacksSection: View {
                     .padding(.vertical, 8)
                 }
             } header: {
-                Label {
-                    Text("Clever Features")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "lightbulb.fill")
-                        .foregroundColor(.yellow)
-                }
+                SectionHeader(title: "The Clever", icon: Image(systemName: "brain.head.profile"))
             }
             .listStyle(PlainListStyle())
             .listSectionSeparator(.hidden)

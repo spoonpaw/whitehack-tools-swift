@@ -27,21 +27,8 @@ struct DetailCleverKnacksSection: View {
                 }
                 .padding(.vertical, 8)
             } header: {
-                CleverSectionHeader()
+                SectionHeader(title: "The Clever", icon: Image(systemName: "brain.head.profile"))
             }
-        }
-    }
-}
-
-// MARK: - Section Header
-private struct CleverSectionHeader: View {
-    var body: some View {
-        Label {
-            Text("The Clever")
-                .foregroundStyle(.primary)
-        } icon: {
-            Image(systemName: "brain.head.profile")
-                .foregroundStyle(.green)
         }
     }
 }
