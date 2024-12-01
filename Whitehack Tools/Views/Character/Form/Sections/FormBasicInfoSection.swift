@@ -1,5 +1,6 @@
 // FormBasicInfoSection.swift
 import SwiftUI
+import PhosphorSwift
 
 struct FormBasicInfoSection: View {
     @Binding var name: String
@@ -10,7 +11,7 @@ struct FormBasicInfoSection: View {
     @FocusState.Binding var focusBinding: CharacterFormView.Field?
 
     var body: some View {
-        Section(header: Text("Basic Info").font(.headline)) {
+        Section(header: SectionHeader(title: "Basic Info", icon: Ph.identificationCard.bold)) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Character Name")
                     .font(.caption)

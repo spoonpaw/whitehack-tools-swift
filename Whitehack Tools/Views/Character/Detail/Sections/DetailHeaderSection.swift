@@ -5,7 +5,7 @@ struct DetailHeaderSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section {
+        Section(header: SectionHeader(title: "Basic Info", icon: Ph.identificationCard.bold)) {
             VStack(spacing: 8) {
                 Text(character.name)
                     .font(.title)
