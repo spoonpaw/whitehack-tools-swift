@@ -25,36 +25,22 @@ private struct SaveColorCard: View {
     let value: Int
     let colorName: String
     
-    private var color: Color {
-        switch colorName.lowercased() {
-        case "red": return .red
-        case "orange": return .orange
-        case "yellow": return .yellow
-        case "green": return .green
-        case "blue": return .blue
-        case "purple": return .purple
-        default: return .gray
-        }
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconFrame(icon: Ph.palette.bold, color: color)
-                Text("Save Color")
+                IconFrame(icon: Ph.shieldStar.bold, color: .purple)
+                Text("Save")
                     .font(.headline)
                     .foregroundColor(.primary)
             }
             
-            HStack {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Save Value: \(value)")
                     .font(.subheadline)
                 
-                Spacer()
-                
-                Circle()
-                    .fill(color)
-                    .frame(width: 24, height: 24)
+                Text("Color: \"\(colorName)\"")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
         }
         .padding(12)
