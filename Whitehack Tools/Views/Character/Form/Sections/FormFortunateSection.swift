@@ -175,14 +175,7 @@ struct FormFortunateSection: View {
                         .padding(.vertical, 8)
                 }
             } header: {
-                Label {
-                    Text("Fortunate Features")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "person.3.fill")
-                        .foregroundColor(.purple)
-                }
+                SectionHeader(title: "The Fortunate", icon: Ph.crown.bold)
             }
             .onChange(of: level) { _ in
                 // Update the actual retainers array when level changes

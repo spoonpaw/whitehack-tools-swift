@@ -114,7 +114,7 @@ struct FormStrongCombatSection: View {
                 }
                 .padding(.vertical, 8)
             } header: {
-                Label("Strong Combat Features", systemImage: "shield.fill")
+                SectionHeader(title: "The Strong", icon: Image(systemName: "figure.strengthtraining.traditional"))
             }
         }
     }

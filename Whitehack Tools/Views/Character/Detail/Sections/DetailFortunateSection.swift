@@ -25,13 +25,7 @@ struct DetailFortunateSection: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity)
             } header: {
-                HStack(spacing: 4) {
-                    Ph.crown.bold
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.orange)
-                    Text("The Fortunate")
-                        .font(.headline)
-                }
+                SectionHeader(title: "The Fortunate", icon: Ph.crown.bold)
             }
         }
     }
