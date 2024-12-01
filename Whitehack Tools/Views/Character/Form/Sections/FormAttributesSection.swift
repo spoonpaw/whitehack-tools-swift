@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormAttributesSection: View {
     @Binding var strength: String
@@ -12,7 +13,7 @@ struct FormAttributesSection: View {
     private let attributeRange = 3...18
     
     var body: some View {
-        Section("Attributes") {
+        Section(header: SectionHeader(title: "Attributes", icon: Ph.gauge.bold)) {
             AttributeEditor(
                 label: "Strength",
                 value: $strength,

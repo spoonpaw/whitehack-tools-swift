@@ -30,7 +30,7 @@ struct DetailStatsSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Attributes", icon: Ph.user.bold)) {
+        Section(header: SectionHeader(title: "Attributes", icon: Ph.gauge.bold)) {
             VStack(spacing: 16) {
                 // Row 1: Strength & Agility
                 HStack(spacing: 16) {
