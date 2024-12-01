@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormWiseMiracleSection: View {
     let characterClass: CharacterClass
@@ -62,14 +63,7 @@ struct FormWiseMiracleSection: View {
                     .padding(.vertical, 4)
                 }
             } header: {
-                Label {
-                    Text("Miracles")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                } icon: {
-                    Image(systemName: "sparkles")
-                        .foregroundColor(.yellow)
-                }
+                SectionHeader(title: "The Wise", icon: Ph.magicWand.bold)
             } footer: {
                 Text("Level \(level) slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))")
             }
