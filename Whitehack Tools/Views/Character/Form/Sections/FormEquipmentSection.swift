@@ -194,7 +194,12 @@ struct FormEquipmentSection: View {
                 }
             }
         } header: {
-            Label("Equipment", systemImage: "bag.fill")
+            HStack(spacing: 8) {
+                Ph.bagSimple.bold
+                    .frame(width: 20, height: 20)
+                Text("Equipment")
+            }
+            .font(.headline)
         }
     }
     
