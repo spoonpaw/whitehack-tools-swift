@@ -6,7 +6,12 @@ struct FormGoldSection: View {
     @Binding var stashedCoins: Int
     
     var body: some View {
-        Section {
+        Section(header: HStack(spacing: 8) {
+            Ph.coins.bold
+                .frame(width: 20, height: 20)
+            Text("Gold")
+        }
+        .font(.headline)) {
             VStack(alignment: .leading, spacing: 16) {
                 // Gold on Hand
                 VStack(alignment: .leading, spacing: 12) {
@@ -53,8 +58,6 @@ struct FormGoldSection: View {
                 }
             }
             .padding(.vertical, 8)
-        } header: {
-            Label("Gold", systemImage: "centsign.circle.fill")
         }
     }
 }
