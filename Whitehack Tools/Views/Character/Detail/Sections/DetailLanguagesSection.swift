@@ -5,7 +5,7 @@ struct DetailLanguagesSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Languages", icon: Ph.chatText.bold)) {
+        Section(header: SectionHeader(title: "Languages", icon: Ph.scroll.bold)) {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 8)], spacing: 8) {
                 ForEach(character.languages, id: \.self) { language in
                     Text(language)

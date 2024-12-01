@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormLanguagesSection: View {
     @Binding var languages: [String]
@@ -10,7 +11,12 @@ struct FormLanguagesSection: View {
     @State private var tempLanguage = ""
     
     var body: some View {
-        Section(header: Text("Languages").font(.headline)) {
+        Section(header: HStack(spacing: 8) {
+            Ph.scroll.bold
+                .frame(width: 20, height: 20)
+            Text("Languages")
+        }
+        .font(.headline)) {
             VStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
