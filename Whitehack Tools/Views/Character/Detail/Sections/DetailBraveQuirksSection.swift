@@ -30,13 +30,7 @@ struct DetailBraveQuirksSection: View {
                 }
                 .padding(.vertical, 8)
             } header: {
-                Label {
-                    Text("The Brave")
-                        .font(.headline)
-                } icon: {
-                    Image(systemName: "heart.fill")
-                        .foregroundColor(.red)
-                }
+                SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
             }
         }
     }

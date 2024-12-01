@@ -144,7 +144,7 @@ struct FormBraveQuirksSection: View {
                 .padding(.vertical, 4)
                 
             } header: {
-                Label("Brave Features", systemImage: "heart.fill")
+                SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
             } footer: {
                 if hasArmorPenalty {
                     Text("Wearing armor heavier than cloth: -2 penalty to all task rolls")
