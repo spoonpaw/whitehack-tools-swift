@@ -4,21 +4,12 @@ import PhosphorSwift
 struct DetailEncumbranceSection: View {
     let character: PlayerCharacter
     
-    private struct SlotCalculation: Identifiable {
-        let id = UUID()
-        let name: String
-        let weight: String
-        let quantity: Int
-        let slots: Double
-        
-        var formattedSlots: String {
-            String(format: "%.2f", slots)
-        }
-    }
+    private let columnWidth: CGFloat = 65
+    private let spacing: CGFloat = 12
+    private let cornerRadius: CGFloat = 12
     
-    private func calculateSlots() -> (total: Double, calculations: [SlotCalculation]) {
+    private var usedSlots: Double {
         var total: Double = 0
-        var calculations: [SlotCalculation] = []
         
         // Add non-stashed gear slots
         for gear in character.gear where !gear.isStashed {
@@ -30,373 +21,410 @@ struct DetailEncumbranceSection: View {
             case "heavy": slotCount = 2.0
             default: slotCount = 1.0
             }
-            let totalSlots = slotCount * Double(gear.quantity)
-            total += totalSlots
-            calculations.append(SlotCalculation(name: gear.name, weight: gear.weight, quantity: gear.quantity, slots: totalSlots))
+            total += slotCount * Double(gear.quantity)
         }
         
-        // Add non-stashed armor slots (direct slot count)
+        // Add non-stashed armor slots
         for armor in character.armor where !armor.isStashed {
-            let totalSlots = Double(armor.weight * armor.quantity)
-            total += totalSlots
-            calculations.append(SlotCalculation(name: armor.name, weight: "\(armor.weight)", quantity: armor.quantity, slots: totalSlots))
+            total += Double(armor.weight * armor.quantity)
         }
         
         // Add non-stashed weapon slots
         for weapon in character.weapons where !weapon.isStashed {
             let slotCount: Double
             switch weapon.weight.lowercased() {
-            case "no size": slotCount = 0.01 // Will be counted in groups of 100
+            case "no size": slotCount = 0.01
             case "minor": slotCount = 0.5
             case "regular": slotCount = 1.0
             case "heavy": slotCount = 2.0
             default: slotCount = 1.0
             }
-            let totalSlots = slotCount * Double(weapon.quantity)
-            total += totalSlots
-            calculations.append(SlotCalculation(name: weapon.name, weight: weapon.weight, quantity: weapon.quantity, slots: totalSlots))
+            total += slotCount * Double(weapon.quantity)
         }
         
         // Add coins (100 coins = 1 slot)
-        let coinSlots = Double(character.coinsOnHand) / 100.0
-        if coinSlots > 0 {
-            total += coinSlots
-            calculations.append(SlotCalculation(name: "Coins", weight: "no size", quantity: character.coinsOnHand, slots: coinSlots))
+        total += Double(character.coinsOnHand) / 100.0
+        
+        return total
+    }
+    
+    private var maxSlots: Double {
+        character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 15.0 : 10.0
+    }
+    
+    private var excessSlots: Double {
+        max(0, usedSlots - maxSlots)
+    }
+    
+    private var burdenLevel: BurdenLevel {
+        let drops = min(3, Int((excessSlots + 1) / 2))
+        switch drops {
+        case 0: return .normal
+        case 1: return .heavy
+        case 2: return .severe
+        default: return .massive
         }
-        
-        return (total, calculations)
     }
     
-    private func calculateMovementRates(baseMovement: Int, totalSlots: Double) -> (normal: Int, careful: Int, run: Int, crawl: Int, maxSlots: Double, excessSlots: Double, categoriesDrop: Int) {
-        let hasContainer = character.gear.contains(where: { $0.isContainer && $0.isEquipped })
-        let maxSlots = hasContainer ? 15.0 : 10.0
-        let excessSlots = max(0, totalSlots - maxSlots)
-        let categoriesDrop = Int(ceil(excessSlots / 2.0))
-        let normalMove = max(baseMovement - (5 * categoriesDrop), 5)
-        
-        return (
-            normal: normalMove,
-            careful: normalMove / 2,
-            run: normalMove * 2,
-            crawl: normalMove * 4,
-            maxSlots: maxSlots,
-            excessSlots: excessSlots,
-            categoriesDrop: categoriesDrop
-        )
+    private var movementPenalty: Int {
+        return 5 * Int((excessSlots + 1) / 2)
     }
     
-    private var isOverEncumbered: Bool {
-        calculateSlots().total > Double(character.maxEncumbrance)
+    private var isSmaller: Bool {
+        character.movement == 25
+    }
+    
+    private var movementColumn: Int {
+        isSmaller ? 2 : 1  // 1 for Human (30), 2 for Smaller (25)
+    }
+    
+    private var movementRates: [String] {
+        let base = character.movement
+        return [
+            "\(base) ft/r",
+            "\(base - 5) ft/r",
+            "\(base - 10) ft/r",
+            "\(base - 15) ft/r"
+        ]
+    }
+    
+    private var crawlRates: [String] {
+        return [
+            "120 ft",
+            "100 ft",
+            "80 ft",
+            "60 ft"
+        ]
     }
     
     var body: some View {
-        Section(header: SectionHeader(title: "Encumbrance", icon: Ph.scales.bold)) {
-            let slots = calculateSlots()
-            let movement = calculateMovementRates(baseMovement: character.movement, totalSlots: slots.total)
-            
+        Section(header: SectionHeader(title: "Encumbrance", icon: Ph.barbell.bold)) {
             VStack(spacing: 16) {
-                // Encumbrance Summary
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("ENCUMBRANCE STATUS")
-                        .font(.caption)
-                        .textCase(.uppercase)
-                        .foregroundColor(.gray)
-                        .padding(.horizontal)
+                // Slots Overview
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        IconFrame(icon: Ph.stack.bold, color: .blue)
+                        Text("Slots Overview")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        // Container Status
-                        HStack {
-                            Label {
-                                Text(character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 
-                                     "Container Equipped (+5 slots)" : "No Container")
-                            } icon: {
-                                IconFrame(icon: Ph.package.bold, color: .blue)
+                    VStack(spacing: 16) {
+                        HStack(alignment: .center, spacing: 16) {
+                            // Used Slots
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Used")
+                                    .font(.system(.subheadline))
+                                    .foregroundColor(.secondary)
+                                Text(String(format: "%.1f", usedSlots))
+                                    .font(.system(.title2, design: .rounded).weight(.medium))
+                                    .foregroundColor(.primary)
                             }
-                            .foregroundColor(.blue)
-                            Spacer()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            
+                            // Available Slots
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Available")
+                                    .font(.system(.subheadline))
+                                    .foregroundColor(.secondary)
+                                Text(String(format: "%d", maxSlots))
+                                    .font(.system(.title2, design: .rounded).weight(.medium))
+                                    .foregroundColor(.primary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .padding(.horizontal)
                         
-                        // Slot Summary
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("Maximum Slots:")
-                                    .frame(width: 120, alignment: .leading)
-                                Text("\(String(format: "%.2f", movement.maxSlots))")
-                                    .foregroundColor(.blue)
-                                Spacer()
-                            }
-                            HStack {
-                                Text("Current Slots:")
-                                    .frame(width: 120, alignment: .leading)
-                                Text("\(String(format: "%.2f", slots.total))")
-                                    .foregroundColor(slots.total > movement.maxSlots ? .red : .blue)
-                                Spacer()
-                            }
-                            if movement.excessSlots > 0 {
-                                HStack {
-                                    Text("Excess Slots:")
-                                        .frame(width: 120, alignment: .leading)
-                                    Text("\(String(format: "%.2f", movement.excessSlots))")
+                        if excessSlots > 0 {
+                            Divider()
+                            
+                            // Excess Slots (only shown when over limit)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Excess")
+                                    .font(.system(.subheadline))
+                                    .foregroundColor(.secondary)
+                                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                                    Text(String(format: "%.1f", excessSlots))
+                                        .font(.system(.title2, design: .rounded).weight(.medium))
                                         .foregroundColor(.red)
-                                    Spacer()
+                                    Text("slots over limit")
+                                        .font(.system(.caption))
+                                        .foregroundColor(.secondary)
                                 }
                             }
-                        }
-                        .padding(.horizontal)
-                        
-                        if movement.categoriesDrop > 0 {
-                            HStack {
-                                Label {
-                                    Text("Movement Penalty: -\(movement.categoriesDrop) categories")
-                                } icon: {
-                                    IconFrame(icon: Ph.warning.bold, color: .red)
-                                }
-                                .foregroundColor(.red)
-                                Spacer()
-                            }
-                            .padding(.horizontal)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
                 }
-                .padding(.vertical, 12)
+                .padding(12)
                 .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
-                // Movement Summary
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("MOVEMENT RATES")
-                        .font(.caption)
-                        .textCase(.uppercase)
-                        .foregroundColor(.gray)
-                        .padding(.horizontal)
+                // Current Burden Status
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        IconFrame(icon: Image(systemName: burdenLevel.iconName), color: burdenLevel.color)
+                        Text("Current Burden")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        // Base Movement
-                        HStack {
-                            Text("Base Movement:")
-                                .frame(width: 120, alignment: .leading)
-                            Text("\(character.movement) ft")
-                                .foregroundColor(.blue)
-                            Spacer()
-                        }
-                        .padding(.horizontal)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(burdenLevel.title)
+                            .font(.system(.title2, design: .rounded))
+                            .fontWeight(.semibold)
+                            .foregroundColor(burdenLevel.color)
                         
-                        // Movement Categories
-                        VStack(alignment: .leading, spacing: 8) {
-                            // Header
-                            HStack {
-                                Text("TYPE")
-                                    .frame(width: 80, alignment: .leading)
-                                Text("RATE")
-                                    .frame(width: 80, alignment: .leading)
-                                Text("NOTES")
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Spacer()
+                        Text(burdenLevel.description)
+                            .font(.system(.subheadline))
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(burdenLevel.color.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                
+                // Movement Rates
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        IconFrame(icon: Ph.personSimpleRun.bold, color: .green)
+                        Text("Movement Rates")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Text("Base rates for different burden levels.")
+                        .font(.system(.caption))
+                        .foregroundColor(.secondary)
+                    Text("Crawl rate is ft per 10 minutes.")
+                        .font(.system(.caption))
+                        .foregroundColor(.secondary)
+                    
+                    // Main movement rates table
+                    VStack(spacing: 2) {
+                        tableHeaderRow
+                        
+                        Divider()
+                            .padding(.vertical, 4)
+                        
+                        ForEach(BurdenLevel.allCases, id: \.self) { burden in
+                            HStack(spacing: spacing) {
+                                // Circle column
+                                Circle()
+                                    .fill(burden == burdenLevel ? burden.color : Color.clear)
+                                    .frame(width: 6, height: 6)
+                                    .frame(width: 16, alignment: .center)
+                                
+                                // Burden name
+                                Text(burden.title)
+                                    .frame(width: columnWidth - 6, alignment: .leading)
+                                
+                                Text(movementRates[burden.index])
+                                    .frame(width: columnWidth, alignment: .leading)
+                                    .foregroundColor(burden == burdenLevel ? burdenLevel.color : .secondary)
+                                    .font(.system(.subheadline, design: .default).weight(burden == burdenLevel ? .bold : .regular))
+                                
+                                Text(crawlRates[burden.index])
+                                    .frame(width: columnWidth, alignment: .leading)
+                                    .foregroundColor(burden == burdenLevel ? burdenLevel.color : .secondary)
+                                    .font(.system(.subheadline, design: .default).weight(burden == burdenLevel ? .bold : .regular))
                             }
-                            .font(.caption2)
-                            .foregroundColor(.gray)
-                            .textCase(.uppercase)
-                            .padding(.horizontal)
+                            .font(.system(.subheadline))
+                            .padding(.vertical, 4)
+                        }
+                    }
+                }
+                .padding(12)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                
+                // Movement Options
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        IconFrame(icon: Ph.arrowsOutCardinal.bold, color: burdenLevel.color)
+                        Text("Movement Options")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Text("Movement rates per round (r)")
+                        .font(.system(.caption))
+                        .foregroundColor(.secondary)
+                    Text("For use in combat and tactical situations")
+                        .font(.system(.caption))
+                        .foregroundColor(.secondary)
+                    
+                    let baseRate = movementRates[burdenLevel.index].replacingOccurrences(of: " ft/r", with: "")
+                    if let base = Int(baseRate) {
+                        VStack(spacing: 2) {
+                            // Header
+                            HStack(spacing: spacing) {
+                                Text("Movement Type")
+                                    .frame(width: columnWidth + 30, alignment: .leading)
+                                Text("Speed")
+                                    .frame(width: columnWidth, alignment: .leading)
+                            }
+                            .font(.system(.subheadline))
+                            .foregroundColor(.secondary)
                             
                             Divider()
-                                .padding(.horizontal)
+                                .padding(.vertical, 4)
                             
-                            // Movement Types
-                            ForEach([
-                                (type: "Normal", rate: movement.normal, note: "Base rate"),
-                                (type: "Careful", rate: movement.careful, note: "Half speed"),
-                                (type: "Run", rate: movement.run, note: "Double speed"),
-                                (type: "Crawl", rate: movement.crawl, note: "Per 10 minutes")
-                            ], id: \.type) { moveType in
-                                HStack {
-                                    Text(moveType.type)
-                                        .frame(width: 80, alignment: .leading)
-                                    Text("\(moveType.rate) ft")
-                                        .frame(width: 80, alignment: .leading)
-                                        .foregroundColor(.primary)
-                                    Text(moveType.note)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .foregroundColor(.gray)
-                                    Spacer()
-                                }
-                                .padding(.horizontal)
+                            // Careful
+                            HStack(spacing: spacing) {
+                                Text("Careful")
+                                    .frame(width: columnWidth + 30, alignment: .leading)
+                                Text("\(base - 10) ft/r")
+                                    .frame(width: columnWidth, alignment: .leading)
+                            }
+                            
+                            // Normal
+                            HStack(spacing: spacing) {
+                                Text("Normal")
+                                    .frame(width: columnWidth + 30, alignment: .leading)
+                                Text("\(base) ft/r")
+                                    .frame(width: columnWidth, alignment: .leading)
+                            }
+                            .foregroundColor(burdenLevel.color)
+                            .font(.system(.subheadline, design: .default).weight(.bold))
+                            
+                            // Running
+                            HStack(spacing: spacing) {
+                                Text("Running")
+                                    .frame(width: columnWidth + 30, alignment: .leading)
+                                Text("\(base * 2) ft/r")
+                                    .frame(width: columnWidth, alignment: .leading)
                             }
                         }
+                        .font(.system(.subheadline))
                     }
                 }
-                .padding(.vertical, 12)
+                .padding(12)
                 .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
-                // Detailed Explanation
-                VStack(alignment: .leading, spacing: 16) {
-                    let slots = calculateSlots()
-                    let movement = calculateMovementRates(baseMovement: character.movement, totalSlots: slots.total)
-                    let excessSlots = max(0, slots.total - movement.maxSlots)
-                    
-                    let burdenCategory = { () -> (name: String, icon: String, color: Color) in
-                        switch movement.categoriesDrop {
-                            case 0: return ("Normal", "figure.walk", .green)
-                            case 1: return ("Heavy", "figure.walk.motion", .yellow)
-                            case 2: return ("Severe", "figure.walk.arrival", .orange)
-                            default: return ("Massive", "figure.walk.departure", .red)
-                        }
-                    }()
-                    
-                    // Burden Category Header
-                    HStack(alignment: .center, spacing: 12) {
-                        Image(systemName: burdenCategory.icon)
-                            .font(.title)
-                            .foregroundColor(burdenCategory.color)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("BURDEN STATUS")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text(burdenCategory.name)
-                                .font(.title)
-                                .fontWeight(.bold)
-                                .foregroundColor(burdenCategory.color)
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.horizontal)
-                    
+                // Burden Status
+                if excessSlots > 0 {
                     VStack(alignment: .leading, spacing: 12) {
-                        // Capacity Info
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "backpack")
-                                .foregroundColor(.secondary)
-                            Text("""
-                                Carrying \(String(format: "%.2f", slots.total)) slots\
-                                \(character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 
-                                " / 15 (with container)" : 
-                                " / 10 (no container)")
-                                """)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer(minLength: 0)
-                        }
-                        .padding(.horizontal)
-                        
-                        if slots.total > movement.maxSlots {
-                            HStack(alignment: .top, spacing: 8) {
-                                Image(systemName: "arrow.up.forward")
-                                    .foregroundColor(burdenCategory.color)
-                                Text("\(String(format: "%.2f", excessSlots)) slots over (\(Int(excessSlots)) completed uneven)")
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.horizontal)
+                        HStack {
+                            IconFrame(icon: Ph.warning.bold, color: .orange)
+                            Text("Burden Status")
+                                .font(.headline)
+                                .foregroundColor(.primary)
                         }
                         
-                        // Movement Rates
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("MOVEMENT RATES")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                                .padding(.top, 8)
-                                .padding(.horizontal)
-                            
-                            HStack(alignment: .top, spacing: 8) {
-                                Image(systemName: "timer")
-                                    .foregroundColor(.secondary)
-                                Text("Combat Round (10 seconds):")
-                                    .fontWeight(.medium)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.horizontal)
-                            
-                            HStack(alignment: .top, spacing: 8) {
-                                Image(systemName: "arrow.right")
-                                    .foregroundColor(.clear)
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("• \(movement.normal) ft with action")
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Text("• \(movement.careful) ft careful")
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Text("• \(movement.run) ft running")
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.horizontal)
-                            
-                            HStack(alignment: .top, spacing: 8) {
-                                Image(systemName: "map")
-                                    .foregroundColor(.secondary)
-                                Text("Exploration (10 minutes):")
-                                    .fontWeight(.medium)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.horizontal)
+                        let drops = min(3, Int((excessSlots + 1) / 2))
+                        let dropsText = drops == 3 ? "maximum of 3" : "\(drops)"
+                        Text("Your character is carrying \(String(format: "%.1f", excessSlots)) slots over their limit, dropping \(dropsText) burden categor\(drops == 1 ? "y" : "ies") from Normal.")
+                            .font(.system(.subheadline))
+                        
+                        Text("Straining & Boosted Movement")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                             .padding(.top, 4)
-                            
-                            HStack(alignment: .top, spacing: 8) {
-                                Image(systemName: "arrow.right")
-                                    .foregroundColor(.clear)
-                                Text("• \(movement.crawl) ft while mapping/searching")
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Spacer(minLength: 0)
-                            }
-                            .padding(.horizontal)
-                        }
                         
-                        // Straining Option
-                        if movement.categoriesDrop > 0 {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("STRAINING OPTION")
-                                    .font(.caption)
-                                    .foregroundColor(.gray)
-                                    .padding(.top, 8)
-                                    .padding(.horizontal)
-                                
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "bolt.fill")
-                                        .foregroundColor(.yellow)
-                                    Text("Strength roll to move as \(movement.categoriesDrop == 1 ? "Normal" : movement.categoriesDrop == 2 ? "Heavy" : "Severe")")
-                                        .fontWeight(.medium)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Spacer(minLength: 0)
-                                }
-                                .padding(.horizontal)
-                                
-                                HStack(alignment: .top, spacing: 8) {
-                                    Image(systemName: "arrow.right")
-                                        .foregroundColor(.clear)
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("• \(movement.normal + 5) ft in combat")
-                                            .fixedSize(horizontal: false, vertical: true)
-                                        Text("• \(movement.run + 10) ft running")
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
-                                    Spacer(minLength: 0)
-                                }
-                                .padding(.horizontal)
-                                
-                                if movement.categoriesDrop >= 3 {
-                                    HStack(alignment: .top, spacing: 8) {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundColor(.red)
-                                        Text("Massive burden may require Strength check to move at all")
-                                            .foregroundColor(.red)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                        Spacer(minLength: 0)
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.top, 4)
-                                }
-                            }
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Make a Strength roll to move as if your burden was one category lighter for the current time unit (round, 10 min, hour, or 6 hours).")
+                                .font(.system(.caption))
+                                .foregroundColor(.secondary)
+                            
+                            Text("Success: Move at the lighter burden rate for the time unit")
+                                .font(.system(.caption))
+                                .foregroundColor(.green)
+                            
+                            Text("Failure: Cannot move in the next time unit")
+                                .font(.system(.caption))
+                                .foregroundColor(.red)
+                            
+                            Text("Note: If a boosted time unit covers a smaller unit (e.g., 6 hours → round), a new roll is required to maintain the boost.")
+                                .font(.system(.caption))
+                                .foregroundColor(.secondary)
                         }
                     }
+                    .padding(12)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 }
-                .padding(.vertical, 12)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
             }
             .padding(.vertical, 8)
+        }
+    }
+    
+    private var tableHeaderRow: some View {
+        HStack(spacing: spacing) {
+            // Empty space for circle
+            Text("")
+                .frame(width: 16, alignment: .leading)
+            Text("Burden")
+                .frame(width: columnWidth - 6, alignment: .leading)
+            Text("Move")
+                .frame(width: columnWidth, alignment: .leading)
+            Text("Crawl")
+                .frame(width: columnWidth, alignment: .leading)
+        }
+        .font(.system(.subheadline))
+        .foregroundColor(.secondary)
+    }
+    
+    private func slotInfoView(title: String, value: String, isHighlighted: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.system(.subheadline))
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.system(.title2, design: .rounded).weight(.medium))
+                .foregroundColor(isHighlighted ? .red : .primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// MARK: - Supporting Types
+enum BurdenLevel: CaseIterable {
+    case normal, heavy, severe, massive
+    
+    var title: String {
+        switch self {
+        case .normal: return "Normal"
+        case .heavy: return "Heavy"
+        case .severe: return "Severe"
+        case .massive: return "Massive"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .normal: return "Moving freely"
+        case .heavy: return "Slightly encumbered"
+        case .severe: return "Heavily encumbered"
+        case .massive: return "Severely encumbered"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .normal: return .green
+        case .heavy: return .yellow
+        case .severe: return .orange
+        case .massive: return .red
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .normal: return "figure.walk"
+        case .heavy: return "figure.walk.motion"
+        case .severe: return "figure.walk.arrival"
+        case .massive: return "figure.walk.departure"
+        }
+    }
+    
+    var index: Int {
+        switch self {
+        case .normal: return 0
+        case .heavy: return 1
+        case .severe: return 2
+        case .massive: return 3
         }
     }
 }
