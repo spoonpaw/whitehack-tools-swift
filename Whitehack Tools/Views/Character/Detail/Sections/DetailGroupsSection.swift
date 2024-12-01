@@ -5,7 +5,7 @@ struct DetailGroupsSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Character Groups", icon: Ph.users.bold)) {
+        Section(header: SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)) {
             VStack(alignment: .leading, spacing: 16) {
                 // Species & Vocation
                 HStack(spacing: 16) {

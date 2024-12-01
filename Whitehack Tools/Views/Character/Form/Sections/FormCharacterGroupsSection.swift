@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormCharacterGroupsSection: View {
     @Binding var speciesGroup: String
@@ -26,7 +27,7 @@ struct FormCharacterGroupsSection: View {
     }
 
     var body: some View {
-        Section(header: Text("Group Associations").font(.headline)) {
+        Section(header: SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)) {
             VStack(spacing: 16) {
                 FormSpeciesGroupView(
                     speciesGroup: $speciesGroup,
