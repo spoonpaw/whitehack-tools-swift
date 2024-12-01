@@ -24,7 +24,7 @@ struct DetailDeftAttunementSection: View {
 // MARK: - Section Header
 private struct DeftSectionHeader: View {
     var body: some View {
-        SectionHeader(title: "The Deft", icon: Image(systemName: "person.fill"))
+        SectionHeader(title: "The Deft", icon: Ph.detective.bold)
     }
 }
 
