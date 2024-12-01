@@ -153,7 +153,7 @@ struct DetailWiseMiracleSection: View {
 // MARK: - Section Header
 private struct WiseSectionHeader: View {
     var body: some View {
-        SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
+        SectionHeader(title: "The Wise", icon: Ph.magicWand.bold)
     }
 }
 
@@ -162,7 +162,7 @@ private struct ClassInfoCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                IconFrame(icon: Ph.sparkle.bold, color: .yellow)
+                IconFrame(icon: Ph.magicWand.bold, color: .yellow)
                 Text("Class Overview")
                     .font(.headline)
                     .foregroundColor(.primary)
