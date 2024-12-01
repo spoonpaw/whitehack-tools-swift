@@ -1,5 +1,6 @@
 // CombatStatsSection.swift
 import SwiftUI
+import PhosphorSwift
 
 struct FormCombatStatsSection: View {
     @Binding var currentHP: String
@@ -10,7 +11,7 @@ struct FormCombatStatsSection: View {
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        Section(header: Text("Combat Stats").font(.headline)) {
+        Section(header: SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)) {
             VStack(alignment: .leading, spacing: 5) {
                 Text("Current HP")
                     .font(.subheadline)
