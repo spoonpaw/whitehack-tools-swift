@@ -1,5 +1,6 @@
 // FormOtherInformationSection.swift
 import SwiftUI
+import PhosphorSwift
 
 struct FormOtherInformationSection: View {
     @Binding var experience: String
