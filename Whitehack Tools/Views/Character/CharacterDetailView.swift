@@ -310,12 +310,13 @@ struct FlowLayout: View {
     private func generateContent(in geometry: GeometryProxy) -> some View {
         var width = CGFloat.zero
         var height = CGFloat.zero
+        let size = geometry.size
 
         return ZStack(alignment: .topLeading) {
             ForEach(Array(self.content.enumerated()), id: \.offset) { index, item in
                 item
                     .alignmentGuide(.leading) { dimension in
-                        if abs(width - dimension.width) > geometry.size.width {
+                        if abs(width - dimension.width) > size.width {
                             width = 0
                             height -= dimension.height + spacing
                         }

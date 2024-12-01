@@ -24,14 +24,7 @@ struct DetailDeftAttunementSection: View {
 // MARK: - Section Header
 private struct DeftSectionHeader: View {
     var body: some View {
-        Label {
-            Text("The Deft")
-                .font(.headline)
-                .foregroundColor(.primary)
-        } icon: {
-            Image(systemName: "person.fill")
-                .foregroundColor(.purple)
-        }
+        SectionHeader(title: "The Deft", icon: Image(systemName: "person.fill"))
     }
 }
 

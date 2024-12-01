@@ -153,13 +153,7 @@ struct DetailWiseMiracleSection: View {
 // MARK: - Section Header
 private struct WiseSectionHeader: View {
     var body: some View {
-        Label {
-            Text("The Wise")
-                .font(.headline)
-                .foregroundColor(.primary)
-        } icon: {
-            IconFrame(icon: Ph.sparkle.bold, color: .yellow)
-        }
+        SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
     }
 }
 

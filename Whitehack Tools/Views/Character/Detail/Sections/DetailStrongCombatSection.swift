@@ -29,14 +29,7 @@ struct DetailStrongCombatSection: View {
 // MARK: - Section Header
 private struct StrongSectionHeader: View {
     var body: some View {
-        Label {
-            Text("The Strong")
-                .font(.headline)
-                .foregroundColor(.primary)
-        } icon: {
-            Image(systemName: "figure.strengthtraining.traditional")
-                .foregroundColor(.red)
-        }
+        SectionHeader(title: "The Strong", icon: Image(systemName: "figure.strengthtraining.traditional"))
     }
 }
 

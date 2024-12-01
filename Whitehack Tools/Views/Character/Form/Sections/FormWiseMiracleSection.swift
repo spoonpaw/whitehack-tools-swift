@@ -9,12 +9,11 @@ struct FormWiseMiracleSection: View {
     
     private var extraInactiveMiracles: Int {
         print("[WISEFORM] Calculating extra inactive miracles...")
-        let willpowerValue = Int(willpower) ?? 0
-        print("[WISEFORM] Willpower value: \(willpowerValue)")
-        if willpowerValue >= 16 {
+        print("[WISEFORM] Willpower value: \(willpower)")
+        if willpower >= 16 {
             print("[WISEFORM] Willpower >= 16, adding 2 extra miracles")
             return 2
-        } else if willpowerValue >= 14 {
+        } else if willpower >= 14 {
             print("[WISEFORM] Willpower >= 14, adding 1 extra miracle")
             return 1
         }
