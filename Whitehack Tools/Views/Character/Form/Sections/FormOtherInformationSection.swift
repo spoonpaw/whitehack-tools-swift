@@ -7,7 +7,12 @@ struct FormOtherInformationSection: View {
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        Section(header: Text("Other Information").font(.headline)) {
+        Section(header: HStack(spacing: 8) {
+            Ph.info.bold
+                .frame(width: 20, height: 20)
+            Text("Additional Information")
+        }
+        .font(.headline)) {
             VStack(alignment: .leading, spacing: 5) {
                 Text("Experience (XP)")
                     .font(.subheadline)
