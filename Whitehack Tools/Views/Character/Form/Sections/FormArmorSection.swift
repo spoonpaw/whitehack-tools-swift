@@ -229,7 +229,12 @@ struct FormArmorSection: View {
                 }
             }
         } header: {
-            Label("Armor", systemImage: "shield.lefthalf.filled")
+            HStack(spacing: 8) {
+                Ph.shield.bold
+                    .frame(width: 20, height: 20)
+                Text("Armor")
+            }
+            .font(.headline)
         }
     }
 }
@@ -529,7 +534,7 @@ struct ArmorEditRow: View {
                     TextField("Armor Name", text: $name)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 } icon: {
-                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
+                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold,
                             color: armor.isShield ? .blue : .purple)
                 }
             }
