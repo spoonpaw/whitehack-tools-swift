@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct FormDeftAttunementSection: View {
     let characterClass: CharacterClass
@@ -12,7 +13,12 @@ struct FormDeftAttunementSection: View {
     
     var body: some View {
         if characterClass == .deft {
-            Section(header: Text("Deft Attunements")) {
+            Section(header: HStack(spacing: 8) {
+                Ph.detective.bold
+                    .frame(width: 20, height: 20)
+                Text("The Deft")
+            }
+            .font(.headline)) {
                 ForEach(0..<availableSlots, id: \.self) { index in
                     AttunementSlotView(
                         index: index,
