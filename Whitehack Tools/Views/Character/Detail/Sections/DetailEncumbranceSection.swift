@@ -11,49 +11,81 @@ struct DetailEncumbranceSection: View {
     private var usedSlots: Double {
         var total: Double = 0
         
+        print("🎒 [ENCUMBRANCE] Starting encumbrance calculation...")
+        
         // Add non-stashed gear slots
         for gear in character.gear where !gear.isStashed {
             let slotCount: Double
             switch gear.weight.lowercased() {
-            case "no size": slotCount = 0.01 // Will be counted in groups of 100
-            case "minor": slotCount = 0.5
-            case "regular": slotCount = 1.0
-            case "heavy": slotCount = 2.0
-            default: slotCount = 1.0
+            case "no size": 
+                slotCount = 0.01 // Will be counted in groups of 100
+                print("🎒 [ENCUMBRANCE] No size item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+            case "minor": 
+                slotCount = 0.5
+                print("🎒 [ENCUMBRANCE] Minor item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+            case "regular": 
+                slotCount = 1.0
+                print("🎒 [ENCUMBRANCE] Regular item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+            case "heavy": 
+                slotCount = 2.0
+                print("🎒 [ENCUMBRANCE] Heavy item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+            default: 
+                slotCount = 1.0
+                print("🎒 [ENCUMBRANCE] Unknown weight item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
             }
             total += slotCount * Double(gear.quantity)
         }
         
         // Add non-stashed armor slots
         for armor in character.armor where !armor.isStashed {
-            total += Double(armor.weight * armor.quantity)
+            let slots = Double(armor.weight * armor.quantity)
+            print("🎒 [ENCUMBRANCE] Armor: \(armor.name) x\(armor.quantity) = \(slots) slots")
+            total += slots
         }
         
         // Add non-stashed weapon slots
         for weapon in character.weapons where !weapon.isStashed {
             let slotCount: Double
             switch weapon.weight.lowercased() {
-            case "no size": slotCount = 0.01
-            case "minor": slotCount = 0.5
-            case "regular": slotCount = 1.0
-            case "heavy": slotCount = 2.0
-            default: slotCount = 1.0
+            case "no size": 
+                slotCount = 0.01
+                print("🎒 [ENCUMBRANCE] No size weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+            case "minor": 
+                slotCount = 0.5
+                print("🎒 [ENCUMBRANCE] Minor weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+            case "regular": 
+                slotCount = 1.0
+                print("🎒 [ENCUMBRANCE] Regular weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+            case "heavy": 
+                slotCount = 2.0
+                print("🎒 [ENCUMBRANCE] Heavy weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+            default: 
+                slotCount = 1.0
+                print("🎒 [ENCUMBRANCE] Unknown weight weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
             }
             total += slotCount * Double(weapon.quantity)
         }
         
         // Add coins (100 coins = 1 slot)
-        total += Double(character.coinsOnHand) / 100.0
+        let coinSlots = Double(character.coinsOnHand) / 100.0
+        print("🎒 [ENCUMBRANCE] Coins: \(character.coinsOnHand) coins = \(coinSlots) slots")
+        total += coinSlots
         
+        print("🎒 [ENCUMBRANCE] Total used slots: \(total)")
         return total
     }
     
     private var maxSlots: Double {
-        character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 15.0 : 10.0
+        let hasContainer = character.gear.contains(where: { $0.isContainer && $0.isEquipped })
+        let max = hasContainer ? 15.0 : 10.0
+        print("🎒 [ENCUMBRANCE] Max slots: \(max) (Container: \(hasContainer))")
+        return max
     }
     
     private var excessSlots: Double {
-        max(0, usedSlots - maxSlots)
+        let excess = max(0, usedSlots - maxSlots)
+        print("🎒 [ENCUMBRANCE] Excess slots: \(excess)")
+        return excess
     }
     
     private var burdenLevel: BurdenLevel {
@@ -127,7 +159,7 @@ struct DetailEncumbranceSection: View {
                                 Text("Available")
                                     .font(.system(.subheadline))
                                     .foregroundColor(.secondary)
-                                Text(String(format: "%d", maxSlots))
+                                Text(String(format: "%.1f", max(0, maxSlots - usedSlots)))
                                     .font(.system(.title2, design: .rounded).weight(.medium))
                                     .foregroundColor(.primary)
                             }
