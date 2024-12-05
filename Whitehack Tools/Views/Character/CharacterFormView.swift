@@ -320,7 +320,11 @@ struct CharacterFormView: View {
 private class FormData: ObservableObject {
     @Published private var _name = ""
     @Published var playerName = ""
-    @Published var selectedClass: CharacterClass = .deft
+    @Published var selectedClass: CharacterClass = .deft {
+        didSet {
+            updateWiseMiracleSlots()
+        }
+    }
     @Published var level = "1"
     
     @Published var strength = "10"
@@ -422,42 +426,47 @@ private class FormData: ObservableObject {
                 extraMiracles = 0
             }
             
-            if !wiseMiracleSlots.isEmpty {
-                print("\n🧙‍♂️ [FORM VIEW] Updating slots...")
-                // Update slot 0's base miracles
-                let baseMiracleCount = 2 + extraMiracles
-                print("🧙‍♂️ [FORM VIEW] Slot 0 should have \(baseMiracleCount) base miracles")
-                print("🧙‍♂️ [FORM VIEW] Current base miracles: \(wiseMiracleSlots[0].baseMiracles.count)")
+            // Initialize slots if they don't exist
+            let levelValue = Int(level) ?? 1
+            if wiseMiracleSlots.isEmpty {
+                print("\n🧙‍♂️ [FORM VIEW] Initializing slots...")
+                for _ in 0..<levelValue {
+                    wiseMiracleSlots.append(WiseMiracleSlot())
+                }
+            }
+            
+            print("\n🧙‍♂️ [FORM VIEW] Updating slots...")
+            // Update slot 0's base miracles
+            let baseMiracleCount = 2 + extraMiracles
+            print("🧙‍♂️ [FORM VIEW] Slot 0 should have \(baseMiracleCount) base miracles")
+            print("🧙‍♂️ [FORM VIEW] Current base miracles: \(wiseMiracleSlots[0].baseMiracles.count)")
+            
+            while wiseMiracleSlots[0].baseMiracles.count < baseMiracleCount {
+                print("🧙‍♂️ [FORM VIEW] Adding base miracle to slot 0")
+                wiseMiracleSlots[0].baseMiracles.append(WiseMiracle(isAdditional: false))
+            }
+            if wiseMiracleSlots[0].baseMiracles.count > baseMiracleCount {
+                print("🧙‍♂️ [FORM VIEW] Removing excess base miracles from slot 0")
+                wiseMiracleSlots[0].baseMiracles = Array(wiseMiracleSlots[0].baseMiracles.prefix(baseMiracleCount))
+            }
+            
+            // Ensure other slots have exactly 2 base miracles
+            for index in 1..<wiseMiracleSlots.count {
+                print("\n🧙‍♂️ [FORM VIEW] Updating slot \(index)...")
+                print("🧙‍♂️ [FORM VIEW] Current base miracles: \(wiseMiracleSlots[index].baseMiracles.count)")
                 
-                while wiseMiracleSlots[0].baseMiracles.count < baseMiracleCount {
-                    print("🧙‍♂️ [FORM VIEW] Adding base miracle to slot 0")
-                    wiseMiracleSlots[0].baseMiracles.append(WiseMiracle(isAdditional: false))
+                while wiseMiracleSlots[index].baseMiracles.count < 2 {
+                    print("🧙‍♂️ [FORM VIEW] Adding base miracle to slot \(index)")
+                    wiseMiracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
                 }
-                if wiseMiracleSlots[0].baseMiracles.count > baseMiracleCount {
-                    print("🧙‍♂️ [FORM VIEW] Removing excess base miracles from slot 0")
-                    wiseMiracleSlots[0].baseMiracles = Array(wiseMiracleSlots[0].baseMiracles.prefix(baseMiracleCount))
+                if wiseMiracleSlots[index].baseMiracles.count > 2 {
+                    print("🧙‍♂️ [FORM VIEW] Removing excess base miracles from slot \(index)")
+                    wiseMiracleSlots[index].baseMiracles = Array(wiseMiracleSlots[index].baseMiracles.prefix(2))
                 }
-                
-                // Ensure other slots have exactly 2 base miracles
-                for index in 1..<wiseMiracleSlots.count {
-                    print("\n🧙‍♂️ [FORM VIEW] Updating slot \(index)...")
-                    print("🧙‍♂️ [FORM VIEW] Current base miracles: \(wiseMiracleSlots[index].baseMiracles.count)")
-                    
-                    while wiseMiracleSlots[index].baseMiracles.count < 2 {
-                        print("🧙‍♂️ [FORM VIEW] Adding base miracle to slot \(index)")
-                        wiseMiracleSlots[index].baseMiracles.append(WiseMiracle(isAdditional: false))
-                    }
-                    if wiseMiracleSlots[index].baseMiracles.count > 2 {
-                        print("🧙‍♂️ [FORM VIEW] Removing excess base miracles from slot \(index)")
-                        wiseMiracleSlots[index].baseMiracles = Array(wiseMiracleSlots[index].baseMiracles.prefix(2))
-                    }
-                    print("🧙‍♂️ [FORM VIEW] Slot \(index) final base miracles: \(wiseMiracleSlots[index].baseMiracles.count)")
-                }
-            } else {
-                print("🧙‍♂️ [FORM VIEW] No miracle slots to update!")
             }
         } else {
-            print("🧙‍♂️ [FORM VIEW] Character is not Wise, skipping update")
+            print("🧙‍♂️ [FORM VIEW] Character is not Wise, clearing miracle slots")
+            wiseMiracleSlots.removeAll()
         }
     }
     
