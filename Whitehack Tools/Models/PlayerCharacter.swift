@@ -391,6 +391,11 @@ struct CleverKnackOptions: Codable {
         return slots[index].knack
     }
     
+    mutating func removeKnack(at index: Int) {
+        guard index < slots.count else { return }
+        slots[index].knack = nil
+    }
+    
     mutating func resetDailyPowers() {
         hasUsedUnorthodoxBonus = false
         for i in 0..<slots.count {
@@ -399,6 +404,16 @@ struct CleverKnackOptions: Codable {
     }
     
     mutating func setHasUsedCombatDie(_ value: Bool, at index: Int) {
+        guard index < slots.count else { return }
+        slots[index].hasUsedCombatDie = value
+    }
+    
+    func isKnackUsed(at index: Int) -> Bool {
+        guard index < slots.count else { return false }
+        return slots[index].hasUsedCombatDie
+    }
+    
+    mutating func setKnackUsed(at index: Int, to value: Bool) {
         guard index < slots.count else { return }
         slots[index].hasUsedCombatDie = value
     }

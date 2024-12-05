@@ -171,6 +171,7 @@ private struct CombatAndSavingThrowsCard: View {
             }
         }
         .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.green.opacity(0.05))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -453,7 +454,7 @@ struct CombatDieStatus: View {
     let hasUsedCombatDie: Bool
     
     var body: some View {
-        HStack {
+        HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Combat Die Status")
                     .font(.caption)
@@ -463,6 +464,7 @@ struct CombatDieStatus: View {
                      "✓ D10 damage die is available this battle")
                     .font(.caption)
                     .foregroundColor(hasUsedCombatDie ? .red : .green)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
             if hasUsedCombatDie {
