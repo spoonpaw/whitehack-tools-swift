@@ -145,7 +145,11 @@ private struct SpecialAbilitiesCard: View {
                     .foregroundColor(.secondary)
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color(.secondarySystemBackground))
+                    #if os(iOS)
+                    .background(Color(uiColor: .secondarySystemBackground))
+                    #else
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    #endif
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 VStack(alignment: .leading, spacing: 16) {
@@ -220,7 +224,11 @@ private struct SpecialAbilitiesCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -264,7 +272,11 @@ private struct ConflictLootingCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -306,7 +318,11 @@ private struct FlowAttacksCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -349,7 +365,11 @@ private struct AttributeBonusesCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }

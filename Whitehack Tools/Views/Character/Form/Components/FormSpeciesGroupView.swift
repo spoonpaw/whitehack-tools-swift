@@ -38,7 +38,9 @@ struct FormSpeciesGroupView: View {
             if isAddingSpecies {
                 HStack {
                     TextField("Add Species Group", text: $newSpeciesText)
+                        #if os(iOS)
                         .textInputAutocapitalization(.words)
+                        #endif
                         .focused($focusedField, equals: .speciesGroup)
                         .textFieldStyle(.roundedBorder)
                     
@@ -79,6 +81,9 @@ struct FormSpeciesGroupView: View {
                 HStack {
                     if isEditing {
                         TextField("Edit Species Group", text: $tempSpeciesText)
+                            #if os(iOS)
+                            .textInputAutocapitalization(.words)
+                            #endif
                             .textFieldStyle(.roundedBorder)
                             .onAppear { tempSpeciesText = speciesGroup }
                         
@@ -148,7 +153,14 @@ struct FormSpeciesGroupView: View {
                     }
                 }
                 .padding(10)
-                .background(Color(.systemGray6))
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        #if os(iOS)
+                        .fill(Color(uiColor: .systemGray6))
+                        #else
+                        .fill(Color(nsColor: .controlBackgroundColor))
+                        #endif
+                )
                 .cornerRadius(8)
             }
         }

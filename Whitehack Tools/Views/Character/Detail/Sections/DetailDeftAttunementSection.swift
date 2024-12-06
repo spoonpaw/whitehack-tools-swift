@@ -1,6 +1,20 @@
 import SwiftUI
 import PhosphorSwift
 
+struct DetailSectionHeader: View {
+    let title: String
+    let icon: Image
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            icon
+                .frame(width: 20, height: 20)
+            Text(title)
+                .font(.headline)
+        }
+    }
+}
+
 struct DetailDeftAttunementSection: View {
     let character: PlayerCharacter
     @Environment(\.colorScheme) var colorScheme
@@ -15,18 +29,18 @@ struct DetailDeftAttunementSection: View {
                 }
                 .padding(.vertical)
             } header: {
-                DeftSectionHeader()
+                DetailSectionHeader(title: "The Deft", icon: Ph.detective.bold)
             }
         }
     }
 }
 
 // MARK: - Section Header
-private struct DeftSectionHeader: View {
-    var body: some View {
-        SectionHeader(title: "The Deft", icon: Ph.detective.bold)
-    }
-}
+// private struct DeftSectionHeader: View {
+//     var body: some View {
+//         SectionHeader(title: "The Deft", icon: Ph.detective.bold)
+//     }
+// }
 
 // MARK: - Cards
 private struct ClassInfoCard: View {
@@ -49,7 +63,11 @@ private struct ClassInfoCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -103,7 +121,11 @@ private struct DeftFeaturesCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -168,7 +190,11 @@ private struct AttunementSlotsCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -256,7 +282,11 @@ private struct AttunementSlotsCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemGray6))
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .cornerRadius(10)
     }
 }

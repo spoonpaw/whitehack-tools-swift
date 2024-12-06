@@ -8,10 +8,10 @@ struct DetailCombatSection: View {
         Section(header: SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)) {
             VStack(spacing: 16) {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                    StatCard(label: "Attack", value: "\(character.attackValue)", icon: Ph.sword.bold)
-                    StatCard(label: "Defense", value: "\(character.defenseValue)", icon: Ph.shield.bold)
-                    StatCard(label: "Movement", value: "\(character.movement) ft", icon: Ph.personSimpleRun.bold)
-                    StatCard(label: "Initiative", value: character.initiativeBonus > 0 ? "+\(character.initiativeBonus)" : "0", icon: Ph.lightning.bold)
+                    StatCard(label: "Attack", value: "\(character.attackValue)", icon: Ph.sword.bold, description: "Your attack bonus")
+                    StatCard(label: "Defense", value: "\(character.defenseValue)", icon: Ph.shield.bold, description: "Your armor class")
+                    StatCard(label: "Movement", value: "\(character.movement) ft", icon: Ph.personSimpleRun.bold, description: "Movement speed per round")
+                    StatCard(label: "Initiative", value: character.initiativeBonus > 0 ? "+\(character.initiativeBonus)" : "0", icon: Ph.lightning.bold, description: "Initiative bonus")
                 }
                 
                 SaveColorCard(value: character.saveValue, colorName: character.saveColor)
@@ -45,7 +45,12 @@ private struct SaveColorCard: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.secondarySystemBackground))
+        .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

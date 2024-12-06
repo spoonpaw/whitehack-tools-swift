@@ -204,7 +204,11 @@ struct WeaponRow: View {
             .padding(.top, 4)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .cornerRadius(10)
     }
 }
@@ -407,9 +411,11 @@ struct WeaponEditRow: View {
                 HStack {
                     Label {
                         TextField("", text: $quantityString)
+                            .textFieldStyle(.roundedBorder)
+                            #if os(iOS)
                             .keyboardType(.numberPad)
-                            .frame(width: 60)  // Made wider to accommodate larger numbers
                             .multilineTextAlignment(.leading)
+                            #endif
                             .onChange(of: quantityString) { newValue in
                                 validateQuantityInput(newValue)
                             }
@@ -497,9 +503,12 @@ struct WeaponEditRow: View {
                     IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
                             color: isBonus ? .green : .red)
                     TextField("", text: $bonusString)
+                        .textFieldStyle(.roundedBorder)
+                        #if os(iOS)
                         .keyboardType(.numberPad)
-                        .frame(width: 60)
                         .multilineTextAlignment(.leading)
+                        #endif
+                        .frame(width: 60)
                         .onChange(of: bonusString) { newValue in
                             validateBonusInput(newValue)
                         }
@@ -582,6 +591,11 @@ struct WeaponEditRow: View {
             .padding(.top, 16)
         }
         .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .onAppear {
             // Reset state to match the input weapon
             name = weapon.name
@@ -822,6 +836,7 @@ struct CustomWeaponForm: View {
                 }
             }
             .navigationTitle(editingWeapon == nil ? "Add Weapon" : "Edit Weapon")
+            #if os(iOS)
             .navigationBarItems(
                 leading: Button("Cancel") {
                     print("❌ Cancel button tapped")
@@ -869,6 +884,59 @@ struct CustomWeaponForm: View {
                 }
                 .disabled(name.isEmpty)
             )
+            #else
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        print("❌ Cancel button tapped")
+                        isPresented = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(editingWeapon == nil ? "Save" : "Update") {
+                        print("💾 Save button tapped")
+                        if let editingWeapon = editingWeapon {
+                            let updatedWeapon = Weapon(
+                                id: editingWeapon.id,
+                                name: name,
+                                damage: damage,
+                                weight: weight,
+                                range: range,
+                                rateOfFire: rateOfFire,
+                                special: special,
+                                isEquipped: isEquipped,
+                                isStashed: isStashed,
+                                isMagical: isMagical,
+                                isCursed: isCursed,
+                                bonus: bonus
+                            )
+                            if let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {
+                                print("🔄 Updating weapon at index: \(index)")
+                                weapons[index] = updatedWeapon
+                            }
+                        } else {
+                            let newWeapon = Weapon(
+                                name: name,
+                                damage: damage,
+                                weight: weight,
+                                range: range,
+                                rateOfFire: rateOfFire,
+                                special: special,
+                                isEquipped: false,
+                                isStashed: false,
+                                isMagical: isMagical,
+                                isCursed: isCursed,
+                                bonus: bonus
+                            )
+                            print("🎯 Created new weapon: \(newWeapon.name)")
+                            weapons.append(newWeapon)
+                        }
+                        isPresented = false
+                    }
+                    .disabled(name.isEmpty)
+                }
+            }
+            #endif
         }
     }
 }
@@ -919,6 +987,7 @@ struct WeaponPickerView: View {
                 }
             }
             .navigationTitle("Add Weapon")
+            #if os(iOS)
             .navigationBarItems(
                 leading: Button("Cancel") {
                     print("❌ Cancel button tapped")
@@ -926,6 +995,17 @@ struct WeaponPickerView: View {
                     isAddingNew = false
                 }
             )
+            #else
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        print("❌ Cancel button tapped")
+                        isPresented = false
+                        isAddingNew = false
+                    }
+                }
+            }
+            #endif
         }
     }
 }

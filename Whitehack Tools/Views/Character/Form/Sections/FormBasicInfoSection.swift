@@ -7,19 +7,20 @@ struct FormBasicInfoSection: View {
     @Binding var playerName: String
     @Binding var selectedClass: CharacterClass
     @Binding var level: String
-    var focusedField: CharacterFormView.Field?
-    @FocusState.Binding var focusBinding: CharacterFormView.Field?
+    @FocusState.Binding var focusedField: CharacterFormView.Field?
 
     var body: some View {
-        Section(header: SectionHeader(title: "Basic Info", icon: Ph.identificationCard.bold)) {
+        Section {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Character Name")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 TextField("", text: $name)
-                    .textInputAutocapitalization(.words)
-                    .focused($focusBinding, equals: .name)
                     .textFieldStyle(.roundedBorder)
+                    #if os(iOS)
+                    .textInputAutocapitalization(.words)
+                    #endif
+                    .focused($focusedField, equals: .name)
             }
             
             VStack(alignment: .leading, spacing: 4) {
@@ -27,9 +28,11 @@ struct FormBasicInfoSection: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 TextField("", text: $playerName)
-                    .textInputAutocapitalization(.words)
-                    .focused($focusBinding, equals: .playerName)
                     .textFieldStyle(.roundedBorder)
+                    #if os(iOS)
+                    .textInputAutocapitalization(.words)
+                    #endif
+                    .focused($focusedField, equals: .playerName)
             }
             
             VStack(alignment: .leading, spacing: 5) {
@@ -37,33 +40,31 @@ struct FormBasicInfoSection: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 TextField("Enter level", text: $level)
-                    .keyboardType(.numberPad)
-                    .focused($focusBinding, equals: .level)
                     .textFieldStyle(.roundedBorder)
+                    #if os(iOS)
+                    .keyboardType(.numberPad)
+                    #endif
+                    .focused($focusedField, equals: .level)
             }
             
             VStack(alignment: .leading, spacing: 5) {
                 Text("Class")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Menu {
-                    Picker("Class", selection: $selectedClass) {
-                        ForEach(CharacterClass.allCases, id: \.self) { characterClass in
-                            Text(characterClass.rawValue)
-                                .tag(characterClass)
-                        }
+                Picker("", selection: $selectedClass) {
+                    ForEach(CharacterClass.allCases, id: \.self) { characterClass in
+                        Text(characterClass.rawValue)
+                            .tag(characterClass)
                     }
-                } label: {
-                    HStack {
-                        Text(selectedClass.rawValue)
-                        Spacer()
-                        Image(systemName: "chevron.up.chevron.down")
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(10)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
                 }
+                .pickerStyle(.menu)
+            }
+        } header: {
+            HStack(spacing: 8) {
+                Ph.identificationCard.bold
+                    .frame(width: 20, height: 20)
+                Text("Basic Info")
+                    .font(.headline)
             }
         }
     }

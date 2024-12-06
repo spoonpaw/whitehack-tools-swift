@@ -268,7 +268,11 @@ struct ArmorDataRow: View {
             .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .cornerRadius(10)
     }
 }
@@ -308,7 +312,9 @@ struct CustomArmorForm: View {
                 HStack {
                     TextField("Defense", value: $df, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        #if os(iOS)
                         .keyboardType(.numberPad)
+                        #endif
                     Stepper("", value: $df, in: 1...Int.max)
                         .labelsHidden()
                 }
@@ -322,7 +328,9 @@ struct CustomArmorForm: View {
                 HStack {
                     TextField("Weight", value: $weight, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        #if os(iOS)
                         .keyboardType(.numberPad)
+                        #endif
                     Stepper("", value: $weight, in: 0...Int.max)
                         .labelsHidden()
                 }
@@ -388,7 +396,9 @@ struct CustomArmorForm: View {
                 HStack {
                     TextField("Quantity", value: $quantity, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        #if os(iOS)
                         .keyboardType(.numberPad)
+                        #endif
                     Stepper("", value: $quantity, in: 1...Int.max)
                         .labelsHidden()
                 }
@@ -402,7 +412,9 @@ struct CustomArmorForm: View {
                 HStack {
                     TextField("Bonus", value: $bonus, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        #if os(iOS)
                         .keyboardType(.numberPad)
+                        #endif
                     Stepper("", value: $bonus)
                         .labelsHidden()
                 }
@@ -460,6 +472,11 @@ struct CustomArmorForm: View {
             .padding(.top, 16)
         }
         .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
     }
 }
 
@@ -643,7 +660,9 @@ struct ArmorEditRow: View {
                             IconFrame(icon: Ph.textT.bold, color: .blue)
                             TextField("Value", text: $bonusString)
                                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                                #if os(iOS)
                                 .keyboardType(.numberPad)
+                                #endif
                                 .onChange(of: bonusString) { newValue in
                                     validateBonusInput(newValue)
                                 }
@@ -711,7 +730,11 @@ struct ArmorEditRow: View {
             .padding(.horizontal)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .cornerRadius(10)
         .onAppear {
             // Reset state to match the input armor
@@ -893,7 +916,11 @@ struct ArmorRow: View {
             .padding(.horizontal)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .cornerRadius(10)
     }
 }

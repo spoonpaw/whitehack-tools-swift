@@ -1,8 +1,31 @@
 import SwiftUI
 import PhosphorSwift
 
+struct GroupPill: View {
+    let label: String
+    let value: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.body)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.secondary.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
 struct DetailGroupsSection: View {
     let character: PlayerCharacter
+    
+    private let columns = [
+        GridItem(.adaptive(minimum: 100, maximum: .infinity), spacing: 8)
+    ]
     
     var body: some View {
         Section(header: SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)) {
@@ -25,16 +48,16 @@ struct DetailGroupsSection: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                        FlowLayout(spacing: 8, content: character.affiliationGroups.map { group in
-                            AnyView(
+                        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                            ForEach(character.affiliationGroups, id: \.self) { group in
                                 Text(group)
                                     .font(.subheadline)
                                     .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.purple.opacity(0.1))
-                                    .cornerRadius(12)
-                            )
-                        })
+                                    .padding(.vertical, 8)
+                                    .background(.secondary.opacity(0.1))
+                                    .cornerRadius(8)
+                            }
+                        }
                     }
                 }
                 

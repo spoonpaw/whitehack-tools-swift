@@ -1,6 +1,9 @@
 import SwiftUI
-import UniformTypeIdentifiers
-import PhosphorSwift
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
 
 class CharacterImportViewModel: ObservableObject {
     @Published var importText = ""
@@ -63,6 +66,103 @@ class CharacterImportViewModel: ObservableObject {
     func selectAll() {
         selectedCharacters = Set(decodedCharacters.map { $0.id })
     }
+    
+    func importSelectedCharacters() {
+        let selectedChars = decodedCharacters.filter { selectedCharacters.contains($0.id) }
+        selectedChars.forEach { character in
+            let newCharacter = character.copyWithNewIDs()
+            // Add character to character store
+        }
+    }
+}
+
+extension Color {
+    static var systemBackground: Color {
+        #if os(iOS)
+        return Color(UIColor.systemBackground)
+        #else
+        return Color(NSColor.windowBackgroundColor)
+        #endif
+    }
+}
+
+struct SelectionHeaderView: View {
+    let selectedCount: Int
+    let totalCount: Int
+    let onSelectAll: () -> Void
+    let onDeselectAll: () -> Void
+    
+    var body: some View {
+        HStack {
+            HStack(spacing: 16) {
+                Button(action: onSelectAll) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 22))
+                            .foregroundColor(selectedCount == totalCount ? .secondary : .accentColor)
+                        Text("Select All")
+                            .foregroundColor(selectedCount == totalCount ? .secondary : .primary)
+                    }
+                    .font(.system(.body, design: .rounded).weight(.medium))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(selectedCount == totalCount)
+                
+                Button(action: onDeselectAll) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "circle")
+                            .font(.system(size: 22))
+                            .foregroundColor(selectedCount == 0 ? .secondary : .accentColor)
+                        Text("Deselect All")
+                            .foregroundColor(selectedCount == 0 ? .secondary : .primary)
+                    }
+                    .font(.system(.body, design: .rounded).weight(.medium))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(selectedCount == 0)
+            }
+            Spacer()
+        }
+        .padding(.bottom, 4)
+    }
+}
+
+struct ImportOptionsView: View {
+    let onFilePickerTap: () -> Void
+    let onPasteTap: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Button(action: onFilePickerTap) {
+                VStack(spacing: 8) {
+                    Image(systemName: "doc")
+                        .font(.system(size: 24))
+                    Text("Choose File")
+                        .font(.caption)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.systemBackground)
+                .cornerRadius(8)
+            }
+            
+            Button(action: onPasteTap) {
+                VStack(spacing: 8) {
+                    Image(systemName: "doc.on.clipboard")
+                        .font(.system(size: 24))
+                    Text("Paste")
+                        .font(.caption)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.systemBackground)
+                .cornerRadius(8)
+            }
+        }
+        .padding(.bottom)
+    }
 }
 
 struct CharacterImportView: View {
@@ -70,108 +170,84 @@ struct CharacterImportView: View {
     @ObservedObject var characterStore: CharacterStore
     @EnvironmentObject private var viewModel: CharacterImportViewModel
 
+    func pasteFromClipboard() {
+        #if os(iOS)
+        if let string = UIPasteboard.general.string {
+            viewModel.setImportText(string)
+        }
+        #else
+        if let string = NSPasteboard.general.string(forType: .string) {
+            viewModel.setImportText(string)
+        }
+        #endif
+    }
+    
+    func importSelectedCharacters() {
+        viewModel.importSelectedCharacters()
+        showSuccess(count: viewModel.selectedCharacters.count)
+    }
+    
+    private func showSuccess(count: Int) {
+        viewModel.showAlert(title: "Success", message: "Imported \(count) character\(count == 1 ? "" : "s")")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            dismiss()
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
                 if viewModel.showingPreview {
-                    // Selection Header
-                    HStack {
-                        HStack(spacing: 16) {
-                            Button(action: { withAnimation { viewModel.selectAll() } }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 22))
-                                        .foregroundColor(viewModel.selectedCharacters.count == viewModel.decodedCharacters.count ? .secondary : .accentColor)
-                                    Text("Select All")
-                                        .foregroundColor(viewModel.selectedCharacters.count == viewModel.decodedCharacters.count ? .secondary : .primary)
-                                }
-                                .font(.system(.body, design: .rounded).weight(.medium))
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(viewModel.selectedCharacters.count == viewModel.decodedCharacters.count)
-                            
-                            Button(action: { withAnimation { viewModel.selectedCharacters.removeAll() } }) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "circle")
-                                        .font(.system(size: 22))
-                                        .foregroundColor(viewModel.selectedCharacters.isEmpty ? .secondary : .accentColor)
-                                    Text("Deselect All")
-                                        .foregroundColor(viewModel.selectedCharacters.isEmpty ? .secondary : .primary)
-                                }
-                                .font(.system(.body, design: .rounded).weight(.medium))
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(viewModel.selectedCharacters.isEmpty)
-                        }
-                        
-                        Spacer()
-                    }
-                    .padding(.bottom, 4)
+                    SelectionHeaderView(
+                        selectedCount: viewModel.selectedCharacters.count,
+                        totalCount: viewModel.decodedCharacters.count,
+                        onSelectAll: { withAnimation { viewModel.selectAll() } },
+                        onDeselectAll: { withAnimation { viewModel.selectedCharacters.removeAll() } }
+                    )
                     
-                    // Character List
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(viewModel.decodedCharacters) { character in
-                                CharacterImportRow(character: character, isSelected: viewModel.selectedCharacters.contains(character.id))
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        withAnimation {
-                                            if viewModel.selectedCharacters.contains(character.id) {
-                                                viewModel.selectedCharacters.remove(character.id)
-                                            } else {
-                                                viewModel.selectedCharacters.insert(character.id)
-                                            }
+                                CharacterImportRow(
+                                    character: character,
+                                    isSelected: viewModel.selectedCharacters.contains(character.id)
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation {
+                                        if viewModel.selectedCharacters.contains(character.id) {
+                                            viewModel.selectedCharacters.remove(character.id)
+                                        } else {
+                                            viewModel.selectedCharacters.insert(character.id)
                                         }
                                     }
+                                }
                             }
                         }
                         .padding(.horizontal)
                     }
                 } else {
-                    // Import Options
-                    HStack(spacing: 16) {
-                        Button(action: { viewModel.showingFilePicker = true }) {
-                            VStack(spacing: 8) {
-                                Image(systemName: "doc")
-                                    .font(.system(size: 24))
-                                Text("Choose File")
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(8)
-                        }
-                        
-                        Button(action: pasteFromClipboard) {
-                            VStack(spacing: 8) {
-                                Image(systemName: "doc.on.clipboard")
-                                    .font(.system(size: 24))
-                                Text("Paste")
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color(.secondarySystemBackground))
-                            .cornerRadius(8)
-                        }
-                    }
-                    .padding(.bottom)
+                    ImportOptionsView(
+                        onFilePickerTap: { viewModel.showingFilePicker = true },
+                        onPasteTap: pasteFromClipboard
+                    )
                     
-                    // Text Editor
                     TextEditor(text: $viewModel.importText)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .padding(8)
-                        .background(Color(.secondarySystemBackground))
+                        .background(Color.systemBackground)
                         .cornerRadius(8)
                 }
             }
             .padding()
+            .background(Color.systemBackground)
+            .cornerRadius(8)
             .navigationTitle("Import Characters")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
+                #if os(iOS)
                 ToolbarItem(placement: .navigationBarLeading) {
                     if viewModel.showingPreview {
                         Button("Back") {
@@ -198,6 +274,34 @@ struct CharacterImportView: View {
                     }
                     .disabled(viewModel.importText.isEmpty || (viewModel.showingPreview && viewModel.selectedCharacters.isEmpty))
                 }
+                #else
+                ToolbarItem(placement: .cancellationAction) {
+                    if viewModel.showingPreview {
+                        Button("Back") {
+                            withAnimation {
+                                viewModel.reset()
+                            }
+                        }
+                    } else {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: viewModel.showingPreview ? importSelectedCharacters : viewModel.previewCharacters) {
+                        if viewModel.showingPreview {
+                            Text("Import")
+                                .bold()
+                        } else {
+                            Text("Preview")
+                                .bold()
+                        }
+                    }
+                    .disabled(viewModel.importText.isEmpty || (viewModel.showingPreview && viewModel.selectedCharacters.isEmpty))
+                }
+                #endif
             }
             .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
                 Button("OK", role: .cancel) { }
@@ -234,52 +338,35 @@ struct CharacterImportView: View {
             viewModel.reset()
         }
     }
-    
-    private func pasteFromClipboard() {
-        if let string = UIPasteboard.general.string {
-            viewModel.setImportText(string)
-        }
-    }
-    
-    private func importSelectedCharacters() {
-        let selectedChars = viewModel.decodedCharacters.filter { viewModel.selectedCharacters.contains($0.id) }
-        selectedChars.forEach { character in
-            let newCharacter = character.copyWithNewIDs()
-            characterStore.addCharacter(newCharacter)
-        }
-        showSuccess(count: selectedChars.count)
-    }
-    
-    private func showSuccess(count: Int) {
-        viewModel.showAlert(title: "Success", message: "Imported \(count) character\(count == 1 ? "" : "s")")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            dismiss()
-        }
-    }
 }
 
 struct CharacterImportRow: View {
     let character: PlayerCharacter
     let isSelected: Bool
     
+    var vocation: String {
+        character.vocationGroup ?? "Unknown"
+    }
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(character.name)
-                    .font(.headline)
-                Text("\(character.characterClass.rawValue) - Level \(character.level)")
-                    .font(.subheadline)
+                    .font(.system(.body, design: .rounded))
+                    .fontWeight(.medium)
+                Text("Level \(character.level) \(vocation)")
+                    .font(.system(.subheadline, design: .rounded))
                     .foregroundColor(.secondary)
             }
             
             Spacer()
             
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .foregroundColor(isSelected ? .blue : .secondary)
-                .font(.title2)
+                .font(.system(size: 22))
+                .foregroundColor(isSelected ? .accentColor : .secondary)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(10)
+        .background(Color.systemBackground)
+        .cornerRadius(8)
     }
 }

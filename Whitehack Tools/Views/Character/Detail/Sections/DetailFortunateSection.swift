@@ -25,7 +25,12 @@ struct DetailFortunateSection: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity)
             } header: {
-                SectionHeader(title: "The Fortunate", icon: Ph.crown.bold)
+                HStack(spacing: 8) {
+                    Ph.crown.bold
+                        .frame(width: 20, height: 20)
+                    Text("The Fortunate")
+                        .font(.headline)
+                }
             }
         }
     }
@@ -71,7 +76,11 @@ private struct ClassOverviewCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
         .frame(maxWidth: .infinity)
@@ -115,12 +124,20 @@ private struct FortunePowerCard: View {
                     .foregroundColor(hasUsedFortune ? .red : .green)
             }
             .padding(8)
-            .background(Color(.systemGray6))
+            #if os(iOS)
+            .background(Color(uiColor: .systemGray4))
+            #else
+            .background(Color(nsColor: .controlBackgroundColor))
+            #endif
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .frame(maxWidth: .infinity)
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
         .frame(maxWidth: .infinity)
@@ -178,7 +195,11 @@ private struct StandingCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
         .frame(maxWidth: .infinity)
@@ -217,7 +238,11 @@ private struct SignatureObjectCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
         .frame(maxWidth: .infinity)
@@ -309,7 +334,11 @@ private struct RetainersCard: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }
@@ -357,11 +386,19 @@ private struct RetainerDetailView: View {
                 Spacer()
             }
             .padding()
-            .background(Color(.systemBackground))
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(.systemGray4), lineWidth: 1)
+                    #if os(iOS)
+                    .stroke(Color(uiColor: .systemGray4), lineWidth: 1)
+                    #else
+                    .stroke(Color(nsColor: .separatorColor), lineWidth: 1)
+                    #endif
             )
         }
     }
@@ -496,7 +533,11 @@ private struct StatBadge: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color(.systemGray6))
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray4))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

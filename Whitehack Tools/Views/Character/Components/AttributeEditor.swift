@@ -4,9 +4,8 @@ struct AttributeEditor: View {
     let label: String
     @Binding var value: String
     let range: ClosedRange<Int>
-    let focusedField: CharacterFormView.Field?
+    @FocusState private var focusedField: CharacterFormView.Field?
     let field: CharacterFormView.Field
-    let focusBinding: FocusState<CharacterFormView.Field?>.Binding
     
     var body: some View {
         HStack(spacing: 20) {

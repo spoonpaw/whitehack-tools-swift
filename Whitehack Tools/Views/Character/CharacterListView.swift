@@ -1,114 +1,193 @@
 import SwiftUI
 import PhosphorSwift
+import Foundation
 
 struct CharacterListView: View {
     @EnvironmentObject private var characterStore: CharacterStore
     @EnvironmentObject private var importViewModel: CharacterImportViewModel
-    @State private var showingAddSheet = false
     @State private var showingImportSheet = false
     @State private var showingExportSheet = false
     @State private var showingDeleteConfirmation = false
     @State private var characterToDelete: IndexSet?
+    @State private var currentView: CurrentView = .list
+    @Environment(\.colorScheme) private var colorScheme
+    
+    enum CurrentView {
+        case list
+        case form
+        case detail(UUID)
+        
+        static func == (lhs: CurrentView, rhs: CurrentView) -> Bool {
+            switch (lhs, rhs) {
+            case (.list, .list):
+                return true
+            case (.form, .form):
+                return true
+            case (.detail(let id1), .detail(let id2)):
+                return id1 == id2
+            default:
+                return false
+            }
+        }
+    }
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(characterStore.characters) { character in
-                    ZStack {
-                        NavigationLink(destination: CharacterDetailView(characterId: character.id, characterStore: characterStore)) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-                        
-                        CharacterRowView(character: character)
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            print("\n [CHARACTER LIST] Delete button tapped for character")
-                            print(" [CHARACTER LIST] Character ID: \(character.id)")
-                            print(" [CHARACTER LIST] Character Name: \(character.name)")
-                            
-                            if let index = characterStore.characters.firstIndex(where: { $0.id == character.id }) {
-                                print(" [CHARACTER LIST] Found character at index: \(index)")
-                                characterToDelete = IndexSet([index])
-                                print(" [CHARACTER LIST] Set characterToDelete to: \(String(describing: characterToDelete))")
-                            } else {
-                                print(" [CHARACTER LIST] ERROR: Could not find character index!")
-                            }
-                            
-                            showingDeleteConfirmation = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                }
-                .onDelete(perform: characterStore.deleteCharacter)
+        switch currentView {
+        case .list:
+            CharacterListContent(
+                showingImportSheet: $showingImportSheet,
+                showingExportSheet: $showingExportSheet,
+                showingDeleteConfirmation: $showingDeleteConfirmation,
+                characterToDelete: $characterToDelete,
+                currentView: $currentView
+            )
+            .environmentObject(characterStore)
+            .environmentObject(importViewModel)
+            
+        case .form:
+            CharacterFormView(characterStore: characterStore, characterId: nil) { _ in
+                currentView = .list
             }
-            .navigationTitle("Characters")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack(spacing: 16) {
-                        Button(action: { showingImportSheet = true }) {
-                            HStack {
-                                Ph.arrowDown.bold
-                                    .frame(width: 16, height: 16)
-                                Text("Import")
-                            }
-                        }
-                        
-                        Button(action: { showingExportSheet = true }) {
-                            HStack {
-                                Ph.arrowUp.bold
-                                    .frame(width: 16, height: 16)
-                                Text("Export")
-                            }
-                        }
+            
+        case .detail(let characterId):
+            CharacterDetailView(characterId: characterId, characterStore: characterStore, currentView: $currentView)
+        }
+    }
+}
+
+private struct CharacterListContent: View {
+    @EnvironmentObject private var characterStore: CharacterStore
+    @EnvironmentObject private var importViewModel: CharacterImportViewModel
+    @Binding var showingImportSheet: Bool
+    @Binding var showingExportSheet: Bool
+    @Binding var showingDeleteConfirmation: Bool
+    @Binding var characterToDelete: IndexSet?
+    @Binding var currentView: CharacterListView.CurrentView
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                HStack(spacing: 16) {
+                    Button {
+                        showingImportSheet = true
+                    } label: {
+                        Text("Import")
+                            .foregroundColor(.blue)
                     }
+                    .buttonStyle(.plain)
+                    
+                    Button {
+                        showingExportSheet = true
+                    } label: {
+                        Text("Export")
+                            .foregroundColor(.blue)
+                    }
+                    .buttonStyle(.plain)
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddSheet = true }) {
-                        Label("Add Character", systemImage: "plus")
-                    }
+                Spacer()
+                
+                Button {
+                    currentView = .form
+                } label: {
+                    Image(systemName: "plus")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 16))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background(Color.systemBackground)
+            
+            Divider()
+            
+            CharacterList(
+                characterToDelete: $characterToDelete,
+                showingDeleteConfirmation: $showingDeleteConfirmation,
+                currentView: $currentView
+            )
+            .listStyle(.plain)
+        }
+        #if os(iOS)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) { EmptyView() }
+        }
+        #endif
+        .sheet(isPresented: $showingImportSheet) {
+            CharacterImportView(characterStore: characterStore)
+                .environmentObject(importViewModel)
+        }
+        .sheet(isPresented: $showingExportSheet) {
+            CharacterExportView(characters: characterStore.characters)
+        }
+        .alert("Delete Character?", isPresented: $showingDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                if let indexSet = characterToDelete {
+                    characterStore.deleteCharacter(at: indexSet)
                 }
             }
-            .sheet(isPresented: $showingAddSheet) {
-                NavigationView {
-                    CharacterFormView(characterStore: characterStore)
-                }
-            }
-            .sheet(isPresented: $showingImportSheet) {
-                CharacterImportView(characterStore: characterStore)
-                    .environmentObject(importViewModel)
-            }
-            .sheet(isPresented: $showingExportSheet) {
-                CharacterExportView(characters: characterStore.characters)
-            }
-            .alert("Delete Character?", isPresented: $showingDeleteConfirmation) {
-                Button("Delete", role: .destructive) {
-                    print("\n [CHARACTER LIST] Delete confirmed in alert")
-                    if let indexSet = characterToDelete {
-                        print(" [CHARACTER LIST] Deleting character at indices: \(indexSet)")
-                        characterStore.deleteCharacter(at: indexSet)
-                    } else {
-                        print(" [CHARACTER LIST] ERROR: No character to delete!")
-                    }
-                }
-                Button("Cancel", role: .cancel) {
-                    print("\n [CHARACTER LIST] Delete cancelled")
-                    characterToDelete = nil
-                }
-            } message: {
-                Text("This action cannot be undone.")
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+}
+
+private struct CharacterList: View {
+    @EnvironmentObject private var characterStore: CharacterStore
+    @Binding var characterToDelete: IndexSet?
+    @Binding var showingDeleteConfirmation: Bool
+    @Binding var currentView: CharacterListView.CurrentView
+    
+    var body: some View {
+        List {
+            ForEach(characterStore.characters) { character in
+                CharacterListRow(
+                    character: character,
+                    characterToDelete: $characterToDelete,
+                    showingDeleteConfirmation: $showingDeleteConfirmation,
+                    currentView: $currentView
+                )
             }
         }
     }
 }
 
-struct CharacterRowView: View {
+private struct CharacterListRow: View {
+    let character: PlayerCharacter
+    @Binding var characterToDelete: IndexSet?
+    @Binding var showingDeleteConfirmation: Bool
+    @Binding var currentView: CharacterListView.CurrentView
+    @EnvironmentObject private var characterStore: CharacterStore
+    
+    var body: some View {
+        HStack {
+            Button {
+                currentView = .detail(character.id)
+            } label: {
+                CharacterRowView(character: character)
+            }
+            .buttonStyle(.plain)
+            
+            Button {
+                if let index = characterStore.characters.firstIndex(where: { $0.id == character.id }) {
+                    characterToDelete = IndexSet([index])
+                    showingDeleteConfirmation = true
+                }
+            } label: {
+                Image(systemName: "trash")
+                    .foregroundColor(.red)
+                    .font(.system(size: 14))
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, 8)
+        }
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+        .listRowBackground(Color.clear)
+    }
+}
+
+private struct CharacterRowView: View {
     let character: PlayerCharacter
     @Environment(\.colorScheme) var colorScheme
     
@@ -143,6 +222,18 @@ struct CharacterRowView: View {
         case .brave: return Ph.shield.bold
         case .clever: return Ph.lightbulb.bold
         case .fortunate: return Ph.crown.bold
+        }
+    }
+    
+    private var backgroundFillColor: Color {
+        if colorScheme == .dark {
+            #if os(iOS)
+            return Color(uiColor: .systemGray6)
+            #else
+            return Color(nsColor: .windowBackgroundColor)
+            #endif
+        } else {
+            return .white
         }
     }
     
@@ -183,7 +274,11 @@ struct CharacterRowView: View {
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.secondary.opacity(0.15))
+                            #if os(iOS)
+                            .background(Color(uiColor: .systemGray6))
+                            #else
+                            .background(Color(nsColor: .windowBackgroundColor))
+                            #endif
                             .clipShape(Capsule())
                     }
                     
@@ -218,7 +313,7 @@ struct CharacterRowView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
+                .fill(backgroundFillColor)
                 .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         )
         .padding(.horizontal, 8)

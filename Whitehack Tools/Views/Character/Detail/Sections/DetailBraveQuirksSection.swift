@@ -14,23 +14,25 @@ struct DetailBraveQuirksSection: View {
     }
     
     var body: some View {
-        if characterClass == .brave {
-            Section {
-                VStack(alignment: .leading, spacing: 16) {
-                    ClassOverviewCard()
-                    AttributesCard()
-                    ArmorCard()
-                    QuirksCard(braveQuirkOptions: braveQuirkOptions, availableSlots: availableSlots)
-                    ComebackDiceCard(comebackDice: comebackDice)
-                    SayNoPowerCard(hasUsedSayNo: hasUsedSayNo)
-                    
-                    if hasArmorPenalty {
-                        ArmorPenaltyWarning()
+        return Group {
+            if characterClass == .brave {
+                Section {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ClassOverviewCard()
+                        AttributesCard()
+                        ArmorCard()
+                        QuirksCard(braveQuirkOptions: braveQuirkOptions, availableSlots: availableSlots)
+                        ComebackDiceCard(comebackDice: comebackDice)
+                        SayNoPowerCard(hasUsedSayNo: hasUsedSayNo)
+                        
+                        if hasArmorPenalty {
+                            ArmorPenaltyWarning()
+                        }
                     }
+                    .padding(.vertical, 8)
+                } header: {
+                    SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
                 }
-                .padding(.vertical, 8)
-            } header: {
-                SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
             }
         }
     }
@@ -44,7 +46,7 @@ struct DetailBraveQuirksSection: View {
 // MARK: - Cards
 private struct ClassOverviewCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "figure.walk.motion")
                     .foregroundColor(.red)
@@ -76,7 +78,7 @@ private struct ClassOverviewCard: View {
 
 private struct AttributesCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "person.crop.circle.badge.plus")
                     .foregroundColor(.blue)
@@ -108,7 +110,7 @@ private struct AttributesCard: View {
 
 private struct ArmorCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "shield.fill")
                     .foregroundColor(.purple)
@@ -142,23 +144,85 @@ private struct QuirksCard: View {
     let braveQuirkOptions: BraveQuirkOptions
     let availableSlots: Int
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+    private var headerView: some View {
+        return HStack {
+            Image(systemName: "sparkles")
+                .foregroundColor(.yellow)
+            Text("Quirks")
+                .font(.headline)
+                .foregroundColor(.primary)
+            Spacer()
+            Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
+                .font(.title3)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+    
+    private func emptySlotView(slotIndex: Int) -> some View {
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Empty Slot")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Text("Slot \(slotIndex + 1)")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
                 Image(systemName: "sparkles")
                     .foregroundColor(.yellow)
-                Text("Quirks")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                Spacer()
-                Text("\(braveQuirkOptions.activeQuirks.count)/\(availableSlots)")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 4)
-                    .background(Color.secondary.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            
+            Text("Select a quirk to fill this slot")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.top, 4)
+        }
+        .padding(12)
+        .background({
+            #if os(iOS)
+            return Color(uiColor: .systemGray6)
+            #else
+            return Color(nsColor: .windowBackgroundColor)
+            #endif
+        }())
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(
+            color: {
+                #if os(iOS)
+                Color(uiColor: .systemGray4).opacity(0.3)
+                #else
+                Color(nsColor: .shadowColor).opacity(0.3)
+                #endif
+            }(),
+            radius: 6,
+            x: 0,
+            y: 2
+        )
+    }
+    
+    private func quirkSlotView(slotIndex: Int) -> some View {
+        return Group {
+            if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
+                QuirkCard(
+                    quirk: quirk,
+                    slotIndex: slotIndex,
+                    protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex)
+                )
+            } else {
+                emptySlotView(slotIndex: slotIndex)
+            }
+        }
+    }
+    
+    var body: some View {
+        return VStack(alignment: .leading, spacing: 12) {
+            headerView
             
             BraveFeatureRow(
                 icon: "star.circle.fill",
@@ -167,35 +231,8 @@ private struct QuirksCard: View {
                 description: "Each slot can hold a special quirk, with eight options to choose from as you level."
             )
             
-            ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                if let quirk = braveQuirkOptions.getQuirk(at: slotIndex) {
-                    QuirkCard(quirk: quirk, slotIndex: slotIndex, protectedAlly: braveQuirkOptions.getProtectedAlly(at: slotIndex))
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Empty Slot")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                Text("Slot \(slotIndex + 1)")
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "sparkles")
-                                .foregroundColor(.yellow)
-                        }
-                        
-                        Text("Select a quirk to fill this slot")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 4)
-                    }
-                    .padding(12)
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: Color(.systemGray4).opacity(0.3), radius: 6, x: 0, y: 2)
-                }
+            ForEach(Array(0..<availableSlots), id: \.self) { (slotIndex: Int) in
+                quirkSlotView(slotIndex: slotIndex)
             }
         }
         .padding(12)
@@ -209,7 +246,7 @@ private struct ComebackDiceCard: View {
     let comebackDice: Int
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "dice.fill")
                     .foregroundColor(.green)
@@ -258,7 +295,7 @@ private struct SayNoPowerCard: View {
     let hasUsedSayNo: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "hand.raised.fill")
                     .foregroundColor(.red)
@@ -315,7 +352,7 @@ private struct BraveFeatureRow: View {
     let description: String
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        return HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .foregroundColor(color)
                 .font(.system(size: 18))
@@ -340,7 +377,7 @@ private struct QuirkCard: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(quirk.name)
@@ -373,15 +410,27 @@ private struct QuirkCard: View {
             }
         }
         .padding(12)
-        .background(colorScheme == .dark ? Color(.systemGray6) : .white)
+        .background({
+            #if os(iOS)
+            return colorScheme == .dark ? Color(uiColor: .systemGray6) : .white
+            #else
+            return colorScheme == .dark ? Color(nsColor: .windowBackgroundColor) : .white
+            #endif
+        }())
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: Color(.systemGray4).opacity(0.3), radius: 6, x: 0, y: 2)
+        .shadow(color: {
+            #if os(iOS)
+            return Color(uiColor: .systemGray4).opacity(0.3)
+            #else
+            return Color(nsColor: .shadowColor).opacity(0.3)
+            #endif
+        }(), radius: 6, x: 0, y: 2)
     }
 }
 
 private struct ArmorPenaltyWarning: View {
     var body: some View {
-        HStack {
+        return HStack {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.red)
             Text("Wearing armor heavier than cloth: -2 penalty to all task rolls")

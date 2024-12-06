@@ -3,32 +3,26 @@ import SwiftUI
 @main
 struct Whitehack_ToolsApp: App {
     @StateObject private var characterStore = CharacterStore()
-    @State private var showingImportSheet = false
     @StateObject private var importViewModel = CharacterImportViewModel()
     
     var body: some Scene {
         WindowGroup {
+            #if os(macOS)
+            CharacterListView()
+                .frame(minWidth: 375, idealWidth: 500, maxWidth: .infinity, minHeight: 600)
+                .environmentObject(characterStore)
+                .environmentObject(importViewModel)
+            #else
             NavigationView {
                 CharacterListView()
-                    .environmentObject(characterStore)
-                    .environmentObject(importViewModel)
-                Text("Select a character")
-                    .foregroundColor(.secondary)
             }
-            .navigationViewStyle(.columns)
-            .sheet(isPresented: $showingImportSheet) {
-                CharacterImportView(characterStore: characterStore)
-                    .environmentObject(importViewModel)
-            }
-            .onOpenURL { url in
-                do {
-                    let data = try String(contentsOf: url)
-                    importViewModel.setImportText(data)
-                    showingImportSheet = true
-                } catch {
-                    print("Error reading file: \(error)")
-                }
-            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .environmentObject(characterStore)
+            .environmentObject(importViewModel)
+            #endif
         }
+        #if os(macOS)
+        .windowResizability(.contentSize)
+        #endif
     }
 }

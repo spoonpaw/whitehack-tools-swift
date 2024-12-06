@@ -415,7 +415,11 @@ private struct HPCostReferenceCard: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemGray6))
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -513,7 +517,11 @@ private struct MiracleSlotCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                #if os(iOS)
+                .fill(Color(uiColor: .systemGray5))
+                #else
+                .fill(Color(nsColor: .controlBackgroundColor))
+                #endif
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -557,7 +565,11 @@ private struct MiracleSlotCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                #if os(iOS)
+                .fill(Color(uiColor: .systemGray5))
+                #else
+                .fill(Color(nsColor: .controlBackgroundColor))
+                #endif
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -581,7 +593,11 @@ private struct MiracleSlotCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                #if os(iOS)
+                .fill(Color(uiColor: .systemGray5))
+                #else
+                .fill(Color(nsColor: .controlBackgroundColor))
+                #endif
         )
         .padding(.horizontal)
         .opacity(0.5)
@@ -713,7 +729,11 @@ struct MagnitudeCard: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemGray6))
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

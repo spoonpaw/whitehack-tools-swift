@@ -22,6 +22,23 @@ struct FormWiseMiracleSection: View {
         return 0
     }
     
+    private var slotIndices: [(Int, WiseMiracleSlot)] {
+        let zipped = zip(miracleSlots.indices, miracleSlots)
+        return Array(zipped.prefix(level))
+    }
+    
+    private var backgroundFillColor: Color {
+        #if os(iOS)
+        colorScheme == .dark ? Color(uiColor: .systemGray6) : .white
+        #else
+        colorScheme == .dark ? Color(nsColor: .windowBackgroundColor) : .white
+        #endif
+    }
+    
+    private var footerText: String {
+        "Level \(level) slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))"
+    }
+    
     enum MiracleType {
         case base     // Regular miracles from the main list (0-2)
         case additional  // Additional miracles in first/second slot
@@ -30,44 +47,48 @@ struct FormWiseMiracleSection: View {
     var body: some View {
         if characterClass == .wise {
             Section {
-                ForEach(Array(zip(miracleSlots.indices, miracleSlots)).prefix(level), id: \.0) { index, slot in
-                    VStack(alignment: .leading, spacing: 12) {
-                        slotHeader(index: index)
-                        
-                        if index == 2 {
-                            magicItemSection(index: index, slot: slot)
-                        }
-                        
-                        if !slot.isMagicItem {
-                            // Base miracles
-                            ForEach(slot.baseMiracles) { miracle in
-                                miracleView(miracle, isAdditional: false, slotIndex: index)
-                            }
-                        }
-                        
-                        if index == 0 {
-                            additionalMiraclesSection(index: index)
-                        }
-                    }
-                    .padding(.vertical, 12)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(colorScheme == .dark ? Color(.systemGray6) : Color.white)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.primary.opacity(0.1), lineWidth: 1)
-                    )
-                    .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 4)
+                ForEach(slotIndices, id: \.0) { index, slot in
+                    miracleSlotView(index: index, slot: slot)
                 }
             } header: {
                 SectionHeader(title: "The Wise", icon: Ph.magicWand.bold)
             } footer: {
-                Text("Level \(level) slot gets \(extraInactiveMiracles) extra inactive miracle\(extraInactiveMiracles == 1 ? "" : "s") (Willpower \(willpower))")
+                Text(footerText)
             }
         }
+    }
+    
+    private func miracleSlotView(index: Int, slot: WiseMiracleSlot) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            slotHeader(index: index)
+            
+            if index == 2 {
+                magicItemSection(index: index, slot: slot)
+            }
+            
+            if !slot.isMagicItem {
+                // Base miracles
+                ForEach(slot.baseMiracles) { miracle in
+                    miracleView(miracle, isAdditional: false, slotIndex: index)
+                }
+            }
+            
+            if index == 0 {
+                additionalMiraclesSection(index: index)
+            }
+        }
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(backgroundFillColor)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+        )
+        .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+        .padding(.horizontal, 4)
+        .padding(.vertical, 4)
     }
     
     private func slotHeader(index: Int) -> some View {
@@ -158,7 +179,7 @@ struct FormWiseMiracleSection: View {
     }
     
     private func miracleView(_ miracle: WiseMiracle, isAdditional: Bool, slotIndex: Int) -> some View {
-        VStack(spacing: 12) {
+        return VStack(spacing: 12) {
             TextField("Miracle Name", text: binding(for: miracle, isAdditional: isAdditional).name)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .overlay(
@@ -175,7 +196,13 @@ struct FormWiseMiracleSection: View {
         .padding(12)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(colorScheme == .dark ? Color(.systemGray5) : Color(.systemGray6))
+                .fill({
+                    #if os(iOS)
+                    return colorScheme == .dark ? Color(uiColor: .systemGray5) : Color(uiColor: .systemGray6)
+                    #else
+                    return colorScheme == .dark ? Color(nsColor: .controlBackgroundColor) : Color(nsColor: .windowBackgroundColor)
+                    #endif
+                }())
         )
         .padding(.horizontal)
     }

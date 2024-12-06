@@ -1,6 +1,11 @@
-// CombatStatsSection.swift
 import SwiftUI
 import PhosphorSwift
+
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 struct FormCombatStatsSection: View {
     @Binding var currentHP: String
@@ -11,146 +16,161 @@ struct FormCombatStatsSection: View {
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        Section(header: SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Current HP")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack(spacing: 8) {
-                    // Minus button
-                    Button(action: {
-                        if let value = Int(currentHP) {
-                            currentHP = String(max(-999, value - 1))
-                        }
-                    }) {
-                        Image(systemName: "minus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.red)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                    
-                    TextField("Enter current HP", text: $currentHP)
-                        .keyboardType(.numberPad)
-                        .focused($focusedField, equals: .currentHP)
-                        .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .onChange(of: currentHP) { newValue in
-                            let filtered = newValue.filter { "-0123456789".contains($0) }
-                            // Only allow one minus sign at the start
-                            if filtered.filter({ $0 == "-" }).count > 1 {
-                                currentHP = String(filtered.prefix(1)) + filtered.dropFirst().filter { $0 != "-" }
-                            } else if filtered != newValue {
-                                currentHP = filtered
-                            }
-                            validateAndCorrectCurrentHP()
-                        }
-                    
-                    // Plus button
-                    Button(action: {
-                        if let value = Int(currentHP) {
-                            let newValue = value + 1
-                            if let maxValue = Int(maxHP), newValue <= maxValue {
-                                currentHP = String(newValue)
-                            }
-                        }
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.green)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                }
-            }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                HStack {
-                    Text("Max HP")
+        Section {
+            VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Current HP")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Text("(min: 1)")
-                        .font(.caption)
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            if let value = Int(currentHP) {
+                                currentHP = String(max(-999, value - 1))
+                            }
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        TextField("Enter current HP", text: $currentHP)
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .focused($focusedField, equals: .currentHP)
+                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .onChange(of: currentHP) { newValue in
+                                let filtered = newValue.filter { "-0123456789".contains($0) }
+                                // Only allow one minus sign at the start
+                                if filtered.filter({ $0 == "-" }).count > 1 {
+                                    currentHP = String(filtered.prefix(1)) + filtered.dropFirst().filter { $0 != "-" }
+                                } else if filtered != newValue {
+                                    currentHP = filtered
+                                }
+                                validateAndCorrectCurrentHP()
+                            }
+                        
+                        Button(action: {
+                            if let value = Int(currentHP) {
+                                let newValue = value + 1
+                                if let maxValue = Int(maxHP), newValue <= maxValue {
+                                    currentHP = String(newValue)
+                                }
+                            }
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack {
+                        Text("Max HP")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text("(min: 1)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            if let value = Int(maxHP) {
+                                maxHP = String(max(1, value - 1))
+                            }
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        TextField("Enter max HP", text: $maxHP)
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .focused($focusedField, equals: .maxHP)
+                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .onChange(of: maxHP) { newValue in
+                                // Only allow numbers
+                                let filtered = newValue.filter { "0123456789".contains($0) }
+                                if filtered != newValue {
+                                    maxHP = filtered
+                                }
+                                
+                                // Don't allow ridiculously large numbers
+                                if filtered.count > 3 {
+                                    maxHP = String(filtered.prefix(3))
+                                }
+                            }
+                            .onSubmit {
+                                validateAndCorrectMaxHP()
+                            }
+                            #if os(iOS)
+                            .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
+                                validateAndCorrectMaxHP()
+                            }
+                            #endif
+                        
+                        Button(action: {
+                            if let value = Int(maxHP) {
+                                maxHP = String(min(999, value + 1))
+                            }
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Defense Value")
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
-                }
-                HStack(spacing: 8) {
-                    // Minus button
-                    Button(action: {
-                        if let value = Int(maxHP) {
-                            maxHP = String(max(1, value - 1))
-                        }
-                    }) {
-                        Image(systemName: "minus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.red)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                    
-                    TextField("Enter max HP", text: $maxHP)
+                    TextField("Enter defense value", text: $defenseValue)
+                        #if os(iOS)
                         .keyboardType(.numberPad)
-                        .focused($focusedField, equals: .maxHP)
+                        #endif
+                        .focused($focusedField, equals: .defenseValue)
                         .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .onChange(of: maxHP) { newValue in
-                            // Only allow numbers
-                            let filtered = newValue.filter { "0123456789".contains($0) }
-                            if filtered != newValue {
-                                maxHP = filtered
-                            }
-                            
-                            // Don't allow ridiculously large numbers
-                            if filtered.count > 3 {
-                                maxHP = String(filtered.prefix(3))
-                            }
-                        }
-                        .onSubmit {
-                            validateAndCorrectMaxHP()
-                        }
-                        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
-                            validateAndCorrectMaxHP()
-                        }
-                    
-                    // Plus button
-                    Button(action: {
-                        if let value = Int(maxHP) {
-                            maxHP = String(min(999, value + 1))
-                        }
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.green)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Movement")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("Enter movement", text: $movement)
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
+                        .focused($focusedField, equals: .movement)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Save Color")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("Enter save color", text: $saveColor)
+                        .focused($focusedField, equals: .saveColor)
+                        .textFieldStyle(.roundedBorder)
                 }
             }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Defense Value")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Enter defense value", text: $defenseValue)
-                    .keyboardType(.numberPad)
-                    .focused($focusedField, equals: .defenseValue)
-                    .textFieldStyle(.roundedBorder)
-            }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Movement")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Enter movement", text: $movement)
-                    .keyboardType(.numberPad)
-                    .focused($focusedField, equals: .movement)
-                    .textFieldStyle(.roundedBorder)
-            }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Save Color")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Enter save color", text: $saveColor)
-                    .focused($focusedField, equals: .saveColor)
-                    .textFieldStyle(.roundedBorder)
+        } header: {
+            HStack(spacing: 8) {
+                Ph.boxingGlove.bold
+                    .frame(width: 20, height: 20)
+                Text("Combat Stats")
+                    .font(.headline)
             }
         }
     }
@@ -184,5 +204,29 @@ struct FormCombatStatsSection: View {
         } else if currentHP.isEmpty {
             currentHP = "0"
         }
+    }
+    
+    private func validateInput(_ newValue: String, for field: CharacterFormView.Field) {
+        let filtered = newValue.filter { "0123456789".contains($0) }
+        
+        switch field {
+        case .currentHP:
+            break
+        case .maxHP:
+            break
+        case .defenseValue:
+            break
+        case .movement:
+            break
+        @unknown default:
+            break
+        }
+        
+        #if os(iOS)
+        // Dismiss keyboard if the input is empty
+        if newValue.isEmpty {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
+        #endif
     }
 }

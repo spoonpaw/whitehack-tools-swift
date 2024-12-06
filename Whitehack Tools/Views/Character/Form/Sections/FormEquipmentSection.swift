@@ -346,7 +346,11 @@ struct FormEquipmentSection: View {
                 .padding(.horizontal)
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            #if os(iOS)
+            .background(Color(uiColor: .secondarySystemBackground))
+            #else
+            .background(Color(nsColor: .controlBackgroundColor))
+            #endif
             .cornerRadius(10)
         }
     }
@@ -367,7 +371,7 @@ struct FormEquipmentSection: View {
         @State private var isMagical: Bool
         @State private var isCursed: Bool
         @State private var isContainer: Bool
-        @State private var quantity: Int
+        @State private var quantityString: String
         
         // Button state tracking
         @State private var isProcessingAction = false
@@ -387,7 +391,7 @@ struct FormEquipmentSection: View {
             _isMagical = State(initialValue: gear.isMagical)
             _isCursed = State(initialValue: gear.isCursed)
             _isContainer = State(initialValue: gear.isContainer)
-            _quantity = State(initialValue: gear.quantity)
+            _quantityString = State(initialValue: String(gear.quantity))
         }
         
         var body: some View {
@@ -479,10 +483,12 @@ struct FormEquipmentSection: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     HStack {
-                        TextField("Quantity", value: $quantity, format: .number)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        TextField("", text: $quantityString)
+                            #if os(iOS)
                             .keyboardType(.numberPad)
-                        Stepper("", value: $quantity, in: 1...Int.max)
+                            #endif
+                            .textFieldStyle(.roundedBorder)
+                        Stepper("", value: .init(get: { Int(quantityString) ?? 1 }, set: { quantityString = "\($0)" }), in: 1...Int.max)
                             .labelsHidden()
                     }
                 }
@@ -520,7 +526,7 @@ struct FormEquipmentSection: View {
                             name: name,
                             weight: weight,
                             special: special,
-                            quantity: quantity,
+                            quantity: Int(quantityString) ?? 1,
                             isEquipped: isEquipped,
                             isStashed: isStashed,
                             isMagical: isMagical,
@@ -544,7 +550,11 @@ struct FormEquipmentSection: View {
                 .padding(.horizontal)
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            #if os(iOS)
+            .background(Color(uiColor: .secondarySystemBackground))
+            #else
+            .background(Color(nsColor: .controlBackgroundColor))
+            #endif
             .cornerRadius(10)
             .onAppear {
                 // Reset state to match the input gear
@@ -556,7 +566,7 @@ struct FormEquipmentSection: View {
                 isMagical = gear.isMagical
                 isCursed = gear.isCursed
                 isContainer = gear.isContainer
-                quantity = gear.quantity
+                quantityString = String(gear.quantity)
             }
         }
     }

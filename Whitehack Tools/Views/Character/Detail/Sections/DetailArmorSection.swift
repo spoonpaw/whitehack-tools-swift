@@ -5,185 +5,58 @@ struct DetailArmorSection: View {
     let armor: [Armor]
     let totalDefenseValue: Int
     
-    private func getWeightDisplayText(_ weight: Int) -> String {
-        return "\(weight) slot\(weight == 1 ? "" : "s")"
-    }
-    
-    private func logArmorDetails() {
-        if armor.isEmpty {
-            print("🛡️ [DetailArmorSection] Rendering empty state")
-        } else {
-            print("🛡️ [DetailArmorSection] Rendering \(armor.count) armor items")
-            print("🛡️ [DetailArmorSection] Total Defense Value: \(totalDefenseValue)")
-            let armorDetails = armor.map { "[\($0.name) - DF:\($0.df) Weight:\($0.weight) Shield:\($0.isShield)]" }
-            print("🛡️ [DetailArmorSection] Items: \(armorDetails.joined(separator: ", "))")
-            
-            armor.forEach { armorItem in
-                print("🛡️ [DetailArmorSection] Rendering armor: \(armorItem.name)")
-                print("🛡️ [DetailArmorSection] Properties - DF: \(armorItem.df), Weight: \(armorItem.weight), Shield: \(armorItem.isShield)")
-                print("🛡️ [DetailArmorSection] Status - Equipped: \(armorItem.isEquipped), Stashed: \(armorItem.isStashed)")
-                print("🛡️ [DetailArmorSection] Magic - Magical: \(armorItem.isMagical), Cursed: \(armorItem.isCursed), Bonus: \(armorItem.bonus)")
-            }
+    private var armorDefenseValue: Int {
+        armor.reduce(into: 0) { total, armor in
+            total += armor.df
         }
     }
     
+    private var armorDescription: String {
+        if armor.isEmpty {
+            return "No armor equipped"
+        } else {
+            return armor.map { "\($0.name) (\($0.df))" }.joined(separator: ", ")
+        }
+    }
+    
+    private var backgroundColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .secondarySystemGroupedBackground)
+        #else
+        return Color(nsColor: .windowBackgroundColor)
+        #endif
+    }
+    
     var body: some View {
-        Section(header: SectionHeader(title: "Armor", icon: Ph.shield.bold)) {
-            if armor.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Armor")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Text("Add armor in edit mode")
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                Ph.shieldStar.bold
+                    .frame(width: 20, height: 20)
+                Text("Armor")
+                    .font(.headline)
+            }
+            
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Defense Value")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .italic()
+                    Spacer()
+                    Text("\(totalDefenseValue)")
+                        .font(.title2)
+                        .fontWeight(.medium)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-            } else {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(armor) { armorItem in
-                        ArmorDetailRow(armor: armorItem)
-                    }
+                
+                if !armor.isEmpty {
+                    Text(armorDescription)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
-                .padding(.vertical, 8)
             }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(backgroundColor)
+            .cornerRadius(12)
         }
-        .onAppear {
-            logArmorDetails()
-        }
-    }
-}
-
-private struct ArmorDetailRow: View {
-    let armor: Armor
-    
-    private func getWeightDisplayText(_ weight: Int) -> String {
-        return "\(weight) slot\(weight == 1 ? "" : "s")"
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Name and Quantity
-            HStack {
-                Label {
-                    Text(armor.name)
-                        .font(.headline)
-                } icon: {
-                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, 
-                            color: armor.isShield ? .blue : .purple)
-                }
-                
-                Spacer()
-                
-                Text("×\(armor.quantity)")
-                    .foregroundColor(.secondary)
-                    .font(.callout)
-            }
-            
-            // Status Section
-            HStack {
-                // Equipped Status
-                Label {
-                    Text(armor.isEquipped ? "Equipped" : "Unequipped")
-                        .foregroundColor(armor.isEquipped ? .green : .secondary)
-                } icon: {
-                    IconFrame(icon: armor.isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
-                            color: armor.isEquipped ? .green : .gray)
-                }
-                
-                Spacer()
-                
-                // Location Status
-                Label {
-                    Text(armor.isStashed ? "Stashed" : "On Person")
-                        .foregroundColor(armor.isStashed ? .orange : .secondary)
-                } icon: {
-                    IconFrame(icon: armor.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: armor.isStashed ? .orange : .gray)
-                }
-            }
-            .font(.callout)
-            
-            // Weight
-            HStack {
-                Label {
-                    Text(getWeightDisplayText(armor.weight))
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-                .foregroundColor(.secondary)
-                .font(.callout)
-            }
-            
-            Divider()
-            
-            // Armor Stats
-            VStack(alignment: .leading, spacing: 4) {
-                // Magical Status
-                if armor.isMagical {
-                    Label {
-                        Text("Magical")
-                            .foregroundColor(.purple)
-                    } icon: {
-                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                    }
-                    .font(.callout)
-                }
-                
-                // Cursed Status
-                if armor.isCursed {
-                    Label {
-                        Text("Cursed")
-                            .foregroundColor(.red)
-                    } icon: {
-                        IconFrame(icon: Ph.skull.bold, color: .red)
-                    }
-                    .font(.callout)
-                }
-                
-                // Defense Value
-                Label {
-                    Text("Defense: \(armor.isShield ? "+\(armor.df)" : "\(armor.df)")")
-                        .foregroundColor(.blue)
-                } icon: {
-                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
-                }
-                .font(.callout)
-                
-                // Bonus/Penalty
-                if armor.bonus != 0 {
-                    Label {
-                        Text("\(armor.bonus >= 0 ? "+" : "-")\(abs(armor.bonus))")
-                            .foregroundColor(armor.bonus >= 0 ? .green : .red)
-                    } icon: {
-                        IconFrame(icon: armor.bonus >= 0 ? Ph.plus.bold : Ph.minus.bold,
-                                color: armor.bonus >= 0 ? .green : .red)
-                    }
-                    .font(.callout)
-                }
-                
-                // Special Properties
-                if !armor.special.isEmpty {
-                    Label {
-                        Text(armor.special)
-                            .foregroundColor(.yellow)
-                    } icon: {
-                        IconFrame(icon: Ph.star.bold, color: .yellow)
-                    }
-                    .font(.callout)
-                }
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(radius: 2)
     }
 }

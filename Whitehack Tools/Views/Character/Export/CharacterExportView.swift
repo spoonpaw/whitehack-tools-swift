@@ -2,6 +2,12 @@ import SwiftUI
 import UniformTypeIdentifiers
 import PhosphorSwift
 
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
+
 struct CharacterExportView: View {
     @Environment(\.dismiss) private var dismiss
     let characters: [PlayerCharacter]
@@ -108,13 +114,23 @@ struct CharacterExportView: View {
                 }
             }
             .navigationTitle("Export Characters")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
+                #if os(iOS)
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                 }
+                #else
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                #endif
             }
         }
         .alert(alertTitle, isPresented: $showingAlert) {
@@ -137,40 +153,46 @@ struct CharacterExportView: View {
     }
     
     private func copyToClipboard() {
-        UIPasteboard.general.string = characterData
-        showAlert(title: "Copied!", message: "\(selectedCharacters.count) characters copied to clipboard")
+        copyToClipboard(characterData)
+    }
+    
+    private func copyToClipboard(_ text: String) {
+        #if os(iOS)
+        UIPasteboard.general.string = text
+        #else
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        #endif
+        
+        alertTitle = "Success"
+        alertMessage = "Character data copied to clipboard"
+        showingAlert = true
     }
     
     private func shareCharacters() {
+        #if os(iOS)
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first
-        else { return }
-        
-        // Create a temporary file
-        let tempDir = FileManager.default.temporaryDirectory
-        let fileName = "whitehack_characters.json"
-        let fileURL = tempDir.appendingPathComponent(fileName)
-        
-        do {
-            try characterData.write(to: fileURL, atomically: true, encoding: .utf8)
-            
-            let activityVC = UIActivityViewController(
-                activityItems: [fileURL],
-                applicationActivities: nil
-            )
-            
-            if let presenter = window.rootViewController?.presentedViewController ?? window.rootViewController {
-                // For iPad
-                if let popover = activityVC.popoverPresentationController {
-                    popover.sourceView = window
-                    popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
-                    popover.permittedArrowDirections = []
-                }
-                presenter.present(activityVC, animated: true)
-            }
-        } catch {
-            showAlert(title: "Error", message: "Could not create character file for sharing.")
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            return
         }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [characterData],
+            applicationActivities: nil
+        )
+        
+        if let popoverController = activityViewController.popoverPresentationController {
+            popoverController.sourceView = window
+            popoverController.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
+            popoverController.permittedArrowDirections = []
+        }
+        
+        rootViewController.present(activityViewController, animated: true)
+        #else
+        // On macOS, we'll just copy to clipboard since sharing isn't as standardized
+        copyToClipboard(characterData)
+        #endif
     }
     
     private func showAlert(title: String, message: String) {

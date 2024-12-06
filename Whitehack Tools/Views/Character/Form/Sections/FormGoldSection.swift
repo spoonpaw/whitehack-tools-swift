@@ -21,8 +21,10 @@ struct FormGoldSection: View {
                     
                     Label {
                         TextField("Amount", value: $coinsOnHand, format: .number)
-                            .keyboardType(.numberPad)
                             .textFieldStyle(.roundedBorder)
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
                     } icon: {
                         IconFrame(icon: Ph.wallet.bold, color: .yellow)
                     }
@@ -36,8 +38,10 @@ struct FormGoldSection: View {
                     
                     Label {
                         TextField("Amount", value: $stashedCoins, format: .number)
-                            .keyboardType(.numberPad)
                             .textFieldStyle(.roundedBorder)
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
                     } icon: {
                         IconFrame(icon: Ph.vault.bold, color: .yellow)
                     }

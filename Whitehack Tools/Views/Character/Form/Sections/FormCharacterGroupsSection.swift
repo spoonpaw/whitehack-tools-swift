@@ -13,7 +13,6 @@ struct FormCharacterGroupsSection: View {
     @Binding var isVocationGroupAdded: Bool
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
-    // Helper computed property to get all available groups
     private var availableGroups: [String] {
         var groups: [String] = []
         if isSpeciesGroupAdded, !speciesGroup.isEmpty {
@@ -25,9 +24,13 @@ struct FormCharacterGroupsSection: View {
         groups.append(contentsOf: affiliationGroups)
         return groups
     }
-
+    
+    private var availableAttributes: [String] {
+        ["Strength", "Agility", "Toughness", "Intelligence", "Willpower", "Charisma"]
+    }
+    
     var body: some View {
-        Section(header: SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)) {
+        Section {
             VStack(spacing: 16) {
                 FormSpeciesGroupView(
                     speciesGroup: $speciesGroup,
@@ -46,19 +49,25 @@ struct FormCharacterGroupsSection: View {
                 FormAffiliationGroupsView(
                     affiliationGroups: $affiliationGroups,
                     newAffiliationGroup: $newAffiliationGroup,
-                    attributeGroupPairs: $attributeGroupPairs,
-                    focusedField: $focusedField
+                    attributeGroupPairs: $attributeGroupPairs
                 )
                 
                 FormAttributeGroupPairsView(
+                    attributes: availableAttributes,
                     attributeGroupPairs: $attributeGroupPairs,
-                    selectedAttribute: $selectedAttribute,
-                    newAttributeGroup: $newAttributeGroup,
-                    availableGroups: availableGroups,
-                    focusedField: $focusedField
+                    availableGroups: availableGroups
                 )
             }
             .padding(.vertical, 8)
+        } header: {
+            HStack(spacing: 8) {
+                Ph.usersThree.bold
+                    .frame(width: 20, height: 20)
+                Text("Character Groups")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            .padding(.vertical, 4)
         }
     }
 }

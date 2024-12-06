@@ -33,6 +33,9 @@ struct FormFortunateStandingCard: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 TextField("Enter standing", text: $standing)
+                    #if os(iOS)
+                    .keyboardType(.numberPad)
+                    #endif
                     .textFieldStyle(.roundedBorder)
             }
             .padding(.horizontal)
@@ -60,13 +63,10 @@ struct FormFortunateStandingCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-        )
+        .background(Color.systemBackground)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
         .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
         .listRowInsets(EdgeInsets())
@@ -111,13 +111,10 @@ struct FormFortunateSignatureObjectCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-        )
+        .background(Color.systemBackground)
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
         .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
         .listRowInsets(EdgeInsets())
@@ -168,7 +165,7 @@ struct FormFortunateSection: View {
                 
                 // Show retainer forms
                 ForEach(Array(displayedRetainers.enumerated()), id: \.element.id) { index, retainer in
-                    FormFortunateRetainerFormView(retainer: binding(for: index), slotNumber: index + 1)
+                    RetainerView(slotNumber: index + 1, retainer: binding(for: index))
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
@@ -199,15 +196,186 @@ struct FormFortunateSection: View {
     }
 }
 
-// MARK: - Retainer Form View
-struct FormFortunateRetainerFormView: View {
+// MARK: - Supporting Views
+
+struct RetainerHPControl: View {
+    @Binding var currentHP: Int
+    @Binding var maxHP: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Hit Points")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            HStack(spacing: 8) {
+                // Current HP
+                HPStepper(value: $currentHP, maxValue: maxHP, isCurrentHP: true)
+                
+                Text("/")
+                    .foregroundColor(.secondary)
+                
+                // Max HP
+                HPStepper(value: $maxHP, minValue: 1, isCurrentHP: false)
+            }
+        }
+    }
+}
+
+struct HPStepper: View {
+    @Binding var value: Int
+    var maxValue: Int?
+    var minValue: Int?
+    var isCurrentHP: Bool
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Button(action: {
+                if let min = minValue {
+                    value = max(min, value - 1)
+                } else {
+                    value = max(-999, value - 1)
+                }
+            }) {
+                Image(systemName: "minus.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+            
+            Text("\(value)")
+                .frame(width: 40)
+                .multilineTextAlignment(.center)
+            
+            Button(action: {
+                if let max = maxValue, isCurrentHP {
+                    if value < max {
+                        value += 1
+                    }
+                } else {
+                    value += 1
+                }
+            }) {
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.green)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+        }
+        .padding(8)
+        .background(Color.systemBackground)
+        .cornerRadius(8)
+    }
+}
+
+struct RetainerBasicInfo: View {
     @Binding var retainer: Retainer
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FormFortunateSectionHeader(title: "Basic Information", icon: Image(systemName: "person.text.rectangle.fill"))
+            
+            HStack(spacing: 12) {
+                FormFortunateCustomTextField(title: "Name", text: $retainer.name, icon: "person.fill")
+                FormFortunateCustomTextField(title: "Type", text: $retainer.type, icon: "tag.fill")
+            }
+        }
+    }
+}
+
+struct RetainerCombatStats: View {
+    @Binding var retainer: Retainer
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FormFortunateSectionHeader(title: "Combat Stats", icon: Image(systemName: "shield.lefthalf.filled"))
+            
+            RetainerHPControl(currentHP: $retainer.currentHP, maxHP: $retainer.maxHP)
+            
+            HStack(spacing: 16) {
+                FormFortunateStatField(label: "HD", value: $retainer.hitDice, systemImage: "heart.fill", color: .red)
+                FormFortunateStatField(label: "DF", value: $retainer.defenseFactor, systemImage: "shield.fill", color: .blue)
+                FormFortunateStatField(label: "MV", value: $retainer.movement, systemImage: "figure.walk", color: .green)
+            }
+        }
+    }
+}
+
+struct RetainerKeywords: View {
+    @Binding var retainer: Retainer
+    @Binding var isAddingKeyword: Bool
+    @Binding var newKeywordText: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                FormFortunateSectionHeader(title: "Keywords", icon: Image(systemName: "tag.fill"))
+                Spacer()
+                if !isAddingKeyword {
+                    FormFortunateAddButton {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            isAddingKeyword = true
+                            newKeywordText = ""
+                        }
+                    }
+                }
+            }
+            
+            if isAddingKeyword {
+                FormFortunateKeywordInputField(
+                    text: $newKeywordText,
+                    onCancel: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            isAddingKeyword = false
+                        }
+                    },
+                    onSave: {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            let trimmed = newKeywordText.trimmingCharacters(in: .whitespaces)
+                            if !trimmed.isEmpty {
+                                retainer.keywords.append(trimmed)
+                            }
+                            newKeywordText = ""
+                            isAddingKeyword = false
+                        }
+                    }
+                )
+            }
+            
+            if !retainer.keywords.isEmpty {
+                TagFlowView(data: retainer.keywords, spacing: 8) { keyword in
+                    KeywordTag(keyword: keyword) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            retainer.keywords.removeAll { $0 == keyword }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct RetainerNotes: View {
+    @Binding var notes: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            FormFortunateSectionHeader(title: "Notes", icon: Image(systemName: "note.text"))
+            
+            TextEditor(text: $notes)
+                .frame(height: 60)
+                .padding(8)
+                .background(Color.systemBackground)
+                .cornerRadius(8)
+        }
+    }
+}
+
+struct RetainerView: View {
     let slotNumber: Int
+    @Binding var retainer: Retainer
     @State private var isAddingKeyword = false
-    @State private var editingKeywordIndex: Int? = nil
-    @State private var tempKeywordText = ""
     @State private var newKeywordText = ""
-    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -227,173 +395,25 @@ struct FormFortunateRetainerFormView: View {
             
             // Content
             VStack(spacing: 20) {
-                // Basic Info
-                VStack(alignment: .leading, spacing: 12) {
-                    FormFortunateSectionHeader(title: "Basic Information", icon: Image(systemName: "person.text.rectangle.fill"))
-                    
-                    HStack(spacing: 12) {
-                        FormFortunateCustomTextField(title: "Name", text: $retainer.name, icon: "person.fill")
-                        FormFortunateCustomTextField(title: "Type", text: $retainer.type, icon: "tag.fill")
-                    }
-                }
-                
-                // Combat Stats
-                VStack(alignment: .leading, spacing: 12) {
-                    FormFortunateSectionHeader(title: "Combat Stats", icon: Image(systemName: "shield.lefthalf.filled"))
-                    
-                    // HP Controls
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Hit Points")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        
-                        HStack(spacing: 8) {
-                            // Current HP
-                            HStack(spacing: 8) {
-                                Button(action: {
-                                    retainer.currentHP = max(-999, retainer.currentHP - 1)
-                                }) {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                
-                                Text("\(retainer.currentHP)")
-                                    .frame(width: 40)
-                                    .multilineTextAlignment(.center)
-                                
-                                Button(action: {
-                                    if retainer.currentHP < retainer.maxHP {
-                                        retainer.currentHP += 1
-                                    }
-                                }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.green)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                            }
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                            
-                            Text("/")
-                                .foregroundColor(.secondary)
-                            
-                            // Max HP
-                            HStack(spacing: 8) {
-                                Button(action: {
-                                    if retainer.maxHP > 1 {
-                                        retainer.maxHP -= 1
-                                        retainer.currentHP = min(retainer.currentHP, retainer.maxHP)
-                                    }
-                                }) {
-                                    Image(systemName: "minus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                
-                                Text("\(retainer.maxHP)")
-                                    .frame(width: 40)
-                                    .multilineTextAlignment(.center)
-                                
-                                Button(action: {
-                                    retainer.maxHP += 1
-                                }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .font(.title2)
-                                        .foregroundColor(.green)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                            }
-                            .padding(8)
-                            .background(Color(.systemGray6))
-                            .cornerRadius(8)
-                        }
-                    }
-                    
-                    HStack(spacing: 16) {
-                        FormFortunateStatField(label: "HD", value: $retainer.hitDice, systemImage: "heart.fill", color: .red)
-                        FormFortunateStatField(label: "DF", value: $retainer.defenseFactor, systemImage: "shield.fill", color: .blue)
-                        FormFortunateStatField(label: "MV", value: $retainer.movement, systemImage: "figure.walk", color: .green)
-                    }
-                }
-                
-                // Notes
-                VStack(alignment: .leading, spacing: 12) {
-                    FormFortunateSectionHeader(title: "Notes", icon: Image(systemName: "note.text"))
-                    
-                    TextEditor(text: $retainer.notes)
-                        .frame(height: 60)
-                        .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-                }
-                
-                // Keywords
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        FormFortunateSectionHeader(title: "Keywords", icon: Image(systemName: "tag.fill"))
-                        Spacer()
-                        if !isAddingKeyword {
-                            FormFortunateAddButton {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    isAddingKeyword = true
-                                    newKeywordText = ""
-                                }
-                            }
-                        }
-                    }
-                    
-                    if isAddingKeyword {
-                        FormFortunateKeywordInputField(
-                            text: $newKeywordText,
-                            onCancel: {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    isAddingKeyword = false
-                                }
-                            },
-                            onSave: {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    let trimmed = newKeywordText.trimmingCharacters(in: .whitespaces)
-                                    if !trimmed.isEmpty {
-                                        retainer.keywords.append(trimmed)
-                                    }
-                                    newKeywordText = ""
-                                    isAddingKeyword = false
-                                }
-                            }
-                        )
-                    }
-                    
-                    if !retainer.keywords.isEmpty {
-                        TagFlowView(data: retainer.keywords, spacing: 8) { keyword in
-                            KeywordTag(keyword: keyword) {
-                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                                    retainer.keywords.removeAll { $0 == keyword }
-                                }
-                            }
-                        }
-                    }
-                }
+                RetainerBasicInfo(retainer: $retainer)
+                RetainerCombatStats(retainer: $retainer)
+                RetainerNotes(notes: $retainer.notes)
+                RetainerKeywords(
+                    retainer: $retainer,
+                    isAddingKeyword: $isAddingKeyword,
+                    newKeywordText: $newKeywordText
+                )
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-            )
+            .background(Color.systemBackground)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color(.systemGray4), lineWidth: 1)
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
             )
         }
     }
 }
-
-// MARK: - Supporting Views
 
 struct FormFortunateSectionHeader: View {
     let title: String
@@ -416,25 +436,18 @@ struct FormFortunateCustomTextField: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label(title, systemImage: icon)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            TextField(title, text: $text)
-                .textFieldStyle(FormFortunateCustomTextFieldStyle())
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .imageScale(.small)
+                    .foregroundColor(.secondary)
+                Text(title)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            TextField("", text: $text)
+                .textFieldStyle(.roundedBorder)
+                .font(.system(.body, design: .rounded))
         }
-    }
-}
-
-struct FormFortunateCustomTextFieldStyle: TextFieldStyle {
-    func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .padding(10)
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-            )
     }
 }
 
@@ -446,14 +459,22 @@ struct FormFortunateStatField: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label(label, systemImage: systemImage)
-                .font(.caption)
-                .foregroundColor(color)
-            
-            TextField(label, value: $value, format: .number)
-                .textFieldStyle(FormFortunateCustomTextFieldStyle())
+            HStack(spacing: 4) {
+                Image(systemName: systemImage)
+                    .imageScale(.small)
+                    .foregroundColor(color)
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            TextField("", value: $value, format: .number)
+                .textFieldStyle(.roundedBorder)
+                .font(.system(.body, design: .rounded))
+                .frame(width: 60)
+                .multilineTextAlignment(.center)
+                #if os(iOS)
                 .keyboardType(.numberPad)
-                .frame(maxWidth: 80)
+                #endif
         }
     }
 }
@@ -465,76 +486,61 @@ struct FormFortunateKeywordInputField: View {
     
     var body: some View {
         HStack {
-            TextField("Add Keyword", text: $text)
-                .textFieldStyle(FormFortunateCustomTextFieldStyle())
+            TextField("Enter keyword", text: $text)
+                .textFieldStyle(.roundedBorder)
+                .font(.system(.body, design: .rounded))
             
             Button(action: onCancel) {
                 Image(systemName: "xmark.circle.fill")
-                    .imageScale(.large)
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
                     .foregroundColor(.red)
             }
+            .buttonStyle(BorderlessButtonStyle())
             
             Button(action: onSave) {
                 Image(systemName: "checkmark.circle.fill")
-                    .imageScale(.large)
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
                     .foregroundColor(.green)
             }
+            .buttonStyle(BorderlessButtonStyle())
+            .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
         }
+        .padding(8)
+        .background(Color.systemBackground)
+        .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
-struct FormFortunateKeywordRow: View {
+struct KeywordTag: View {
     let keyword: String
-    let isEditing: Bool
-    @Binding var tempText: String
-    let onEdit: () -> Void
     let onDelete: () -> Void
-    let onSave: (String) -> Void
-    let onCancel: () -> Void
     
     var body: some View {
-        HStack {
-            if isEditing {
-                TextField("Edit Keyword", text: $tempText)
-                    .textFieldStyle(FormFortunateCustomTextFieldStyle())
-                
-                Button(action: onCancel) {
-                    Image(systemName: "xmark.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundColor(.red)
-                }
-                
-                Button {
-                    let trimmed = tempText.trimmingCharacters(in: .whitespaces)
-                    if !trimmed.isEmpty {
-                        onSave(trimmed)
-                    }
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundColor(.green)
-                }
-            } else {
-                Text(keyword)
-                    .foregroundColor(.primary)
-                Spacer()
-                
-                Button(action: onEdit) {
-                    Image(systemName: "pencil.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundColor(.blue)
-                }
-                
-                Button(action: onDelete) {
-                    Image(systemName: "trash.circle.fill")
-                        .imageScale(.medium)
-                        .foregroundColor(.red)
-                }
+        HStack(spacing: 4) {
+            Text(keyword)
+                .font(.system(.subheadline, design: .rounded))
+            Button(action: onDelete) {
+                Image(systemName: "xmark.circle.fill")
+                    .imageScale(.small)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundColor(.red)
             }
+            .buttonStyle(BorderlessButtonStyle())
         }
-        .padding(10)
-        .background(Color(.systemGray6))
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.systemBackground)
         .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -551,43 +557,13 @@ struct FormFortunateAddButton: View {
     }
 }
 
-struct KeywordTag: View {
-    let keyword: String
-    let onDelete: () -> Void
-    
-    var body: some View {
-        HStack(spacing: 6) {
-            Text(keyword)
-                .font(.subheadline)
-                .foregroundColor(.primary)
-            
-            Button(action: onDelete) {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.secondary)
-                    .imageScale(.small)
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color(.systemGray6))
-        .clipShape(Capsule())
-        .overlay(
-            Capsule()
-                .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-        )
-    }
-}
-
 extension View {
     func cardStyle() -> some View {
         self
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: Color(.systemGray4).opacity(0.3), radius: 10, x: 0, y: 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color.purple.opacity(0.3), lineWidth: 1)
-            )
+            .padding()
+            .background(Color.systemBackground)
+            .cornerRadius(10)
+            .shadow(radius: 2)
     }
 }
 

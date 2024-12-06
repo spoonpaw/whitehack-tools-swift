@@ -49,50 +49,55 @@ struct DetailHeaderSection: View {
                                 .font(.caption)
                                 .foregroundColor(.red)
                                 .fontWeight(.bold)
-                        } else if character.currentHP <= -2 {
-                            VStack(spacing: 2) {
-                                Text("Knocked out until healed to positive HP.")
-                                Text("Injured.")
-                                Text("Save or die in d6 rounds.")
-                            }
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                        } else if character.currentHP <= -1 {
-                            VStack(spacing: 2) {
-                                Text("Knocked out until healed to positive HP.")
-                                Text("Injured.")
-                            }
-                            .font(.caption)
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                        } else if character.currentHP == 0 {
-                            Text("Knocked out until healed to positive HP.")
+                        } else if character.currentHP <= 0 {
+                            Text("Unconscious and dying.")
                                 .font(.caption)
                                 .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                        } else if character.currentHP < character.maxHP / 2 {
-                            Text("Wounded")
-                                .font(.caption)
-                                .foregroundColor(.orange)
                         }
                     }
                     
                     if character.level < 10 {
+                        let xpProgress = character.xpProgress
+                        let currentLevelXP = character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0
+                        let nextLevelXP = character.xpForNextLevel
+                        let xpNeeded = nextLevelXP - currentLevelXP
+                        let xpGained = character.experience - currentLevelXP
+                        
                         ProgressBar(
-                            value: Double(character.experience - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0)),
-                            maxValue: Double(character.xpForNextLevel - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0)),
+                            value: Double(xpGained),
+                            maxValue: Double(xpNeeded),
                             label: "XP to Level \(character.level + 1)",
                             foregroundColor: .blue,
                             showPercentage: true,
-                            isComplete: character.experience >= character.xpForNextLevel,
-                            completionMessage: "Ready to advance to Level \(character.level + 1)!"
+                            isComplete: character.canLevelUp,
+                            completionMessage: "Ready to level up!"
                         )
                     }
                 }
-                .padding(.vertical, 8)
             }
-            .padding(.vertical, 8)
+            .padding()
         }
+    }
+}
+
+struct StatPill: View {
+    let label: String
+    let value: String
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.headline)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(.background)
+                .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 1)
+        )
     }
 }

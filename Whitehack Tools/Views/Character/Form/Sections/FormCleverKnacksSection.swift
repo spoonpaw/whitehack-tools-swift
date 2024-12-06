@@ -110,10 +110,12 @@ private struct DailyPowerCard: View {
             .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-        )
+        .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .compositingGroup()
         .shadow(color: .black.opacity(0.1), radius: 3, x: 0, y: 2)
         .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
@@ -147,10 +149,12 @@ private struct KnackSlotCard: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? Color(.systemGray6) : .white)
-        )
+        .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
         .compositingGroup()
         .shadow(color: .black.opacity(0.1), radius: 3, x: 0, y: 2)
         .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)

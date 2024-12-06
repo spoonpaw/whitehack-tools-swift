@@ -188,7 +188,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                #if os(iOS)
+                .background(Color(uiColor: .secondarySystemBackground))
+                #else
+                .background(Color(nsColor: .controlBackgroundColor))
+                #endif
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
                 // Current Burden Status
@@ -267,7 +271,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                #if os(iOS)
+                .background(Color(uiColor: .secondarySystemBackground))
+                #else
+                .background(Color(nsColor: .controlBackgroundColor))
+                #endif
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
                 // Movement Options
@@ -332,7 +340,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                #if os(iOS)
+                .background(Color(uiColor: .secondarySystemBackground))
+                #else
+                .background(Color(nsColor: .controlBackgroundColor))
+                #endif
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 
                 // Burden Status
@@ -374,7 +386,11 @@ struct DetailEncumbranceSection: View {
                         }
                     }
                     .padding(12)
-                    .background(Color(.secondarySystemBackground))
+                    #if os(iOS)
+                    .background(Color(uiColor: .secondarySystemBackground))
+                    #else
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    #endif
                     .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 }
             }

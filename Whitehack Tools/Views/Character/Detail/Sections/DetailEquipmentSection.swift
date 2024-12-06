@@ -5,8 +5,15 @@ struct DetailEquipmentSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Equipment", icon: Ph.bagSimple.bold)) {
+        Section {
             VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 8) {
+                    Ph.bagSimple.bold
+                        .frame(width: 20, height: 20)
+                    Text("Equipment")
+                        .font(.headline)
+                }
+                
                 // Gear Items
                 if character.gear.isEmpty {
                     VStack(spacing: 12) {
@@ -148,7 +155,11 @@ private struct GearDetailRow: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }

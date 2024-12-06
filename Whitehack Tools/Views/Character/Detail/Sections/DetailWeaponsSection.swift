@@ -167,7 +167,11 @@ private struct WeaponDetailRow: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        #if os(iOS)
+        .background(Color(uiColor: .systemBackground))
+        #else
+        .background(Color(nsColor: .windowBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
     }

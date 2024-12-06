@@ -441,7 +441,13 @@ private struct AttunementSlotView: View {
             // }
         }
         .padding(16)
-        .background(Color(.systemBackground))
+        .background({
+            #if os(iOS)
+            Color(uiColor: .systemBackground)
+            #else
+            Color(nsColor: .windowBackgroundColor)
+            #endif
+        }())
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
         .overlay(

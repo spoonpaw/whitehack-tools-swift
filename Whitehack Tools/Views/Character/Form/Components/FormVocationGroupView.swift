@@ -38,9 +38,11 @@ struct FormVocationGroupView: View {
             if isAddingVocation {
                 HStack {
                     TextField("Add Vocation Group", text: $newVocationText)
-                        .textInputAutocapitalization(.words)
-                        .focused($focusedField, equals: .vocationGroup)
                         .textFieldStyle(.roundedBorder)
+                        #if os(iOS)
+                        .textInputAutocapitalization(.words)
+                        #endif
+                        .focused($focusedField, equals: .vocationGroup)
                     
                     Button {
                         withAnimation(.easeInOut) {
@@ -145,8 +147,12 @@ struct FormVocationGroupView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                .padding(10)
-                .background(Color(.systemGray6))
+                .padding()
+                #if os(iOS)
+                .background(Color(uiColor: .systemGray6))
+                #else
+                .background(Color(nsColor: .controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
             }
         }
