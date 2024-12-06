@@ -255,12 +255,14 @@ struct CharacterDetailView: View {
                     DetailGroupsSection(character: character)
                     DetailWiseMiracleSection(character: character)
                 }
-                .padding()
+                .frame(maxWidth: 600)
+                .padding(.horizontal)
             } else {
                 Text("Character not found")
                     .foregroundColor(.secondary)
             }
         }
+        .frame(maxWidth: .infinity)
         .toolbar {
             #if os(iOS)
             ToolbarItem(placement: .navigationBarLeading) {
