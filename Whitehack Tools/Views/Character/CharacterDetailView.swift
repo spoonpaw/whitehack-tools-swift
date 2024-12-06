@@ -266,6 +266,7 @@ struct CharacterDetailView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     dismiss()
+                    currentView = .list
                 } label: {
                     Label("Back", systemImage: "chevron.left")
                 }
@@ -281,7 +282,7 @@ struct CharacterDetailView: View {
             #else
             ToolbarItem(placement: .automatic) {
                 Button {
-                    dismiss()
+                    currentView = .list
                 } label: {
                     Label("Back", systemImage: "chevron.left")
                 }
