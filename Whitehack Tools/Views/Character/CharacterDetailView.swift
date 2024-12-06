@@ -159,7 +159,6 @@ public struct TabButton: View {
 struct CharacterDetailView: View {
     let characterId: UUID
     @ObservedObject var characterStore: CharacterStore
-    @State private var showingEditSheet = false
     @State private var refreshTrigger = false
     @Binding var currentView: CharacterListView.CurrentView
     @Environment(\.dismiss) private var dismiss
@@ -276,7 +275,7 @@ struct CharacterDetailView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    showingEditSheet.toggle()
+                    currentView = .form(characterId)
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
@@ -292,19 +291,12 @@ struct CharacterDetailView: View {
             
             ToolbarItem(placement: .automatic) {
                 Button {
-                    showingEditSheet.toggle()
+                    currentView = .form(characterId)
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
             }
             #endif
-        }
-        .sheet(isPresented: $showingEditSheet) {
-            if let character = character {
-                NavigationView {
-                    CharacterFormView(characterStore: characterStore, characterId: character.id)
-                }
-            }
         }
     }
 }

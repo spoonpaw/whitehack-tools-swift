@@ -14,15 +14,15 @@ struct CharacterListView: View {
     
     enum CurrentView {
         case list
-        case form
+        case form(UUID?)
         case detail(UUID)
         
         static func == (lhs: CurrentView, rhs: CurrentView) -> Bool {
             switch (lhs, rhs) {
             case (.list, .list):
                 return true
-            case (.form, .form):
-                return true
+            case (.form(let id1), .form(let id2)):
+                return id1 == id2
             case (.detail(let id1), .detail(let id2)):
                 return id1 == id2
             default:
@@ -44,8 +44,8 @@ struct CharacterListView: View {
             .environmentObject(characterStore)
             .environmentObject(importViewModel)
             
-        case .form:
-            CharacterFormView(characterStore: characterStore, characterId: nil) { _ in
+        case .form(let characterId):
+            CharacterFormView(characterStore: characterStore, characterId: characterId) { _ in
                 currentView = .list
             }
             
@@ -88,7 +88,7 @@ private struct CharacterListContent: View {
                 Spacer()
                 
                 Button {
-                    currentView = .form
+                    currentView = .form(nil)
                 } label: {
                     Image(systemName: "plus")
                         .foregroundColor(.blue)
@@ -176,6 +176,16 @@ private struct CharacterListRow: View {
             } label: {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
+                    .font(.system(size: 14))
+            }
+            .buttonStyle(.plain)
+            .padding(.trailing, 8)
+            
+            Button {
+                currentView = .form(character.id)
+            } label: {
+                Image(systemName: "pencil")
+                    .foregroundColor(.blue)
                     .font(.system(size: 14))
             }
             .buttonStyle(.plain)

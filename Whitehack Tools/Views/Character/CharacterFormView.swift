@@ -48,91 +48,104 @@ struct CharacterFormView: View {
     }
     
     var body: some View {
-        ScrollView {
-            Form {
-                Section {
-                    FormBasicInfoSection(
-                        name: $formData.name,
-                        playerName: $formData.playerName,
-                        selectedClass: $formData.selectedClass,
-                        level: $formData.level,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormAttributesSection(
-                        strength: $formData.strength,
-                        agility: $formData.agility,
-                        toughness: $formData.toughness,
-                        intelligence: $formData.intelligence,
-                        willpower: $formData.willpower,
-                        charisma: $formData.charisma
-                    )
-                }
-                
-                Section {
-                    FormCharacterGroupsSection(
-                        speciesGroup: $formData.speciesGroup,
-                        vocationGroup: $formData.vocationGroup,
-                        affiliationGroups: $formData.affiliationGroups,
-                        newAffiliationGroup: $formData.newAffiliationGroup,
-                        attributeGroupPairs: $formData.attributeGroupPairs,
-                        selectedAttribute: $formData.selectedAttribute,
-                        newAttributeGroup: $formData.newAttributeGroup,
-                        isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                        isVocationGroupAdded: $formData.isVocationGroupAdded,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormCombatStatsSection(
-                        currentHP: $formData.currentHP,
-                        maxHP: $formData.maxHP,
-                        defenseValue: $formData.defenseValue,
-                        movement: $formData.movement,
-                        saveColor: $formData.saveColor,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormEncumbranceSection(
-                        currentEncumbrance: $formData.currentEncumbrance,
-                        maxEncumbrance: $formData.maxEncumbrance,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormLanguagesSection(
-                        languages: $formData.languages,
-                        newLanguage: $formData.newLanguage,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormOtherInformationSection(
-                        experience: $formData.experience,
-                        corruption: $formData.corruption,
-                        focusedField: $focusedField
-                    )
-                }
-                
-                Section {
-                    FormNotesSection(
-                        notes: $formData.notes,
-                        focusedField: $focusedField
-                    )
-                }
+        Form {
+            Section {
+                FormBasicInfoSection(
+                    name: $formData.name,
+                    playerName: $formData.playerName,
+                    selectedClass: $formData.selectedClass,
+                    level: $formData.level,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormAttributesSection(
+                    strength: $formData.strength,
+                    agility: $formData.agility,
+                    toughness: $formData.toughness,
+                    intelligence: $formData.intelligence,
+                    willpower: $formData.willpower,
+                    charisma: $formData.charisma
+                )
+            }
+            
+            Section {
+                FormCharacterGroupsSection(
+                    speciesGroup: $formData.speciesGroup,
+                    vocationGroup: $formData.vocationGroup,
+                    affiliationGroups: $formData.affiliationGroups,
+                    newAffiliationGroup: $formData.newAffiliationGroup,
+                    attributeGroupPairs: $formData.attributeGroupPairs,
+                    selectedAttribute: $formData.selectedAttribute,
+                    newAttributeGroup: $formData.newAttributeGroup,
+                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                    isVocationGroupAdded: $formData.isVocationGroupAdded,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormCombatStatsSection(
+                    currentHP: $formData.currentHP,
+                    maxHP: $formData.maxHP,
+                    defenseValue: $formData.defenseValue,
+                    movement: $formData.movement,
+                    saveColor: $formData.saveColor,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormEncumbranceSection(
+                    currentEncumbrance: $formData.currentEncumbrance,
+                    maxEncumbrance: $formData.maxEncumbrance,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormLanguagesSection(
+                    languages: $formData.languages,
+                    newLanguage: $formData.newLanguage,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormOtherInformationSection(
+                    experience: $formData.experience,
+                    corruption: $formData.corruption,
+                    focusedField: $focusedField
+                )
+            }
+            
+            Section {
+                FormNotesSection(
+                    notes: $formData.notes,
+                    focusedField: $focusedField
+                )
             }
         }
+        .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
+            #if os(iOS)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    onComplete?(nil)
+                }
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    let id = saveCharacter()
+                    onComplete?(id)
+                }
+            }
+            #else
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     onComplete?(nil)
@@ -141,10 +154,11 @@ struct CharacterFormView: View {
             
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    let characterId = saveCharacter()
-                    onComplete?(characterId)
+                    let id = saveCharacter()
+                    onComplete?(id)
                 }
             }
+            #endif
         }
     }
     
