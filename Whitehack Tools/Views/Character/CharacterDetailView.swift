@@ -266,7 +266,6 @@ struct CharacterDetailView: View {
             #if os(iOS)
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    dismiss()
                     currentView = .list
                 } label: {
                     Label("Back", systemImage: "chevron.left")

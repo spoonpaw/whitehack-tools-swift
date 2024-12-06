@@ -45,8 +45,12 @@ struct CharacterListView: View {
             .environmentObject(importViewModel)
             
         case .form(let characterId):
-            CharacterFormView(characterStore: characterStore, characterId: characterId) { _ in
-                currentView = .list
+            CharacterFormView(characterStore: characterStore, characterId: characterId) { savedId in
+                if let id = savedId ?? characterId {
+                    currentView = .detail(id)
+                } else {
+                    currentView = .list
+                }
             }
             
         case .detail(let characterId):
@@ -176,16 +180,6 @@ private struct CharacterListRow: View {
             } label: {
                 Image(systemName: "trash")
                     .foregroundColor(.red)
-                    .font(.system(size: 14))
-            }
-            .buttonStyle(.plain)
-            .padding(.trailing, 8)
-            
-            Button {
-                currentView = .form(character.id)
-            } label: {
-                Image(systemName: "pencil")
-                    .foregroundColor(.blue)
                     .font(.system(size: 14))
             }
             .buttonStyle(.plain)
