@@ -52,7 +52,7 @@ struct CharacterFormView: View {
         #if os(macOS)
         ScrollView {
             Form {
-                Section {
+                VStack(spacing: 20) {
                     FormBasicInfoSection(
                         name: $formData.name,
                         playerName: $formData.playerName,
@@ -60,9 +60,8 @@ struct CharacterFormView: View {
                         level: $formData.level,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormAttributesSection(
                         strength: $formData.strength,
                         agility: $formData.agility,
@@ -71,9 +70,8 @@ struct CharacterFormView: View {
                         willpower: $formData.willpower,
                         charisma: $formData.charisma
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormCharacterGroupsSection(
                         speciesGroup: $formData.speciesGroup,
                         vocationGroup: $formData.vocationGroup,
@@ -86,9 +84,8 @@ struct CharacterFormView: View {
                         isVocationGroupAdded: $formData.isVocationGroupAdded,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormCombatStatsSection(
                         currentHP: $formData.currentHP,
                         maxHP: $formData.maxHP,
@@ -97,40 +94,39 @@ struct CharacterFormView: View {
                         saveColor: $formData.saveColor,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormEncumbranceSection(
                         currentEncumbrance: $formData.currentEncumbrance,
                         maxEncumbrance: $formData.maxEncumbrance,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormLanguagesSection(
                         languages: $formData.languages,
                         newLanguage: $formData.newLanguage,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormOtherInformationSection(
                         experience: $formData.experience,
                         corruption: $formData.corruption,
                         focusedField: $focusedField
                     )
-                }
-                
-                Section {
+                    .frame(maxWidth: .infinity)
+                    
                     FormNotesSection(
                         notes: $formData.notes,
                         focusedField: $focusedField
                     )
+                    .frame(maxWidth: .infinity)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 40)
+                .padding(.vertical, 20)
             }
-            .padding()
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .toolbar {

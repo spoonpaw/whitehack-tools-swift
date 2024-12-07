@@ -37,6 +37,7 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .strength
                 )
+                .frame(maxWidth: .infinity)
                 
                 AttributeEditor(
                     label: "Agility",
@@ -44,6 +45,7 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .agility
                 )
+                .frame(maxWidth: .infinity)
                 
                 AttributeEditor(
                     label: "Toughness",
@@ -51,6 +53,7 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .toughness
                 )
+                .frame(maxWidth: .infinity)
                 
                 AttributeEditor(
                     label: "Intelligence",
@@ -58,6 +61,7 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .intelligence
                 )
+                .frame(maxWidth: .infinity)
                 
                 AttributeEditor(
                     label: "Willpower",
@@ -65,6 +69,7 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .willpower
                 )
+                .frame(maxWidth: .infinity)
                 
                 AttributeEditor(
                     label: "Charisma",
@@ -72,8 +77,10 @@ struct FormAttributesSection: View {
                     range: attributeRange,
                     field: .charisma
                 )
+                .frame(maxWidth: .infinity)
             }
             .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
         } header: {
             HStack(spacing: 8) {
                 Ph.barbell.bold
@@ -82,6 +89,7 @@ struct FormAttributesSection: View {
                     .font(.headline)
                     .foregroundColor(.primary)
             }
+            .frame(maxWidth: .infinity)
             .padding(.vertical, 4)
         }
     }

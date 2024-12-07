@@ -11,61 +11,66 @@ struct FormBasicInfoSection: View {
 
     var body: some View {
         Section {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Character Name")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                TextField("", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    #if os(iOS)
-                    .textInputAutocapitalization(.words)
-                    #endif
-                    .focused($focusedField, equals: .name)
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Player Name")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                TextField("", text: $playerName)
-                    .textFieldStyle(.roundedBorder)
-                    #if os(iOS)
-                    .textInputAutocapitalization(.words)
-                    #endif
-                    .focused($focusedField, equals: .playerName)
-            }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Level")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Enter level", text: $level)
-                    .textFieldStyle(.roundedBorder)
-                    #if os(iOS)
-                    .keyboardType(.numberPad)
-                    #endif
-                    .focused($focusedField, equals: .level)
-            }
-            
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Class")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Picker("Select Class", selection: $selectedClass) {
-                    ForEach(CharacterClass.allCases, id: \.self) { characterClass in
-                        Text(characterClass.rawValue)
-                            .tag(characterClass)
-                    }
+            VStack(spacing: 16) {
+                VStack(alignment: .center, spacing: 5) {
+                    Text("Name")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("", text: $name)
+                        .focused($focusedField, equals: .name)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                 }
-                .pickerStyle(.menu)
+                
+                VStack(alignment: .center, spacing: 5) {
+                    Text("Player Name")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("", text: $playerName)
+                        .focused($focusedField, equals: .playerName)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                
+                VStack(alignment: .center, spacing: 5) {
+                    Text("Level")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    TextField("", text: $level)
+                        .focused($focusedField, equals: .level)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                
+                VStack(alignment: .center, spacing: 5) {
+                    Text("Character Class")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Picker("", selection: $selectedClass) {
+                        ForEach(CharacterClass.allCases, id: \.self) { characterClass in
+                            Text(characterClass.rawValue)
+                                .tag(characterClass)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: .infinity)
+                }
             }
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
         } header: {
             HStack(spacing: 8) {
                 Ph.identificationCard.bold
                     .frame(width: 20, height: 20)
-                Text("Basic Info")
+                Text("Basic Information")
                     .font(.headline)
+                    .foregroundColor(.primary)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
         }
     }
 }
