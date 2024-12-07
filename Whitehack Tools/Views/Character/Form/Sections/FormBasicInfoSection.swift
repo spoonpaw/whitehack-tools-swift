@@ -42,33 +42,48 @@ struct FormBasicInfoSection: View {
                     Text("Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    TextField("", text: $name)
-                        .focused($focusedField, equals: .name)
-                        .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 300)
+                    HStack {
+                        Spacer()
+                        TextField("", text: $name)
+                            .focused($focusedField, equals: .name)
+                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                    }
+                    .frame(maxWidth: 300)
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
                     Text("Player Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    TextField("", text: $playerName)
-                        .focused($focusedField, equals: .playerName)
-                        .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 300)
+                    HStack {
+                        Spacer()
+                        TextField("", text: $playerName)
+                            .focused($focusedField, equals: .playerName)
+                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                    }
+                    .frame(maxWidth: 300)
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
                     Text("Level")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    TextField("", text: $level)
-                        .focused($focusedField, equals: .level)
-                        .textFieldStyle(.roundedBorder)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 300)
+                    HStack {
+                        Spacer()
+                        TextField("", text: $level)
+                            .focused($focusedField, equals: .level)
+                            .textFieldStyle(.roundedBorder)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                        Spacer()
+                    }
+                    .frame(maxWidth: 300)
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
@@ -76,21 +91,25 @@ struct FormBasicInfoSection: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     #if os(iOS)
-                    Menu {
-                        ForEach(CharacterClass.allCases, id: \.self) { characterClass in
-                            Button(characterClass.rawValue) {
-                                selectedClass = characterClass
+                    HStack {
+                        Spacer()
+                        Menu {
+                            ForEach(CharacterClass.allCases, id: \.self) { characterClass in
+                                Button(characterClass.rawValue) {
+                                    selectedClass = characterClass
+                                }
                             }
+                        } label: {
+                            TextField("", text: .constant(selectedClass.rawValue))
+                                .multilineTextAlignment(.center)
+                                .textFieldStyle(.roundedBorder)
+                                .disabled(true)
+                                .frame(maxWidth: .infinity)
                         }
-                    } label: {
-                        TextField("", text: .constant(selectedClass.rawValue))
-                            .multilineTextAlignment(.center)
-                            .textFieldStyle(.roundedBorder)
-                            .disabled(true)
-                            .frame(maxWidth: .infinity)
+                        .buttonStyle(.plain)
+                        Spacer()
                     }
-                    .frame(maxWidth: .infinity)
-                    .buttonStyle(.plain)
+                    .frame(maxWidth: 300)
                     #else
                     Picker("", selection: $selectedClass) {
                         ForEach(CharacterClass.allCases, id: \.self) { characterClass in
