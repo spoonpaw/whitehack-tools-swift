@@ -8,10 +8,10 @@ struct DetailCombatSection: View {
         Section(header: SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)) {
             VStack(spacing: 16) {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                    StatCard(label: "Attack", value: "\(character.attackValue)", icon: Ph.sword.bold, description: "Your attack bonus")
-                    StatCard(label: "Defense", value: "\(character.defenseValue)", icon: Ph.shield.bold, description: "Your armor class")
-                    StatCard(label: "Movement", value: "\(character.movement) ft", icon: Ph.personSimpleRun.bold, description: "Movement speed per round")
-                    StatCard(label: "Initiative", value: character.initiativeBonus > 0 ? "+\(character.initiativeBonus)" : "0", icon: Ph.lightning.bold, description: "Initiative bonus")
+                    StatCard(label: "Attack", value: "\(character.attackValue)", icon: AnyView(Ph.sword.bold))
+                    StatCard(label: "Defense", value: "\(character.defenseValue)", icon: AnyView(Ph.shield.bold))
+                    StatCard(label: "Movement", value: "\(character.movement) ft", icon: AnyView(Ph.personSimpleRun.bold))
+                    StatCard(label: "Initiative", value: character.initiativeBonus > 0 ? "+\(character.initiativeBonus)" : "0", icon: AnyView(Ph.lightning.bold))
                 }
                 
                 SaveColorCard(value: character.saveValue, colorName: character.saveColor)

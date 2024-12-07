@@ -1,146 +1,74 @@
+import SwiftUICore
 import SwiftUI
 import PhosphorSwift
 
-struct DetailStatsSection: View {
+public struct DetailStatsSection: View {
     let character: PlayerCharacter
     
-    private var backgroundColor: Color {
-        #if os(iOS)
-        return Color(uiColor: .secondarySystemGroupedBackground)
-        #else
-        return Color(nsColor: .windowBackgroundColor)
-        #endif
-    }
-    
-    private func getAttributeDescription(_ value: Int) -> String {
-        if value >= 16 {
-            return "Exceptional (+2)"
-        } else if value >= 13 {
-            return "Above Average (+1)"
-        } else if value >= 8 {
-            return "Average"
-        } else if value >= 6 {
-            return "Below Average (-1)"
-        } else {
-            return "Poor (-2)"
-        }
-    }
-    
-    private func logCharacterStats() {
-        print("\n [DETAIL STATS] Displaying stats for character: \(character.name)")
-        print(" [DETAIL STATS] Using custom attributes: \(character.useCustomAttributes)")
-        if character.useCustomAttributes {
-            print(" [DETAIL STATS] Custom attributes:")
-            for attr in character.customAttributes {
-                print("   - \(attr.name): \(attr.value)")
-            }
-        }
-    }
-    
-    var body: some View {
+    public var body: some View {
+        
         Section {
             VStack(spacing: 16) {
                 if character.useCustomAttributes {
+                    // Display custom attributes
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                         ForEach(character.customAttributes) { attribute in
                             StatCard(
                                 label: attribute.name,
                                 value: "\(attribute.value)",
-                                icon: Ph.star.bold,
-                                description: getAttributeDescription(attribute.value)
+                                icon: AnyView(attribute.icon.iconView)
                             )
                         }
                     }
                 } else {
+                    // Display default attributes
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                         StatCard(
                             label: "Strength",
                             value: "\(character.strength)",
-                            icon: Ph.barbell.bold,
-                            description: getAttributeDescription(character.strength)
+                            icon: AnyView(Ph.barbell.bold)
                         )
                         
                         StatCard(
-                            label: "Agility",
+                            label: "Dexterity",
                             value: "\(character.agility)",
-                            icon: Ph.personSimpleRun.bold,
-                            description: getAttributeDescription(character.agility)
+                            icon: AnyView(Ph.personSimpleRun.bold)
                         )
                         
                         StatCard(
-                            label: "Toughness",
+                            label: "Constitution",
                             value: "\(character.toughness)",
-                            icon: Ph.heart.bold,
-                            description: getAttributeDescription(character.toughness)
+                            icon: AnyView(Ph.heart.bold)
                         )
                         
                         StatCard(
                             label: "Intelligence",
                             value: "\(character.intelligence)",
-                            icon: Ph.brain.bold,
-                            description: getAttributeDescription(character.intelligence)
+                            icon: AnyView(Ph.brain.bold)
                         )
                         
                         StatCard(
                             label: "Willpower",
                             value: "\(character.willpower)",
-                            icon: Ph.eye.bold,
-                            description: getAttributeDescription(character.willpower)
+                            icon: AnyView(Ph.eye.bold)
                         )
                         
                         StatCard(
                             label: "Charisma",
                             value: "\(character.charisma)",
-                            icon: Ph.star.bold,
-                            description: getAttributeDescription(character.charisma)
+                            icon: AnyView(Ph.star.bold)
                         )
                     }
                 }
             }
             .padding(.vertical, 8)
-            .onAppear {
-                logCharacterStats()
-            }
         } header: {
             HStack(spacing: 8) {
-                Ph.chartBar.bold
+                AnyView(Ph.chartBar.bold)
                     .frame(width: 20, height: 20)
                 Text("Attributes")
                     .font(.headline)
             }
         }
-    }
-}
-
-struct StatCard: View {
-    let label: String
-    let value: String
-    let icon: Image
-    let description: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                icon
-                    .frame(width: 20, height: 20)
-                Text(label)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Text(value)
-                    .font(.title2)
-                    .fontWeight(.medium)
-            }
-            
-            Text(description)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.background)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-        )
     }
 }

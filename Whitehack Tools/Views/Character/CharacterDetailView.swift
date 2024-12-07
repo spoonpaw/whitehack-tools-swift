@@ -16,11 +16,10 @@ public struct SectionHeader: View {
     }
 }
 
-public struct AttributeCard: View, Equatable {
+public struct StatCard: View, Equatable {
     let label: String
     let value: String
-    let description: String
-    let icon: Image
+    let icon: AnyView
     @Environment(\.colorScheme) private var colorScheme
 
     private var backgroundColor: Color {
@@ -31,50 +30,34 @@ public struct AttributeCard: View, Equatable {
         #endif
     }
 
-    public static func == (lhs: AttributeCard, rhs: AttributeCard) -> Bool {
+    public static func == (lhs: StatCard, rhs: StatCard) -> Bool {
         lhs.label == rhs.label &&
-        lhs.value == rhs.value &&
-        lhs.description == rhs.description
+        lhs.value == rhs.value
     }
     
-    public init(label: String, value: String, icon: Image, description: String = "") {
+    public init(label: String, value: String, icon: AnyView) {
         self.label = label
         self.value = value
-        self.description = description
         self.icon = icon
     }
 
     public var body: some View {
         VStack(alignment: .center, spacing: 8) {
             icon
-                .font(.system(size: 20))
-                .foregroundColor(.blue)
-                .frame(width: 32, height: 32)
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(8)
+                .frame(width: 24, height: 24)
+                .foregroundColor(.accentColor)
             
             Text(label)
-                .font(.headline)
-                .foregroundColor(.primary)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
             
             Text(value)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.blue)
-            
-            if !description.isEmpty {
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+                .font(.headline)
         }
+        .frame(maxWidth: .infinity)
         .padding()
-        .frame(height: 220.5)  // Force all cards to be the same height
         .background(backgroundColor)
         .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -177,6 +160,20 @@ struct CharacterDetailView: View {
         #endif
     }
 
+    private func getAttributeDescription(_ value: Int) -> String {
+        if value >= 16 {
+            return "Exceptional (+2)"
+        } else if value >= 13 {
+            return "Above Average (+1)"
+        } else if value >= 8 {
+            return "Average"
+        } else if value >= 6 {
+            return "Below Average (-1)"
+        } else {
+            return "Poor (-2)"
+        }
+    }
+    
     var body: some View {
         ScrollView {
             if let character = character {
@@ -223,47 +220,53 @@ struct CharacterDetailView: View {
                         VStack(spacing: 16) {
                             if character.useCustomAttributes {
                                 // Display custom attributes
-                                ForEach(character.customAttributes) { attribute in
-                                    HStack {
-                                        Text(attribute.name)
-                                            .font(.headline)
-                                            .frame(width: 100, alignment: .leading)
-                                        
-                                        Text("\(attribute.value)")
-                                            .font(.body)
-                                            .frame(width: 40)
-                                        
-                                        let modifier = (attribute.value - 10) / 2
-                                        Text("(\(modifier >= 0 ? "+" : "")\(modifier))")
-                                            .font(.body)
-                                            .foregroundColor(.secondary)
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                    ForEach(character.customAttributes) { attribute in
+                                        StatCard(
+                                            label: attribute.name,
+                                            value: "\(attribute.value)",
+                                            icon: AnyView(attribute.icon.iconView)
+                                        )
                                     }
                                 }
                             } else {
                                 // Display default attributes
-                                let attributes = [
-                                    ("STR", character.strength),
-                                    ("DEX", character.agility),
-                                    ("CON", character.toughness),
-                                    ("INT", character.intelligence),
-                                    ("WIS", character.willpower),
-                                    ("CHA", character.charisma)
-                                ]
-                                ForEach(attributes, id: \.0) { attribute, value in
-                                    HStack {
-                                        Text(attribute)
-                                            .font(.headline)
-                                            .frame(width: 50, alignment: .leading)
-                                        
-                                        Text("\(value)")
-                                            .font(.body)
-                                            .frame(width: 40)
-                                        
-                                        let modifier = (value - 10) / 2
-                                        Text("(\(modifier >= 0 ? "+" : "")\(modifier))")
-                                            .font(.body)
-                                            .foregroundColor(.secondary)
-                                    }
+                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                                    StatCard(
+                                        label: "Strength",
+                                        value: "\(character.strength)",
+                                        icon: AnyView(Ph.barbell.bold)
+                                    )
+                                    
+                                    StatCard(
+                                        label: "Dexterity",
+                                        value: "\(character.agility)",
+                                        icon: AnyView(Ph.personSimpleRun.bold)
+                                    )
+                                    
+                                    StatCard(
+                                        label: "Constitution",
+                                        value: "\(character.toughness)",
+                                        icon: AnyView(Ph.heart.bold)
+                                    )
+                                    
+                                    StatCard(
+                                        label: "Intelligence",
+                                        value: "\(character.intelligence)",
+                                        icon: AnyView(Ph.brain.bold)
+                                    )
+                                    
+                                    StatCard(
+                                        label: "Willpower",
+                                        value: "\(character.willpower)",
+                                        icon: AnyView(Ph.eye.bold)
+                                    )
+                                    
+                                    StatCard(
+                                        label: "Charisma",
+                                        value: "\(character.charisma)",
+                                        icon: AnyView(Ph.star.bold)
+                                    )
                                 }
                             }
                         }

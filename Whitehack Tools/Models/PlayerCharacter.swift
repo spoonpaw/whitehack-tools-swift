@@ -1,4 +1,6 @@
 import Foundation
+import SwiftUICore
+import PhosphorSwift
 
 // MARK: - Deft Class Specific Types
 struct Attunement: Codable, Identifiable {
@@ -527,15 +529,132 @@ struct FortunateOptions: Codable {
 }
 
 // MARK: - Types
+import PhosphorSwift
+
+enum CustomAttributeIcon: String, Codable, CaseIterable {
+    case barbell      // Strength - Classic physical power
+    case personSimpleRun  // Agility/Speed - Movement ability
+    case heart       // Health/Vitality - Life force
+    case brain       // Intelligence - Mental capacity
+    case eye         // Perception - Awareness
+    case crown       // Leadership - Authority
+    case sword       // Combat/Attack - Offensive skill
+    case shield      // Defense - Protection
+    case lightning   // Speed/Reflexes - Quick action
+    case flame       // Power/Energy - Raw force
+    case moon        // Mystery - Arcane power
+    case scroll      // Knowledge - Learning
+    case magicWand   // Magic - Spellcasting
+    case target      // Accuracy - Precision
+    case arrowsOutCardinal  // Movement - Positioning
+    case sparkle     // Special - Unique powers
+    case shieldStar  // Divine - Holy power
+    case skull       // Death - Dark power
+    case crosshair   // Focus - Concentration
+    case scales      // Balance - Equilibrium
+    case spiral      // Chaos - Transformation/Change
+    case infinity    // Eternal - Transcendence/Limitless
+    case waves       // Flow - Adaptation/Flexibility
+    case hourglass   // Time - Duration/Patience
+    case drop        // Poison/Toxin - Resistance to corruption
+    case wind        // Breath - Elemental resistance
+    case handFist    // Petrification - Physical transformation
+    case bandage     // Disease - Health/Recovery
+    case star        // Celestial - Reality/cosmic power
+    case atom        // Energy - Fundamental forces
+    case compass     // Destiny - Fate/direction manipulation
+    case clover      // Luck - Fortune/chance
+    
+    var iconView: AnyView {
+        switch self {
+        case .barbell: return AnyView(Ph.barbell.bold)
+        case .personSimpleRun: return AnyView(Ph.personSimpleRun.bold)
+        case .heart: return AnyView(Ph.heart.bold)
+        case .brain: return AnyView(Ph.brain.bold)
+        case .eye: return AnyView(Ph.eye.bold)
+        case .crown: return AnyView(Ph.crown.bold)
+        case .sword: return AnyView(Ph.sword.bold)
+        case .shield: return AnyView(Ph.shield.bold)
+        case .lightning: return AnyView(Ph.lightning.bold)
+        case .flame: return AnyView(Ph.flame.bold)
+        case .moon: return AnyView(Ph.moon.bold)
+        case .scroll: return AnyView(Ph.scroll.bold)
+        case .magicWand: return AnyView(Ph.magicWand.bold)
+        case .target: return AnyView(Ph.target.bold)
+        case .arrowsOutCardinal: return AnyView(Ph.arrowsOutCardinal.bold)
+        case .sparkle: return AnyView(Ph.sparkle.bold)
+        case .shieldStar: return AnyView(Ph.shieldStar.bold)
+        case .skull: return AnyView(Ph.skull.bold)
+        case .crosshair: return AnyView(Ph.crosshair.bold)
+        case .scales: return AnyView(Ph.scales.bold)
+        case .spiral: return AnyView(Ph.spiral.bold)
+        case .infinity: return AnyView(Ph.infinity.bold)
+        case .waves: return AnyView(Ph.waves.bold)
+        case .hourglass: return AnyView(Ph.hourglass.bold)
+        case .drop: return AnyView(Ph.drop.bold)
+        case .wind: return AnyView(Ph.wind.bold)
+        case .handFist: return AnyView(Ph.handFist.bold)
+        case .bandage: return AnyView(Ph.bandaids.bold)
+        case .star: return AnyView(Ph.star.bold)
+        case .atom: return AnyView(Ph.atom.bold)
+        case .compass: return AnyView(Ph.compass.bold)
+        case .clover: return AnyView(Ph.clover.bold)
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .barbell: return Image(systemName: "barbell")
+        case .personSimpleRun: return Image(systemName: "person.run")
+        case .heart: return Image(systemName: "heart.fill")
+        case .brain: return Image(systemName: "brain.head.profile")
+        case .eye: return Image(systemName: "eye.fill")
+        case .crown: return Image(systemName: "crown.fill")
+        case .sword: return Image(systemName: "sword")
+        case .shield: return Image(systemName: "shield.fill")
+        case .lightning: return Image(systemName: "bolt.fill")
+        case .flame: return Image(systemName: "flame.fill")
+        case .moon: return Image(systemName: "moon.fill")
+        case .scroll: return Image(systemName: "scroll.fill")
+        case .magicWand: return Image(systemName: "sparkles.rectangle.stack")
+        case .target: return Image(systemName: "target")
+        case .arrowsOutCardinal: return Image(systemName: "arrow.up.left.and.arrow.down.right")
+        case .sparkle: return Image(systemName: "sparkles")
+        case .shieldStar: return Image(systemName: "shield.star.fill")
+        case .skull: return Image(systemName: "cross.circle.fill")
+        case .crosshair: return Image(systemName: "crosshair")
+        case .scales: return Image(systemName: "scales")
+        case .spiral: return Image(systemName: "spiral")
+        case .infinity: return Image(systemName: "infinity")
+        case .waves: return Image(systemName: "waveform.path.ecg.rectangle")
+        case .hourglass: return Image(systemName: "hourglass")
+        case .drop: return Image(systemName: "drop.fill")
+        case .wind: return Image(systemName: "wind")
+        case .handFist: return Image(systemName: "hand.fist")
+        case .bandage: return Image(systemName: "bandage.fill")
+        case .star: return Image(systemName: "star")
+        case .atom: return Image(systemName: "atom")
+        case .compass: return Image(systemName: "compass")
+        case .clover: return Image(systemName: "clover")
+        }
+    }
+    
+    var displayName: String {
+        self.rawValue.capitalized
+    }
+}
+
 struct CustomAttribute: Codable, Identifiable {
     let id: UUID
     var name: String
     var value: Int
+    var icon: CustomAttributeIcon
     
-    init(id: UUID = UUID(), name: String = "", value: Int = 10) {
+    init(id: UUID = UUID(), name: String = "", value: Int = 10, icon: CustomAttributeIcon = .sword) {
         self.id = id
         self.name = name
         self.value = value
+        self.icon = icon
     }
 }
 
@@ -751,161 +870,6 @@ class PlayerCharacter: Identifiable, Codable {
         return 0
     }
     
-    // MARK: - Deft Attunement Methods
-    
-    /// Tracks if the daily attunement power has been used
-    var hasUsedAttunementToday: Bool = false
-    
-    /// Switches the active state between primary and secondary attunements in a slot
-    /// - Parameter slotIndex: The index of the slot to switch
-    /// - Returns: True if the switch was successful, false if the slot doesn't exist
-    func switchAttunements(inSlot slotIndex: Int) -> Bool {
-        guard slotIndex < attunementSlots.count else { return false }
-        
-        // Swap active states
-        attunementSlots[slotIndex].primaryAttunement.isActive.toggle()
-        attunementSlots[slotIndex].secondaryAttunement.isActive.toggle()
-        
-        return true
-    }
-    
-    /// Get the number of available attunement slots based on character level
-    var availableAttunementSlots: Int {
-        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.slots
-    }
-    
-    /// Checks if the character can use attunements (based on armor restrictions)
-    var canUseAttunements: Bool {
-        // TODO: Add armor check logic when equipment system is implemented
-        return true
-    }
-    
-    // MARK: - Strong Combat Methods
-
-    /// Tracks if the character has any flow attacks remaining
-    var remainingFlowAttacks: Int {
-        guard characterClass == .strong else { return 0 }
-        return level + 1 // raises + 1
-    }
-
-    /// Available combat options based on level
-    var availableCombatOptions: [StrongCombatOption] {
-        StrongCombatOption.allCases.filter { $0.rawValue <= level }
-    }
-
-    // MARK: - Brave Class Specific Methods
-    var availableQuirkSlots: Int {
-        guard characterClass == .brave else { return 0 }
-        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.slots
-    }
-
-    var hasArmorPenalty: Bool {
-        // TODO: Add armor check logic when equipment system is implemented
-        // Returns true if wearing armor heavier than cloth
-        return false
-    }
-
-    var attributePenalty: Int {
-        guard characterClass == .brave && hasArmorPenalty else { return 0 }
-        return 2
-    }
-    
-    // MARK: - Initializer
-    init(
-        id: UUID = UUID(),
-        name: String = "",
-        playerName: String = "",
-        characterClass: CharacterClass = .deft,
-        level: Int = 1,
-        useCustomAttributes: Bool = false,
-        customAttributes: [CustomAttribute] = [],
-        strength: Int = 10,
-        agility: Int = 10,
-        toughness: Int = 10,
-        intelligence: Int = 10,
-        willpower: Int = 10,
-        charisma: Int = 10,
-        currentHP: Int = 1,
-        maxHP: Int = 1,
-        _attackValue: Int = 10, // Initialize with default value for backward compatibility
-        defenseValue: Int = 0,
-        movement: Int = 30,
-        _saveValue: Int = 7, // Initialize with default value for backward compatibility
-        saveColor: String = "",
-        speciesGroup: String? = nil,
-        vocationGroup: String? = nil,
-        affiliationGroups: [String] = [],
-        attributeGroupPairs: [AttributeGroupPair] = [], // Initialize as empty
-        attunementSlots: [AttunementSlot] = [], // Initialize as empty
-        currentConflictLoot: ConflictLoot? = nil,
-        strongCombatOptions: StrongCombatOptions = StrongCombatOptions(), // Initialize as empty
-        wiseMiracleSlots: [WiseMiracleSlot] = [], // Initialize as empty
-        braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions(), // Initialize as empty
-        cleverKnackOptions: CleverKnackOptions = CleverKnackOptions(), // Initialize as empty
-        fortunateOptions: FortunateOptions = FortunateOptions(), // Initialize as empty
-        comebackDice: Int = 0,
-        hasUsedSayNo: Bool = false,
-        languages: [String] = ["Common"],
-        notes: String = "",
-        experience: Int = 0,
-        corruption: Int = 0,
-        inventory: [String] = [],
-        maxEncumbrance: Int = 15,
-        coinsOnHand: Int = 0,
-        stashedCoins: Int = 0,
-        gear: [Gear] = [],
-        weapons: [Weapon] = [],
-        armor: [Armor] = [],
-        hasUsedAttunementToday: Bool = false) {
-        self.id = id
-        self.name = name
-        self.playerName = playerName
-        self.characterClass = characterClass
-        self.level = level
-        self.useCustomAttributes = useCustomAttributes
-        self.customAttributes = customAttributes
-        self.strength = strength
-        self.agility = agility
-        self.toughness = toughness
-        self.intelligence = intelligence
-        self.willpower = willpower
-        self.charisma = charisma
-        self.currentHP = currentHP
-        self.maxHP = maxHP
-        self._attackValue = _attackValue
-        self.defenseValue = defenseValue
-        self.movement = movement
-        self._saveValue = _saveValue
-        self.saveColor = saveColor
-        self.speciesGroup = speciesGroup
-        self.vocationGroup = vocationGroup
-        self.affiliationGroups = affiliationGroups
-        self.attributeGroupPairs = attributeGroupPairs
-        self.attunementSlots = attunementSlots
-        self.currentConflictLoot = currentConflictLoot
-        self.strongCombatOptions = strongCombatOptions
-        self.wiseMiracleSlots = wiseMiracleSlots
-        self.braveQuirkOptions = braveQuirkOptions
-        self.cleverKnackOptions = cleverKnackOptions
-        self.fortunateOptions = fortunateOptions
-        self.comebackDice = comebackDice
-        self.hasUsedSayNo = hasUsedSayNo
-        self.languages = languages
-        self.notes = notes
-        self.experience = experience
-        self.corruption = corruption
-        self.inventory = inventory
-        self.maxEncumbrance = maxEncumbrance
-        self.coinsOnHand = coinsOnHand
-        self.stashedCoins = stashedCoins
-        self.gear = gear
-        self.weapons = weapons
-        self.armor = armor
-        self.hasUsedAttunementToday = hasUsedAttunementToday
-    }
-    
     // MARK: - ID Regeneration Extension
     func copyWithNewIDs() -> PlayerCharacter {
         // Create a copy of the character with a new ID
@@ -920,7 +884,8 @@ class PlayerCharacter: Identifiable, Codable {
                 CustomAttribute(
                     id: UUID(),
                     name: attribute.name,
-                    value: attribute.value
+                    value: attribute.value,
+                    icon: attribute.icon
                 )
             },
             strength: strength,
@@ -1087,8 +1052,7 @@ class PlayerCharacter: Identifiable, Codable {
                     bonus: armor.bonus,
                     isShield: armor.isShield
                 )
-            },
-            hasUsedAttunementToday: hasUsedAttunementToday
+            }
         )
         
         // Copy attribute group pairs with new IDs
@@ -1185,5 +1149,98 @@ class PlayerCharacter: Identifiable, Codable {
         newCharacter.cleverKnackOptions = newCleverKnackOptions
         
         return newCharacter
+    }
+    
+    // MARK: - Initializer
+    init(
+        id: UUID = UUID(),
+        name: String = "",
+        playerName: String = "",
+        characterClass: CharacterClass = .deft,
+        level: Int = 1,
+        useCustomAttributes: Bool = false,
+        customAttributes: [CustomAttribute] = [],
+        strength: Int = 10,
+        agility: Int = 10,
+        toughness: Int = 10,
+        intelligence: Int = 10,
+        willpower: Int = 10,
+        charisma: Int = 10,
+        currentHP: Int = 1,
+        maxHP: Int = 1,
+        _attackValue: Int = 10,
+        defenseValue: Int = 0,
+        movement: Int = 30,
+        _saveValue: Int = 7,
+        saveColor: String = "",
+        speciesGroup: String? = nil,
+        vocationGroup: String? = nil,
+        affiliationGroups: [String] = [],
+        attributeGroupPairs: [AttributeGroupPair] = [],
+        attunementSlots: [AttunementSlot] = [],
+        currentConflictLoot: ConflictLoot? = nil,
+        strongCombatOptions: StrongCombatOptions = StrongCombatOptions(),
+        wiseMiracleSlots: [WiseMiracleSlot] = [],
+        braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions(),
+        cleverKnackOptions: CleverKnackOptions = CleverKnackOptions(),
+        fortunateOptions: FortunateOptions = FortunateOptions(),
+        comebackDice: Int = 0,
+        hasUsedSayNo: Bool = false,
+        languages: [String] = ["Common"],
+        notes: String = "",
+        experience: Int = 0,
+        corruption: Int = 0,
+        inventory: [String] = [],
+        maxEncumbrance: Int = 15,
+        coinsOnHand: Int = 0,
+        stashedCoins: Int = 0,
+        gear: [Gear] = [],
+        weapons: [Weapon] = [],
+        armor: [Armor] = []
+    ) {
+        self.id = id
+        self.name = name
+        self.playerName = playerName
+        self.characterClass = characterClass
+        self.level = level
+        self.useCustomAttributes = useCustomAttributes
+        self.customAttributes = customAttributes
+        self.strength = strength
+        self.agility = agility
+        self.toughness = toughness
+        self.intelligence = intelligence
+        self.willpower = willpower
+        self.charisma = charisma
+        self.currentHP = currentHP
+        self.maxHP = maxHP
+        self._attackValue = _attackValue
+        self.defenseValue = defenseValue
+        self.movement = movement
+        self._saveValue = _saveValue
+        self.saveColor = saveColor
+        self.speciesGroup = speciesGroup
+        self.vocationGroup = vocationGroup
+        self.affiliationGroups = affiliationGroups
+        self.attributeGroupPairs = attributeGroupPairs
+        self.attunementSlots = attunementSlots
+        self.currentConflictLoot = currentConflictLoot
+        self.strongCombatOptions = strongCombatOptions
+        self.wiseMiracleSlots = wiseMiracleSlots
+        self.braveQuirkOptions = braveQuirkOptions
+        self.cleverKnackOptions = cleverKnackOptions
+        self.fortunateOptions = fortunateOptions
+        self.comebackDice = comebackDice
+        self.hasUsedSayNo = hasUsedSayNo
+        self.languages = languages
+        self.notes = notes
+        self.experience = experience
+        self.corruption = corruption
+        self.inventory = inventory
+        self.maxEncumbrance = maxEncumbrance
+        self.coinsOnHand = coinsOnHand
+        self.stashedCoins = stashedCoins
+        self.gear = gear
+        self.weapons = weapons
+        self.armor = armor
     }
 }
