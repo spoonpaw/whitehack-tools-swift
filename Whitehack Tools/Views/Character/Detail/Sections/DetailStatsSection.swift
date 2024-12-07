@@ -27,56 +27,74 @@ struct DetailStatsSection: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        Section {
+            VStack(spacing: 16) {
+                if character.useCustomAttributes {
+                    // Display custom attributes
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        ForEach(character.customAttributes) { attribute in
+                            StatCard(
+                                label: attribute.name,
+                                value: "\(attribute.value)",
+                                icon: Ph.star.bold,
+                                description: getAttributeDescription(attribute.value)
+                            )
+                        }
+                    }
+                } else {
+                    // Display default attributes
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        StatCard(
+                            label: "Strength",
+                            value: "\(character.strength)",
+                            icon: Ph.barbell.bold,
+                            description: getAttributeDescription(character.strength)
+                        )
+                        
+                        StatCard(
+                            label: "Agility",
+                            value: "\(character.agility)",
+                            icon: Ph.personSimpleRun.bold,
+                            description: getAttributeDescription(character.agility)
+                        )
+                        
+                        StatCard(
+                            label: "Toughness",
+                            value: "\(character.toughness)",
+                            icon: Ph.heart.bold,
+                            description: getAttributeDescription(character.toughness)
+                        )
+                        
+                        StatCard(
+                            label: "Intelligence",
+                            value: "\(character.intelligence)",
+                            icon: Ph.brain.bold,
+                            description: getAttributeDescription(character.intelligence)
+                        )
+                        
+                        StatCard(
+                            label: "Willpower",
+                            value: "\(character.willpower)",
+                            icon: Ph.eye.bold,
+                            description: getAttributeDescription(character.willpower)
+                        )
+                        
+                        StatCard(
+                            label: "Charisma",
+                            value: "\(character.charisma)",
+                            icon: Ph.star.bold,
+                            description: getAttributeDescription(character.charisma)
+                        )
+                    }
+                }
+            }
+            .padding(.vertical, 8)
+        } header: {
             HStack(spacing: 8) {
                 Ph.chartBar.bold
                     .frame(width: 20, height: 20)
                 Text("Attributes")
                     .font(.headline)
-            }
-            
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                StatCard(
-                    label: "Strength",
-                    value: "\(character.strength)",
-                    icon: Ph.barbell.bold,
-                    description: getAttributeDescription(character.strength)
-                )
-                
-                StatCard(
-                    label: "Agility",
-                    value: "\(character.agility)",
-                    icon: Ph.personSimpleRun.bold,
-                    description: getAttributeDescription(character.agility)
-                )
-                
-                StatCard(
-                    label: "Toughness",
-                    value: "\(character.toughness)",
-                    icon: Ph.heart.bold,
-                    description: getAttributeDescription(character.toughness)
-                )
-                
-                StatCard(
-                    label: "Intelligence",
-                    value: "\(character.intelligence)",
-                    icon: Ph.brain.bold,
-                    description: getAttributeDescription(character.intelligence)
-                )
-                
-                StatCard(
-                    label: "Willpower",
-                    value: "\(character.willpower)",
-                    icon: Ph.eye.bold,
-                    description: getAttributeDescription(character.willpower)
-                )
-                
-                StatCard(
-                    label: "Charisma",
-                    value: "\(character.charisma)",
-                    icon: Ph.star.bold,
-                    description: getAttributeDescription(character.charisma)
-                )
             }
         }
     }

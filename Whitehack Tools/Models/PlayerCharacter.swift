@@ -526,6 +526,19 @@ struct FortunateOptions: Codable {
     }
 }
 
+// MARK: - Types
+struct CustomAttribute: Codable, Identifiable {
+    let id: UUID
+    var name: String
+    var value: Int
+    
+    init(id: UUID = UUID(), name: String = "", value: Int = 10) {
+        self.id = id
+        self.name = name
+        self.value = value
+    }
+}
+
 // MARK: - Weapon Types
 struct Weapon: Codable, Identifiable, Hashable {
     let id: UUID
@@ -595,7 +608,11 @@ class PlayerCharacter: Identifiable, Codable {
         }
     }
     
-    // Attributes
+    // Attributes Configuration
+    var useCustomAttributes: Bool
+    var customAttributes: [CustomAttribute]
+    
+    // Default Attributes (used when useCustomAttributes is false)
     var strength: Int
     var agility: Int
     var toughness: Int
@@ -802,6 +819,8 @@ class PlayerCharacter: Identifiable, Codable {
         playerName: String = "",
         characterClass: CharacterClass = .deft,
         level: Int = 1,
+        useCustomAttributes: Bool = false,
+        customAttributes: [CustomAttribute] = [],
         strength: Int = 10,
         agility: Int = 10,
         toughness: Int = 10,
@@ -845,6 +864,8 @@ class PlayerCharacter: Identifiable, Codable {
         self.playerName = playerName
         self.characterClass = characterClass
         self.level = level
+        self.useCustomAttributes = useCustomAttributes
+        self.customAttributes = customAttributes
         self.strength = strength
         self.agility = agility
         self.toughness = toughness
@@ -894,6 +915,14 @@ class PlayerCharacter: Identifiable, Codable {
             playerName: playerName,
             characterClass: characterClass,
             level: level,
+            useCustomAttributes: useCustomAttributes,
+            customAttributes: customAttributes.map { attribute in
+                CustomAttribute(
+                    id: UUID(),
+                    name: attribute.name,
+                    value: attribute.value
+                )
+            },
             strength: strength,
             agility: agility,
             toughness: toughness,

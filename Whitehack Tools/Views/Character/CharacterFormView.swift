@@ -51,85 +51,97 @@ struct CharacterFormView: View {
     var body: some View {
         #if os(macOS)
         ScrollView {
-            Form {
-                VStack(spacing: 20) {
-                    FormBasicInfoSection(
-                        name: $formData.name,
-                        playerName: $formData.playerName,
-                        selectedClass: $formData.selectedClass,
-                        level: $formData.level,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormAttributesSection(
-                        strength: $formData.strength,
-                        agility: $formData.agility,
-                        toughness: $formData.toughness,
-                        intelligence: $formData.intelligence,
-                        willpower: $formData.willpower,
-                        charisma: $formData.charisma
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormCharacterGroupsSection(
-                        speciesGroup: $formData.speciesGroup,
-                        vocationGroup: $formData.vocationGroup,
-                        affiliationGroups: $formData.affiliationGroups,
-                        newAffiliationGroup: $formData.newAffiliationGroup,
-                        attributeGroupPairs: $formData.attributeGroupPairs,
-                        selectedAttribute: $formData.selectedAttribute,
-                        newAttributeGroup: $formData.newAttributeGroup,
-                        isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                        isVocationGroupAdded: $formData.isVocationGroupAdded,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormCombatStatsSection(
-                        currentHP: $formData.currentHP,
-                        maxHP: $formData.maxHP,
-                        defenseValue: $formData.defenseValue,
-                        movement: $formData.movement,
-                        saveColor: $formData.saveColor,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormEncumbranceSection(
-                        currentEncumbrance: $formData.currentEncumbrance,
-                        maxEncumbrance: $formData.maxEncumbrance,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormLanguagesSection(
-                        languages: $formData.languages,
-                        newLanguage: $formData.newLanguage,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormOtherInformationSection(
-                        experience: $formData.experience,
-                        corruption: $formData.corruption,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                    
-                    FormNotesSection(
-                        notes: $formData.notes,
-                        focusedField: $focusedField
-                    )
-                    .frame(maxWidth: .infinity)
-                }
+            VStack(spacing: 20) {
+                FormBasicInfoSection(
+                    name: $formData.name,
+                    playerName: $formData.playerName,
+                    selectedClass: $formData.selectedClass,
+                    level: $formData.level,
+                    focusedField: $focusedField
+                )
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 40)
-                .padding(.vertical, 20)
+                
+                FormAttributesSection(
+                    useCustomAttributes: $formData.useCustomAttributes,
+                    customAttributes: $formData.customAttributes,
+                    strength: $formData.strength,
+                    agility: $formData.agility,
+                    toughness: $formData.toughness,
+                    intelligence: $formData.intelligence,
+                    willpower: $formData.willpower,
+                    charisma: $formData.charisma
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormCharacterGroupsSection(
+                    speciesGroup: $formData.speciesGroup,
+                    vocationGroup: $formData.vocationGroup,
+                    affiliationGroups: $formData.affiliationGroups,
+                    newAffiliationGroup: $formData.newAffiliationGroup,
+                    attributeGroupPairs: $formData.attributeGroupPairs,
+                    selectedAttribute: $formData.selectedAttribute,
+                    newAttributeGroup: $formData.newAttributeGroup,
+                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                    isVocationGroupAdded: $formData.isVocationGroupAdded,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormCombatStatsSection(
+                    currentHP: $formData.currentHP,
+                    maxHP: $formData.maxHP,
+                    defenseValue: $formData.defenseValue,
+                    movement: $formData.movement,
+                    saveColor: $formData.saveColor,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormEncumbranceSection(
+                    currentEncumbrance: $formData.currentEncumbrance,
+                    maxEncumbrance: $formData.maxEncumbrance,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormLanguagesSection(
+                    languages: $formData.languages,
+                    newLanguage: $formData.newLanguage,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormOtherInformationSection(
+                    experience: $formData.experience,
+                    corruption: $formData.corruption,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
+                
+                FormNotesSection(
+                    notes: $formData.notes,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
             }
+            .padding()
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .toolbar {
+            #if os(iOS)
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    onComplete?(nil)
+                }
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    let id = saveCharacter()
+                    onComplete?(id)
+                }
+            }
+            #else
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
                     onComplete?(nil)
@@ -142,6 +154,7 @@ struct CharacterFormView: View {
                     onComplete?(id)
                 }
             }
+            #endif
         }
         #else
         Form {
@@ -157,6 +170,8 @@ struct CharacterFormView: View {
             
             Section {
                 FormAttributesSection(
+                    useCustomAttributes: $formData.useCustomAttributes,
+                    customAttributes: $formData.customAttributes,
                     strength: $formData.strength,
                     agility: $formData.agility,
                     toughness: $formData.toughness,
@@ -243,36 +258,36 @@ struct CharacterFormView: View {
     }
     
     private func saveCharacter() -> UUID {
-        let newCharacter = PlayerCharacter(id: characterId ?? UUID())
-        newCharacter.name = formData.name
-        newCharacter.playerName = formData.playerName
-        newCharacter.level = Int(formData.level) ?? 1
-        newCharacter.characterClass = formData.selectedClass
-        newCharacter.strength = Int(formData.strength) ?? 10
-        newCharacter.agility = Int(formData.agility) ?? 10
-        newCharacter.toughness = Int(formData.toughness) ?? 10
-        newCharacter.intelligence = Int(formData.intelligence) ?? 10
-        newCharacter.willpower = Int(formData.willpower) ?? 10
-        newCharacter.charisma = Int(formData.charisma) ?? 10
-        
-        newCharacter.speciesGroup = formData.isSpeciesGroupAdded ? formData.speciesGroup : nil
-        newCharacter.vocationGroup = formData.isVocationGroupAdded ? formData.vocationGroup : nil
-        newCharacter.affiliationGroups = formData.affiliationGroups
-        newCharacter.attributeGroupPairs = formData.attributeGroupPairs.map { pair in
-            AttributeGroupPair(attribute: pair.attribute, group: pair.group)
-        }
-        
-        newCharacter.currentHP = Int(formData.currentHP) ?? 0
-        newCharacter.maxHP = Int(formData.maxHP) ?? 0
-        newCharacter.defenseValue = Int(formData.defenseValue) ?? 0
-        newCharacter.movement = Int(formData.movement) ?? 0
-        newCharacter.saveColor = formData.saveColor
-        // currentEncumbrance is computed from gear
-        newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 0
-        newCharacter.experience = Int(formData.experience) ?? 0
-        newCharacter.corruption = Int(formData.corruption) ?? 0
-        newCharacter.notes = formData.notes
-        newCharacter.languages = formData.languages
+        let newCharacter = PlayerCharacter(
+            id: characterId ?? UUID(),
+            name: formData.name,
+            playerName: formData.playerName,
+            characterClass: formData.selectedClass,
+            level: Int(formData.level) ?? 1,
+            useCustomAttributes: formData.useCustomAttributes,
+            customAttributes: formData.customAttributes,
+            strength: Int(formData.strength) ?? 10,
+            agility: Int(formData.agility) ?? 10,
+            toughness: Int(formData.toughness) ?? 10,
+            intelligence: Int(formData.intelligence) ?? 10,
+            willpower: Int(formData.willpower) ?? 10,
+            charisma: Int(formData.charisma) ?? 10,
+            currentHP: Int(formData.currentHP) ?? 0,
+            maxHP: Int(formData.maxHP) ?? 0,
+            defenseValue: Int(formData.defenseValue) ?? 0,
+            movement: Int(formData.movement) ?? 30,
+            saveColor: formData.saveColor,
+            speciesGroup: formData.isSpeciesGroupAdded ? formData.speciesGroup : nil,
+            vocationGroup: formData.isVocationGroupAdded ? formData.vocationGroup : nil,
+            affiliationGroups: formData.affiliationGroups,
+            attributeGroupPairs: formData.attributeGroupPairs.map { pair in
+                AttributeGroupPair(attribute: pair.attribute, group: pair.group)
+            },
+            languages: formData.languages,
+            notes: formData.notes,
+            experience: Int(formData.experience) ?? 0,
+            maxEncumbrance: Int(formData.maxEncumbrance) ?? 15
+        )
         
         if characterId != nil {
             characterStore.updateCharacter(newCharacter)
@@ -285,73 +300,92 @@ struct CharacterFormView: View {
 }
 
 private class FormData: ObservableObject {
-    @Published var name = ""
-    @Published var playerName = ""
-    @Published var level = "1"
-    @Published var selectedClass: CharacterClass = .deft
+    @Published var name: String
+    @Published var playerName: String
+    @Published var level: String
+    @Published var selectedClass: CharacterClass
     
-    @Published var strength = "10"
-    @Published var agility = "10"
-    @Published var toughness = "10"
-    @Published var intelligence = "10"
-    @Published var willpower = "10"
-    @Published var charisma = "10"
+    // Attributes
+    @Published var useCustomAttributes: Bool
+    @Published var customAttributes: [CustomAttribute]
+    @Published var strength: String
+    @Published var agility: String
+    @Published var toughness: String
+    @Published var intelligence: String
+    @Published var willpower: String
+    @Published var charisma: String
     
-    @Published var speciesGroup = ""
-    @Published var vocationGroup = ""
-    @Published var affiliationGroups: [String] = []
-    @Published var newAffiliationGroup = ""
-    @Published var attributeGroupPairs: [AttributeGroupPair] = []
-    @Published var selectedAttribute = ""
-    @Published var newAttributeGroup = ""
-    @Published var isSpeciesGroupAdded = false
-    @Published var isVocationGroupAdded = false
+    // Combat Stats
+    @Published var currentHP: String
+    @Published var maxHP: String
+    @Published var defenseValue: String
+    @Published var movement: String
+    @Published var saveColor: String
+    @Published var currentEncumbrance: String
+    @Published var maxEncumbrance: String
+    @Published var experience: String
+    @Published var corruption: String
     
-    @Published var currentHP = ""
-    @Published var maxHP = ""
-    @Published var defenseValue = ""
-    @Published var movement = ""
-    @Published var saveColor = ""
-    @Published var currentEncumbrance = ""
-    @Published var maxEncumbrance = ""
-    @Published var experience = ""
-    @Published var corruption = ""
-    @Published var notes = ""
-    @Published var languages: [String] = []
-    @Published var newLanguage = ""
+    // Groups
+    @Published var speciesGroup: String
+    @Published var vocationGroup: String
+    @Published var affiliationGroups: [String]
+    @Published var newAffiliationGroup: String
+    @Published var attributeGroupPairs: [AttributeGroupPair]
+    @Published var selectedAttribute: String
+    @Published var newAttributeGroup: String
+    @Published var isSpeciesGroupAdded: Bool
+    @Published var isVocationGroupAdded: Bool
     
-    init(character: PlayerCharacter?) {
-        if let character = character {
-            name = character.name
-            playerName = character.playerName
-            level = String(character.level)
-            selectedClass = character.characterClass
-            strength = String(character.strength)
-            agility = String(character.agility)
-            toughness = String(character.toughness)
-            intelligence = String(character.intelligence)
-            willpower = String(character.willpower)
-            charisma = String(character.charisma)
-            speciesGroup = character.speciesGroup ?? ""
-            vocationGroup = character.vocationGroup ?? ""
-            affiliationGroups = character.affiliationGroups
-            attributeGroupPairs = character.attributeGroupPairs.map { pair in
-                AttributeGroupPair(id: UUID(), attribute: pair.attribute, group: pair.group)
-            }
-            isSpeciesGroupAdded = character.speciesGroup != nil
-            isVocationGroupAdded = character.vocationGroup != nil
-            currentHP = String(character.currentHP)
-            maxHP = String(character.maxHP)
-            defenseValue = String(character.defenseValue)
-            movement = String(character.movement)
-            saveColor = character.saveColor ?? ""
-            currentEncumbrance = String(character.currentEncumbrance)
-            maxEncumbrance = String(character.maxEncumbrance)
-            experience = String(character.experience)
-            corruption = String(character.corruption)
-            notes = character.notes
-            languages = character.languages
-        }
+    // Additional Info
+    @Published var languages: [String]
+    @Published var newLanguage: String
+    @Published var notes: String
+    
+    init(character: PlayerCharacter? = nil) {
+        self.name = character?.name ?? ""
+        self.playerName = character?.playerName ?? ""
+        self.level = character?.level.description ?? "1"
+        self.selectedClass = character?.characterClass ?? .deft
+        
+        // Attributes
+        self.useCustomAttributes = character?.useCustomAttributes ?? false
+        self.customAttributes = character?.customAttributes ?? []
+        self.strength = character?.strength.description ?? "10"
+        self.agility = character?.agility.description ?? "10"
+        self.toughness = character?.toughness.description ?? "10"
+        self.intelligence = character?.intelligence.description ?? "10"
+        self.willpower = character?.willpower.description ?? "10"
+        self.charisma = character?.charisma.description ?? "10"
+        
+        // Combat Stats
+        self.currentHP = character?.currentHP.description ?? ""
+        self.maxHP = character?.maxHP.description ?? ""
+        self.defenseValue = character?.defenseValue.description ?? ""
+        self.movement = character?.movement.description ?? ""
+        self.saveColor = character?.saveColor ?? ""
+        self.currentEncumbrance = character?.currentEncumbrance.description ?? ""
+        self.maxEncumbrance = character?.maxEncumbrance.description ?? ""
+        self.experience = character?.experience.description ?? ""
+        self.corruption = character?.corruption.description ?? ""
+        
+        // Groups
+        self.speciesGroup = character?.speciesGroup ?? ""
+        self.vocationGroup = character?.vocationGroup ?? ""
+        self.affiliationGroups = character?.affiliationGroups ?? []
+        self.newAffiliationGroup = ""
+        self.attributeGroupPairs = character?.attributeGroupPairs.map { pair in
+            AttributeGroupPair(id: UUID(), attribute: pair.attribute, group: pair.group)
+        } ?? []
+        self.selectedAttribute = ""
+        self.newAttributeGroup = ""
+        self.isSpeciesGroupAdded = character?.speciesGroup != nil
+        self.isVocationGroupAdded = character?.vocationGroup != nil
+        
+        // Additional Info
+        self.languages = character?.languages ?? []
+        self.newLanguage = ""
+        self.notes = character?.notes ?? ""
     }
 }
 
