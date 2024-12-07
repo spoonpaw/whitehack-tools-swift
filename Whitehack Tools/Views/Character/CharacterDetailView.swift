@@ -221,28 +221,49 @@ struct CharacterDetailView: View {
                     // Attributes Section
                     Section(header: SectionHeader(title: "Attributes", icon: Ph.barbell.bold)) {
                         VStack(spacing: 16) {
-                            let attributes = [
-                                ("STR", character.strength),
-                                ("DEX", character.agility),
-                                ("CON", character.toughness),
-                                ("INT", character.intelligence),
-                                ("WIS", character.willpower),
-                                ("CHA", character.charisma)
-                            ]
-                            ForEach(attributes, id: \.0) { attribute, value in
-                                HStack {
-                                    Text(attribute)
-                                        .font(.headline)
-                                        .frame(width: 50, alignment: .leading)
-                                    
-                                    Text("\(value)")
-                                        .font(.body)
-                                        .frame(width: 40)
-                                    
-                                    let modifier = (value - 10) / 2
-                                    Text("(\(modifier >= 0 ? "+" : "")\(modifier))")
-                                        .font(.body)
-                                        .foregroundColor(.secondary)
+                            if character.useCustomAttributes {
+                                // Display custom attributes
+                                ForEach(character.customAttributes) { attribute in
+                                    HStack {
+                                        Text(attribute.name)
+                                            .font(.headline)
+                                            .frame(width: 100, alignment: .leading)
+                                        
+                                        Text("\(attribute.value)")
+                                            .font(.body)
+                                            .frame(width: 40)
+                                        
+                                        let modifier = (attribute.value - 10) / 2
+                                        Text("(\(modifier >= 0 ? "+" : "")\(modifier))")
+                                            .font(.body)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            } else {
+                                // Display default attributes
+                                let attributes = [
+                                    ("STR", character.strength),
+                                    ("DEX", character.agility),
+                                    ("CON", character.toughness),
+                                    ("INT", character.intelligence),
+                                    ("WIS", character.willpower),
+                                    ("CHA", character.charisma)
+                                ]
+                                ForEach(attributes, id: \.0) { attribute, value in
+                                    HStack {
+                                        Text(attribute)
+                                            .font(.headline)
+                                            .frame(width: 50, alignment: .leading)
+                                        
+                                        Text("\(value)")
+                                            .font(.body)
+                                            .frame(width: 40)
+                                        
+                                        let modifier = (value - 10) / 2
+                                        Text("(\(modifier >= 0 ? "+" : "")\(modifier))")
+                                            .font(.body)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
                         }

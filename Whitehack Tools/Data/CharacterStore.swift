@@ -12,6 +12,13 @@ class CharacterStore: ObservableObject {
         print("\n [CHARACTER STORE] Adding new character")
         print(" [CHARACTER STORE] Character name: \(character.name)")
         print(" [CHARACTER STORE] Character ID: \(character.id)")
+        print(" [CHARACTER STORE] Using custom attributes: \(character.useCustomAttributes)")
+        if character.useCustomAttributes {
+            print(" [CHARACTER STORE] Custom attributes:")
+            for attr in character.customAttributes {
+                print("   - \(attr.name): \(attr.value)")
+            }
+        }
         print(" [CHARACTER STORE] Armor count: \(character.armor.count)")
         print(" [CHARACTER STORE] Weapon count: \(character.weapons.count)")
         characters.append(character)
@@ -22,6 +29,13 @@ class CharacterStore: ObservableObject {
         print("\n [CHARACTER STORE] Updating existing character")
         print(" [CHARACTER STORE] Character name: \(character.name)")
         print(" [CHARACTER STORE] Character ID: \(character.id)")
+        print(" [CHARACTER STORE] Using custom attributes: \(character.useCustomAttributes)")
+        if character.useCustomAttributes {
+            print(" [CHARACTER STORE] Custom attributes:")
+            for attr in character.customAttributes {
+                print("   - \(attr.name): \(attr.value)")
+            }
+        }
         print(" [CHARACTER STORE] Armor count: \(character.armor.count)")
         print(" [CHARACTER STORE] Weapon count: \(character.weapons.count)")
         if let index = characters.firstIndex(where: { $0.id == character.id }) {
@@ -61,9 +75,43 @@ class CharacterStore: ObservableObject {
     private func saveCharacters() {
         print("\n [CHARACTER STORE] Saving all characters")
         print(" [CHARACTER STORE] Total character count: \(characters.count)")
+        
+        // Log custom attributes for each character before saving
+        for character in characters {
+            print(" [CHARACTER STORE] Character: \(character.name)")
+            print("   Using custom attributes: \(character.useCustomAttributes)")
+            if character.useCustomAttributes {
+                print("   Custom attributes:")
+                for attr in character.customAttributes {
+                    print("     - \(attr.name): \(attr.value)")
+                }
+            }
+        }
+        
         if let encoded = try? JSONEncoder().encode(characters) {
             UserDefaults.standard.set(encoded, forKey: saveKey)
             print(" [CHARACTER STORE] Successfully saved to UserDefaults")
+            
+            // Verify saved data by decoding
+            if let savedData = UserDefaults.standard.data(forKey: saveKey),
+               let decoded = try? JSONDecoder().decode([PlayerCharacter].self, from: savedData) {
+                print(" [CHARACTER STORE] Verification - Successfully decoded saved data")
+                print(" [CHARACTER STORE] Verification - Decoded \(decoded.count) characters")
+                
+                // Verify custom attributes in decoded data
+                for character in decoded {
+                    print(" [CHARACTER STORE] Verification - Character: \(character.name)")
+                    print("   Using custom attributes: \(character.useCustomAttributes)")
+                    if character.useCustomAttributes {
+                        print("   Custom attributes:")
+                        for attr in character.customAttributes {
+                            print("     - \(attr.name): \(attr.value)")
+                        }
+                    }
+                }
+            } else {
+                print(" [CHARACTER STORE] ERROR: Failed to verify saved data")
+            }
         } else {
             print(" [CHARACTER STORE] ERROR: Failed to encode characters")
         }
@@ -72,7 +120,37 @@ class CharacterStore: ObservableObject {
     private func loadCharacters() {
         if let data = UserDefaults.standard.data(forKey: saveKey),
            let decoded = try? JSONDecoder().decode([PlayerCharacter].self, from: data) {
+            print("\n [CHARACTER STORE] Loading characters from UserDefaults")
+            print(" [CHARACTER STORE] Found \(decoded.count) characters")
+            
+            // Log custom attributes for loaded characters
+            for character in decoded {
+                print(" [CHARACTER STORE] Character: \(character.name)")
+                print("   Using custom attributes: \(character.useCustomAttributes)")
+                if character.useCustomAttributes {
+                    print("   Custom attributes:")
+                    for attr in character.customAttributes {
+                        print("     - \(attr.name): \(attr.value)")
+                    }
+                }
+            }
+            
             characters = decoded
+            
+            // Verify custom attributes after assignment
+            print("\n [CHARACTER STORE] Verifying loaded characters")
+            for character in characters {
+                print(" [CHARACTER STORE] Character: \(character.name)")
+                print("   Using custom attributes: \(character.useCustomAttributes)")
+                if character.useCustomAttributes {
+                    print("   Custom attributes:")
+                    for attr in character.customAttributes {
+                        print("     - \(attr.name): \(attr.value)")
+                    }
+                }
+            }
+        } else {
+            print(" [CHARACTER STORE] No saved characters found or failed to decode")
         }
     }
 }

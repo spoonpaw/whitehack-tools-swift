@@ -26,11 +26,21 @@ struct DetailStatsSection: View {
         }
     }
     
+    private func logCharacterStats() {
+        print("\n [DETAIL STATS] Displaying stats for character: \(character.name)")
+        print(" [DETAIL STATS] Using custom attributes: \(character.useCustomAttributes)")
+        if character.useCustomAttributes {
+            print(" [DETAIL STATS] Custom attributes:")
+            for attr in character.customAttributes {
+                print("   - \(attr.name): \(attr.value)")
+            }
+        }
+    }
+    
     var body: some View {
         Section {
             VStack(spacing: 16) {
                 if character.useCustomAttributes {
-                    // Display custom attributes
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                         ForEach(character.customAttributes) { attribute in
                             StatCard(
@@ -42,7 +52,6 @@ struct DetailStatsSection: View {
                         }
                     }
                 } else {
-                    // Display default attributes
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                         StatCard(
                             label: "Strength",
@@ -89,6 +98,9 @@ struct DetailStatsSection: View {
                 }
             }
             .padding(.vertical, 8)
+            .onAppear {
+                logCharacterStats()
+            }
         } header: {
             HStack(spacing: 8) {
                 Ph.chartBar.bold
