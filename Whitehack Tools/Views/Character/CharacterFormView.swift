@@ -36,18 +36,118 @@ struct CharacterFormView: View {
     var onComplete: ((UUID?) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Field?
-    @State private var formData: FormData
+    @StateObject private var formData: FormData
     
     init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?) -> Void)? = nil) {
         self.characterStore = characterStore
         self.characterId = characterId
         self.onComplete = onComplete
-        self._formData = State(initialValue: FormData(character: characterId.flatMap { id in
+        let character = characterId.flatMap { id in
             characterStore.characters.first { $0.id == id }
-        }))
+        }
+        self._formData = StateObject(wrappedValue: FormData(character: character))
     }
     
     var body: some View {
+        #if os(macOS)
+        ScrollView {
+            Form {
+                Section {
+                    FormBasicInfoSection(
+                        name: $formData.name,
+                        playerName: $formData.playerName,
+                        selectedClass: $formData.selectedClass,
+                        level: $formData.level,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormAttributesSection(
+                        strength: $formData.strength,
+                        agility: $formData.agility,
+                        toughness: $formData.toughness,
+                        intelligence: $formData.intelligence,
+                        willpower: $formData.willpower,
+                        charisma: $formData.charisma
+                    )
+                }
+                
+                Section {
+                    FormCharacterGroupsSection(
+                        speciesGroup: $formData.speciesGroup,
+                        vocationGroup: $formData.vocationGroup,
+                        affiliationGroups: $formData.affiliationGroups,
+                        newAffiliationGroup: $formData.newAffiliationGroup,
+                        attributeGroupPairs: $formData.attributeGroupPairs,
+                        selectedAttribute: $formData.selectedAttribute,
+                        newAttributeGroup: $formData.newAttributeGroup,
+                        isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                        isVocationGroupAdded: $formData.isVocationGroupAdded,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormCombatStatsSection(
+                        currentHP: $formData.currentHP,
+                        maxHP: $formData.maxHP,
+                        defenseValue: $formData.defenseValue,
+                        movement: $formData.movement,
+                        saveColor: $formData.saveColor,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormEncumbranceSection(
+                        currentEncumbrance: $formData.currentEncumbrance,
+                        maxEncumbrance: $formData.maxEncumbrance,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormLanguagesSection(
+                        languages: $formData.languages,
+                        newLanguage: $formData.newLanguage,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormOtherInformationSection(
+                        experience: $formData.experience,
+                        corruption: $formData.corruption,
+                        focusedField: $focusedField
+                    )
+                }
+                
+                Section {
+                    FormNotesSection(
+                        notes: $formData.notes,
+                        focusedField: $focusedField
+                    )
+                }
+            }
+            .padding()
+        }
+        .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    onComplete?(nil)
+                }
+            }
+            
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    let id = saveCharacter()
+                    onComplete?(id)
+                }
+            }
+        }
+        #else
         Form {
             Section {
                 FormBasicInfoSection(
@@ -128,11 +228,8 @@ struct CharacterFormView: View {
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
-        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
-        #endif
         .toolbar {
-            #if os(iOS)
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("Cancel") {
                     onComplete?(nil)
@@ -145,21 +242,8 @@ struct CharacterFormView: View {
                     onComplete?(id)
                 }
             }
-            #else
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    onComplete?(nil)
-                }
-            }
-            
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    let id = saveCharacter()
-                    onComplete?(id)
-                }
-            }
-            #endif
         }
+        #endif
     }
     
     private func saveCharacter() -> UUID {
@@ -182,6 +266,18 @@ struct CharacterFormView: View {
             AttributeGroupPair(attribute: pair.attribute, group: pair.group)
         }
         
+        newCharacter.currentHP = Int(formData.currentHP) ?? 0
+        newCharacter.maxHP = Int(formData.maxHP) ?? 0
+        newCharacter.defenseValue = Int(formData.defenseValue) ?? 0
+        newCharacter.movement = Int(formData.movement) ?? 0
+        newCharacter.saveColor = formData.saveColor
+        // currentEncumbrance is computed from gear
+        newCharacter.maxEncumbrance = Int(formData.maxEncumbrance) ?? 0
+        newCharacter.experience = Int(formData.experience) ?? 0
+        newCharacter.corruption = Int(formData.corruption) ?? 0
+        newCharacter.notes = formData.notes
+        newCharacter.languages = formData.languages
+        
         if characterId != nil {
             characterStore.updateCharacter(newCharacter)
         } else {
@@ -189,39 +285,6 @@ struct CharacterFormView: View {
         }
         
         return newCharacter.id
-    }
-}
-
-private struct AttributeRowView: View {
-    let name: String
-    @Binding var value: String
-    
-    var body: some View {
-        HStack {
-            Text(name)
-            Spacer()
-            Text(value)
-                .monospacedDigit()
-            HStack(spacing: 20) {
-                Button {
-                    if let current = Int(value), current > 3 {
-                        value = String(current - 1)
-                    }
-                } label: {
-                    Image(systemName: "minus.circle.fill")
-                        .foregroundColor(.red)
-                }
-                
-                Button {
-                    if let current = Int(value), current < 18 {
-                        value = String(current + 1)
-                    }
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.green)
-                }
-            }
-        }
     }
 }
 
@@ -261,7 +324,7 @@ private class FormData: ObservableObject {
     @Published var languages: [String] = []
     @Published var newLanguage = ""
     
-    init(character: PlayerCharacter? = nil) {
+    init(character: PlayerCharacter?) {
         if let character = character {
             name = character.name
             playerName = character.playerName
@@ -292,6 +355,39 @@ private class FormData: ObservableObject {
             corruption = String(character.corruption)
             notes = character.notes
             languages = character.languages
+        }
+    }
+}
+
+private struct AttributeRowView: View {
+    let name: String
+    @Binding var value: String
+    
+    var body: some View {
+        HStack {
+            Text(name)
+            Spacer()
+            Text(value)
+                .monospacedDigit()
+            HStack(spacing: 20) {
+                Button {
+                    if let current = Int(value), current > 3 {
+                        value = String(current - 1)
+                    }
+                } label: {
+                    Image(systemName: "minus.circle.fill")
+                        .foregroundColor(.red)
+                }
+                
+                Button {
+                    if let current = Int(value), current < 18 {
+                        value = String(current + 1)
+                    }
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(.green)
+                }
+            }
         }
     }
 }

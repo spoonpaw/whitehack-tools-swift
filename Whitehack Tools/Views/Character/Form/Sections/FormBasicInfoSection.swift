@@ -51,7 +51,7 @@ struct FormBasicInfoSection: View {
                 Text("Class")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                Picker("", selection: $selectedClass) {
+                Picker("Select Class", selection: $selectedClass) {
                     ForEach(CharacterClass.allCases, id: \.self) { characterClass in
                         Text(characterClass.rawValue)
                             .tag(characterClass)
