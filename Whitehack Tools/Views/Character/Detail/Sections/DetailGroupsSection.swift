@@ -58,13 +58,7 @@ struct DetailGroupsSection: View {
                         isPlaceholder: character.speciesGroup == nil
                     )
                     .padding()
-                    #if os(iOS)
-                    .background(Color(uiColor: .systemBackground))
-                    #else
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    #endif
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+                    .groupCardStyle()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     
                     GroupRow(
@@ -74,13 +68,7 @@ struct DetailGroupsSection: View {
                         isPlaceholder: character.vocationGroup == nil
                     )
                     .padding()
-                    #if os(iOS)
-                    .background(Color(uiColor: .systemBackground))
-                    #else
-                    .background(Color(nsColor: .windowBackgroundColor))
-                    #endif
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+                    .groupCardStyle()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -109,21 +97,23 @@ private struct GroupRow: View {
     let isPlaceholder: Bool
     
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            IconFrame(icon: icon, color: isPlaceholder ? .secondary : .accentColor)
+        VStack(spacing: 8) {
+            icon
+                .frame(width: 24, height: 24)
+                .foregroundColor(isPlaceholder ? .secondary : .accentColor)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Text(value)
-                    .font(isPlaceholder ? .body.italic() : .body)
-                    .foregroundColor(isPlaceholder ? .secondary : .primary)
-                    .multilineTextAlignment(.leading)
-            }
-            .frame(maxHeight: .infinity, alignment: .topLeading)
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(value)
+                .font(.body)
+                .foregroundColor(isPlaceholder ? .secondary : .primary)
+                .multilineTextAlignment(.center)
+            
             Spacer(minLength: 0)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -135,8 +125,9 @@ private extension View {
             #else
             .background(Color(nsColor: .windowBackgroundColor))
             #endif
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
 }
 
