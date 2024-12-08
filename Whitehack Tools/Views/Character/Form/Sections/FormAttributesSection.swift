@@ -305,7 +305,7 @@ struct FormAttributesSection: View {
                             let newAttribute = CustomAttribute(
                                 name: "",
                                 value: 10,
-                                icon: .barbell
+                                icon: .star
                             )
                             customAttributes.append(newAttribute)
                             print(" [FORM ATTRIBUTES SECTION] New attribute added with id: \(newAttribute.id)")
