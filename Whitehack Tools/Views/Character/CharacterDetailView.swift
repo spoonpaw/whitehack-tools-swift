@@ -208,13 +208,16 @@ struct CharacterDetailView: View {
                         DetailEquipmentSection(character: character)
                     }
                 }
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: 800)
                 .padding(.vertical)
             } else {
-                Text("Character not found")
-                    .foregroundColor(.secondary)
+                ProgressView()
             }
         }
+        #if os(macOS)
+        .background(.white)
+        #endif
+        .navigationTitle(character?.name ?? "Character Details")
         .frame(maxWidth: .infinity)
         .toolbar {
             #if os(iOS)
