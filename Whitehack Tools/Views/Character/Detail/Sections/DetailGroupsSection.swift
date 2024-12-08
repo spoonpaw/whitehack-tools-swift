@@ -24,74 +24,90 @@ struct DetailGroupsSection: View {
     let character: PlayerCharacter
     
     private let columns = [
-        GridItem(.adaptive(minimum: 100, maximum: .infinity), spacing: 8)
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
     
     var body: some View {
-        Section(header: SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)) {
-            VStack(alignment: .leading, spacing: 16) {
-                // Species & Vocation
-                HStack(spacing: 16) {
-                    GroupPill(label: "Species", value: character.speciesGroup ?? "None")
-                    GroupPill(label: "Vocation", value: character.vocationGroup ?? "None")
+        Section(header: SectionHeader(title: "Groups", icon: Ph.users.bold)) {
+            VStack(spacing: 16) {
+                // Species and Vocation in a grid
+                LazyVGrid(columns: columns, spacing: 16) {
+                    GroupRow(
+                        title: "Species",
+                        value: character.speciesGroup ?? "Not Chosen",
+                        icon: Ph.dna.bold,
+                        isPlaceholder: character.speciesGroup == nil
+                    )
+                    .padding()
+                    .groupCardStyle()
+                    
+                    GroupRow(
+                        title: "Vocation",
+                        value: character.vocationGroup ?? "Not Chosen",
+                        icon: Ph.briefcase.bold,
+                        isPlaceholder: character.vocationGroup == nil
+                    )
+                    .padding()
+                    .groupCardStyle()
                 }
                 
-                // Affiliation Groups
+                // Affiliations as full width
                 if !character.affiliationGroups.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Ph.flag.bold
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(.secondary)
-                            Text("Affiliations")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
-                            ForEach(character.affiliationGroups, id: \.self) { group in
-                                Text(group)
-                                    .font(.subheadline)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 8)
-                                    .background(.secondary.opacity(0.1))
-                                    .cornerRadius(8)
-                            }
-                        }
-                    }
-                }
-                
-                // Attribute-Group Pairs
-                if !character.attributeGroupPairs.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Ph.sparkle.bold
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(.secondary)
-                            Text("Attribute Specializations")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        ForEach(character.attributeGroupPairs) { pair in
-                            HStack(spacing: 8) {
-                                Text(pair.attribute)
-                                    .fontWeight(.medium)
-                                Text("•")
-                                    .foregroundColor(.secondary)
-                                Text(pair.group)
-                            }
-                            .font(.subheadline)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.purple.opacity(0.1))
-                            .cornerRadius(12)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
+                    GroupRow(
+                        title: "Affiliations",
+                        value: character.affiliationGroups.joined(separator: ", "),
+                        icon: Ph.usersThree.bold,
+                        isPlaceholder: false
+                    )
+                    .padding()
+                    .groupCardStyle()
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.horizontal)
         }
     }
+}
+
+private struct GroupRow: View {
+    let title: String
+    let value: String
+    let icon: Image
+    let isPlaceholder: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            IconFrame(icon: icon, color: isPlaceholder ? .secondary : .accentColor)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Text(value)
+                    .font(isPlaceholder ? .body.italic() : .body)
+                    .foregroundColor(isPlaceholder ? .secondary : .primary)
+            }
+            
+            Spacer()
+        }
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+    }
+}
+
+#Preview {
+    DetailGroupsSection(character: PlayerCharacter())
+        .padding()
 }

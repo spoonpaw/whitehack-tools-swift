@@ -6,71 +6,121 @@ public struct DetailStatsSection: View {
     let character: PlayerCharacter
     
     public var body: some View {
-        
-        Section {
+        Section(header: SectionHeader(title: "Attributes", icon: Ph.chartBar.bold)) {
             VStack(spacing: 16) {
                 if character.useCustomAttributes {
                     // Display custom attributes
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                         ForEach(character.customAttributes) { attribute in
-                            StatCard(
-                                label: attribute.name,
+                            AttributeRow(
+                                title: attribute.name,
                                 value: "\(attribute.value)",
-                                icon: AnyView(attribute.icon.iconView)
+                                iconView: AnyView(attribute.icon.iconView),
+                                isPlaceholder: false
                             )
+                            .padding()
+                            .groupCardStyle()
                         }
                     }
-                    .padding(.horizontal)
                 } else {
                     // Display default attributes
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        StatCard(
-                            label: "Strength",
+                    LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
+                        AttributeRow(
+                            title: "Strength",
                             value: "\(character.strength)",
-                            icon: AnyView(Ph.barbell.bold)
+                            iconView: AnyView(Ph.barbell.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                         
-                        StatCard(
-                            label: "Dexterity",
+                        AttributeRow(
+                            title: "Dexterity",
                             value: "\(character.agility)",
-                            icon: AnyView(Ph.personSimpleRun.bold)
+                            iconView: AnyView(Ph.personSimpleRun.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                         
-                        StatCard(
-                            label: "Constitution",
+                        AttributeRow(
+                            title: "Constitution",
                             value: "\(character.toughness)",
-                            icon: AnyView(Ph.heart.bold)
+                            iconView: AnyView(Ph.heart.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                         
-                        StatCard(
-                            label: "Intelligence",
+                        AttributeRow(
+                            title: "Intelligence",
                             value: "\(character.intelligence)",
-                            icon: AnyView(Ph.brain.bold)
+                            iconView: AnyView(Ph.brain.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                         
-                        StatCard(
-                            label: "Willpower",
+                        AttributeRow(
+                            title: "Willpower",
                             value: "\(character.willpower)",
-                            icon: AnyView(Ph.eye.bold)
+                            iconView: AnyView(Ph.eye.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                         
-                        StatCard(
-                            label: "Charisma",
+                        AttributeRow(
+                            title: "Charisma",
                             value: "\(character.charisma)",
-                            icon: AnyView(Ph.star.bold)
+                            iconView: AnyView(Ph.star.bold),
+                            isPlaceholder: false
                         )
+                        .padding()
+                        .groupCardStyle()
                     }
-                    .padding(.horizontal)
                 }
             }
-            .padding(.vertical, 8)
-        } header: {
-            HStack(spacing: 8) {
-                AnyView(Ph.chartBar.bold)
-                    .frame(width: 20, height: 20)
-                Text("Attributes")
-                    .font(.headline)
-            }
+            .padding(.horizontal)
         }
+    }
+}
+
+private struct AttributeRow: View {
+    let title: String
+    let value: String
+    let iconView: AnyView
+    let isPlaceholder: Bool
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            iconView
+                .frame(width: 24, height: 24)
+                .foregroundColor(isPlaceholder ? .secondary : .accentColor)
+            
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Text(value)
+                .font(.title2)
+                .fontWeight(.medium)
+                .foregroundColor(isPlaceholder ? .secondary : .primary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
 }
