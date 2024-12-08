@@ -91,8 +91,8 @@ public struct TabPicker: View {
     @Binding var selection: DetailTab
     
     public var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
+        GeometryReader { geometry in
+            HStack(spacing: 8) {
                 ForEach(DetailTab.allCases, id: \.id) { tab in
                     TabButton(
                         title: tab.title,
@@ -105,7 +105,9 @@ public struct TabPicker: View {
                     }
                 }
             }
+            .frame(width: geometry.size.width, alignment: .center)
         }
+        .frame(height: 60)
     }
 }
 
@@ -117,24 +119,19 @@ public struct TabButton: View {
     
     public var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            VStack(spacing: 4) {
                 IconFrame(icon: icon, color: isSelected ? .accentColor : .secondary)
                 Text(title)
+                    .font(.footnote)
                     .foregroundColor(isSelected ? .primary : .secondary)
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
-            #if os(iOS)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : .clear)
             )
-            #else
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : .clear)
-            )
-            #endif
+            .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
     }
@@ -145,6 +142,7 @@ struct CharacterDetailView: View {
     let characterId: UUID
     @ObservedObject var characterStore: CharacterStore
     @State private var refreshTrigger = false
+    @State private var selectedTab: DetailTab = .info
     @Binding var currentView: CharacterListView.CurrentView
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -180,16 +178,28 @@ struct CharacterDetailView: View {
         ScrollView {
             if let character = character {
                 VStack(spacing: 16) {
-                    // Basic Info Section
-                    Section(header: SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)) {
-                        DetailHeaderSection(character: character)
+                    TabPicker(selection: $selectedTab)
+                        .padding(.horizontal)
+                    
+                    switch selectedTab {
+                    case .info:
+                        // Basic Info Section
+                        Section(header: SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)) {
+                            DetailHeaderSection(character: character)
+                        }
+                        
+                        DetailStatsSection(character: character)
+                        
+                        DetailGroupsSection(character: character)
+                        
+                        DetailWiseMiracleSection(character: character)
+                        
+                    case .combat:
+                        DetailCombatSection(character: character)
+                        
+                    case .equipment:
+                        DetailEquipmentSection(character: character)
                     }
-                    
-                    DetailStatsSection(character: character)
-                    
-                    DetailGroupsSection(character: character)
-                    
-                    DetailWiseMiracleSection(character: character)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical)
