@@ -86,11 +86,20 @@ struct DetailHeaderSection: View {
                 }
                 
                 if character.level < 10 {
+                    let xpProgress = Double(character.experience - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0)) / Double(character.xpForNextLevel - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0))
+                    let xpColor = character.experience >= character.xpForNextLevel ? 
+                        Color(hue: 0.15, saturation: 1.0, brightness: 0.9) : // Gold color when ready to level up
+                        Color(
+                            hue: 0.6 + (0.1 * xpProgress), // Blue (0.6) to Purple (0.7)
+                            saturation: 0.8,
+                            brightness: 0.9
+                        )
+                    
                     ProgressBar(
                         value: Double(character.experience - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0)),
                         maxValue: Double(character.xpForNextLevel - (character.level > 1 ? AdvancementTables.shared.xpRequirement(for: character.characterClass, at: character.level) : 0)),
                         label: "XP to Level \(character.level + 1)",
-                        foregroundColor: .blue,
+                        foregroundColor: xpColor,
                         showPercentage: true,
                         isComplete: character.experience >= character.xpForNextLevel,
                         completionMessage: "Ready to advance to Level \(character.level + 1)!"
