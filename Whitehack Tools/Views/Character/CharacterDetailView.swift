@@ -127,10 +127,17 @@ public struct TabButton: View {
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
+            #if os(iOS)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : .clear)
             )
+            #else
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : .clear)
+            )
+            #endif
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
