@@ -241,15 +241,42 @@ struct AddAttributeGroupView: View {
 struct FormAttributeGroupPairsView: View {
     let attributes: [String]
     @Binding var attributeGroupPairs: [AttributeGroupPair]
+    let availableGroups: [String]
+    let displayedPairs: [AttributeGroupPair]
     
-    var availableGroups: [String]
-    
-    @State private var isAddingAttributeGroup = false
-    @State private var editingPairId: UUID? = nil
+    @State private var editingPairId: UUID?
     @State private var selectedAttribute = ""
     @State private var newAttributeGroup = ""
-    @State private var tempAttribute = ""
-    @State private var tempGroup = ""
+    @State private var isAddingNew = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            attributeGroupPairsHeader
+            
+            if !displayedPairs.isEmpty {
+                VStack(spacing: 8) {
+                    ForEach(displayedPairs) { pair in
+                        if editingPairId == pair.id {
+                            AttributeGroupPairEditView(
+                                pair: pair,
+                                attributes: attributes,
+                                availableGroups: availableGroups,
+                                attributeGroupPairs: $attributeGroupPairs,
+                                editingPairId: $editingPairId
+                            )
+                        } else {
+                            attributePairDisplayView(for: pair)
+                        }
+                    }
+                }
+                .animation(.easeInOut, value: editingPairId)
+            }
+            
+            if isAddingNew {
+                addAttributeGroupView
+            }
+        }
+    }
     
     private var attributeGroupPairsHeader: some View {
         HStack {
@@ -258,10 +285,10 @@ struct FormAttributeGroupPairsView: View {
                 .fontWeight(.medium)
                 .foregroundColor(.secondary)
             Spacer()
-            if !availableGroups.isEmpty && !isAddingAttributeGroup {
+            if !availableGroups.isEmpty && !isAddingNew {
                 Button {
                     withAnimation(.easeInOut) {
-                        isAddingAttributeGroup = true
+                        isAddingNew = true
                         selectedAttribute = ""
                         newAttributeGroup = ""
                     }
@@ -276,86 +303,6 @@ struct FormAttributeGroupPairsView: View {
         }
     }
     
-    private func attributePairEditView(for pair: AttributeGroupPair) -> some View {
-        HStack(spacing: 8) {
-            Menu {
-                ForEach(attributes, id: \.self) { attribute in
-                    Button(attribute) {
-                        withAnimation(.easeInOut) {
-                            tempAttribute = attribute
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(tempAttribute.isEmpty ? "Select Attribute" : tempAttribute)
-                        .foregroundColor(tempAttribute.isEmpty ? .secondary : .primary)
-                        .frame(minWidth: 100, alignment: .leading)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: 120)
-            }
-            
-            Menu {
-                ForEach(availableGroups, id: \.self) { group in
-                    Button(group) {
-                        withAnimation(.easeInOut) {
-                            tempGroup = group
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(tempGroup.isEmpty ? "Select Group" : tempGroup)
-                        .foregroundColor(tempGroup.isEmpty ? .secondary : .primary)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            Spacer()
-            
-            HStack(spacing: 8) {
-                Button {
-                    withAnimation(.easeInOut) {
-                        editingPairId = nil
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                Button {
-                    withAnimation(.easeInOut) {
-                        if !tempAttribute.isEmpty && !tempGroup.isEmpty {
-                            if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
-                                attributeGroupPairs[index] = AttributeGroupPair(attribute: tempAttribute, group: tempGroup)
-                            }
-                        }
-                        editingPairId = nil
-                    }
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.green)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                .disabled(tempAttribute.isEmpty || tempGroup.isEmpty)
-            }
-        }
-        .onAppear {
-            tempAttribute = pair.attribute
-            tempGroup = pair.group
-        }
-    }
-    
     private func attributePairDisplayView(for pair: AttributeGroupPair) -> some View {
         HStack {
             Text(pair.attribute)
@@ -367,8 +314,6 @@ struct FormAttributeGroupPairsView: View {
             Button {
                 withAnimation(.easeInOut) {
                     editingPairId = pair.id
-                    tempAttribute = pair.attribute
-                    tempGroup = pair.group
                 }
             } label: {
                 Image(systemName: "pencil.circle.fill")
@@ -455,7 +400,7 @@ struct FormAttributeGroupPairsView: View {
                     withAnimation(.easeInOut) {
                         newAttributeGroup = ""
                         selectedAttribute = ""
-                        isAddingAttributeGroup = false
+                        isAddingNew = false
                     }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
@@ -471,7 +416,7 @@ struct FormAttributeGroupPairsView: View {
                             attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: newAttributeGroup))
                             newAttributeGroup = ""
                             selectedAttribute = ""
-                            isAddingAttributeGroup = false
+                            isAddingNew = false
                         }
                     }
                 } label: {
@@ -485,39 +430,5 @@ struct FormAttributeGroupPairsView: View {
             }
         }
         .transition(.opacity)
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            attributeGroupPairsHeader
-            
-            if !attributeGroupPairs.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(attributeGroupPairs) { pair in
-                        HStack {
-                            if editingPairId == pair.id {
-                                attributePairEditView(for: pair)
-                            } else {
-                                attributePairDisplayView(for: pair)
-                            }
-                        }
-                        .padding(10)
-                        .background({
-                            #if os(iOS)
-                            Color(uiColor: .systemGray6)
-                            #else
-                            Color(nsColor: .windowBackgroundColor)
-                            #endif
-                        }())
-                        .cornerRadius(8)
-                    }
-                }
-                .animation(.easeInOut, value: attributeGroupPairs)
-            }
-            
-            if isAddingAttributeGroup {
-                addAttributeGroupView
-            }
-        }
     }
 }

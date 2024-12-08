@@ -83,6 +83,8 @@ struct CharacterFormView: View {
                     newAttributeGroup: $formData.newAttributeGroup,
                     isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
                     isVocationGroupAdded: $formData.isVocationGroupAdded,
+                    useCustomAttributes: $formData.useCustomAttributes,
+                    customAttributes: $formData.customAttributes,
                     focusedField: $focusedField
                 )
                 .frame(maxWidth: .infinity)
@@ -192,6 +194,8 @@ struct CharacterFormView: View {
                     newAttributeGroup: $formData.newAttributeGroup,
                     isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
                     isVocationGroupAdded: $formData.isVocationGroupAdded,
+                    useCustomAttributes: $formData.useCustomAttributes,
+                    customAttributes: $formData.customAttributes,
                     focusedField: $focusedField
                 )
             }

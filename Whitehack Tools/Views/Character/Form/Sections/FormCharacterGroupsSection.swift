@@ -11,7 +11,11 @@ struct FormCharacterGroupsSection: View {
     @Binding var newAttributeGroup: String
     @Binding var isSpeciesGroupAdded: Bool
     @Binding var isVocationGroupAdded: Bool
+    @Binding var useCustomAttributes: Bool
+    @Binding var customAttributes: [CustomAttribute]
     @FocusState.Binding var focusedField: CharacterFormView.Field?
+    
+    private let defaultAttributes = ["Strength", "Agility", "Toughness", "Intelligence", "Willpower", "Charisma"]
     
     private var availableGroups: [String] {
         var groups: [String] = []
@@ -26,7 +30,20 @@ struct FormCharacterGroupsSection: View {
     }
     
     private var availableAttributes: [String] {
-        ["Strength", "Agility", "Toughness", "Intelligence", "Willpower", "Charisma"]
+        if useCustomAttributes {
+            return customAttributes.map { $0.name }
+        } else {
+            return defaultAttributes
+        }
+    }
+    
+    private var filteredAttributeGroupPairs: [AttributeGroupPair] {
+        if useCustomAttributes {
+            let customAttributeNames = customAttributes.map { $0.name }
+            return attributeGroupPairs.filter { customAttributeNames.contains($0.attribute) }
+        } else {
+            return attributeGroupPairs.filter { defaultAttributes.contains($0.attribute) }
+        }
     }
     
     var body: some View {
@@ -38,6 +55,10 @@ struct FormCharacterGroupsSection: View {
                     attributeGroupPairs: $attributeGroupPairs,
                     focusedField: $focusedField
                 )
+                .padding()
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 
                 FormVocationGroupView(
                     vocationGroup: $vocationGroup,
@@ -45,18 +66,31 @@ struct FormCharacterGroupsSection: View {
                     attributeGroupPairs: $attributeGroupPairs,
                     focusedField: $focusedField
                 )
+                .padding()
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 
                 FormAffiliationGroupsView(
                     affiliationGroups: $affiliationGroups,
                     newAffiliationGroup: $newAffiliationGroup,
                     attributeGroupPairs: $attributeGroupPairs
                 )
+                .padding()
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 
                 FormAttributeGroupPairsView(
                     attributes: availableAttributes,
                     attributeGroupPairs: $attributeGroupPairs,
-                    availableGroups: availableGroups
+                    availableGroups: availableGroups,
+                    displayedPairs: filteredAttributeGroupPairs
                 )
+                .padding()
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
             .padding(.vertical, 8)
         } header: {

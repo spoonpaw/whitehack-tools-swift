@@ -12,28 +12,11 @@ struct FormSpeciesGroupView: View {
     @State private var tempSpeciesText = ""
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Species Group")
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                Spacer()
-                if !isSpeciesGroupAdded && !isAddingSpecies {
-                    Button {
-                        withAnimation(.easeInOut) {
-                            isAddingSpecies = true
-                            newSpeciesText = ""
-                        }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .imageScale(.large)
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundColor(.blue)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                }
-            }
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Species Group")
+                .font(.system(.subheadline, design: .rounded))
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
             
             if isAddingSpecies {
                 HStack {
@@ -53,7 +36,7 @@ struct FormSpeciesGroupView: View {
                         Image(systemName: "xmark.circle.fill")
                             .imageScale(.large)
                             .symbolRenderingMode(.hierarchical)
-                            .foregroundColor(.red)
+                            .foregroundColor(.secondary)
                     }
                     .buttonStyle(BorderlessButtonStyle())
                     
@@ -75,9 +58,7 @@ struct FormSpeciesGroupView: View {
                     }
                     .buttonStyle(BorderlessButtonStyle())
                 }
-            }
-            
-            if isSpeciesGroupAdded {
+            } else if isSpeciesGroupAdded {
                 HStack {
                     if isEditing {
                         TextField("Edit Species Group", text: $tempSpeciesText)
@@ -85,83 +66,97 @@ struct FormSpeciesGroupView: View {
                             .textInputAutocapitalization(.words)
                             #endif
                             .textFieldStyle(.roundedBorder)
-                            .onAppear { tempSpeciesText = speciesGroup }
+                            .focused($focusedField, equals: .speciesGroup)
                         
-                        Button {
-                            withAnimation(.easeInOut) {
-                                isEditing = false
-                            }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .imageScale(.medium)
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundColor(.red)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        
-                        Button {
-                            withAnimation(.easeInOut) {
-                                let trimmed = tempSpeciesText.trimmingCharacters(in: .whitespaces)
-                                if !trimmed.isEmpty {
-                                    // Update any attribute pairs that were using the old group name
-                                    attributeGroupPairs = attributeGroupPairs.map { pair in
-                                        if pair.group == speciesGroup {
-                                            return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
-                                        }
-                                        return pair
-                                    }
-                                    speciesGroup = trimmed
+                        HStack(spacing: 12) {
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    isEditing = false
+                                    tempSpeciesText = ""
                                 }
-                                isEditing = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
                             }
-                        } label: {
-                            Image(systemName: "checkmark.circle.fill")
-                                .imageScale(.medium)
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundColor(.green)
+                            .buttonStyle(BorderlessButtonStyle())
+
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    let trimmed = tempSpeciesText.trimmingCharacters(in: .whitespaces)
+                                    if !trimmed.isEmpty {
+                                        // Update any attribute pairs that were using the old group name
+                                        attributeGroupPairs = attributeGroupPairs.map { pair in
+                                            if pair.group == speciesGroup {
+                                                return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
+                                            }
+                                            return pair
+                                        }
+                                        speciesGroup = trimmed
+                                    }
+                                    isEditing = false
+                                    tempSpeciesText = ""
+                                }
+                            } label: {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.green)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
                         }
-                        .buttonStyle(BorderlessButtonStyle())
                     } else {
                         Text(speciesGroup)
-                            .foregroundColor(.primary)
+                            .font(.title3)
                         Spacer()
-                        Button {
-                            withAnimation(.easeInOut) {
-                                isEditing = true
+                        HStack(spacing: 12) {
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    isEditing = true
+                                    tempSpeciesText = speciesGroup
+                                }
+                            } label: {
+                                Image(systemName: "pencil.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.blue)
                             }
-                        } label: {
-                            Image(systemName: "pencil.circle.fill")
-                                .imageScale(.medium)
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        Button {
-                            withAnimation(.easeInOut) {
-                                // Remove any attribute pairs associated with this group
-                                attributeGroupPairs.removeAll { $0.group == speciesGroup }
-                                speciesGroup = ""
-                                isSpeciesGroupAdded = false
+                            
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    isSpeciesGroupAdded = false
+                                    speciesGroup = ""
+                                    
+                                    // Remove all attribute group pairs that reference this group
+                                    attributeGroupPairs.removeAll { $0.group == speciesGroup }
+                                }
+                            } label: {
+                                Image(systemName: "trash.circle.fill")
+                                    .imageScale(.large)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
                             }
-                        } label: {
-                            Image(systemName: "trash.circle.fill")
-                                .imageScale(.medium)
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundColor(.red)
                         }
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                .padding(10)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        #if os(iOS)
-                        .fill(Color(uiColor: .systemGray6))
-                        #else
-                        .fill(Color(nsColor: .controlBackgroundColor))
-                        #endif
-                )
-                .cornerRadius(8)
+            } else {
+                Button {
+                    withAnimation(.easeInOut) {
+                        isAddingSpecies = true
+                        newSpeciesText = ""
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .imageScale(.large)
+                            .symbolRenderingMode(.hierarchical)
+                        Text("Add Species Group")
+                    }
+                    .foregroundColor(.blue)
+                }
+                .buttonStyle(BorderlessButtonStyle())
             }
         }
     }
