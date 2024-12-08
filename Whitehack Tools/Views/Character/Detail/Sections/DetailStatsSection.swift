@@ -20,6 +20,7 @@ public struct DetailStatsSection: View {
                             )
                         }
                     }
+                    .padding(.horizontal)
                 } else {
                     // Display default attributes
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -59,6 +60,7 @@ public struct DetailStatsSection: View {
                             icon: AnyView(Ph.star.bold)
                         )
                     }
+                    .padding(.horizontal)
                 }
             }
             .padding(.vertical, 8)

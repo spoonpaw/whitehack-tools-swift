@@ -50,6 +50,7 @@ public struct StatCard: View, Equatable {
             Text(label)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .lineLimit(1)
             
             Text(value)
                 .font(.headline)
@@ -58,6 +59,7 @@ public struct StatCard: View, Equatable {
         .padding()
         .background(backgroundColor)
         .cornerRadius(12)
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -177,109 +179,20 @@ struct CharacterDetailView: View {
     var body: some View {
         ScrollView {
             if let character = character {
-                VStack(spacing: 24) {
+                VStack(spacing: 16) {
                     // Basic Info Section
                     Section(header: SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            // Name and Class
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(character.name)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                Text(character.characterClass.rawValue)
-                                    .font(.headline)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            // Level and HP
-                            HStack(spacing: 16) {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Level")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Text("\(character.level)")
-                                        .font(.body)
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("HP")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Text("\(character.currentHP)/\(character.maxHP)")
-                                        .font(.body)
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(.secondary.opacity(0.1))
-                        .cornerRadius(12)
+                        DetailHeaderSection(character: character)
                     }
                     
-                    // Attributes Section
-                    Section(header: SectionHeader(title: "Attributes", icon: Ph.barbell.bold)) {
-                        VStack(spacing: 16) {
-                            if character.useCustomAttributes {
-                                // Display custom attributes
-                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                    ForEach(character.customAttributes) { attribute in
-                                        StatCard(
-                                            label: attribute.name,
-                                            value: "\(attribute.value)",
-                                            icon: AnyView(attribute.icon.iconView)
-                                        )
-                                    }
-                                }
-                            } else {
-                                // Display default attributes
-                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                    StatCard(
-                                        label: "Strength",
-                                        value: "\(character.strength)",
-                                        icon: AnyView(Ph.barbell.bold)
-                                    )
-                                    
-                                    StatCard(
-                                        label: "Dexterity",
-                                        value: "\(character.agility)",
-                                        icon: AnyView(Ph.personSimpleRun.bold)
-                                    )
-                                    
-                                    StatCard(
-                                        label: "Constitution",
-                                        value: "\(character.toughness)",
-                                        icon: AnyView(Ph.heart.bold)
-                                    )
-                                    
-                                    StatCard(
-                                        label: "Intelligence",
-                                        value: "\(character.intelligence)",
-                                        icon: AnyView(Ph.brain.bold)
-                                    )
-                                    
-                                    StatCard(
-                                        label: "Willpower",
-                                        value: "\(character.willpower)",
-                                        icon: AnyView(Ph.eye.bold)
-                                    )
-                                    
-                                    StatCard(
-                                        label: "Charisma",
-                                        value: "\(character.charisma)",
-                                        icon: AnyView(Ph.star.bold)
-                                    )
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(.secondary.opacity(0.1))
-                        .cornerRadius(12)
-                    }
+                    DetailStatsSection(character: character)
                     
                     DetailGroupsSection(character: character)
+                    
                     DetailWiseMiracleSection(character: character)
                 }
-                .frame(maxWidth: 600)
-                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical)
             } else {
                 Text("Character not found")
                     .foregroundColor(.secondary)
