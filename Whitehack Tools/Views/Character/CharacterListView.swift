@@ -106,12 +106,20 @@ private struct CharacterListContent: View {
             
             Divider()
             
-            CharacterList(
-                characterToDelete: $characterToDelete,
-                showingDeleteConfirmation: $showingDeleteConfirmation,
-                currentView: $currentView
-            )
-            .listStyle(.plain)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Characters")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                
+                CharacterList(
+                    characterToDelete: $characterToDelete,
+                    showingDeleteConfirmation: $showingDeleteConfirmation,
+                    currentView: $currentView
+                )
+                .listStyle(.plain)
+            }
         }
         #if os(iOS)
         .toolbar {
