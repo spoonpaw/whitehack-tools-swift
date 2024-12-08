@@ -5,40 +5,72 @@ struct IconPicker: View {
     @Binding var selectedIcon: CustomAttributeIcon
     @Environment(\.dismiss) private var dismiss
     
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 4)
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 6)
     
     var body: some View {
+        #if os(iOS)
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(CustomAttributeIcon.allCases, id: \.self) { icon in
-                        Button {
-                            print(" [ICON PICKER] Selecting icon: \(icon)")
-                            selectedIcon = icon
-                            dismiss()
-                        } label: {
-                            icon.iconView
-                                .font(.system(size: 24))
-                                .frame(width: 44, height: 44)
-                                .background(Color(.tertiarySystemFill))
-                                .cornerRadius(8)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding()
+            iconGrid
+        }
+        #else
+        VStack(spacing: 8) {
+            iconGrid
+            
+            Button("Cancel") {
+                dismiss()
             }
-            .navigationTitle("Select Icon")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        print(" [ICON PICKER] Cancel button tapped")
+            .keyboardShortcut(.escape)
+            .padding(.bottom, 8)
+        }
+        .frame(minWidth: 400, minHeight: 300)
+        .padding()
+        #endif
+    }
+    
+    private var iconGrid: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(CustomAttributeIcon.allCases, id: \.self) { icon in
+                    Button {
+                        print(" [ICON PICKER] Selecting icon: \(icon)")
+                        selectedIcon = icon
                         dismiss()
+                    } label: {
+                        icon.iconView
+                            .font(.system(size: 24))
+                            .frame(width: 44, height: 44)
+                            .background(systemFillColor)
+                            .cornerRadius(8)
                     }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding()
+        }
+        #if os(iOS)
+        .navigationTitle("Select Icon")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    print(" [ICON PICKER] Cancel button tapped")
+                    dismiss()
                 }
             }
         }
+        #endif
+    }
+    
+    private var systemFillColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .tertiarySystemFill)
+        #else
+        if #available(macOS 14.0, *) {
+            return Color(nsColor: .tertiarySystemFill)
+        } else {
+            return Color(nsColor: .controlBackgroundColor)
+        }
+        #endif
     }
 }
 
@@ -107,10 +139,32 @@ struct CustomAttributeEditor: View {
                         localAttribute.icon.iconView
                             .font(.system(size: 32))
                             .frame(width: 60, height: 60)
-                            .background(Color(.tertiarySystemFill))
+                            .background(systemFillColor)
                             .cornerRadius(12)
                     }
                     .buttonStyle(.plain)
+                    #if os(macOS)
+                    .sheet(isPresented: $showIconPicker) {
+                        IconPicker(selectedIcon: Binding(
+                            get: { localAttribute.icon },
+                            set: { newIcon in
+                                localAttribute.icon = newIcon
+                                onUpdate(localAttribute)
+                            }
+                        ))
+                        .frame(width: 400, height: 300)
+                    }
+                    #else
+                    .sheet(isPresented: $showIconPicker) {
+                        IconPicker(selectedIcon: Binding(
+                            get: { localAttribute.icon },
+                            set: { newIcon in
+                                localAttribute.icon = newIcon
+                                onUpdate(localAttribute)
+                            }
+                        ))
+                    }
+                    #endif
                 }
                 
                 // Name section
@@ -163,28 +217,35 @@ struct CustomAttributeEditor: View {
         }
         .padding()
         .background(
-            Color(.secondarySystemGroupedBackground)
+            systemFillColor
                 .cornerRadius(12)
                 .allowsHitTesting(false) // Make background non-interactive
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(.separator), lineWidth: 0.5)
+                .stroke(separatorColor, lineWidth: 0.5)
         )
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-        .sheet(isPresented: $showIconPicker) {
-            IconPicker(selectedIcon: Binding(
-                get: { 
-                    print(" [CUSTOM ATTRIBUTE EDITOR] Getting icon for attribute: \(attribute.id)")
-                    return localAttribute.icon 
-                },
-                set: { newValue in
-                    print(" [CUSTOM ATTRIBUTE EDITOR] Setting icon for attribute: \(attribute.id) to: \(newValue)")
-                    localAttribute.icon = newValue
-                    onUpdate(localAttribute)
-                }
-            ))
+    }
+    
+    private var systemFillColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .tertiarySystemFill)
+        #else
+        if #available(macOS 14.0, *) {
+            return Color(nsColor: .tertiarySystemFill)
+        } else {
+            return Color(nsColor: .controlBackgroundColor)
         }
+        #endif
+    }
+    
+    private var separatorColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .separator)
+        #else
+        return Color(nsColor: .separatorColor)
+        #endif
     }
 }
 
@@ -258,7 +319,7 @@ struct FormAttributesSection: View {
                             .font(.body)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
-                            .background(Color(.tertiarySystemFill))
+                            .background(systemFillColor)
                             .cornerRadius(8)
                         }
                         .buttonStyle(.plain)
@@ -321,6 +382,26 @@ struct FormAttributesSection: View {
             print(" [FORM ATTRIBUTES SECTION] Current attributes count: \(customAttributes.count)")
             print(" [FORM ATTRIBUTES SECTION] Current attributes: \(customAttributes.map { $0.id })")
         }
+    }
+    
+    private var systemFillColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .tertiarySystemFill)
+        #else
+        if #available(macOS 14.0, *) {
+            return Color(nsColor: .tertiarySystemFill)
+        } else {
+            return Color(nsColor: .controlBackgroundColor)
+        }
+        #endif
+    }
+    
+    private var separatorColor: Color {
+        #if os(iOS)
+        return Color(uiColor: .separator)
+        #else
+        return Color(nsColor: .separatorColor)
+        #endif
     }
 }
 
