@@ -11,11 +11,13 @@ struct ProgressBar: View {
     var completionMessage: String? = nil
     
     private var progress: Double {
-        min(max(value / maxValue, 0.0), 1.0)  // Clamp between 0 and 1
+        guard maxValue > 0 else { return 0.0 }
+        return min(max(value / maxValue, 0.0), 1.0)  // Clamp between 0 and 1
     }
     
     private var percentage: Int {
-        min(Int(value / maxValue * 100), 100)  // Cap at 100%
+        guard maxValue > 0 else { return 0 }
+        return min(Int(value / maxValue * 100), 100)  // Cap at 100%
     }
     
     private var barColor: Color {
