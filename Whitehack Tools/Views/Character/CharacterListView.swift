@@ -159,6 +159,18 @@ private struct CharacterList: View {
                     showingDeleteConfirmation: $showingDeleteConfirmation,
                     currentView: $currentView
                 )
+                #if os(iOS)
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        if let index = characterStore.characters.firstIndex(where: { $0.id == character.id }) {
+                            characterToDelete = IndexSet([index])
+                            showingDeleteConfirmation = true
+                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                #endif
             }
         }
     }
@@ -180,6 +192,7 @@ private struct CharacterListRow: View {
             }
             .buttonStyle(.plain)
             
+            #if os(macOS)
             Button {
                 if let index = characterStore.characters.firstIndex(where: { $0.id == character.id }) {
                     characterToDelete = IndexSet([index])
@@ -192,6 +205,7 @@ private struct CharacterListRow: View {
             }
             .buttonStyle(.plain)
             .padding(.trailing, 8)
+            #endif
         }
         .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
