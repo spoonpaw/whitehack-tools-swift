@@ -777,6 +777,25 @@ class PlayerCharacter: Identifiable, Codable {
     // Deft Class Specific Properties
     var attunementSlots: [AttunementSlot]
     
+    /// Switches the active state between primary and secondary attunements in a slot
+    /// - Parameter slotIndex: The index of the slot to switch
+    /// - Returns: True if the switch was successful, false if the slot doesn't exist
+    func switchAttunements(inSlot slotIndex: Int) -> Bool {
+        guard slotIndex < attunementSlots.count else { return false }
+        
+        // Swap active states
+        attunementSlots[slotIndex].primaryAttunement.isActive.toggle()
+        attunementSlots[slotIndex].secondaryAttunement.isActive.toggle()
+        
+        return true
+    }
+    
+    /// Get the number of available attunement slots based on character level
+    var availableAttunementSlots: Int {
+        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+        return stats.attunementSlots
+    }
+    
     // Strong Class Specific Properties
     var currentConflictLoot: ConflictLoot?
     var strongCombatOptions: StrongCombatOptions
@@ -786,10 +805,6 @@ class PlayerCharacter: Identifiable, Codable {
     
     // Brave Class Specific Properties
     var braveQuirkOptions: BraveQuirkOptions
-    var comebackDice: Int
-    var hasUsedSayNo: Bool
-    
-    // Clever Class Specific Properties
     var cleverKnackOptions: CleverKnackOptions
     
     // Fortunate Class Specific Properties
@@ -799,6 +814,9 @@ class PlayerCharacter: Identifiable, Codable {
     var languages: [String]
     var notes: String
     var experience: Int
+    var corruption: Int
+    var inventory: [String]
+    var maxEncumbrance: Int
     var coinsOnHand: Int
     var stashedCoins: Int
     var gear: [Gear]  // New gear array
@@ -821,8 +839,12 @@ class PlayerCharacter: Identifiable, Codable {
         return total
     }
     
-    var maxEncumbrance: Int
-    var inventory: [String]
+    var comebackDice: Int {
+        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+        return stats.comebackDice
+    }
+    
+    var hasUsedSayNo: Bool
     
     // Computed XP properties
     var xpForNextLevel: Int {
@@ -847,8 +869,6 @@ class PlayerCharacter: Identifiable, Codable {
         guard level < 10 else { return false }
         return experience >= xpForNextLevel
     }
-    
-    var corruption: Int
     
     // Equipment Tracking
     var weapons: [Weapon]
