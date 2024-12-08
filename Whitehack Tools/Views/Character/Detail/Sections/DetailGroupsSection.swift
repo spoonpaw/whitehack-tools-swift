@@ -20,19 +20,37 @@ struct GroupPill: View {
     }
 }
 
+struct EqualHeight: ViewModifier {
+    let alignment: Alignment
+    
+    func body(content: Content) -> some View {
+        content
+            .frame(maxHeight: .infinity, alignment: alignment)
+    }
+}
+
+extension View {
+    func equalHeight(alignment: Alignment = .center) -> some View {
+        modifier(EqualHeight(alignment: alignment))
+    }
+}
+
+private struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 struct DetailGroupsSection: View {
     let character: PlayerCharacter
-    
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
     
     var body: some View {
         Section(header: SectionHeader(title: "Groups", icon: Ph.users.bold)) {
             VStack(spacing: 16) {
                 // Species and Vocation in a grid
-                LazyVGrid(columns: columns, spacing: 16) {
+                HStack(spacing: 16) {
                     GroupRow(
                         title: "Species",
                         value: character.speciesGroup ?? "Not Chosen",
@@ -40,7 +58,14 @@ struct DetailGroupsSection: View {
                         isPlaceholder: character.speciesGroup == nil
                     )
                     .padding()
-                    .groupCardStyle()
+                    #if os(iOS)
+                    .background(Color(uiColor: .systemBackground))
+                    #else
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    #endif
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     
                     GroupRow(
                         title: "Vocation",
@@ -49,8 +74,16 @@ struct DetailGroupsSection: View {
                         isPlaceholder: character.vocationGroup == nil
                     )
                     .padding()
-                    .groupCardStyle()
+                    #if os(iOS)
+                    .background(Color(uiColor: .systemBackground))
+                    #else
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    #endif
+                    .cornerRadius(12)
+                    .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 
                 // Affiliations as full width
                 if !character.affiliationGroups.isEmpty {
@@ -76,7 +109,7 @@ private struct GroupRow: View {
     let isPlaceholder: Bool
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             IconFrame(icon: icon, color: isPlaceholder ? .secondary : .accentColor)
             
             VStack(alignment: .leading, spacing: 4) {
@@ -86,9 +119,10 @@ private struct GroupRow: View {
                 Text(value)
                     .font(isPlaceholder ? .body.italic() : .body)
                     .foregroundColor(isPlaceholder ? .secondary : .primary)
+                    .multilineTextAlignment(.leading)
             }
-            
-            Spacer()
+            .frame(maxHeight: .infinity, alignment: .topLeading)
+            Spacer(minLength: 0)
         }
     }
 }
@@ -101,9 +135,8 @@ private extension View {
             #else
             .background(Color(nsColor: .windowBackgroundColor))
             #endif
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 }
 
