@@ -776,6 +776,7 @@ class PlayerCharacter: Identifiable, Codable {
     
     // Deft Class Specific Properties
     var attunementSlots: [AttunementSlot]
+    var hasUsedAttunementToday: Bool
     
     /// Switches the active state between primary and secondary attunements in a slot
     /// - Parameter slotIndex: The index of the slot to switch
@@ -793,7 +794,7 @@ class PlayerCharacter: Identifiable, Codable {
     /// Get the number of available attunement slots based on character level
     var availableAttunementSlots: Int {
         let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.attunementSlots
+        return stats.slots
     }
     
     // Strong Class Specific Properties
@@ -839,10 +840,7 @@ class PlayerCharacter: Identifiable, Codable {
         return total
     }
     
-    var comebackDice: Int {
-        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.comebackDice
-    }
+    var comebackDice: Int = 0  // Store this directly in PlayerCharacter
     
     var hasUsedSayNo: Bool
     
@@ -967,6 +965,7 @@ class PlayerCharacter: Identifiable, Codable {
                     hasUsedDailyPower: slot.hasUsedDailyPower
                 )
             },
+            hasUsedAttunementToday: hasUsedAttunementToday,
             currentConflictLoot: currentConflictLoot,
             strongCombatOptions: strongCombatOptions,
             wiseMiracleSlots: wiseMiracleSlots.map { slot in
@@ -1171,6 +1170,154 @@ class PlayerCharacter: Identifiable, Codable {
         return newCharacter
     }
     
+    // MARK: - Encodable Implementation
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        // Required fields
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(playerName, forKey: .playerName)
+        try container.encode(characterClass, forKey: .characterClass)
+        try container.encode(level, forKey: .level)
+        
+        // Attributes Configuration
+        try container.encode(useCustomAttributes, forKey: .useCustomAttributes)
+        try container.encode(customAttributes, forKey: .customAttributes)
+        
+        // Default Attributes
+        try container.encode(strength, forKey: .strength)
+        try container.encode(agility, forKey: .agility)
+        try container.encode(toughness, forKey: .toughness)
+        try container.encode(intelligence, forKey: .intelligence)
+        try container.encode(willpower, forKey: .willpower)
+        try container.encode(charisma, forKey: .charisma)
+        
+        // Combat Stats
+        try container.encode(currentHP, forKey: .currentHP)
+        try container.encode(maxHP, forKey: .maxHP)
+        try container.encode(_attackValue, forKey: ._attackValue)
+        try container.encode(defenseValue, forKey: .defenseValue)
+        try container.encode(movement, forKey: .movement)
+        try container.encode(_saveValue, forKey: ._saveValue)
+        try container.encode(saveColor, forKey: .saveColor)
+        
+        // Groups
+        try container.encode(speciesGroup, forKey: .speciesGroup)
+        try container.encode(vocationGroup, forKey: .vocationGroup)
+        try container.encode(affiliationGroups, forKey: .affiliationGroups)
+        try container.encode(attributeGroupPairs, forKey: .attributeGroupPairs)
+        
+        // Class Specific Properties
+        try container.encode(attunementSlots, forKey: .attunementSlots)
+        try container.encode(hasUsedAttunementToday, forKey: .hasUsedAttunementToday)
+        try container.encode(currentConflictLoot, forKey: .currentConflictLoot)
+        try container.encode(strongCombatOptions, forKey: .strongCombatOptions)
+        try container.encode(wiseMiracleSlots, forKey: .wiseMiracleSlots)
+        try container.encode(braveQuirkOptions, forKey: .braveQuirkOptions)
+        try container.encode(cleverKnackOptions, forKey: .cleverKnackOptions)
+        try container.encode(fortunateOptions, forKey: .fortunateOptions)
+        try container.encode(comebackDice, forKey: .comebackDice)
+        try container.encode(hasUsedSayNo, forKey: .hasUsedSayNo)
+        
+        // Other
+        try container.encode(languages, forKey: .languages)
+        try container.encode(notes, forKey: .notes)
+        try container.encode(experience, forKey: .experience)
+        try container.encode(corruption, forKey: .corruption)
+        try container.encode(inventory, forKey: .inventory)
+        try container.encode(maxEncumbrance, forKey: .maxEncumbrance)
+        try container.encode(coinsOnHand, forKey: .coinsOnHand)
+        try container.encode(stashedCoins, forKey: .stashedCoins)
+        try container.encode(gear, forKey: .gear)
+        try container.encode(weapons, forKey: .weapons)
+        try container.encode(armor, forKey: .armor)
+    }
+    
+    // MARK: - Coding Keys
+    private enum CodingKeys: String, CodingKey {
+        case id, name, playerName, characterClass, level
+        case useCustomAttributes, customAttributes
+        case strength, agility, toughness, intelligence, willpower, charisma
+        case currentHP, maxHP, _attackValue, defenseValue, movement, _saveValue, saveColor
+        case speciesGroup, vocationGroup, affiliationGroups, attributeGroupPairs
+        case attunementSlots, hasUsedAttunementToday
+        case currentConflictLoot, strongCombatOptions
+        case wiseMiracleSlots
+        case braveQuirkOptions, cleverKnackOptions
+        case fortunateOptions
+        case comebackDice, hasUsedSayNo
+        case languages, notes, experience, corruption
+        case inventory, maxEncumbrance, coinsOnHand, stashedCoins
+        case gear, weapons, armor
+    }
+    
+    // MARK: - Decodable Implementation
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Required fields with defaults
+        id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        playerName = try container.decodeIfPresent(String.self, forKey: .playerName) ?? ""
+        characterClass = try container.decodeIfPresent(CharacterClass.self, forKey: .characterClass) ?? .deft
+        level = try container.decodeIfPresent(Int.self, forKey: .level) ?? 1
+        
+        // Attributes Configuration
+        useCustomAttributes = try container.decodeIfPresent(Bool.self, forKey: .useCustomAttributes) ?? false
+        customAttributes = try container.decodeIfPresent([CustomAttribute].self, forKey: .customAttributes) ?? []
+        
+        // Default Attributes
+        strength = try container.decodeIfPresent(Int.self, forKey: .strength) ?? 10
+        agility = try container.decodeIfPresent(Int.self, forKey: .agility) ?? 10
+        toughness = try container.decodeIfPresent(Int.self, forKey: .toughness) ?? 10
+        intelligence = try container.decodeIfPresent(Int.self, forKey: .intelligence) ?? 10
+        willpower = try container.decodeIfPresent(Int.self, forKey: .willpower) ?? 10
+        charisma = try container.decodeIfPresent(Int.self, forKey: .charisma) ?? 10
+        
+        // Combat Stats
+        currentHP = try container.decodeIfPresent(Int.self, forKey: .currentHP) ?? 1
+        maxHP = try container.decodeIfPresent(Int.self, forKey: .maxHP) ?? 1
+        _attackValue = try container.decodeIfPresent(Int.self, forKey: ._attackValue) ?? 10
+        defenseValue = try container.decodeIfPresent(Int.self, forKey: .defenseValue) ?? 0
+        movement = try container.decodeIfPresent(Int.self, forKey: .movement) ?? 30
+        _saveValue = try container.decodeIfPresent(Int.self, forKey: ._saveValue) ?? 7
+        saveColor = try container.decodeIfPresent(String.self, forKey: .saveColor) ?? ""
+        
+        // Groups
+        speciesGroup = try container.decodeIfPresent(String.self, forKey: .speciesGroup)
+        vocationGroup = try container.decodeIfPresent(String.self, forKey: .vocationGroup)
+        affiliationGroups = try container.decodeIfPresent([String].self, forKey: .affiliationGroups) ?? []
+        attributeGroupPairs = try container.decodeIfPresent([AttributeGroupPair].self, forKey: .attributeGroupPairs) ?? []
+        
+        // Class Specific Properties
+        attunementSlots = try container.decodeIfPresent([AttunementSlot].self, forKey: .attunementSlots) ?? []
+        hasUsedAttunementToday = try container.decodeIfPresent(Bool.self, forKey: .hasUsedAttunementToday) ?? false
+        currentConflictLoot = try container.decodeIfPresent(ConflictLoot.self, forKey: .currentConflictLoot)
+        strongCombatOptions = try container.decodeIfPresent(StrongCombatOptions.self, forKey: .strongCombatOptions) ?? StrongCombatOptions()
+        wiseMiracleSlots = try container.decodeIfPresent([WiseMiracleSlot].self, forKey: .wiseMiracleSlots) ?? []
+        braveQuirkOptions = try container.decodeIfPresent(BraveQuirkOptions.self, forKey: .braveQuirkOptions) ?? BraveQuirkOptions()
+        cleverKnackOptions = try container.decodeIfPresent(CleverKnackOptions.self, forKey: .cleverKnackOptions) ?? CleverKnackOptions()
+        fortunateOptions = try container.decodeIfPresent(FortunateOptions.self, forKey: .fortunateOptions) ?? FortunateOptions()
+        comebackDice = try container.decodeIfPresent(Int.self, forKey: .comebackDice) ?? 0
+        hasUsedSayNo = try container.decodeIfPresent(Bool.self, forKey: .hasUsedSayNo) ?? false
+        
+        // Other
+        languages = try container.decodeIfPresent([String].self, forKey: .languages) ?? ["Common"]
+        notes = try container.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        experience = try container.decodeIfPresent(Int.self, forKey: .experience) ?? 0
+        corruption = try container.decodeIfPresent(Int.self, forKey: .corruption) ?? 0
+        inventory = try container.decodeIfPresent([String].self, forKey: .inventory) ?? []
+        maxEncumbrance = try container.decodeIfPresent(Int.self, forKey: .maxEncumbrance) ?? 15
+        coinsOnHand = try container.decodeIfPresent(Int.self, forKey: .coinsOnHand) ?? 0
+        stashedCoins = try container.decodeIfPresent(Int.self, forKey: .stashedCoins) ?? 0
+        gear = try container.decodeIfPresent([Gear].self, forKey: .gear) ?? []
+        weapons = try container.decodeIfPresent([Weapon].self, forKey: .weapons) ?? []
+        armor = try container.decodeIfPresent([Armor].self, forKey: .armor) ?? []
+        
+        print("Successfully decoded PlayerCharacter with name: \(name)")
+    }
+
     // MARK: - Initializer
     init(
         id: UUID = UUID(),
@@ -1198,6 +1345,7 @@ class PlayerCharacter: Identifiable, Codable {
         affiliationGroups: [String] = [],
         attributeGroupPairs: [AttributeGroupPair] = [],
         attunementSlots: [AttunementSlot] = [],
+        hasUsedAttunementToday: Bool = false,
         currentConflictLoot: ConflictLoot? = nil,
         strongCombatOptions: StrongCombatOptions = StrongCombatOptions(),
         wiseMiracleSlots: [WiseMiracleSlot] = [],
@@ -1243,6 +1391,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.affiliationGroups = affiliationGroups
         self.attributeGroupPairs = attributeGroupPairs
         self.attunementSlots = attunementSlots
+        self.hasUsedAttunementToday = hasUsedAttunementToday
         self.currentConflictLoot = currentConflictLoot
         self.strongCombatOptions = strongCombatOptions
         self.wiseMiracleSlots = wiseMiracleSlots
