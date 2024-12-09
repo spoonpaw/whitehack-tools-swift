@@ -208,12 +208,13 @@ struct CharacterDetailView: View {
                         DetailEquipmentSection(character: character)
                     }
                 }
-                .frame(maxWidth: 800)
+                .frame(maxWidth: .infinity)
                 .padding(.vertical)
             } else {
                 ProgressView()
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         #if os(macOS)
         .background(.white)
         #endif
