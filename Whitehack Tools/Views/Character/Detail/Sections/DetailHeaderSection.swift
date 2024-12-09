@@ -32,7 +32,16 @@ struct DetailHeaderSection: View {
                 InfoCard(
                     title: "Class",
                     value: character.characterClass.rawValue,
-                    icon: Ph.spiral.bold  // Mystical/destiny vibes for character class
+                    icon: {
+                        switch character.characterClass {
+                        case .strong: return Ph.barbell.bold
+                        case .wise: return Ph.sparkle.bold
+                        case .deft: return Ph.arrowsOutCardinal.bold
+                        case .brave: return Ph.shield.bold
+                        case .clever: return Ph.lightbulb.bold
+                        case .fortunate: return Ph.crown.bold
+                        }
+                    }()
                 )
                 .padding()
                 .groupCardStyle()
