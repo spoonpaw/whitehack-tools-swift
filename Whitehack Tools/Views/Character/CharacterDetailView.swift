@@ -16,77 +16,6 @@ public struct SectionHeader: View {
     }
 }
 
-public struct StatCard: View, Equatable {
-    let label: String
-    let value: String
-    let icon: AnyView
-    @Environment(\.colorScheme) private var colorScheme
-
-    private var backgroundColor: Color {
-        #if os(iOS)
-        return Color(uiColor: .secondarySystemGroupedBackground)
-        #else
-        return Color(nsColor: .windowBackgroundColor)
-        #endif
-    }
-
-    public static func == (lhs: StatCard, rhs: StatCard) -> Bool {
-        lhs.label == rhs.label &&
-        lhs.value == rhs.value
-    }
-    
-    public init(label: String, value: String, icon: AnyView) {
-        self.label = label
-        self.value = value
-        self.icon = icon
-    }
-
-    public var body: some View {
-        VStack(alignment: .center, spacing: 8) {
-            icon
-                .frame(width: 24, height: 24)
-                .foregroundColor(.accentColor)
-            
-            Text(label)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-            
-            Text(value)
-                .font(.headline)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(backgroundColor)
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-    }
-}
-
-// MARK: - Tab Enum
-public enum DetailTab: String, CaseIterable, Identifiable {
-    case info, combat, equipment
-    
-    public var id: String { rawValue }
-    
-    public var title: String {
-        switch self {
-        case .info: return "Info"
-        case .combat: return "Combat"
-        case .equipment: return "Equipment"
-        }
-    }
-    
-    public var icon: Image {
-        switch self {
-        case .info: return Image(systemName: "info.circle")
-        case .combat: return Image(systemName: "shield")
-        case .equipment: return Image(systemName: "bag")
-        }
-    }
-}
-
-// MARK: - Tab Picker
 public struct TabPicker: View {
     @Binding var selection: DetailTab
     
@@ -141,6 +70,29 @@ public struct TabButton: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Tab Enum
+public enum DetailTab: String, CaseIterable, Identifiable {
+    case info, combat, equipment
+    
+    public var id: String { rawValue }
+    
+    public var title: String {
+        switch self {
+        case .info: return "Info"
+        case .combat: return "Combat"
+        case .equipment: return "Equipment"
+        }
+    }
+    
+    public var icon: Image {
+        switch self {
+        case .info: return Image(systemName: "info.circle")
+        case .combat: return Image(systemName: "shield")
+        case .equipment: return Image(systemName: "bag")
+        }
     }
 }
 
