@@ -5,6 +5,12 @@ import PhosphorSwift
 public struct DetailStatsSection: View {
     let character: PlayerCharacter
     
+    private func findGroupsForAttribute(_ attributeName: String) -> [String] {
+        return character.attributeGroupPairs
+            .filter { $0.attribute.lowercased() == attributeName.lowercased() }
+            .map { $0.group }
+    }
+    
     public var body: some View {
         Section(header: SectionHeader(title: "Attributes", icon: Ph.chartBar.bold)) {
             VStack(spacing: 16) {
@@ -16,7 +22,9 @@ public struct DetailStatsSection: View {
                                 title: attribute.name,
                                 value: "\(attribute.value)",
                                 iconView: AnyView(attribute.icon.iconView),
-                                isPlaceholder: false
+                                isPlaceholder: false,
+                                groups: findGroupsForAttribute(attribute.name),
+                                character: character
                             )
                             .padding()
                             .groupCardStyle()
@@ -29,25 +37,31 @@ public struct DetailStatsSection: View {
                             title: "Strength",
                             value: "\(character.strength)",
                             iconView: AnyView(Ph.barbell.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Strength"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
                         
                         AttributeRow(
-                            title: "Dexterity",
+                            title: "Agility",
                             value: "\(character.agility)",
                             iconView: AnyView(Ph.personSimpleRun.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Agility"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
                         
                         AttributeRow(
-                            title: "Constitution",
+                            title: "Toughness",
                             value: "\(character.toughness)",
                             iconView: AnyView(Ph.heart.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Toughness"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
@@ -56,7 +70,9 @@ public struct DetailStatsSection: View {
                             title: "Intelligence",
                             value: "\(character.intelligence)",
                             iconView: AnyView(Ph.brain.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Intelligence"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
@@ -65,7 +81,9 @@ public struct DetailStatsSection: View {
                             title: "Willpower",
                             value: "\(character.willpower)",
                             iconView: AnyView(Ph.eye.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Willpower"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
@@ -74,7 +92,9 @@ public struct DetailStatsSection: View {
                             title: "Charisma",
                             value: "\(character.charisma)",
                             iconView: AnyView(Ph.star.bold),
-                            isPlaceholder: false
+                            isPlaceholder: false,
+                            groups: findGroupsForAttribute("Charisma"),
+                            character: character
                         )
                         .padding()
                         .groupCardStyle()
@@ -91,6 +111,18 @@ private struct AttributeRow: View {
     let value: String
     let iconView: AnyView
     let isPlaceholder: Bool
+    let groups: [String]
+    let character: PlayerCharacter
+    
+    private func groupColor(for group: String) -> Color {
+        if group == character.speciesGroup {
+            return .blue
+        } else if group == character.vocationGroup {
+            return .purple
+        } else {
+            return .green
+        }
+    }
     
     var body: some View {
         VStack(spacing: 8) {
@@ -106,8 +138,25 @@ private struct AttributeRow: View {
                 .font(.title2)
                 .fontWeight(.medium)
                 .foregroundColor(isPlaceholder ? .secondary : .primary)
+            
+            if !groups.isEmpty {
+                VStack(spacing: 4) {
+                    ForEach(groups, id: \.self) { group in
+                        let color = groupColor(for: group)
+                        Text(group)
+                            .font(.caption)
+                            .foregroundColor(color)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(color.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
+            }
+            
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
@@ -123,4 +172,9 @@ private extension View {
             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
+}
+
+#Preview {
+    DetailStatsSection(character: PlayerCharacter())
+        .padding()
 }
