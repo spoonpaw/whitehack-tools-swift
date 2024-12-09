@@ -184,9 +184,10 @@ struct CharacterDetailView: View {
     var body: some View {
         ScrollView {
             if let character = character {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     TabPicker(selection: $selectedTab)
                         .padding(.horizontal)
+                        .padding(.top, 4)
                     
                     switch selectedTab {
                     case .info:
