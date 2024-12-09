@@ -12,11 +12,19 @@ struct DetailHeaderSection: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            // Name field
-            if !character.name.isEmpty {
-                Text(character.name)
-                    .font(.title2)
-                    .fontWeight(.medium)
+            // Character and Player Names
+            VStack(spacing: 8) {
+                if !character.name.isEmpty {
+                    Text(character.name)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                }
+                
+                if !character.playerName.isEmpty {
+                    Text("Player: \(character.playerName)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
             }
             
             // Level, Class, XP
