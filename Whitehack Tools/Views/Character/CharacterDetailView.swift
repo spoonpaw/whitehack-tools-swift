@@ -187,7 +187,6 @@ struct CharacterDetailView: View {
                 VStack(spacing: 8) {
                     TabPicker(selection: $selectedTab)
                         .padding(.horizontal)
-                        .padding(.top, 4)
                     
                     switch selectedTab {
                     case .info:
@@ -210,12 +209,14 @@ struct CharacterDetailView: View {
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical)
             } else {
                 ProgressView()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
         #if os(macOS)
         .background(.white)
         #endif
