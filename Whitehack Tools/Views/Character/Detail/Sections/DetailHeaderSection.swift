@@ -24,7 +24,7 @@ struct DetailHeaderSection: View {
                 InfoCard(
                     title: "Level",
                     value: "\(character.level)",
-                    icon: Ph.numberCircleOne.bold
+                    icon: Ph.chartLineUp.bold  // Better representation of level progression
                 )
                 .padding()
                 .groupCardStyle()
@@ -32,7 +32,7 @@ struct DetailHeaderSection: View {
                 InfoCard(
                     title: "Class",
                     value: character.characterClass.rawValue,
-                    icon: Ph.sword.bold
+                    icon: Ph.spiral.bold  // Mystical/destiny vibes for character class
                 )
                 .padding()
                 .groupCardStyle()
@@ -40,7 +40,7 @@ struct DetailHeaderSection: View {
                 InfoCard(
                     title: "XP",
                     value: "\(character.experience)",
-                    icon: Ph.star.bold
+                    icon: Ph.sparkle.bold
                 )
                 .padding()
                 .groupCardStyle()
