@@ -420,12 +420,26 @@ private struct HPCostReferenceCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        #if os(iOS)
-        .background(Color(uiColor: .systemGray6))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
+        .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
+    }
+}
+
+private struct HPCostRow: View {
+    let cost: Int
+    let text: String
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Text("\(cost)")
+                .font(.headline)
+                .foregroundColor(.primary)
+                .frame(width: 24)
+            
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
     }
 }
 
