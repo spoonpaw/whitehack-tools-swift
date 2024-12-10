@@ -57,7 +57,7 @@ struct DetailHeaderSection: View {
                 InfoCard(
                     title: "XP",
                     value: "\(character.experience)",
-                    icon: Ph.sparkle.bold
+                    icon: Ph.trophy.bold
                 )
                 .padding()
                 .groupCardStyle()
