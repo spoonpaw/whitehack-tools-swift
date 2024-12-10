@@ -5,15 +5,10 @@ struct DetailEquipmentSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Equipment", icon: Ph.bagSimple.bold)
+            
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 8) {
-                    Ph.bagSimple.bold
-                        .frame(width: 20, height: 20)
-                    Text("Equipment")
-                        .font(.headline)
-                }
-                
                 // Gear Items
                 if character.gear.isEmpty {
                     VStack(spacing: 12) {
@@ -31,17 +26,29 @@ struct DetailEquipmentSection: View {
                             .italic()
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
+                    .padding()
+                    .groupCardStyle()
                 } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(character.gear) { gearItem in
-                            GearDetailRow(gear: gearItem)
-                        }
+                    ForEach(character.gear) { gearItem in
+                        GearDetailRow(gear: gearItem)
+                            .padding()
+                            .groupCardStyle()
                     }
-                    .padding(.vertical, 8)
                 }
             }
         }
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
     }
 }
 
