@@ -274,17 +274,12 @@ struct FormAttributesSection: View {
             
             // Content
             VStack(spacing: 16) {
-                VStack(alignment: .center, spacing: 5) {
-                    Text("Attribute Type")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    Picker("Attribute Type", selection: $useCustomAttributes) {
-                        Text("Default").tag(false)
-                        Text("Custom").tag(true)
-                    }
-                    .pickerStyle(.segmented)
+                Picker("", selection: $useCustomAttributes) {
+                    Text("Standard").tag(false)
+                    Text("Custom").tag(true)
                 }
+                .pickerStyle(.segmented)
+                .labelsHidden()
                 
                 if useCustomAttributes {
                     VStack(spacing: 16) {
