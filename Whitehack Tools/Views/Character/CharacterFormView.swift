@@ -125,6 +125,17 @@ struct CharacterFormView: View {
                     focusedField: $focusedField
                 )
                 .frame(maxWidth: .infinity)
+                
+                if formData.selectedClass == .wise {
+                    FormWiseMiracleSection(
+                        characterClass: formData.selectedClass,
+                        level: Int(formData.level) ?? 1,
+                        willpower: $formData.willpower,
+                        useCustomAttributes: $formData.useCustomAttributes,
+                        miracleSlots: $formData.miracleSlots
+                    )
+                    .frame(maxWidth: .infinity)
+                }
             }
             .padding()
         }
@@ -240,6 +251,16 @@ struct CharacterFormView: View {
                     notes: $formData.notes,
                     focusedField: $focusedField
                 )
+                
+                if formData.selectedClass == .wise {
+                    FormWiseMiracleSection(
+                        characterClass: formData.selectedClass,
+                        level: Int(formData.level) ?? 1,
+                        willpower: $formData.willpower,
+                        useCustomAttributes: $formData.useCustomAttributes,
+                        miracleSlots: $formData.miracleSlots
+                    )
+                }
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
@@ -262,44 +283,55 @@ struct CharacterFormView: View {
     }
     
     private func saveCharacter() -> UUID {
-        let newCharacter = PlayerCharacter(
+        // Create basic info
+        var character = PlayerCharacter(
             id: characterId ?? UUID(),
             name: formData.name,
             playerName: formData.playerName,
             characterClass: formData.selectedClass,
-            level: Int(formData.level) ?? 1,
-            useCustomAttributes: formData.useCustomAttributes,
-            customAttributes: formData.customAttributes,
-            strength: Int(formData.strength) ?? 10,
-            agility: Int(formData.agility) ?? 10,
-            toughness: Int(formData.toughness) ?? 10,
-            intelligence: Int(formData.intelligence) ?? 10,
-            willpower: Int(formData.willpower) ?? 10,
-            charisma: Int(formData.charisma) ?? 10,
-            currentHP: Int(formData.currentHP) ?? 0,
-            maxHP: Int(formData.maxHP) ?? 0,
-            defenseValue: Int(formData.defenseValue) ?? 0,
-            movement: Int(formData.movement) ?? 30,
-            saveColor: formData.saveColor,
-            speciesGroup: formData.isSpeciesGroupAdded ? formData.speciesGroup : nil,
-            vocationGroup: formData.isVocationGroupAdded ? formData.vocationGroup : nil,
-            affiliationGroups: formData.affiliationGroups,
-            attributeGroupPairs: formData.attributeGroupPairs.map { pair in
-                AttributeGroupPair(attribute: pair.attribute, group: pair.group)
-            },
-            languages: formData.languages,
-            notes: formData.notes,
-            experience: Int(formData.experience) ?? 0,
-            maxEncumbrance: Int(formData.maxEncumbrance) ?? 15
+            level: Int(formData.level) ?? 1
         )
         
+        // Set attributes
+        character.useCustomAttributes = formData.useCustomAttributes
+        character.customAttributes = formData.customAttributes
+        character.strength = Int(formData.strength) ?? 10
+        character.agility = Int(formData.agility) ?? 10
+        character.toughness = Int(formData.toughness) ?? 10
+        character.intelligence = Int(formData.intelligence) ?? 10
+        character.willpower = Int(formData.willpower) ?? 10
+        character.charisma = Int(formData.charisma) ?? 10
+        
+        // Set combat stats
+        character.currentHP = Int(formData.currentHP) ?? 0
+        character.maxHP = Int(formData.maxHP) ?? 0
+        character.defenseValue = Int(formData.defenseValue) ?? 0
+        character.movement = Int(formData.movement) ?? 0
+        character.saveColor = formData.saveColor
+        character.maxEncumbrance = Int(formData.maxEncumbrance) ?? 15
+        
+        // Set groups
+        character.speciesGroup = formData.speciesGroup
+        character.vocationGroup = formData.vocationGroup
+        character.affiliationGroups = formData.affiliationGroups
+        character.attributeGroupPairs = formData.attributeGroupPairs
+        
+        // Set additional info
+        character.languages = formData.languages
+        character.notes = formData.notes
+        character.experience = Int(formData.experience) ?? 0
+        character.corruption = Int(formData.corruption) ?? 0
+        
+        // Set wise-specific info
+        character.wiseMiracleSlots = formData.miracleSlots
+        
         if characterId != nil {
-            characterStore.updateCharacter(newCharacter)
+            characterStore.updateCharacter(character)
         } else {
-            characterStore.addCharacter(newCharacter)
+            characterStore.addCharacter(character)
         }
         
-        return newCharacter.id
+        return character.id
     }
 }
 
@@ -346,6 +378,8 @@ private class FormData: ObservableObject {
     @Published var newLanguage: String
     @Published var notes: String
     
+    @Published var miracleSlots: [WiseMiracleSlot]
+    
     init(character: PlayerCharacter? = nil) {
         self.name = character?.name ?? ""
         self.playerName = character?.playerName ?? ""
@@ -390,6 +424,8 @@ private class FormData: ObservableObject {
         self.languages = character?.languages ?? []
         self.newLanguage = ""
         self.notes = character?.notes ?? ""
+        
+        self.miracleSlots = character?.wiseMiracleSlots ?? []
     }
 }
 
