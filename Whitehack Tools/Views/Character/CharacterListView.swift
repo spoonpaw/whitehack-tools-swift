@@ -305,6 +305,7 @@ private struct CharacterRowView: View {
                             #else
                             .background(Color(nsColor: .windowBackgroundColor))
                             #endif
+                            .foregroundColor(.gray)
                             .clipShape(Capsule())
                     }
                     
@@ -333,16 +334,12 @@ private struct CharacterRowView: View {
                 
                 Spacer()
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
+            .padding()
         }
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(backgroundFillColor)
-                .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
-        )
-        .padding(.horizontal, 8)
+        .background(backgroundFillColor)
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.15), radius: 4, x: 0, y: 2)
+        .padding(.horizontal)
         .padding(.vertical, 4)
     }
 }
