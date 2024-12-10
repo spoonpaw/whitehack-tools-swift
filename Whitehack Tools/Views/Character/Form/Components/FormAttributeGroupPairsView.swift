@@ -277,12 +277,11 @@ struct FormAttributeGroupPairsView: View {
     var body: some View {
         VStack(spacing: 16) {
             // Header
-            HStack(spacing: 8) {
-                Ph.usersThree.bold
-                    .frame(width: 20, height: 20)
+            HStack {
                 Text("Attribute-Group Pairs")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                    .font(.system(.subheadline, design: .rounded))
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
                 
                 Spacer()
                 
@@ -308,7 +307,6 @@ struct FormAttributeGroupPairsView: View {
                     .padding()
                 }
             }
-            .padding(.vertical, 4)
             
             // Pairs List
             VStack(spacing: 12) {
