@@ -32,9 +32,7 @@ struct FormBasicInfoSection: View {
                     .font(.headline)
                     .foregroundColor(.primary)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 4)
-            .padding(.top, 16)
+            .padding(.vertical, 4)
             
             // Content
             VStack(spacing: 16) {
@@ -136,9 +134,10 @@ struct FormBasicInfoSection: View {
                 }
             }
             .padding()
+            .frame(maxWidth: .infinity)
+            .background(backgroundColor)
+            .cornerRadius(10)
         }
         .frame(maxWidth: .infinity)
-        .background(backgroundColor)
-        .cornerRadius(10)
     }
 }
