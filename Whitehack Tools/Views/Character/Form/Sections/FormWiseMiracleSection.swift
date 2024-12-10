@@ -10,6 +10,10 @@ struct FormWiseMiracleSection: View {
     
     private var extraInactiveMiracles: Int {
         print("[WISEFORM] Calculating extra inactive miracles...")
+        if useCustomAttributes {
+            print("[WISEFORM] Using custom attributes, no extra miracles")
+            return 0
+        }
         print("[WISEFORM] Willpower value: \(willpower)")
         if willpower >= 16 {
             print("[WISEFORM] Willpower >= 16, adding 2 extra miracles")

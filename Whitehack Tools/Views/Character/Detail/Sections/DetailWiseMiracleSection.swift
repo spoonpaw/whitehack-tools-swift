@@ -8,6 +8,10 @@ struct DetailWiseMiracleSection: View {
     
     private var extraInactiveMiracles: Int {
         print("\n[WISEDETAIL] Calculating extra inactive miracles...")
+        if character.useCustomAttributes {
+            print("[WISEDETAIL] Using custom attributes, no extra miracles")
+            return 0
+        }
         print("[WISEDETAIL] Willpower value: \(character.willpower)")
         if character.willpower >= 16 {
             print("[WISEDETAIL] Willpower >= 16, adding 2 extra miracles")
