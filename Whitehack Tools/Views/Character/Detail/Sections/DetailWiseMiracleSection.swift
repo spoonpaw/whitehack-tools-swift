@@ -142,6 +142,7 @@ struct DetailWiseMiracleSection: View {
                         }
                     }
                 }
+                .padding(.horizontal, 16)
             }
         } else {
             EmptyView()
@@ -171,10 +172,10 @@ private struct ClassInfoCard: View {
                 .font(.subheadline)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
 }
 
@@ -244,10 +245,10 @@ private struct ClassFeaturesCard: View {
                 description: "+2 HP costs when using shields or armor heavier than leather (before doubling)."
             )
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
 }
 
@@ -295,10 +296,10 @@ private struct MiracleGuidelinesCard: View {
                 )
             }
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
 }
 
@@ -379,10 +380,10 @@ private struct CostModifiersCard: View {
                 }
             }
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
 }
 
@@ -412,14 +413,14 @@ private struct HPCostReferenceCard: View {
                 }
             }
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(iOS)
         .background(Color(uiColor: .systemGray6))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
 }
 
@@ -454,10 +455,10 @@ private struct MiracleSlotCard: View {
                 }
             }
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
     
     private func slotHeader(index: Int, slot: WiseMiracleSlot, extraInactiveMiracles: Int) -> some View {
@@ -512,7 +513,7 @@ private struct MiracleSlotCard: View {
             
             Spacer()
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -540,7 +541,7 @@ private struct MiracleSlotCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(12)
+        .padding()
         .background(Color.yellow.opacity(0.05))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -560,7 +561,7 @@ private struct MiracleSlotCard: View {
             
             Spacer()
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -588,7 +589,7 @@ private struct MiracleSlotCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -665,10 +666,10 @@ private struct MiracleRuleCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(color.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
     }
     
     private func getPhosphorIcon(for name: String) -> some View {
@@ -726,13 +727,26 @@ struct MagnitudeCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(12)
+        .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(iOS)
         .background(Color(uiColor: .systemGray6))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .groupCardStyle()
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
