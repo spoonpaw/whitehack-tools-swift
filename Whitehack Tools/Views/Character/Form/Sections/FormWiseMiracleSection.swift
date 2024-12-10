@@ -4,7 +4,8 @@ import PhosphorSwift
 struct FormWiseMiracleSection: View {
     let characterClass: CharacterClass
     let level: Int
-    let willpower: Int
+    @Binding var willpower: String
+    @Binding var useCustomAttributes: Bool
     @Binding var miracleSlots: [WiseMiracleSlot]
     @Environment(\.colorScheme) var colorScheme
     
@@ -15,10 +16,14 @@ struct FormWiseMiracleSection: View {
             return 0
         }
         print("[WISEFORM] Willpower value: \(willpower)")
-        if willpower >= 16 {
+        guard let willpowerValue = Int(willpower) else {
+            print("[WISEFORM] Invalid willpower value, no extra miracles")
+            return 0
+        }
+        if willpowerValue >= 16 {
             print("[WISEFORM] Willpower >= 16, adding 2 extra miracles")
             return 2
-        } else if willpower >= 14 {
+        } else if willpowerValue >= 14 {
             print("[WISEFORM] Willpower >= 14, adding 1 extra miracle")
             return 1
         }
