@@ -880,6 +880,10 @@ class PlayerCharacter: Identifiable, Codable {
     }
     
     var initiativeBonus: Int {
+        if useCustomAttributes {
+            return 0
+        }
+        
         if agility >= 16 {
             return 2
         } else if agility >= 13 {
