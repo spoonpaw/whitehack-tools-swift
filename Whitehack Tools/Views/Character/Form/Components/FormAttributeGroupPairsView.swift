@@ -100,36 +100,42 @@ struct AttributeGroupPairDisplayView: View {
     var body: some View {
         HStack {
             Text(pair.attribute)
-                .font(.system(.body, design: .rounded))
-                .frame(minWidth: 100, alignment: .leading)
+                .frame(minWidth: 100, maxWidth: .infinity, alignment: .leading)
+            
             Text(pair.group)
-                .foregroundColor(.primary)
-            Spacer()
-            Button {
-                withAnimation(.easeInOut) {
-                    editingPairId = pair.id
-                    tempAttribute = pair.attribute
-                    tempGroup = pair.group
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            
+            HStack(spacing: 8) {
+                Button {
+                    withAnimation(.easeInOut) {
+                        editingPairId = pair.id
+                        tempAttribute = pair.attribute
+                        tempGroup = pair.group
+                    }
+                } label: {
+                    Image(systemName: "pencil.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(.blue)
                 }
-            } label: {
-                Image(systemName: "pencil.circle.fill")
-                    .imageScale(.medium)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundColor(.blue)
-            }
-            .buttonStyle(BorderlessButtonStyle())
-            Button {
-                withAnimation(.easeInOut) {
-                    attributeGroupPairs.removeAll { $0.id == pair.id }
+                .buttonStyle(BorderlessButtonStyle())
+                
+                Button {
+                    withAnimation(.easeInOut) {
+                        attributeGroupPairs.removeAll { $0.id == pair.id }
+                    }
+                } label: {
+                    Image(systemName: "trash.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(.red)
                 }
-            } label: {
-                Image(systemName: "trash.circle.fill")
-                    .imageScale(.medium)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundColor(.red)
+                .buttonStyle(BorderlessButtonStyle())
             }
-            .buttonStyle(BorderlessButtonStyle())
         }
+        .padding(.horizontal)
     }
 }
 
@@ -306,34 +312,40 @@ struct FormAttributeGroupPairsView: View {
     private func attributePairDisplayView(for pair: AttributeGroupPair) -> some View {
         HStack {
             Text(pair.attribute)
-                .font(.system(.body, design: .rounded))
-                .frame(minWidth: 100, alignment: .leading)
+                .frame(minWidth: 100, maxWidth: .infinity, alignment: .leading)
+            
             Text(pair.group)
-                .foregroundColor(.primary)
-            Spacer()
-            Button {
-                withAnimation(.easeInOut) {
-                    editingPairId = pair.id
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
+                .truncationMode(.tail)
+            
+            HStack(spacing: 8) {
+                Button {
+                    withAnimation(.easeInOut) {
+                        editingPairId = pair.id
+                    }
+                } label: {
+                    Image(systemName: "pencil.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(.blue)
                 }
-            } label: {
-                Image(systemName: "pencil.circle.fill")
-                    .imageScale(.medium)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundColor(.blue)
-            }
-            .buttonStyle(BorderlessButtonStyle())
-            Button {
-                withAnimation(.easeInOut) {
-                    attributeGroupPairs.removeAll { $0.id == pair.id }
+                .buttonStyle(BorderlessButtonStyle())
+                
+                Button {
+                    withAnimation(.easeInOut) {
+                        attributeGroupPairs.removeAll { $0.id == pair.id }
+                    }
+                } label: {
+                    Image(systemName: "trash.circle.fill")
+                        .imageScale(.medium)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundColor(.red)
                 }
-            } label: {
-                Image(systemName: "trash.circle.fill")
-                    .imageScale(.medium)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundColor(.red)
+                .buttonStyle(BorderlessButtonStyle())
             }
-            .buttonStyle(BorderlessButtonStyle())
         }
+        .padding(.horizontal)
     }
     
     private var addAttributeGroupView: some View {
