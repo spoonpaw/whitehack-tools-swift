@@ -159,6 +159,9 @@ private struct CharacterList: View {
                     showingDeleteConfirmation: $showingDeleteConfirmation,
                     currentView: $currentView
                 )
+                #if os(macOS)
+                .padding(.top, characterStore.characters.first?.id == character.id ? 8 : 0)
+                #endif
                 #if os(iOS)
                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                     Button(role: .destructive) {
