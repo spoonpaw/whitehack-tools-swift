@@ -107,7 +107,7 @@ struct DetailWiseMiracleSection: View {
     var body: some View {
         if character.characterClass == .wise {
             VStack(spacing: 12) {
-                SectionHeader(title: "Wise Miracles", icon: Ph.sparkle.bold)
+                SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
                 
                 VStack(alignment: .leading, spacing: 16) {
                     ClassInfoCard()
@@ -142,7 +142,6 @@ struct DetailWiseMiracleSection: View {
                         }
                     }
                 }
-                .padding(.vertical)
             }
         } else {
             EmptyView()
