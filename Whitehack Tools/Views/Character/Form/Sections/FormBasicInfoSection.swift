@@ -81,6 +81,19 @@ struct FormBasicInfoSection: View {
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
+                            .onChange(of: level) { newValue in
+                                // Only allow numbers
+                                let filtered = newValue.filter { $0.isNumber }
+                                if filtered != newValue {
+                                    level = filtered
+                                }
+                                
+                                // Convert to int and clamp between 1-10
+                                if let intValue = Int(filtered) {
+                                    let clamped = min(10, max(1, intValue))
+                                    level = String(clamped)
+                                }
+                            }
                         Spacer()
                     }
                     .frame(maxWidth: 300)
