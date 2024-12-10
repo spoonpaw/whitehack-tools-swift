@@ -322,10 +322,6 @@ struct FormAttributeGroupPairsView: View {
                             editingPairId: $editingPairId
                         )
                         .transition(.opacity)
-                        .padding()
-                        .background(.background)
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                     } else {
                         AttributeGroupPairDisplayView(
                             pair: pair,
@@ -335,10 +331,6 @@ struct FormAttributeGroupPairsView: View {
                             tempGroup: $tempGroup
                         )
                         .transition(.opacity)
-                        .padding()
-                        .background(.background)
-                        .cornerRadius(10)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                     }
                 }
             }
