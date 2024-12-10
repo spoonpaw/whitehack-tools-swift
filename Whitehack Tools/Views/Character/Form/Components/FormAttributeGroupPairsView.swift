@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct AttributeGroupPairEditView: View {
     let pair: AttributeGroupPair
@@ -6,52 +7,84 @@ struct AttributeGroupPairEditView: View {
     let availableGroups: [String]
     @Binding var attributeGroupPairs: [AttributeGroupPair]
     @Binding var editingPairId: UUID?
-    @State private var tempAttribute: String = ""
-    @State private var tempGroup: String = ""
+    @State private var tempAttribute = ""
+    @State private var tempGroup = ""
     
     var body: some View {
-        HStack(spacing: 8) {
-            Menu {
-                ForEach(attributes, id: \.self) { attribute in
-                    Button(attribute) {
-                        withAnimation(.easeInOut) {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Attribute")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundColor(.secondary)
+                
+                Menu {
+                    ForEach(attributes, id: \.self) { attribute in
+                        Button(action: {
                             tempAttribute = attribute
+                        }) {
+                            Text(attribute)
                         }
                     }
+                } label: {
+                    HStack {
+                        Text(tempAttribute.isEmpty ? "Select Attribute" : tempAttribute)
+                            .foregroundColor(tempAttribute.isEmpty ? .secondary : .primary)
+                        Spacer()
+                        Image(systemName: "chevron.up.chevron.down")
+                            .imageScale(.small)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background({
+                        #if os(iOS)
+                        Color(uiColor: .systemGray6)
+                        #else
+                        Color(nsColor: .windowBackgroundColor)
+                        #endif
+                    }())
+                    .cornerRadius(8)
                 }
-            } label: {
-                HStack {
-                    Text(tempAttribute.isEmpty ? "Select Attribute" : tempAttribute)
-                        .foregroundColor(tempAttribute.isEmpty ? .secondary : .primary)
-                        .frame(minWidth: 100, alignment: .leading)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: 120)
             }
             
-            Menu {
-                ForEach(availableGroups, id: \.self) { group in
-                    Button(group) {
-                        withAnimation(.easeInOut) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Group")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundColor(.secondary)
+                
+                Menu {
+                    ForEach(availableGroups, id: \.self) { group in
+                        Button(action: {
                             tempGroup = group
+                        }) {
+                            Text(group)
                         }
                     }
-                }
-            } label: {
-                HStack {
-                    Text(tempGroup.isEmpty ? "Select Group" : tempGroup)
-                        .foregroundColor(tempGroup.isEmpty ? .secondary : .primary)
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
+                } label: {
+                    HStack {
+                        Text(tempGroup.isEmpty ? "Select Group" : tempGroup)
+                            .foregroundColor(tempGroup.isEmpty ? .secondary : .primary)
+                        Spacer()
+                        Image(systemName: "chevron.up.chevron.down")
+                            .imageScale(.small)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background({
+                        #if os(iOS)
+                        Color(uiColor: .systemGray6)
+                        #else
+                        Color(nsColor: .windowBackgroundColor)
+                        #endif
+                    }())
+                    .cornerRadius(8)
                 }
             }
             
-            Spacer()
-            
-            HStack(spacing: 8) {
+            HStack {
+                Spacer()
+                
                 Button {
                     withAnimation(.easeInOut) {
                         editingPairId = nil
@@ -66,10 +99,9 @@ struct AttributeGroupPairEditView: View {
                 
                 Button {
                     withAnimation(.easeInOut) {
-                        if !tempAttribute.isEmpty && !tempGroup.isEmpty {
-                            if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
-                                attributeGroupPairs[index] = AttributeGroupPair(attribute: tempAttribute, group: tempGroup)
-                            }
+                        if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
+                            attributeGroupPairs[index].attribute = tempAttribute
+                            attributeGroupPairs[index].group = tempGroup
                         }
                         editingPairId = nil
                     }
@@ -83,6 +115,11 @@ struct AttributeGroupPairEditView: View {
                 .disabled(tempAttribute.isEmpty || tempGroup.isEmpty)
             }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.background)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
         .onAppear {
             tempAttribute = pair.attribute
             tempGroup = pair.group
@@ -98,44 +135,62 @@ struct AttributeGroupPairDisplayView: View {
     @Binding var tempGroup: String
     
     var body: some View {
-        HStack {
-            Text(pair.attribute)
-                .frame(minWidth: 100, maxWidth: .infinity, alignment: .leading)
-            
-            Text(pair.group)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(1)
-                .truncationMode(.tail)
-            
-            HStack(spacing: 8) {
-                Button {
-                    withAnimation(.easeInOut) {
-                        editingPairId = pair.id
-                        tempAttribute = pair.attribute
-                        tempGroup = pair.group
-                    }
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.blue)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Attribute")
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundColor(.secondary)
+                    Text(pair.attribute)
+                        .font(.system(.body, design: .rounded))
+                        .foregroundColor(.primary)
                 }
-                .buttonStyle(BorderlessButtonStyle())
                 
-                Button {
-                    withAnimation(.easeInOut) {
-                        attributeGroupPairs.removeAll { $0.id == pair.id }
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    Button {
+                        withAnimation(.easeInOut) {
+                            editingPairId = pair.id
+                            tempAttribute = pair.attribute
+                            tempGroup = pair.group
+                        }
+                    } label: {
+                        Image(systemName: "pencil.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundColor(.blue)
                     }
-                } label: {
-                    Image(systemName: "trash.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
+                    .buttonStyle(BorderlessButtonStyle())
+                    
+                    Button {
+                        withAnimation(.easeInOut) {
+                            attributeGroupPairs.removeAll { $0.id == pair.id }
+                        }
+                    } label: {
+                        Image(systemName: "trash.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
                 }
-                .buttonStyle(BorderlessButtonStyle())
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Group")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundColor(.secondary)
+                Text(pair.group)
+                    .font(.system(.body, design: .rounded))
+                    .foregroundColor(.primary)
             }
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.background)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -166,7 +221,8 @@ struct AddAttributeGroupView: View {
                         .imageScale(.small)
                         .foregroundColor(.secondary)
                 }
-                .padding(10)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
                 .background({
                     #if os(iOS)
                     Color(uiColor: .systemGray6)
@@ -194,7 +250,8 @@ struct AddAttributeGroupView: View {
                         .imageScale(.small)
                         .foregroundColor(.secondary)
                 }
-                .padding(10)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
                 .background({
                     #if os(iOS)
                     Color(uiColor: .systemGray6)
@@ -240,6 +297,8 @@ struct AddAttributeGroupView: View {
                 .disabled(selectedAttribute.isEmpty || newAttributeGroup.isEmpty)
             }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .transition(.opacity)
     }
 }
@@ -249,55 +308,27 @@ struct FormAttributeGroupPairsView: View {
     @Binding var attributeGroupPairs: [AttributeGroupPair]
     let availableGroups: [String]
     let displayedPairs: [AttributeGroupPair]
-    
+    @Binding var selectedAttribute: String
+    @Binding var newAttributeGroup: String
     @State private var editingPairId: UUID?
-    @State private var selectedAttribute = ""
-    @State private var newAttributeGroup = ""
-    @State private var isAddingNew = false
+    @State private var tempAttribute = ""
+    @State private var tempGroup = ""
+    @State private var isShowingAddSheet = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            attributeGroupPairsHeader
-            
-            if !displayedPairs.isEmpty {
-                VStack(spacing: 8) {
-                    ForEach(displayedPairs) { pair in
-                        if editingPairId == pair.id {
-                            AttributeGroupPairEditView(
-                                pair: pair,
-                                attributes: attributes,
-                                availableGroups: availableGroups,
-                                attributeGroupPairs: $attributeGroupPairs,
-                                editingPairId: $editingPairId
-                            )
-                        } else {
-                            attributePairDisplayView(for: pair)
-                        }
-                    }
-                }
-                .animation(.easeInOut, value: editingPairId)
-            }
-            
-            if isAddingNew {
-                addAttributeGroupView
-            }
-        }
-    }
-    
-    private var attributeGroupPairsHeader: some View {
-        HStack {
-            Text("Attribute-Group Pairs")
-                .font(.system(.subheadline, design: .rounded))
-                .fontWeight(.medium)
-                .foregroundColor(.secondary)
-            Spacer()
-            if !availableGroups.isEmpty && !isAddingNew {
+        VStack(spacing: 16) {
+            // Header
+            HStack(spacing: 8) {
+                Ph.usersThree.bold
+                    .frame(width: 20, height: 20)
+                Text("Attribute-Group Pairs")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
                 Button {
-                    withAnimation(.easeInOut) {
-                        isAddingNew = true
-                        selectedAttribute = ""
-                        newAttributeGroup = ""
-                    }
+                    isShowingAddSheet = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .imageScale(.large)
@@ -306,141 +337,53 @@ struct FormAttributeGroupPairsView: View {
                 }
                 .buttonStyle(BorderlessButtonStyle())
             }
-        }
-    }
-    
-    private func attributePairDisplayView(for pair: AttributeGroupPair) -> some View {
-        HStack {
-            Text(pair.attribute)
-                .frame(minWidth: 100, maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
             
-            Text(pair.group)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(1)
-                .truncationMode(.tail)
-            
-            HStack(spacing: 8) {
-                Button {
-                    withAnimation(.easeInOut) {
-                        editingPairId = pair.id
+            // Pairs List
+            VStack(spacing: 12) {
+                ForEach(displayedPairs) { pair in
+                    if editingPairId == pair.id {
+                        AttributeGroupPairEditView(
+                            pair: pair,
+                            attributes: attributes,
+                            availableGroups: availableGroups,
+                            attributeGroupPairs: $attributeGroupPairs,
+                            editingPairId: $editingPairId
+                        )
+                        .transition(.opacity)
+                        .padding()
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    } else {
+                        AttributeGroupPairDisplayView(
+                            pair: pair,
+                            attributeGroupPairs: $attributeGroupPairs,
+                            editingPairId: $editingPairId,
+                            tempAttribute: $tempAttribute,
+                            tempGroup: $tempGroup
+                        )
+                        .transition(.opacity)
+                        .padding()
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                     }
-                } label: {
-                    Image(systemName: "pencil.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.blue)
                 }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                Button {
-                    withAnimation(.easeInOut) {
-                        attributeGroupPairs.removeAll { $0.id == pair.id }
-                    }
-                } label: {
-                    Image(systemName: "trash.circle.fill")
-                        .imageScale(.medium)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
-                }
-                .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .padding(.horizontal)
-    }
-    
-    private var addAttributeGroupView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Menu {
-                ForEach(attributes, id: \.self) { attribute in
-                    Button(attribute) {
-                        withAnimation(.easeInOut) {
-                            selectedAttribute = attribute
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(selectedAttribute.isEmpty ? "Select Attribute" : selectedAttribute)
-                        .foregroundColor(selectedAttribute.isEmpty ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .padding(10)
-                .background({
-                    #if os(iOS)
-                    Color(uiColor: .systemGray6)
-                    #else
-                    Color(nsColor: .windowBackgroundColor)
-                    #endif
-                }())
-                .cornerRadius(8)
+        .sheet(isPresented: $isShowingAddSheet) {
+            NavigationView {
+                AddAttributeGroupView(
+                    attributes: attributes,
+                    availableGroups: availableGroups,
+                    selectedAttribute: $selectedAttribute,
+                    newAttributeGroup: $newAttributeGroup,
+                    isAddingAttributeGroup: $isShowingAddSheet,
+                    attributeGroupPairs: $attributeGroupPairs
+                )
             }
-            
-            Menu {
-                ForEach(availableGroups, id: \.self) { group in
-                    Button(group) {
-                        withAnimation(.easeInOut) {
-                            newAttributeGroup = group
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(newAttributeGroup.isEmpty ? "Select Group" : newAttributeGroup)
-                        .foregroundColor(newAttributeGroup.isEmpty ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .padding(10)
-                .background({
-                    #if os(iOS)
-                    Color(uiColor: .systemGray6)
-                    #else
-                    Color(nsColor: .windowBackgroundColor)
-                    #endif
-                }())
-                .cornerRadius(8)
-            }
-            
-            HStack {
-                Spacer()
-                Button {
-                    withAnimation(.easeInOut) {
-                        newAttributeGroup = ""
-                        selectedAttribute = ""
-                        isAddingNew = false
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                Button {
-                    withAnimation(.easeInOut) {
-                        if !selectedAttribute.isEmpty && !newAttributeGroup.isEmpty {
-                            attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: newAttributeGroup))
-                            newAttributeGroup = ""
-                            selectedAttribute = ""
-                            isAddingNew = false
-                        }
-                    }
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.green)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                .disabled(selectedAttribute.isEmpty || newAttributeGroup.isEmpty)
-            }
+            .navigationViewStyle(.stack)
         }
-        .transition(.opacity)
     }
 }

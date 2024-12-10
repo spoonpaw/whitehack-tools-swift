@@ -55,7 +55,8 @@ struct FormCharacterGroupsSection: View {
                     attributeGroupPairs: $attributeGroupPairs,
                     focusedField: $focusedField
                 )
-                .padding()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
                 .background(.background)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
@@ -66,7 +67,8 @@ struct FormCharacterGroupsSection: View {
                     attributeGroupPairs: $attributeGroupPairs,
                     focusedField: $focusedField
                 )
-                .padding()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
                 .background(.background)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
@@ -76,7 +78,8 @@ struct FormCharacterGroupsSection: View {
                     newAffiliationGroup: $newAffiliationGroup,
                     attributeGroupPairs: $attributeGroupPairs
                 )
-                .padding()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
                 .background(.background)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
@@ -85,9 +88,12 @@ struct FormCharacterGroupsSection: View {
                     attributes: availableAttributes,
                     attributeGroupPairs: $attributeGroupPairs,
                     availableGroups: availableGroups,
-                    displayedPairs: filteredAttributeGroupPairs
+                    displayedPairs: filteredAttributeGroupPairs,
+                    selectedAttribute: $selectedAttribute,
+                    newAttributeGroup: $newAttributeGroup
                 )
-                .padding()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
                 .background(.background)
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
