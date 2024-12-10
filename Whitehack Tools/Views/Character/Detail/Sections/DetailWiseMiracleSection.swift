@@ -116,30 +116,35 @@ struct DetailWiseMiracleSection: View {
                     CostModifiersCard()
                     HPCostReferenceCard()
                     
-                    Text("Miracles")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundColor(.primary)
-                        .padding(.top, 8)
-                        .onAppear {
-                            initializeSlots()
-                            logMiracleStructure()
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            IconFrame(icon: Ph.magicWand.bold, color: .yellow)
+                            Text("Miracles")
+                                .font(.headline)
+                                .foregroundColor(.primary)
                         }
-                    
-                    let _ = initializeSlots() // Force initialization before ForEach
-                    ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
-                        MiracleSlotCard(
-                            index: index,
-                            slot: slot,
-                            extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
-                            colorScheme: colorScheme
-                        )
-                        .onAppear {
-                            print("\n[WISEDETAIL] Slot \(index) appeared")
-                            print("[WISEDETAIL] Base miracles: \(slot.baseMiracles.count)")
-                            print("[WISEDETAIL] Additional miracles: \(slot.additionalMiracles.count)")
-                            print("[WISEDETAIL] Extra inactive miracles for this slot: \(index == 0 ? extraInactiveMiracles : 0)")
+                        
+                        let _ = initializeSlots() // Force initialization before ForEach
+                        ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
+                            MiracleSlotCard(
+                                index: index,
+                                slot: slot,
+                                extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
+                                colorScheme: colorScheme
+                            )
                         }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    #if os(iOS)
+                    .background(Color(uiColor: .systemBackground))
+                    #else
+                    .background(Color(nsColor: .windowBackgroundColor))
+                    #endif
+                    .groupCardStyle()
+                    .onAppear {
+                        initializeSlots()
+                        logMiracleStructure()
                     }
                 }
                 .padding(.horizontal, 16)
