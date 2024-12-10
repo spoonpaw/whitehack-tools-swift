@@ -383,7 +383,9 @@ struct FormAttributeGroupPairsView: View {
                     attributeGroupPairs: $attributeGroupPairs
                 )
             }
+            #if os(iOS)
             .navigationViewStyle(.stack)
+            #endif
         }
     }
 }
