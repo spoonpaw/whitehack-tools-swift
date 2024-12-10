@@ -63,7 +63,7 @@ struct IconPicker: View {
     
     private var systemFillColor: Color {
         #if os(iOS)
-        return Color(uiColor: .tertiarySystemFill)
+        return Color(uiColor: .secondarySystemBackground)
         #else
         if #available(macOS 14.0, *) {
             return Color(nsColor: .tertiarySystemFill)
@@ -230,7 +230,7 @@ struct CustomAttributeEditor: View {
     
     private var systemFillColor: Color {
         #if os(iOS)
-        return Color(uiColor: .tertiarySystemFill)
+        return Color(uiColor: .secondarySystemBackground)
         #else
         if #available(macOS 14.0, *) {
             return Color(nsColor: .tertiarySystemFill)
@@ -261,7 +261,18 @@ struct FormAttributesSection: View {
     @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        Section {
+        VStack(spacing: 16) {
+            // Header
+            HStack(spacing: 8) {
+                Ph.chartBar.bold
+                    .frame(width: 20, height: 20)
+                Text("Attributes")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            .padding(.vertical, 4)
+            
+            // Content
             VStack(spacing: 16) {
                 VStack(alignment: .center, spacing: 5) {
                     Text("Attribute Type")
@@ -376,23 +387,19 @@ struct FormAttributesSection: View {
                     }
                 }
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(systemFillColor)
+            .cornerRadius(10)
         }
-        .onAppear {
-            print(" [FORM ATTRIBUTES SECTION] Appearing")
-            print(" [FORM ATTRIBUTES SECTION] Current attributes count: \(customAttributes.count)")
-            print(" [FORM ATTRIBUTES SECTION] Current attributes: \(customAttributes.map { $0.id })")
-        }
+        .frame(maxWidth: .infinity)
     }
     
     private var systemFillColor: Color {
         #if os(iOS)
-        return Color(uiColor: .tertiarySystemFill)
+        return Color(uiColor: .secondarySystemBackground)
         #else
-        if #available(macOS 14.0, *) {
-            return Color(nsColor: .tertiarySystemFill)
-        } else {
-            return Color(nsColor: .controlBackgroundColor)
-        }
+        return Color(NSColor.windowBackgroundColor)
         #endif
     }
     
@@ -400,7 +407,7 @@ struct FormAttributesSection: View {
         #if os(iOS)
         return Color(uiColor: .separator)
         #else
-        return Color(nsColor: .separatorColor)
+        return Color(NSColor.separatorColor)
         #endif
     }
 }
