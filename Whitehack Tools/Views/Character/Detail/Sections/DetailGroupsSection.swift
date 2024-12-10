@@ -47,7 +47,9 @@ struct DetailGroupsSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Groups", icon: Ph.users.bold)) {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Groups", icon: Ph.users.bold)
+            
             VStack(spacing: 16) {
                 // Species and Vocation in a grid
                 HStack(spacing: 16) {

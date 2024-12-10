@@ -12,7 +12,9 @@ public struct DetailStatsSection: View {
     }
     
     public var body: some View {
-        Section(header: SectionHeader(title: "Attributes", icon: Ph.chartBar.bold)) {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Attributes", icon: Ph.chartBar.bold)
+            
             VStack(spacing: 16) {
                 if character.useCustomAttributes {
                     // Display custom attributes

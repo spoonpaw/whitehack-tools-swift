@@ -5,7 +5,9 @@ struct DetailCombatSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)) {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Combat Stats", icon: Ph.boxingGlove.bold)
+            
             VStack(spacing: 16) {
                 LazyVGrid(columns: [GridItem(.flexible(), spacing: 16), GridItem(.flexible(), spacing: 16)], spacing: 16) {
                     StatCard(

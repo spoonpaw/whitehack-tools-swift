@@ -13,6 +13,7 @@ public struct SectionHeader: View {
             Text(title)
         }
         .font(.headline)
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -136,28 +137,36 @@ struct CharacterDetailView: View {
     var body: some View {
         ScrollView {
             if let character = character {
-                VStack(spacing: 8) {
+                VStack(spacing: 0) {
                     TabPicker(selection: $selectedTab)
                         .padding(.horizontal)
                     
                     switch selectedTab {
                     case .info:
-                        // Basic Info Section
-                        Section(header: SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)) {
-                            DetailHeaderSection(character: character)
+                        VStack(spacing: 32) {
+                            VStack(alignment: .leading, spacing: 12) {
+                                SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+                                    .padding(.horizontal, 16)
+                                DetailHeaderSection(character: character)
+                                    .padding(.horizontal, 16)
+                            }
+                            
+                            DetailStatsSection(character: character)
+                                .padding(.horizontal, 16)
+                            
+                            DetailGroupsSection(character: character)
+                                .padding(.horizontal, 16)
+                            
+                            DetailWiseMiracleSection(character: character)
+                                .padding(.horizontal, 16)
                         }
-                        
-                        DetailStatsSection(character: character)
-                        
-                        DetailGroupsSection(character: character)
-                        
-                        DetailWiseMiracleSection(character: character)
-                        
+                        .padding(.vertical, 16)
                     case .combat:
                         DetailCombatSection(character: character)
-                        
+                            .padding()
                     case .equipment:
                         DetailEquipmentSection(character: character)
+                            .padding()
                     }
                 }
                 .frame(maxWidth: .infinity)
