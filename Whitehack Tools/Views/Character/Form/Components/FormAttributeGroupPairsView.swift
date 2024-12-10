@@ -203,103 +203,62 @@ struct AddAttributeGroupView: View {
     @Binding var attributeGroupPairs: [AttributeGroupPair]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Menu {
-                ForEach(attributes, id: \.self) { attribute in
-                    Button(attribute) {
-                        withAnimation(.easeInOut) {
-                            selectedAttribute = attribute
-                        }
+        VStack(alignment: .leading, spacing: 16) {
+            Text("New Attribute-Group Pair")
+                .font(.headline)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Attribute")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Picker("", selection: $selectedAttribute) {
+                    Text("Select Attribute").tag("")
+                    ForEach(attributes, id: \.self) { attribute in
+                        Text(attribute).tag(attribute)
                     }
                 }
-            } label: {
-                HStack {
-                    Text(selectedAttribute.isEmpty ? "Select Attribute" : selectedAttribute)
-                        .foregroundColor(selectedAttribute.isEmpty ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background({
-                    #if os(iOS)
-                    Color(uiColor: .systemGray6)
-                    #else
-                    Color(nsColor: .windowBackgroundColor)
-                    #endif
-                }())
-                .cornerRadius(8)
+                .labelsHidden()
             }
             
-            Menu {
-                ForEach(availableGroups, id: \.self) { group in
-                    Button(group) {
-                        withAnimation(.easeInOut) {
-                            newAttributeGroup = group
-                        }
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Group")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Picker("", selection: $newAttributeGroup) {
+                    Text("Select Group").tag("")
+                    ForEach(availableGroups, id: \.self) { group in
+                        Text(group).tag(group)
                     }
                 }
-            } label: {
-                HStack {
-                    Text(newAttributeGroup.isEmpty ? "Select Group" : newAttributeGroup)
-                        .foregroundColor(newAttributeGroup.isEmpty ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .imageScale(.small)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-                .background({
-                    #if os(iOS)
-                    Color(uiColor: .systemGray6)
-                    #else
-                    Color(nsColor: .windowBackgroundColor)
-                    #endif
-                }())
-                .cornerRadius(8)
+                .labelsHidden()
             }
+            
+            Divider()
             
             HStack {
                 Spacer()
-                Button {
-                    withAnimation(.easeInOut) {
-                        newAttributeGroup = ""
+                
+                Button("Cancel") {
+                    isAddingAttributeGroup = false
+                    selectedAttribute = ""
+                    newAttributeGroup = ""
+                }
+                .keyboardShortcut(.escape, modifiers: [])
+                
+                Button("Add") {
+                    if !selectedAttribute.isEmpty && !newAttributeGroup.isEmpty {
+                        attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: newAttributeGroup))
                         selectedAttribute = ""
+                        newAttributeGroup = ""
                         isAddingAttributeGroup = false
                     }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.red)
                 }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                Button {
-                    withAnimation(.easeInOut) {
-                        if !selectedAttribute.isEmpty && !newAttributeGroup.isEmpty {
-                            attributeGroupPairs.append(AttributeGroupPair(attribute: selectedAttribute, group: newAttributeGroup))
-                            newAttributeGroup = ""
-                            selectedAttribute = ""
-                            isAddingAttributeGroup = false
-                        }
-                    }
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.green)
-                }
-                .buttonStyle(BorderlessButtonStyle())
+                .keyboardShortcut(.return, modifiers: [])
                 .disabled(selectedAttribute.isEmpty || newAttributeGroup.isEmpty)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .transition(.opacity)
     }
 }
 
@@ -313,7 +272,7 @@ struct FormAttributeGroupPairsView: View {
     @State private var editingPairId: UUID?
     @State private var tempAttribute = ""
     @State private var tempGroup = ""
-    @State private var isShowingAddSheet = false
+    @State private var isShowingAddPopover = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -328,7 +287,7 @@ struct FormAttributeGroupPairsView: View {
                 Spacer()
                 
                 Button {
-                    isShowingAddSheet = true
+                    isShowingAddPopover = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .imageScale(.large)
@@ -336,6 +295,18 @@ struct FormAttributeGroupPairsView: View {
                         .foregroundColor(.blue)
                 }
                 .buttonStyle(BorderlessButtonStyle())
+                .popover(isPresented: $isShowingAddPopover, arrowEdge: .top) {
+                    AddAttributeGroupView(
+                        attributes: attributes,
+                        availableGroups: availableGroups,
+                        selectedAttribute: $selectedAttribute,
+                        newAttributeGroup: $newAttributeGroup,
+                        isAddingAttributeGroup: $isShowingAddPopover,
+                        attributeGroupPairs: $attributeGroupPairs
+                    )
+                    .frame(width: 300)
+                    .padding()
+                }
             }
             .padding(.vertical, 4)
             
@@ -371,21 +342,6 @@ struct FormAttributeGroupPairsView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $isShowingAddSheet) {
-            NavigationView {
-                AddAttributeGroupView(
-                    attributes: attributes,
-                    availableGroups: availableGroups,
-                    selectedAttribute: $selectedAttribute,
-                    newAttributeGroup: $newAttributeGroup,
-                    isAddingAttributeGroup: $isShowingAddSheet,
-                    attributeGroupPairs: $attributeGroupPairs
-                )
-            }
-            #if os(iOS)
-            .navigationViewStyle(.stack)
-            #endif
         }
     }
 }
