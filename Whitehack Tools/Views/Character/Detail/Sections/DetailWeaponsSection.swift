@@ -5,7 +5,9 @@ struct DetailWeaponsSection: View {
     let weapons: [Weapon]
     
     var body: some View {
-        Section(header: SectionHeader(title: "Weapons", icon: Ph.sword.bold)) {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Weapons", icon: Ph.sword.bold)
+            
             if weapons.isEmpty {
                 VStack(spacing: 12) {
                     Image(systemName: "shield.slash")
@@ -23,13 +25,19 @@ struct DetailWeaponsSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
+                .groupCardStyle()
             } else {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 16) {
                     ForEach(weapons) { weapon in
                         WeaponDetailRow(weapon: weapon)
+                            .padding()
+                            .groupCardStyle()
+                            .shadow(radius: 2)
                     }
                 }
-                .padding(.vertical, 8)
+                .padding()
+                .groupCardStyle()
+                .shadow(radius: 4)
             }
         }
     }
@@ -44,7 +52,7 @@ private struct WeaponDetailRow: View {
             HStack {
                 Label {
                     Text(weapon.name)
-                        .font(.headline)
+                        .font(.title3)
                 } icon: {
                     IconFrame(icon: Ph.sword.bold, color: .blue)
                 }
@@ -82,6 +90,9 @@ private struct WeaponDetailRow: View {
             
             // Weight and Slots
             HStack {
+                Text("Weight:")
+                    .foregroundColor(.secondary)
+                    .font(.callout)
                 Label {
                     Text(getWeightDisplayText(weapon.weight))
                 } icon: {
@@ -91,89 +102,108 @@ private struct WeaponDetailRow: View {
                 .font(.callout)
             }
             
-            Divider()
-            
             // Combat Stats
             VStack(alignment: .leading, spacing: 4) {
                 // Magical Status
                 if weapon.isMagical {
-                    Label {
-                        Text("Magical")
-                            .font(.subheadline)
-                    } icon: {
-                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                    HStack {
+                        Text("Status:")
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("Magical")
+                                .font(.subheadline)
+                        } icon: {
+                            IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                        }
+                        .foregroundStyle(.purple)
                     }
-                    .foregroundStyle(.purple)
                 }
                 
                 // Cursed Status
                 if weapon.isCursed {
-                    Label {
-                        Text("Cursed")
-                            .font(.subheadline)
-                    } icon: {
-                        IconFrame(icon: Ph.skull.bold, color: .red)
+                    HStack {
+                        Text("Status:")
+                            .foregroundColor(.secondary)
+                        Label {
+                            Text("Cursed")
+                                .font(.subheadline)
+                        } icon: {
+                            IconFrame(icon: Ph.skull.bold, color: .red)
+                        }
+                        .foregroundStyle(.red)
                     }
-                    .foregroundStyle(.red)
                 }
                 
                 // Bonus/Penalty
                 if weapon.bonus != 0 {
-                    Label {
-                        HStack(spacing: 4) {
-                            Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
-                            Text("\(abs(weapon.bonus))")
+                    HStack {
+                        Text("Modifier:")
+                            .foregroundColor(.secondary)
+                        Label {
+                            HStack(spacing: 4) {
+                                Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
+                                Text("\(abs(weapon.bonus))")
+                            }
+                            .font(.subheadline)
+                        } icon: {
+                            IconFrame(icon: Ph.plusMinus.bold, color: .purple)
                         }
-                        .font(.subheadline)
+                        .foregroundStyle(.purple)
+                    }
+                }
+                
+                HStack {
+                    Text("Damage:")
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.damage)
                     } icon: {
-                        IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                        IconFrame(icon: Ph.target.bold, color: .red)
+                    }
+                    .foregroundStyle(.red)
+                }
+                
+                HStack {
+                    Text("Range:")
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.range)
+                    } icon: {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
                     }
                     .foregroundStyle(.purple)
                 }
                 
-                Label {
-                    Text("Damage: \(weapon.damage)")
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: .red)
+                HStack {
+                    Text("Rate of Fire:")
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.rateOfFire)
+                    } icon: {
+                        IconFrame(icon: Ph.timer.bold, color: .green)
+                    }
+                    .foregroundStyle(.green)
                 }
-                .foregroundStyle(.red)
-                
-                Label {
-                    Text("Range: \(weapon.range)")
-                } icon: {
-                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
-                }
-                .foregroundStyle(.purple)
-                
-                Label {
-                    Text("Rate of Fire: \(weapon.rateOfFire)")
-                } icon: {
-                    IconFrame(icon: Ph.timer.bold, color: .green)
-                }
-                .foregroundStyle(.green)
             }
             .font(.subheadline)
             
             // Special Properties
             if !weapon.special.isEmpty {
-                Label {
-                    Text(weapon.special)
-                        .italic()
-                } icon: {
-                    IconFrame(icon: Ph.star.bold, color: .purple)
+                HStack {
+                    Text("Special:")
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.special)
+                            .italic()
+                    } icon: {
+                        IconFrame(icon: Ph.star.bold, color: .purple)
+                    }
                 }
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
         }
         .padding()
-        #if os(iOS)
-        .background(Color(uiColor: .systemBackground))
-        #else
-        .background(Color(nsColor: .windowBackgroundColor))
-        #endif
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(radius: 2)
     }
     
     private func getWeightDisplayText(_ weight: String) -> String {
@@ -184,5 +214,17 @@ private struct WeaponDetailRow: View {
         case "Heavy": return "Heavy (2 slots)"
         default: return weight
         }
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(uiColor: .systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
     }
 }
