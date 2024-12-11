@@ -29,12 +29,7 @@ struct DetailArmorSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Ph.shieldStar.bold
-                    .frame(width: 20, height: 20)
-                Text("Armor")
-                    .font(.headline)
-            }
+            SectionHeader(title: "Armor", icon: Ph.shieldStar.bold)
             
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
