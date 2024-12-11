@@ -9,10 +9,9 @@ struct DetailEquipmentSection: View {
             SectionHeader(title: "Equipment", icon: Ph.bagSimple.bold)
             
             VStack(alignment: .leading, spacing: 16) {
-                // Gear Items
                 if character.gear.isEmpty {
                     VStack(spacing: 12) {
-                        Image(systemName: "shippingbox.fill")
+                        Image(systemName: "bag.badge.minus")
                             .font(.system(size: 40))
                             .foregroundColor(.secondary)
                         
@@ -26,17 +25,24 @@ struct DetailEquipmentSection: View {
                             .italic()
                     }
                     .frame(maxWidth: .infinity)
-                    .padding()
-                    .groupCardStyle()
+                    .padding(.vertical, 20)
                 } else {
                     ForEach(character.gear) { gearItem in
                         GearDetailRow(gear: gearItem)
                             .padding()
-                            .groupCardStyle()
+                            .background(Color(uiColor: .systemBackground))
+                            .cornerRadius(12)
+                            .shadow(radius: 2)
                     }
                 }
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(uiColor: .systemBackground))
+            .cornerRadius(12)
+            .shadow(radius: 4)
         }
+        .padding(.horizontal)
     }
 }
 
