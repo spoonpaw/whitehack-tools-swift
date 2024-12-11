@@ -165,8 +165,14 @@ struct CharacterDetailView: View {
                         DetailCombatSection(character: character)
                             .padding()
                     case .equipment:
-                        DetailEquipmentSection(character: character)
-                            .padding()
+                        VStack(spacing: 16) {
+                            DetailWeaponsSection(weapons: character.weapons)
+                                .padding()
+                            DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
+                                .padding()
+                            DetailEquipmentSection(character: character)
+                                .padding()
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity)
