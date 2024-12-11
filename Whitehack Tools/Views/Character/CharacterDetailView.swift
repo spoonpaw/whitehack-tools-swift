@@ -165,7 +165,7 @@ struct CharacterDetailView: View {
                         DetailCombatSection(character: character)
                             .padding()
                     case .equipment:
-                        VStack(spacing: 16) {
+                        VStack(spacing: 32) {
                             DetailWeaponsSection(weapons: character.weapons)
                             DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
                             DetailEquipmentSection(character: character)
