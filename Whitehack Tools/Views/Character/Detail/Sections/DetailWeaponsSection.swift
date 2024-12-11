@@ -8,27 +8,26 @@ struct DetailWeaponsSection: View {
         VStack(spacing: 12) {
             SectionHeader(title: "Weapons", icon: Ph.sword.bold)
             
-            if weapons.isEmpty {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Weapons")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Text("Add weapons in edit mode")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .italic()
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .padding(.horizontal)
-                .groupCardStyle()
-            } else {
-                VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 16) {
+                if weapons.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "shield.slash")
+                            .font(.system(size: 40))
+                            .foregroundColor(.secondary)
+                        
+                        Text("No Weapons")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Add weapons in edit mode")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .italic()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .padding(.horizontal)
+                } else {
                     ForEach(weapons) { weapon in
                         WeaponDetailRow(weapon: weapon)
                             .padding()
@@ -36,10 +35,10 @@ struct DetailWeaponsSection: View {
                             .shadow(radius: 2)
                     }
                 }
-                .padding()
-                .groupCardStyle()
-                .shadow(radius: 4)
             }
+            .padding()
+            .groupCardStyle()
+            .shadow(radius: 4)
         }
         .padding(.horizontal)
     }
