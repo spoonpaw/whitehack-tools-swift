@@ -32,16 +32,6 @@ struct DetailArmorSection: View {
             SectionHeader(title: "Armor", icon: Ph.shieldStar.bold)
             
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("Defense Value")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("\(totalDefenseValue)")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                }
-                
                 if armor.isEmpty {
                     VStack(spacing: 12) {
                         Image(systemName: "shield.slash")
