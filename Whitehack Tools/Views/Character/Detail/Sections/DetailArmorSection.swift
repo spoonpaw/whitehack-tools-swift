@@ -47,7 +47,24 @@ struct DetailArmorSection: View {
                         .fontWeight(.medium)
                 }
                 
-                if !armor.isEmpty {
+                if armor.isEmpty {
+                    VStack(spacing: 12) {
+                        Image(systemName: "shield.slash")
+                            .font(.system(size: 40))
+                            .foregroundColor(.secondary)
+                        
+                        Text("No Armor")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Add armor in edit mode")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .italic()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                } else {
                     Text(armorDescription)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
