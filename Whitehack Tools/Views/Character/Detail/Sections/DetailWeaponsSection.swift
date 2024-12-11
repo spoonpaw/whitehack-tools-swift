@@ -25,6 +25,7 @@ struct DetailWeaponsSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
+                .padding(.horizontal)
                 .groupCardStyle()
             } else {
                 VStack(alignment: .leading, spacing: 16) {
@@ -40,6 +41,7 @@ struct DetailWeaponsSection: View {
                 .shadow(radius: 4)
             }
         }
+        .padding(.horizontal)
     }
 }
 
