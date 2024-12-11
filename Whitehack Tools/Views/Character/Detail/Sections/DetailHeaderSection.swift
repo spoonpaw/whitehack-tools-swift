@@ -66,11 +66,36 @@ struct DetailHeaderSection: View {
             
             // Health and XP Progress
             VStack(spacing: 8) {
+                let healthColor: Color = {
+                    if character.currentHP <= -10 {
+                        return .red.opacity(0.8)  // Death state
+                    } else if character.currentHP <= -2 {
+                        return .red  // Critical state
+                    } else if character.currentHP <= -1 {
+                        return .red.opacity(0.9)  // Near death
+                    } else if character.currentHP == 0 {
+                        return .orange  // Unconscious
+                    } else if character.currentHP < character.maxHP / 4 {
+                        return .orange.opacity(0.8)  // Severely wounded
+                    } else if character.currentHP < character.maxHP / 2 {
+                        return .yellow  // Wounded
+                    } else if character.currentHP == character.maxHP {
+                        return .green  // Full health
+                    } else {
+                        let healthPercentage = Double(character.currentHP) / Double(character.maxHP)
+                        return Color(
+                            hue: max(0.1, min(0.33 * healthPercentage, 0.33)), // Yellow-green to Green
+                            saturation: 0.8,
+                            brightness: 0.8
+                        )
+                    }
+                }()
+
                 ProgressBar(
                     value: Double(character.currentHP),
                     maxValue: Double(character.maxHP),
                     label: "Health (\(character.currentHP)/\(character.maxHP))",
-                    foregroundColor: character.currentHP <= 0 ? .red : .green
+                    foregroundColor: healthColor
                 )
                 
                 if character.currentHP <= 0 {
