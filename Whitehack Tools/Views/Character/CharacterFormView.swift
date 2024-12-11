@@ -120,12 +120,6 @@ struct CharacterFormView: View {
                 )
                 .frame(maxWidth: .infinity)
                 
-                FormNotesSection(
-                    notes: $formData.notes,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
                 if formData.selectedClass == .wise {
                     FormWiseMiracleSection(
                         characterClass: formData.selectedClass,
@@ -136,6 +130,12 @@ struct CharacterFormView: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
+                
+                FormNotesSection(
+                    notes: $formData.notes,
+                    focusedField: $focusedField
+                )
+                .frame(maxWidth: .infinity)
             }
             .padding()
         }
@@ -246,13 +246,8 @@ struct CharacterFormView: View {
                 )
             }
             
-            Section {
-                FormNotesSection(
-                    notes: $formData.notes,
-                    focusedField: $focusedField
-                )
-                
-                if formData.selectedClass == .wise {
+            if formData.selectedClass == .wise {
+                Section {
                     FormWiseMiracleSection(
                         characterClass: formData.selectedClass,
                         level: Int(formData.level) ?? 1,
@@ -261,6 +256,13 @@ struct CharacterFormView: View {
                         miracleSlots: $formData.miracleSlots
                     )
                 }
+            }
+            
+            Section {
+                FormNotesSection(
+                    notes: $formData.notes,
+                    focusedField: $focusedField
+                )
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
