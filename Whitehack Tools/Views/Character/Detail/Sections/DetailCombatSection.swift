@@ -97,18 +97,13 @@ private struct SaveColorCard: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             
-            HStack(spacing: 8) {
-                Text("\(value)")
-                    .font(.title2)
-                    .fontWeight(.medium)
-                
-                Text("•")
-                    .foregroundColor(.secondary)
-                
-                Text(colorName)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
+            Text("\(value)")
+                .font(.title2)
+                .fontWeight(.medium)
+            
+            Text(colorName)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
             
             Spacer(minLength: 0)
         }
