@@ -66,9 +66,11 @@ struct DetailArmorSection: View {
                 }
             }
             .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
             .background(backgroundColor)
             .cornerRadius(12)
+            .shadow(radius: 4)
         }
+        .padding(.horizontal)
     }
 }
