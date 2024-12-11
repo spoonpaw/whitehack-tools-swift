@@ -99,6 +99,9 @@ struct CharacterFormView: View {
                 )
                 .frame(maxWidth: .infinity)
                 
+                FormWeaponsSection(weapons: $formData.weapons)
+                    .frame(maxWidth: .infinity)
+                
                 FormEncumbranceSection(
                     currentEncumbrance: $formData.currentEncumbrance,
                     maxEncumbrance: $formData.maxEncumbrance,
@@ -223,6 +226,10 @@ struct CharacterFormView: View {
             }
             
             Section {
+                FormWeaponsSection(weapons: $formData.weapons)
+            }
+            
+            Section {
                 FormEncumbranceSection(
                     currentEncumbrance: $formData.currentEncumbrance,
                     maxEncumbrance: $formData.maxEncumbrance,
@@ -327,6 +334,8 @@ struct CharacterFormView: View {
         // Set wise-specific info
         character.wiseMiracleSlots = formData.miracleSlots
         
+        character.weapons = formData.weapons
+        
         if characterId != nil {
             characterStore.updateCharacter(character)
         } else {
@@ -382,6 +391,8 @@ private class FormData: ObservableObject {
     
     @Published var miracleSlots: [WiseMiracleSlot]
     
+    @Published var weapons: [Weapon]
+    
     init(character: PlayerCharacter? = nil) {
         self.name = character?.name ?? ""
         self.playerName = character?.playerName ?? ""
@@ -428,6 +439,8 @@ private class FormData: ObservableObject {
         self.notes = character?.notes ?? ""
         
         self.miracleSlots = character?.wiseMiracleSlots ?? []
+        
+        self.weapons = character?.weapons ?? []
     }
 }
 
