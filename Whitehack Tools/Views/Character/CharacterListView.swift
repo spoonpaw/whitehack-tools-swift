@@ -15,7 +15,7 @@ struct CharacterListView: View {
     enum CurrentView {
         case list
         case form(UUID?, selectedTab: FormTab = .info)
-        case detail(UUID)
+        case detail(UUID, selectedTab: DetailTab = .info)
         
         static func == (lhs: CurrentView, rhs: CurrentView) -> Bool {
             switch (lhs, rhs) {
@@ -23,7 +23,7 @@ struct CharacterListView: View {
                 return true
             case (.form(let id1, _), .form(let id2, _)):
                 return id1 == id2
-            case (.detail(let id1), .detail(let id2)):
+            case (.detail(let id1, _), .detail(let id2, _)):
                 return id1 == id2
             default:
                 return false
@@ -48,9 +48,9 @@ struct CharacterListView: View {
             CharacterFormView(
                 characterStore: characterStore,
                 characterId: characterId,
-                onComplete: { savedId in
+                onComplete: { savedId, selectedTab in
                     if let id = savedId ?? characterId {
-                        currentView = .detail(id)
+                        currentView = .detail(id, selectedTab: DetailTab(rawValue: selectedTab.rawValue) ?? .info)
                     } else {
                         currentView = .list
                     }
@@ -58,8 +58,8 @@ struct CharacterListView: View {
                 initialTab: selectedTab
             )
             
-        case .detail(let characterId):
-            CharacterDetailView(characterId: characterId, characterStore: characterStore, currentView: $currentView)
+        case .detail(let characterId, let selectedTab):
+            CharacterDetailView(characterId: characterId, characterStore: characterStore, selectedTab: selectedTab, currentView: $currentView)
         }
     }
 }
@@ -194,7 +194,7 @@ private struct CharacterListRow: View {
     var body: some View {
         HStack {
             Button {
-                currentView = .detail(character.id)
+                currentView = .detail(character.id, selectedTab: .info)
             } label: {
                 CharacterRowView(character: character)
             }

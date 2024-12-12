@@ -57,13 +57,13 @@ struct CharacterFormView: View {
     
     @ObservedObject var characterStore: CharacterStore
     let characterId: UUID?
-    var onComplete: ((UUID?) -> Void)?
+    var onComplete: ((UUID?, FormTab) -> Void)?
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Field?
     @StateObject private var formData: FormData
     @State private var selectedTab: FormTab
     
-    init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?) -> Void)? = nil, initialTab: FormTab = .info) {
+    init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?, FormTab) -> Void)? = nil, initialTab: FormTab = .info) {
         self.characterStore = characterStore
         self.characterId = characterId
         self.onComplete = onComplete
@@ -212,27 +212,31 @@ struct CharacterFormView: View {
             #if os(iOS)
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("Cancel") {
-                    onComplete?(nil)
+                    onComplete?(nil, selectedTab)
+                    dismiss()
                 }
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Save") {
-                    let id = saveCharacter()
-                    onComplete?(id)
+                    let savedId = saveCharacter()
+                    onComplete?(savedId, selectedTab)
+                    dismiss()
                 }
             }
             #else
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
-                    onComplete?(nil)
+                    onComplete?(nil, selectedTab)
+                    dismiss()
                 }
             }
             
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") {
-                    let id = saveCharacter()
-                    onComplete?(id)
+                    let savedId = saveCharacter()
+                    onComplete?(savedId, selectedTab)
+                    dismiss()
                 }
             }
             #endif
@@ -371,14 +375,16 @@ struct CharacterFormView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button("Cancel") {
-                    onComplete?(nil)
+                    onComplete?(nil, selectedTab)
+                    dismiss()
                 }
             }
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Save") {
-                    let id = saveCharacter()
-                    onComplete?(id)
+                    let savedId = saveCharacter()
+                    onComplete?(savedId, selectedTab)
+                    dismiss()
                 }
             }
         }

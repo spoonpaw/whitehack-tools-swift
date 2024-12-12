@@ -102,12 +102,19 @@ struct CharacterDetailView: View {
     let characterId: UUID
     @ObservedObject var characterStore: CharacterStore
     @State private var refreshTrigger = false
-    @State private var selectedTab: DetailTab = .info
+    @State private var selectedTab: DetailTab
     @Binding var currentView: CharacterListView.CurrentView
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.presentationMode) var presentationMode
     
+    init(characterId: UUID, characterStore: CharacterStore, selectedTab: DetailTab = .info, currentView: Binding<CharacterListView.CurrentView>) {
+        self.characterId = characterId
+        self.characterStore = characterStore
+        self._selectedTab = State(initialValue: selectedTab)
+        self._currentView = currentView
+    }
+
     private var character: PlayerCharacter? {
         characterStore.characters.first(where: { $0.id == characterId })
     }
