@@ -10,7 +10,6 @@ import AppKit
 struct FormCombatStatsSection: View {
     @Binding var currentHP: String
     @Binding var maxHP: String
-    @Binding var defenseValue: String
     @Binding var movement: String
     @Binding var saveColor: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
@@ -99,29 +98,16 @@ struct FormCombatStatsSection: View {
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
                             .onChange(of: maxHP) { newValue in
-                                // Only allow numbers
                                 let filtered = newValue.filter { "0123456789".contains($0) }
                                 if filtered != newValue {
                                     maxHP = filtered
                                 }
-                                
-                                // Don't allow ridiculously large numbers
-                                if filtered.count > 3 {
-                                    maxHP = String(filtered.prefix(3))
-                                }
-                            }
-                            .onSubmit {
                                 validateAndCorrectMaxHP()
                             }
-                            #if os(iOS)
-                            .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidEndEditingNotification)) { _ in
-                                validateAndCorrectMaxHP()
-                            }
-                            #endif
                         
                         Button(action: {
                             if let value = Int(maxHP) {
-                                maxHP = String(min(999, value + 1))
+                                maxHP = String(value + 1)
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
@@ -133,27 +119,26 @@ struct FormCombatStatsSection: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Defense Value")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    TextField("Enter defense value", text: $defenseValue)
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                        .focused($focusedField, equals: .defenseValue)
-                        .textFieldStyle(.roundedBorder)
-                }
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Movement")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text("Movement")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text("(ft)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                     TextField("Enter movement", text: $movement)
                         #if os(iOS)
                         .keyboardType(.numberPad)
                         #endif
                         .focused($focusedField, equals: .movement)
                         .textFieldStyle(.roundedBorder)
+                        .onChange(of: movement) { newValue in
+                            let filtered = newValue.filter { "0123456789".contains($0) }
+                            if filtered != newValue {
+                                movement = filtered
+                            }
+                        }
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
@@ -170,7 +155,6 @@ struct FormCombatStatsSection: View {
                 Ph.boxingGlove.bold
                     .frame(width: 20, height: 20)
                 Text("Combat Stats")
-                    .font(.headline)
             }
         }
     }
@@ -180,53 +164,18 @@ struct FormCombatStatsSection: View {
             if intValue < 1 {
                 maxHP = "1"
             }
-            
-            // If maxHP is lowered, ensure currentHP doesn't exceed it
-            if let currentValue = Int(currentHP), currentValue > intValue {
-                currentHP = maxHP
-            }
         } else if maxHP.isEmpty {
             maxHP = "1"
         }
     }
     
     private func validateAndCorrectCurrentHP() {
-        if let currentValue = Int(currentHP) {
-            // Don't allow ridiculously large numbers
-            if abs(currentValue) > 999 {
-                currentHP = String(currentValue > 0 ? 999 : -999)
-            }
-            
-            // Don't exceed maxHP
-            if let maxValue = Int(maxHP), currentValue > maxValue {
+        if let currentValue = Int(currentHP), let maxValue = Int(maxHP) {
+            if currentValue > maxValue {
                 currentHP = maxHP
+            } else if currentValue < -999 {
+                currentHP = "-999"
             }
-        } else if currentHP.isEmpty {
-            currentHP = "0"
         }
-    }
-    
-    private func validateInput(_ newValue: String, for field: CharacterFormView.Field) {
-        let filtered = newValue.filter { "0123456789".contains($0) }
-        
-        switch field {
-        case .currentHP:
-            break
-        case .maxHP:
-            break
-        case .defenseValue:
-            break
-        case .movement:
-            break
-        @unknown default:
-            break
-        }
-        
-        #if os(iOS)
-        // Dismiss keyboard if the input is empty
-        if newValue.isEmpty {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        }
-        #endif
     }
 }

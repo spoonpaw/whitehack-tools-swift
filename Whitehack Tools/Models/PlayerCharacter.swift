@@ -742,29 +742,28 @@ class PlayerCharacter: Identifiable, Codable {
     // Combat Stats
     var currentHP: Int
     var maxHP: Int
-    private(set) var _attackValue: Int // Stored property for backward compatibility
-    var attackValue: Int { // Computed property
-        get {
-            let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-            return stats.attackValue
-        }
-        set {
-            _attackValue = newValue // For backward compatibility
-        }
-    }
-    var defenseValue: Int
+    var _attackValue: Int // Stored property for backward compatibility
     var movement: Int
-    private(set) var _saveValue: Int // Stored property for backward compatibility
-    var saveValue: Int { // Computed property
-        get {
-            let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-            return stats.savingValue
-        }
-        set {
-            _saveValue = newValue // For backward compatibility
+    var _saveValue: Int // Stored property for backward compatibility
+    var saveColor: String
+    
+    // Computed combat values
+    var attackValue: Int {
+        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+        return stats.attackValue
+    }
+    
+    var saveValue: Int {
+        let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
+        return stats.savingValue
+    }
+    
+    // Computed defense value based on equipped armor
+    var defenseValue: Int {
+        armor.filter { $0.isEquipped }.reduce(0) { sum, armor in
+            sum + armor.df + armor.bonus
         }
     }
-    var saveColor: String
     
     // Groups
     var speciesGroup: String? // "Human" or custom
@@ -919,7 +918,6 @@ class PlayerCharacter: Identifiable, Codable {
             currentHP: currentHP,
             maxHP: maxHP,
             _attackValue: _attackValue,
-            defenseValue: defenseValue,
             movement: movement,
             _saveValue: _saveValue,
             saveColor: saveColor,
@@ -1201,7 +1199,6 @@ class PlayerCharacter: Identifiable, Codable {
         try container.encode(currentHP, forKey: .currentHP)
         try container.encode(maxHP, forKey: .maxHP)
         try container.encode(_attackValue, forKey: ._attackValue)
-        try container.encode(defenseValue, forKey: .defenseValue)
         try container.encode(movement, forKey: .movement)
         try container.encode(_saveValue, forKey: ._saveValue)
         try container.encode(saveColor, forKey: .saveColor)
@@ -1243,7 +1240,7 @@ class PlayerCharacter: Identifiable, Codable {
         case id, name, playerName, characterClass, level
         case useCustomAttributes, customAttributes
         case strength, agility, toughness, intelligence, willpower, charisma
-        case currentHP, maxHP, _attackValue, defenseValue, movement, _saveValue, saveColor
+        case currentHP, maxHP, _attackValue, movement, _saveValue, saveColor
         case speciesGroup, vocationGroup, affiliationGroups, attributeGroupPairs
         case attunementSlots, hasUsedAttunementToday
         case currentConflictLoot, strongCombatOptions
@@ -1283,7 +1280,6 @@ class PlayerCharacter: Identifiable, Codable {
         currentHP = try container.decodeIfPresent(Int.self, forKey: .currentHP) ?? 1
         maxHP = try container.decodeIfPresent(Int.self, forKey: .maxHP) ?? 1
         _attackValue = try container.decodeIfPresent(Int.self, forKey: ._attackValue) ?? 10
-        defenseValue = try container.decodeIfPresent(Int.self, forKey: .defenseValue) ?? 0
         movement = try container.decodeIfPresent(Int.self, forKey: .movement) ?? 30
         _saveValue = try container.decodeIfPresent(Int.self, forKey: ._saveValue) ?? 7
         saveColor = try container.decodeIfPresent(String.self, forKey: .saveColor) ?? ""
@@ -1340,7 +1336,6 @@ class PlayerCharacter: Identifiable, Codable {
         currentHP: Int = 1,
         maxHP: Int = 1,
         _attackValue: Int = 10,
-        defenseValue: Int = 0,
         movement: Int = 30,
         _saveValue: Int = 7,
         saveColor: String = "",
@@ -1386,7 +1381,6 @@ class PlayerCharacter: Identifiable, Codable {
         self.currentHP = currentHP
         self.maxHP = maxHP
         self._attackValue = _attackValue
-        self.defenseValue = defenseValue
         self.movement = movement
         self._saveValue = _saveValue
         self.saveColor = saveColor

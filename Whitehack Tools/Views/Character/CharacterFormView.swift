@@ -44,7 +44,6 @@ struct CharacterFormView: View {
         case experience
         case currentHP
         case maxHP
-        case defenseValue
         case movement
         case initiative
         case corruption
@@ -149,7 +148,6 @@ struct CharacterFormView: View {
                         FormCombatStatsSection(
                             currentHP: $formData.currentHP,
                             maxHP: $formData.maxHP,
-                            defenseValue: $formData.defenseValue,
                             movement: $formData.movement,
                             saveColor: $formData.saveColor,
                             focusedField: $focusedField
@@ -315,7 +313,6 @@ struct CharacterFormView: View {
                         FormCombatStatsSection(
                             currentHP: $formData.currentHP,
                             maxHP: $formData.maxHP,
-                            defenseValue: $formData.defenseValue,
                             movement: $formData.movement,
                             saveColor: $formData.saveColor,
                             focusedField: $focusedField
@@ -410,7 +407,6 @@ struct CharacterFormView: View {
             currentHP: Int(formData.currentHP) ?? 0,
             maxHP: Int(formData.maxHP) ?? 0,
             _attackValue: 10,
-            defenseValue: Int(formData.defenseValue) ?? 0,
             movement: Int(formData.movement) ?? 30,
             _saveValue: 7,
             saveColor: formData.saveColor,
@@ -459,7 +455,6 @@ private class FormData: ObservableObject {
     // Combat Stats
     @Published var currentHP: String
     @Published var maxHP: String
-    @Published var defenseValue: String
     @Published var movement: String
     @Published var saveColor: String
     
@@ -502,7 +497,6 @@ private class FormData: ObservableObject {
         self.charisma = character?.charisma.description ?? "10"
         self.currentHP = character?.currentHP.description ?? "0"
         self.maxHP = character?.maxHP.description ?? "0"
-        self.defenseValue = character?.defenseValue.description ?? "0"
         self.movement = character?.movement.description ?? "30"
         self.saveColor = character?.saveColor ?? ""
         self.speciesGroup = character?.speciesGroup ?? ""
