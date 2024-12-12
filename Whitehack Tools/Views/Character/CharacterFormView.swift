@@ -162,11 +162,13 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         // Weapons Section
-                        HStack {
-                            IconFrame(icon: Ph.sword.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.sword.bold
+                                .frame(width: 20, height: 20)
                             Text("Weapons")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormWeaponsSection(weapons: $formData.weapons)
@@ -323,11 +325,13 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         // Weapons Section
-                        HStack {
-                            IconFrame(icon: Ph.sword.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.sword.bold
+                                .frame(width: 20, height: 20)
                             Text("Weapons")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormWeaponsSection(weapons: $formData.weapons)
