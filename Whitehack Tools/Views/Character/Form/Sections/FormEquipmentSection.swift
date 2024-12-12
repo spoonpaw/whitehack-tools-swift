@@ -73,133 +73,124 @@ struct FormEquipmentSection: View {
     }
     
     var body: some View {
-        Section {
-            if gear.isEmpty && !isAddingNew {
-                VStack(spacing: 12) {
-                    Image(systemName: "bag.badge.minus")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Equipment")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        print("📱 Add First Item tapped")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Your First Item", systemImage: "plus.circle.fill")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-            } else {
-                ForEach(gear) { gearItem in
-                    Group {
-                        if editingGearId == gearItem.id {
-                            GearEditRow(gear: gearItem) { updatedGear in
-                                print("💾 Saving updated gear: \(updatedGear.name)")
-                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                    print("🔄 Updating gear at index: \(index)")
-                                    gear[index] = updatedGear
-                                }
-                                editingGearId = nil
-                            } onCancel: {
-                                print("❌ Canceling gear edit - reverting to original state")
-                                editingGearId = nil
-                            }
-                            .id("\(gearItem.id)-\(editingGearId != nil)")
-                        } else {
-                            GearRow(gear: gearItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for gear: \(gearItem.name)")
-                                    editingGearId = gearItem.id
-                                },
-                                onDelete: {
-                                    gear.removeAll(where: { $0.id == gearItem.id })
-                                }
-                            )
-                        }
-                    }
-                }
+        if gear.isEmpty && !isAddingNew {
+            VStack(spacing: 12) {
+                Image(systemName: "bag.badge.minus")
+                    .font(.system(size: 40))
+                    .foregroundColor(.secondary)
                 
-                if isAddingNew {
-                    if let editingGear = editingNewGear {
-                        GearEditRow(gear: editingGear) { newGear in
-                            print("🟢 [FormEquipmentSection] Save action received for: \(newGear.name)")
-                            gear.append(newGear)
-                            print("✅ [FormEquipmentSection] Gear added to array")
-                            withAnimation {
-                                print("🔄 [FormEquipmentSection] Resetting form state after save")
-                                isAddingNew = false
+                Text("No Equipment")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                
+                Button(action: {
+                    print("📱 Add First Item tapped")
+                    withAnimation {
+                        isAddingNew = true
+                    }
+                }) {
+                    Label("Add Your First Item", systemImage: "plus.circle.fill")
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+        } else {
+            ForEach(gear) { gearItem in
+                Group {
+                    if editingGearId == gearItem.id {
+                        GearEditRow(gear: gearItem) { updatedGear in
+                            print("💾 Saving updated gear: \(updatedGear.name)")
+                            if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                print("🔄 Updating gear at index: \(index)")
+                                gear[index] = updatedGear
                             }
+                            editingGearId = nil
                         } onCancel: {
-                            print("🔴 [FormEquipmentSection] Cancel action received")
-                            withAnimation {
-                                print("🔄 [FormEquipmentSection] Resetting form state after cancel")
-                                selectedGearName = nil
-                                editingNewGear = nil
-                                isAddingNew = false
-                            }
+                            print("❌ Canceling gear edit - reverting to original state")
+                            editingGearId = nil
                         }
-                        .id("\(editingGear.id)-\(editingGearId != nil)")
+                        .id("\(gearItem.id)-\(editingGearId != nil)")
                     } else {
-                        VStack(spacing: 12) {
-                            Text("Select Item Type")
-                                .font(.headline)
-                            
-                            Picker("Select Item", selection: $selectedGearName) {
-                                Text("Select an Item").tag(nil as String?)
-                                ForEach(GearData.gear.map { $0.name }.sorted(), id: \.self) { name in
-                                    Text(name).tag(name as String?)
-                                }
-                                Text("Custom Item").tag("custom" as String?)
+                        GearRow(gear: gearItem,
+                            onEdit: {
+                                print("✏️ Starting edit for gear: \(gearItem.name)")
+                                editingGearId = gearItem.id
+                            },
+                            onDelete: {
+                                gear.removeAll(where: { $0.id == gearItem.id })
                             }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                            .onChange(of: selectedGearName) { newValue in
-                                if let gearName = newValue {
-                                    createGearFromSelection(gearName)
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    print("❌ Cancel button tapped")
-                                    withAnimation {
-                                        isAddingNew = false
-                                    }
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 8)
+                        )
                     }
                 }
-                
-                if !isAddingNew {
-                    Button(action: {
-                        print("🔄 Adding new gear")
+            }
+            
+            if isAddingNew {
+                if let editingGear = editingNewGear {
+                    GearEditRow(gear: editingGear) { newGear in
+                        print("🟢 [FormEquipmentSection] Save action received for: \(newGear.name)")
+                        gear.append(newGear)
+                        print("✅ [FormEquipmentSection] Gear added to array")
                         withAnimation {
-                            isAddingNew = true
+                            print("🔄 [FormEquipmentSection] Resetting form state after save")
+                            isAddingNew = false
                         }
-                    }) {
-                        Label("Add Another Item", systemImage: "plus.circle.fill")
+                    } onCancel: {
+                        print("🔴 [FormEquipmentSection] Cancel action received")
+                        withAnimation {
+                            print("🔄 [FormEquipmentSection] Resetting form state after cancel")
+                            selectedGearName = nil
+                            editingNewGear = nil
+                            isAddingNew = false
+                        }
                     }
+                    .id("\(editingGear.id)-\(editingGearId != nil)")
+                } else {
+                    VStack(spacing: 12) {
+                        Text("Select Item Type")
+                            .font(.headline)
+                        
+                        Picker("Select Item", selection: $selectedGearName) {
+                            Text("Select an Item").tag(nil as String?)
+                            ForEach(GearData.gear.map { $0.name }.sorted(), id: \.self) { name in
+                                Text(name).tag(name as String?)
+                            }
+                            Text("Custom Item").tag("custom" as String?)
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .onChange(of: selectedGearName) { newValue in
+                            if let gearName = newValue {
+                                createGearFromSelection(gearName)
+                            }
+                        }
+                        
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                print("❌ Cancel button tapped")
+                                withAnimation {
+                                    isAddingNew = false
+                                }
+                            }) {
+                                Text("Cancel")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 8)
                 }
             }
-        } header: {
-            HStack(spacing: 8) {
-                Ph.bagSimple.bold
-                    .frame(width: 20, height: 20)
-                Text("Equipment")
+            
+            if !isAddingNew {
+                Button(action: {
+                    print("🔄 Adding new gear")
+                    withAnimation {
+                        isAddingNew = true
+                    }
+                }) {
+                    Label("Add Another Item", systemImage: "plus.circle.fill")
+                }
             }
-            .font(.headline)
         }
     }
     

@@ -1,4 +1,5 @@
 import SwiftUI
+import PhosphorSwift
 
 struct CharacterFormView: View {
     enum Field: Hashable {
@@ -99,14 +100,44 @@ struct CharacterFormView: View {
                 )
                 .frame(maxWidth: .infinity)
                 
-                FormWeaponsSection(weapons: $formData.weapons)
-                    .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Ph.sword.bold
+                            .frame(width: 20, height: 20)
+                        Text("Weapons")
+                    }
+                    .font(.headline)
+                    
+                    FormWeaponsSection(weapons: $formData.weapons)
+                        .frame(maxWidth: .infinity)
+                        .macOSCardStyle()
+                }
                 
-                FormArmorSection(armor: $formData.armor)
-                    .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Ph.shieldStar.bold
+                            .frame(width: 20, height: 20)
+                        Text("Armor")
+                    }
+                    .font(.headline)
+                    
+                    FormArmorSection(armor: $formData.armor)
+                        .frame(maxWidth: .infinity)
+                        .macOSCardStyle()
+                }
                 
-                FormEquipmentSection(gear: $formData.gear)
-                    .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Ph.bagSimple.bold
+                            .frame(width: 20, height: 20)
+                        Text("Equipment")
+                    }
+                    .font(.headline)
+                    
+                    FormEquipmentSection(gear: $formData.gear)
+                        .frame(maxWidth: .infinity)
+                        .macOSCardStyle()
+                }
                 
                 FormEncumbranceSection(
                     currentEncumbrance: $formData.currentEncumbrance,
@@ -461,6 +492,21 @@ private class FormData: ObservableObject {
         self.weapons = character?.weapons ?? []
         self.armor = character?.armor ?? []
         self.gear = character?.gear ?? []
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func macOSCardStyle() -> some View {
+        #if os(macOS)
+        self
+            .padding()
+            .background(Color(nsColor: .windowBackgroundColor))
+            .cornerRadius(12)
+            .shadow(radius: 2)
+        #else
+        self
+        #endif
     }
 }
 
