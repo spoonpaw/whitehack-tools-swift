@@ -5,6 +5,7 @@ struct FormVocationGroupView: View {
     @Binding var isVocationGroupAdded: Bool
     @Binding var attributeGroupPairs: [AttributeGroupPair]
     @FocusState.Binding var focusedField: CharacterFormView.Field?
+    var onRemove: () -> Void
     
     @State private var isAddingVocation = false
     @State private var editingVocation = false
@@ -125,11 +126,7 @@ struct FormVocationGroupView: View {
                             
                             Button {
                                 withAnimation(.easeInOut) {
-                                    isVocationGroupAdded = false
-                                    vocationGroup = ""
-                                    
-                                    // Remove all attribute group pairs that reference this group
-                                    attributeGroupPairs.removeAll { $0.group == vocationGroup }
+                                    onRemove()
                                 }
                             } label: {
                                 Image(systemName: "trash.circle.fill")

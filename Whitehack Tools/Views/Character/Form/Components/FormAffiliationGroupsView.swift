@@ -170,6 +170,18 @@ struct FormAffiliationGroupsView: View {
     @State private var editingAffiliationIndex: Int?
     @State private var tempAffiliationText = ""
     
+    private func deleteAffiliation(at index: Int) {
+        withAnimation(.easeInOut) {
+            let removedGroup = affiliationGroups[index]
+            affiliationGroups.remove(at: index)
+            
+            // Remove any attribute group pairs that reference the removed group
+            attributeGroupPairs.removeAll { pair in
+                pair.group == removedGroup
+            }
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -260,11 +272,7 @@ struct FormAffiliationGroupsView: View {
                             }
                             
                             Button {
-                                withAnimation(.easeInOut) {
-                                    // Remove any attribute pairs associated with this group
-                                    attributeGroupPairs.removeAll { $0.group == affiliation }
-                                    affiliationGroups.remove(at: index)
-                                }
+                                deleteAffiliation(at: index)
                             } label: {
                                 Image(systemName: "trash.circle.fill")
                                     .imageScale(.large)

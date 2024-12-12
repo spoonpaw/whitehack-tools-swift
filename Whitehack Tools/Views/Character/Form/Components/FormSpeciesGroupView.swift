@@ -5,6 +5,7 @@ struct FormSpeciesGroupView: View {
     @Binding var isSpeciesGroupAdded: Bool
     @Binding var attributeGroupPairs: [AttributeGroupPair]
     @FocusState.Binding var focusedField: CharacterFormView.Field?
+    var onRemove: () -> Void
     
     @State private var isAddingSpecies = false
     @State private var newSpeciesText = ""
@@ -125,11 +126,7 @@ struct FormSpeciesGroupView: View {
                             
                             Button {
                                 withAnimation(.easeInOut) {
-                                    isSpeciesGroupAdded = false
-                                    speciesGroup = ""
-                                    
-                                    // Remove all attribute group pairs that reference this group
-                                    attributeGroupPairs.removeAll { $0.group == speciesGroup }
+                                    onRemove()
                                 }
                             } label: {
                                 Image(systemName: "trash.circle.fill")

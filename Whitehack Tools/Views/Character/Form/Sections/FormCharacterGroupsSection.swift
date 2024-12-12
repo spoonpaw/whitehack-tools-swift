@@ -46,6 +46,32 @@ struct FormCharacterGroupsSection: View {
         }
     }
     
+    private func removeSpeciesGroup() {
+        withAnimation {
+            let oldGroup = speciesGroup
+            speciesGroup = ""
+            isSpeciesGroupAdded = false
+            
+            // Remove any attribute group pairs that reference the removed species group
+            attributeGroupPairs.removeAll { pair in
+                pair.group == oldGroup
+            }
+        }
+    }
+    
+    private func removeVocationGroup() {
+        withAnimation {
+            let oldGroup = vocationGroup
+            vocationGroup = ""
+            isVocationGroupAdded = false
+            
+            // Remove any attribute group pairs that reference the removed vocation group
+            attributeGroupPairs.removeAll { pair in
+                pair.group == oldGroup
+            }
+        }
+    }
+    
     var body: some View {
         Section {
             VStack(spacing: 16) {
@@ -53,7 +79,8 @@ struct FormCharacterGroupsSection: View {
                     speciesGroup: $speciesGroup,
                     isSpeciesGroupAdded: $isSpeciesGroupAdded,
                     attributeGroupPairs: $attributeGroupPairs,
-                    focusedField: $focusedField
+                    focusedField: $focusedField,
+                    onRemove: removeSpeciesGroup
                 )
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -65,7 +92,8 @@ struct FormCharacterGroupsSection: View {
                     vocationGroup: $vocationGroup,
                     isVocationGroupAdded: $isVocationGroupAdded,
                     attributeGroupPairs: $attributeGroupPairs,
-                    focusedField: $focusedField
+                    focusedField: $focusedField,
+                    onRemove: removeVocationGroup
                 )
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
