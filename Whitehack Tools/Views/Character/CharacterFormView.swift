@@ -446,6 +446,8 @@ struct CharacterFormView: View {
             vocationGroup: formData.vocationGroup,
             affiliationGroups: formData.affiliationGroups,
             attributeGroupPairs: formData.attributeGroupPairs,
+            attunementSlots: formData.attunementSlots,
+            hasUsedAttunementToday: formData.hasUsedAttunementToday,
             languages: formData.languages,
             notes: formData.notes,
             experience: Int(formData.experience) ?? 0,
@@ -473,6 +475,10 @@ private class FormData: ObservableObject {
     @Published var playerName: String
     @Published var level: String
     @Published var selectedClass: CharacterClass
+    
+    // Deft
+    @Published var attunementSlots: [AttunementSlot]
+    @Published var hasUsedAttunementToday: Bool
     
     // Attributes
     @Published var useCustomAttributes: Bool
@@ -514,14 +520,17 @@ private class FormData: ObservableObject {
     
     @Published var notes: String
     
-    @Published var attunementSlots: [AttunementSlot]
-    @Published var hasUsedAttunementToday: Bool
-    
     init(character: PlayerCharacter? = nil) {
         self.name = character?.name ?? ""
         self.playerName = character?.playerName ?? ""
+        self.level = "\(character?.level ?? 1)"
         self.selectedClass = character?.characterClass ?? .deft
-        self.level = character?.level.description ?? "1"
+        
+        // Deft
+        self.attunementSlots = character?.attunementSlots ?? []
+        self.hasUsedAttunementToday = character?.hasUsedAttunementToday ?? false
+        
+        // Attributes
         self.useCustomAttributes = character?.useCustomAttributes ?? false
         self.customAttributes = character?.customAttributes ?? []
         self.strength = character?.strength.description ?? "10"
@@ -554,9 +563,6 @@ private class FormData: ObservableObject {
         self.weapons = character?.weapons ?? []
         self.armor = character?.armor ?? []
         self.gear = character?.gear ?? []
-        
-        self.attunementSlots = character?.attunementSlots ?? []
-        self.hasUsedAttunementToday = character?.hasUsedAttunementToday ?? false
     }
 }
 
