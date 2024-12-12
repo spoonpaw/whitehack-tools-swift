@@ -199,7 +199,7 @@ struct CharacterDetailView: View {
             
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    currentView = .form(characterId)
+                    currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
@@ -215,7 +215,7 @@ struct CharacterDetailView: View {
             
             ToolbarItem(placement: .automatic) {
                 Button {
-                    currentView = .form(characterId)
+                    currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }

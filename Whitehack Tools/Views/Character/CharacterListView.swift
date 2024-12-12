@@ -14,14 +14,14 @@ struct CharacterListView: View {
     
     enum CurrentView {
         case list
-        case form(UUID?)
+        case form(UUID?, selectedTab: FormTab = .info)
         case detail(UUID)
         
         static func == (lhs: CurrentView, rhs: CurrentView) -> Bool {
             switch (lhs, rhs) {
             case (.list, .list):
                 return true
-            case (.form(let id1), .form(let id2)):
+            case (.form(let id1, _), .form(let id2, _)):
                 return id1 == id2
             case (.detail(let id1), .detail(let id2)):
                 return id1 == id2
@@ -44,14 +44,19 @@ struct CharacterListView: View {
             .environmentObject(characterStore)
             .environmentObject(importViewModel)
             
-        case .form(let characterId):
-            CharacterFormView(characterStore: characterStore, characterId: characterId) { savedId in
-                if let id = savedId ?? characterId {
-                    currentView = .detail(id)
-                } else {
-                    currentView = .list
-                }
-            }
+        case .form(let characterId, let selectedTab):
+            CharacterFormView(
+                characterStore: characterStore,
+                characterId: characterId,
+                onComplete: { savedId in
+                    if let id = savedId ?? characterId {
+                        currentView = .detail(id)
+                    } else {
+                        currentView = .list
+                    }
+                },
+                initialTab: selectedTab
+            )
             
         case .detail(let characterId):
             CharacterDetailView(characterId: characterId, characterStore: characterStore, currentView: $currentView)

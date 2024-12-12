@@ -1,13 +1,10 @@
-import SwiftUI
-import PhosphorSwift
-
 // MARK: - Form Tab Enum
-private enum FormTab: String, CaseIterable, Identifiable {
+public enum FormTab: String, CaseIterable, Identifiable {
     case info, combat, equipment
     
-    var id: String { rawValue }
+    public var id: String { rawValue }
     
-    var title: String {
+    public var title: String {
         switch self {
         case .info: return "Info"
         case .combat: return "Combat"
@@ -15,7 +12,7 @@ private enum FormTab: String, CaseIterable, Identifiable {
         }
     }
     
-    var icon: Image {
+    public var icon: Image {
         switch self {
         case .info: return Image(systemName: "info.circle")
         case .combat: return Image(systemName: "shield")
@@ -23,6 +20,9 @@ private enum FormTab: String, CaseIterable, Identifiable {
         }
     }
 }
+
+import SwiftUI
+import PhosphorSwift
 
 struct CharacterFormView: View {
     enum Field: Hashable {
@@ -61,9 +61,9 @@ struct CharacterFormView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Field?
     @StateObject private var formData: FormData
-    @State private var selectedTab: FormTab = .info
+    @State private var selectedTab: FormTab
     
-    init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?) -> Void)? = nil) {
+    init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?) -> Void)? = nil, initialTab: FormTab = .info) {
         self.characterStore = characterStore
         self.characterId = characterId
         self.onComplete = onComplete
@@ -71,6 +71,7 @@ struct CharacterFormView: View {
             characterStore.characters.first { $0.id == id }
         }
         self._formData = StateObject(wrappedValue: FormData(character: character))
+        self._selectedTab = State(initialValue: initialTab)
     }
     
     var body: some View {

@@ -1,7 +1,7 @@
 import SwiftUI
 import PhosphorSwift
 
-struct FormEquipmentSection: View {
+public struct FormEquipmentSection: View {
     @Binding var gear: [Gear]
     @State private var editingGearId: UUID?
     @State private var isAddingNew = false {
@@ -72,7 +72,7 @@ struct FormEquipmentSection: View {
         }
     }
     
-    var body: some View {
+    public var body: some View {
         if gear.isEmpty && !isAddingNew {
             VStack(spacing: 12) {
                 Image(systemName: "bag.badge.minus")
@@ -406,7 +406,7 @@ struct FormEquipmentSection: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Picker("Weight", selection: $weight) {
-                        ForEach(["No size", "Minor", "Regular", "Heavy"], id: \.self) { option in
+                        ForEach(["No size", "Light", "Medium", "Heavy", "Very Heavy"], id: \.self) { option in
                             Text(FormEquipmentSection.getWeightDisplayText(option))
                                 .tag(option)
                         }
@@ -561,13 +561,17 @@ struct FormEquipmentSection: View {
             }
         }
     }
-    
-    static func getWeightDisplayText(_ weight: String) -> String {
+}
+
+// MARK: - Weight Display Helper
+extension FormEquipmentSection {
+    public static func getWeightDisplayText(_ weight: String) -> String {
         switch weight {
         case "No size": return "No size (100/slot)"
-        case "Minor": return "Minor (2/slot)"
-        case "Regular": return "Regular (1 slot)"
-        case "Heavy": return "Heavy (2 slots)"
+        case "Light": return "Light (10/slot)"
+        case "Medium": return "Medium (5/slot)"
+        case "Heavy": return "Heavy (2/slot)"
+        case "Very Heavy": return "Very Heavy (1/slot)"
         default: return weight
         }
     }
