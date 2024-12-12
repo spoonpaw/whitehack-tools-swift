@@ -102,6 +102,9 @@ struct CharacterFormView: View {
                 FormWeaponsSection(weapons: $formData.weapons)
                     .frame(maxWidth: .infinity)
                 
+                FormArmorSection(armor: $formData.armor)
+                    .frame(maxWidth: .infinity)
+                
                 FormEncumbranceSection(
                     currentEncumbrance: $formData.currentEncumbrance,
                     maxEncumbrance: $formData.maxEncumbrance,
@@ -227,6 +230,10 @@ struct CharacterFormView: View {
             
             Section {
                 FormWeaponsSection(weapons: $formData.weapons)
+            }
+            
+            Section {
+                FormArmorSection(armor: $formData.armor)
             }
             
             Section {
@@ -392,6 +399,7 @@ private class FormData: ObservableObject {
     @Published var miracleSlots: [WiseMiracleSlot]
     
     @Published var weapons: [Weapon]
+    @Published var armor: [Armor]
     
     init(character: PlayerCharacter? = nil) {
         self.name = character?.name ?? ""
@@ -441,6 +449,7 @@ private class FormData: ObservableObject {
         self.miracleSlots = character?.wiseMiracleSlots ?? []
         
         self.weapons = character?.weapons ?? []
+        self.armor = character?.armor ?? []
     }
 }
 
