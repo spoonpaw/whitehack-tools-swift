@@ -25,14 +25,7 @@ struct FormBasicInfoSection: View {
     var body: some View {
         VStack(spacing: 16) {
             // Header
-            HStack(spacing: 8) {
-                Ph.identificationCard.bold
-                    .frame(width: 20, height: 20)
-                Text("Basic Information")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .padding(.vertical, 4)
+            SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
             
             // Content
             VStack(spacing: 16) {
