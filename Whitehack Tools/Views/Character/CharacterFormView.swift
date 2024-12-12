@@ -137,6 +137,16 @@ struct CharacterFormView: View {
                             .frame(maxWidth: .infinity)
                         }
                         
+                        if formData.selectedClass == .deft {
+                            FormDeftAttunementSection(
+                                characterClass: formData.selectedClass,
+                                level: Int(formData.level) ?? 1,
+                                attunementSlots: $formData.attunementSlots,
+                                hasUsedAttunementToday: $formData.hasUsedAttunementToday
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        
                         FormOtherInformationSection(
                             experience: $formData.experience,
                             corruption: $formData.corruption,
@@ -302,6 +312,16 @@ struct CharacterFormView: View {
                                 willpower: $formData.willpower,
                                 useCustomAttributes: $formData.useCustomAttributes,
                                 miracleSlots: $formData.miracleSlots
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        
+                        if formData.selectedClass == .deft {
+                            FormDeftAttunementSection(
+                                characterClass: formData.selectedClass,
+                                level: Int(formData.level) ?? 1,
+                                attunementSlots: $formData.attunementSlots,
+                                hasUsedAttunementToday: $formData.hasUsedAttunementToday
                             )
                             .frame(maxWidth: .infinity)
                         }
@@ -494,6 +514,9 @@ private class FormData: ObservableObject {
     
     @Published var notes: String
     
+    @Published var attunementSlots: [AttunementSlot]
+    @Published var hasUsedAttunementToday: Bool
+    
     init(character: PlayerCharacter? = nil) {
         self.name = character?.name ?? ""
         self.playerName = character?.playerName ?? ""
@@ -531,6 +554,9 @@ private class FormData: ObservableObject {
         self.weapons = character?.weapons ?? []
         self.armor = character?.armor ?? []
         self.gear = character?.gear ?? []
+        
+        self.attunementSlots = character?.attunementSlots ?? []
+        self.hasUsedAttunementToday = character?.hasUsedAttunementToday ?? false
     }
 }
 
