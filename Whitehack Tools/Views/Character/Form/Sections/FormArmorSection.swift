@@ -15,22 +15,15 @@ struct FormArmorSection: View {
             print("🛡️ isAddingNew changed to: \(isAddingNew)")
             if !isAddingNew {
                 print("🧹 Cleaning up armor states")
-                selectedArmorName = nil
-                editingNewArmor = nil
             }
         }
     }
-    @State private var editingNewArmor: Armor? {
-        didSet {
-            print("🛡️ editingNewArmor changed: \(String(describing: oldValue?.name)) -> \(String(describing: editingNewArmor?.name))")
-        }
-    }
+    @State private var editingNewArmor: Armor?
     @State private var selectedArmorName: String? {
         didSet {
             print("🎯 selectedArmorName changed: \(String(describing: oldValue)) -> \(String(describing: selectedArmorName))")
             if selectedArmorName == nil {
                 print("⚠️ No armor selected")
-                editingNewArmor = nil
             }
         }
     }
@@ -65,11 +58,11 @@ struct FormArmorSection: View {
         
         if armorName == "custom" {
             // Handle custom armor creation
-            let armor = Armor(
+            let newArmor = Armor(
                 id: UUID(),
                 name: "",
                 df: 0,
-                weight: 1,
+                weight: 0,
                 special: "",
                 quantity: 1,
                 isEquipped: false,
@@ -79,7 +72,7 @@ struct FormArmorSection: View {
                 bonus: 0,
                 isShield: false
             )
-            editingNewArmor = armor
+            editingNewArmor = newArmor
         } else if let armorData = ArmorData.armors.first(where: { $0.name == armorName }) {
             print("📦 Found armor data: \(armorData)")
             let newArmor = Armor(
@@ -110,39 +103,8 @@ struct FormArmorSection: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            if armor.isEmpty {
-                VStack(spacing: 8) {
-                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
-                    Text("No Armor")
-                        .foregroundColor(.secondary)
-                    
-                    Button {
-                        armor.append(Armor(
-                            id: UUID(),
-                            name: "",
-                            df: 0,
-                            weight: 0,
-                            special: "",
-                            quantity: 1,
-                            isEquipped: false,
-                            isStashed: false,
-                            isMagical: false,
-                            isCursed: false,
-                            bonus: 0,
-                            isShield: false
-                        ))
-                    } label: {
-                        Label("Add Your First Armor", systemImage: "plus.circle.fill")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
-            } else {
-                // Armor list
+            // Armor list
+            if !armor.isEmpty {
                 VStack(spacing: 12) {
                     ForEach(armor) { armorItem in
                         Group {
@@ -162,7 +124,7 @@ struct FormArmorSection: View {
                                         editingArmorId = nil
                                     }
                                 }
-                                .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
+                                .id("\(armorItem.id)-\(editingArmorId != nil)")
                             } else {
                                 ArmorRow(armor: armorItem,
                                     onEdit: {
@@ -182,79 +144,120 @@ struct FormArmorSection: View {
                 .background(Color(nsColor: .windowBackgroundColor))
                 .cornerRadius(12)
                 #endif
-                
-                // Add armor button (only shown when there's existing armor)
-                Button {
-                    armor.append(Armor(
-                        id: UUID(),
-                        name: "",
-                        df: 0,
-                        weight: 0,
-                        special: "",
-                        quantity: 1,
-                        isEquipped: false,
-                        isStashed: false,
-                        isMagical: false,
-                        isCursed: false,
-                        bonus: 0,
-                        isShield: false
-                    ))
-                } label: {
-                    Label("Add Another Armor", systemImage: "plus.circle.fill")
+            } else if !isAddingNew && editingNewArmor == nil {
+                VStack(spacing: 8) {
+                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
+                    Text("No Armor")
+                        .foregroundColor(.secondary)
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
+            }
+            
+            if let newArmor = editingNewArmor {
+                ArmorEditRow(armor: newArmor) { updatedArmor in
+                    logNewArmorCreation(updatedArmor)
+                    withAnimation {
+                        armor.append(updatedArmor)
+                        editingNewArmor = nil
+                    }
+                } onCancel: {
+                    withAnimation {
+                        editingNewArmor = nil
+                    }
+                }
+                .padding()
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
             }
             
             if isAddingNew {
-                if let editingArmor = editingNewArmor {
-                    ArmorEditRow(armor: editingArmor) { newArmor in
-                        logNewArmorCreation(newArmor)
-                        withAnimation {
-                            armor.append(newArmor)
-                            isAddingNew = false
-                            print("🛡️ [FormArmorSection] Added to armor array, total count: \(armor.count)")
+                VStack(spacing: 8) {
+                    Menu {
+                        ForEach(ArmorData.armors, id: \.name) { armorData in
+                            Button(armorData.name) {
+                                armor.append(Armor(
+                                    id: UUID(),
+                                    name: armorData.name,
+                                    df: armorData.df,
+                                    weight: armorData.weight,
+                                    special: "",
+                                    quantity: 1,
+                                    isEquipped: false,
+                                    isStashed: false,
+                                    isMagical: false,
+                                    isCursed: false,
+                                    bonus: 0,
+                                    isShield: armorData.isShield
+                                ))
+                                isAddingNew = false
+                            }
                         }
-                    } onCancel: {
-                        print("🛡️ [FormArmorSection] Add armor cancelled")
-                        withAnimation {
+                        
+                        Divider()
+                        
+                        Button("Custom Armor") {
+                            let newArmor = Armor(
+                                id: UUID(),
+                                name: "",
+                                df: 0,
+                                weight: 0,
+                                special: "",
+                                quantity: 1,
+                                isEquipped: false,
+                                isStashed: false,
+                                isMagical: false,
+                                isCursed: false,
+                                bonus: 0,
+                                isShield: false
+                            )
+                            editingNewArmor = newArmor
+                            selectedArmorName = "custom"
                             isAddingNew = false
                         }
+                    } label: {
+                        Text("Select Armor")
+                            .frame(maxWidth: .infinity)
                     }
-                } else {
-                    VStack(spacing: 12) {
-                        Text("Select Armor Type")
-                            .font(.headline)
-                        
-                        Picker("Select Armor", selection: $selectedArmorName) {
-                            Text("Select an Armor").tag(nil as String?)
-                            ForEach(ArmorData.armors.map { $0.name }.sorted(), id: \.self) { name in
-                                Text(name).tag(name as String?)
-                            }
-                            Text("Custom Armor").tag("custom" as String?)
-                        }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .onChange(of: selectedArmorName) { newValue in
-                            if let armorName = newValue {
-                                createArmorFromSelection(armorName)
-                            }
-                        }
-                        
+                    .menuStyle(.borderlessButton)
+                    .frame(maxWidth: .infinity)
+                    
+                    Button(role: .cancel) {
+                        isAddingNew = false
+                    } label: {
                         HStack {
-                            Spacer()
-                            Button(action: {
-                                print("❌ Cancel button tapped")
-                                withAnimation {
-                                    isAddingNew = false
-                                }
-                            }) {
-                                Text("Cancel")
-                                    .foregroundColor(.red)
-                            }
+                            Image(systemName: "xmark.circle.fill")
+                            Text("Cancel")
                         }
+                        .foregroundColor(.red)
                     }
-                    .padding(.vertical, 8)
                 }
+                .padding(.horizontal)
             }
+            
+            // Add armor button - only show when not adding new and not editing
+            if !isAddingNew && editingNewArmor == nil {
+                Button {
+                    isAddingNew = true
+                } label: {
+                    Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
+                }
+                .padding(.horizontal)
+            }
+            
+            // Add armor button
+            // Button {
+            //     isAddingNew = true
+            // } label: {
+            //     Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
+            // }
+            // .padding(.horizontal)
         }
     }
 }
@@ -758,8 +761,8 @@ struct ArmorEditRow: View {
                     .foregroundColor(.blue)
                 }
             }
-            .buttonStyle(.plain)
             .padding(.horizontal)
+            .padding(.top, 4)
         }
         .padding()
         #if os(iOS)
@@ -797,25 +800,11 @@ struct ArmorRow: View {
             // Content Area
             VStack(alignment: .leading, spacing: 12) {
                 // Name Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Item Name")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Armor Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
-                    HStack {
-                        Label {
-                            Text(armor.name)
-                        } icon: {
-                            IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold,
-                                    color: armor.isShield ? .blue : .purple)
-                        }
-                        
-                        if armor.quantity > 1 {
-                            Text("× \(armor.quantity)")
-                                .foregroundColor(.secondary)
-                                .font(.subheadline)
-                        }
-                    }
+                    Text(armor.name.isEmpty ? "Unnamed Armor" : armor.name)
                 }
                 
                 // Defense Section
@@ -944,8 +933,8 @@ struct ArmorRow: View {
                     .foregroundColor(.red)
                 }
             }
-            .buttonStyle(.plain)
             .padding(.horizontal)
+            .padding(.top, 4)
         }
         .padding()
         #if os(iOS)
