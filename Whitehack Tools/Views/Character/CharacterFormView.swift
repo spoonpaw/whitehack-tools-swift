@@ -1,6 +1,29 @@
 import SwiftUI
 import PhosphorSwift
 
+// MARK: - Form Tab Enum
+private enum FormTab: String, CaseIterable, Identifiable {
+    case info, combat, equipment
+    
+    var id: String { rawValue }
+    
+    var title: String {
+        switch self {
+        case .info: return "Info"
+        case .combat: return "Combat"
+        case .equipment: return "Equipment"
+        }
+    }
+    
+    var icon: Image {
+        switch self {
+        case .info: return Image(systemName: "info.circle")
+        case .combat: return Image(systemName: "shield")
+        case .equipment: return Image(systemName: "bag")
+        }
+    }
+}
+
 struct CharacterFormView: View {
     enum Field: Hashable {
         case name
@@ -38,6 +61,7 @@ struct CharacterFormView: View {
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: Field?
     @StateObject private var formData: FormData
+    @State private var selectedTab: FormTab = .info
     
     init(characterStore: CharacterStore, characterId: UUID?, onComplete: ((UUID?) -> Void)? = nil) {
         self.characterStore = characterStore
@@ -51,126 +75,136 @@ struct CharacterFormView: View {
     
     var body: some View {
         #if os(macOS)
-        ScrollView {
-            VStack(spacing: 20) {
-                FormBasicInfoSection(
-                    name: $formData.name,
-                    playerName: $formData.playerName,
-                    selectedClass: $formData.selectedClass,
-                    level: $formData.level,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
-                FormAttributesSection(
-                    useCustomAttributes: $formData.useCustomAttributes,
-                    customAttributes: $formData.customAttributes,
-                    strength: $formData.strength,
-                    agility: $formData.agility,
-                    toughness: $formData.toughness,
-                    intelligence: $formData.intelligence,
-                    willpower: $formData.willpower,
-                    charisma: $formData.charisma
-                )
-                .frame(maxWidth: .infinity)
-                
-                FormCharacterGroupsSection(
-                    speciesGroup: $formData.speciesGroup,
-                    vocationGroup: $formData.vocationGroup,
-                    affiliationGroups: $formData.affiliationGroups,
-                    newAffiliationGroup: $formData.newAffiliationGroup,
-                    attributeGroupPairs: $formData.attributeGroupPairs,
-                    selectedAttribute: $formData.selectedAttribute,
-                    newAttributeGroup: $formData.newAttributeGroup,
-                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                    isVocationGroupAdded: $formData.isVocationGroupAdded,
-                    useCustomAttributes: $formData.useCustomAttributes,
-                    customAttributes: $formData.customAttributes,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
-                FormCombatStatsSection(
-                    currentHP: $formData.currentHP,
-                    maxHP: $formData.maxHP,
-                    defenseValue: $formData.defenseValue,
-                    movement: $formData.movement,
-                    saveColor: $formData.saveColor,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Ph.sword.bold
-                            .frame(width: 20, height: 20)
-                        Text("Weapons")
-                    }
-                    .font(.headline)
-                    
-                    FormWeaponsSection(weapons: $formData.weapons)
+        VStack(spacing: 0) {
+            FormTabPicker(selection: $selectedTab)
+                .padding(.horizontal)
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    switch selectedTab {
+                    case .info:
+                        FormBasicInfoSection(
+                            name: $formData.name,
+                            playerName: $formData.playerName,
+                            selectedClass: $formData.selectedClass,
+                            level: $formData.level,
+                            focusedField: $focusedField
+                        )
                         .frame(maxWidth: .infinity)
-                        .macOSCardStyle()
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Ph.shieldStar.bold
-                            .frame(width: 20, height: 20)
-                        Text("Armor")
-                    }
-                    .font(.headline)
-                    
-                    FormArmorSection(armor: $formData.armor)
+                        
+                        FormAttributesSection(
+                            useCustomAttributes: $formData.useCustomAttributes,
+                            customAttributes: $formData.customAttributes,
+                            strength: $formData.strength,
+                            agility: $formData.agility,
+                            toughness: $formData.toughness,
+                            intelligence: $formData.intelligence,
+                            willpower: $formData.willpower,
+                            charisma: $formData.charisma
+                        )
                         .frame(maxWidth: .infinity)
-                        .macOSCardStyle()
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Ph.bagSimple.bold
-                            .frame(width: 20, height: 20)
-                        Text("Equipment")
-                    }
-                    .font(.headline)
-                    
-                    FormEquipmentSection(gear: $formData.gear)
+                        
+                        FormCharacterGroupsSection(
+                            speciesGroup: $formData.speciesGroup,
+                            vocationGroup: $formData.vocationGroup,
+                            affiliationGroups: $formData.affiliationGroups,
+                            newAffiliationGroup: $formData.newAffiliationGroup,
+                            attributeGroupPairs: $formData.attributeGroupPairs,
+                            selectedAttribute: $formData.selectedAttribute,
+                            newAttributeGroup: $formData.newAttributeGroup,
+                            isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                            isVocationGroupAdded: $formData.isVocationGroupAdded,
+                            useCustomAttributes: $formData.useCustomAttributes,
+                            customAttributes: $formData.customAttributes,
+                            focusedField: $focusedField
+                        )
                         .frame(maxWidth: .infinity)
-                        .macOSCardStyle()
+                        
+                        FormLanguagesSection(
+                            languages: $formData.languages,
+                            newLanguage: $formData.newLanguage,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        if formData.selectedClass == .wise {
+                            FormWiseMiracleSection(
+                                characterClass: formData.selectedClass,
+                                level: Int(formData.level) ?? 1,
+                                willpower: $formData.willpower,
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                miracleSlots: $formData.miracleSlots
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        
+                        FormNotesSection(
+                            notes: $formData.notes,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                    case .combat:
+                        FormCombatStatsSection(
+                            currentHP: $formData.currentHP,
+                            maxHP: $formData.maxHP,
+                            defenseValue: $formData.defenseValue,
+                            movement: $formData.movement,
+                            saveColor: $formData.saveColor,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        FormOtherInformationSection(
+                            experience: $formData.experience,
+                            corruption: $formData.corruption,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                    case .equipment:
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.sword.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Weapons")
+                            }
+                            .font(.headline)
+                            
+                            FormWeaponsSection(weapons: $formData.weapons)
+                                .frame(maxWidth: .infinity)
+                                .macOSCardStyle()
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.shieldStar.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Armor")
+                            }
+                            .font(.headline)
+                            
+                            FormArmorSection(armor: $formData.armor)
+                                .frame(maxWidth: .infinity)
+                                .macOSCardStyle()
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.bagSimple.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Equipment")
+                            }
+                            .font(.headline)
+                            
+                            FormEquipmentSection(gear: $formData.gear)
+                                .frame(maxWidth: .infinity)
+                                .macOSCardStyle()
+                        }
+                    }
                 }
-                
-                FormLanguagesSection(
-                    languages: $formData.languages,
-                    newLanguage: $formData.newLanguage,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
-                FormOtherInformationSection(
-                    experience: $formData.experience,
-                    corruption: $formData.corruption,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
-                
-                if formData.selectedClass == .wise {
-                    FormWiseMiracleSection(
-                        characterClass: formData.selectedClass,
-                        level: Int(formData.level) ?? 1,
-                        willpower: $formData.willpower,
-                        useCustomAttributes: $formData.useCustomAttributes,
-                        miracleSlots: $formData.miracleSlots
-                    )
-                    .frame(maxWidth: .infinity)
-                }
-                
-                FormNotesSection(
-                    notes: $formData.notes,
-                    focusedField: $focusedField
-                )
-                .frame(maxWidth: .infinity)
+                .padding()
             }
-            .padding()
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .toolbar {
@@ -203,103 +237,132 @@ struct CharacterFormView: View {
             #endif
         }
         #else
-        Form {
-            Section {
-                FormBasicInfoSection(
-                    name: $formData.name,
-                    playerName: $formData.playerName,
-                    selectedClass: $formData.selectedClass,
-                    level: $formData.level,
-                    focusedField: $focusedField
-                )
-            }
+        VStack(spacing: 0) {
+            FormTabPicker(selection: $selectedTab)
+                .padding(.horizontal)
             
-            Section {
-                FormAttributesSection(
-                    useCustomAttributes: $formData.useCustomAttributes,
-                    customAttributes: $formData.customAttributes,
-                    strength: $formData.strength,
-                    agility: $formData.agility,
-                    toughness: $formData.toughness,
-                    intelligence: $formData.intelligence,
-                    willpower: $formData.willpower,
-                    charisma: $formData.charisma
-                )
-            }
-            
-            Section {
-                FormCharacterGroupsSection(
-                    speciesGroup: $formData.speciesGroup,
-                    vocationGroup: $formData.vocationGroup,
-                    affiliationGroups: $formData.affiliationGroups,
-                    newAffiliationGroup: $formData.newAffiliationGroup,
-                    attributeGroupPairs: $formData.attributeGroupPairs,
-                    selectedAttribute: $formData.selectedAttribute,
-                    newAttributeGroup: $formData.newAttributeGroup,
-                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                    isVocationGroupAdded: $formData.isVocationGroupAdded,
-                    useCustomAttributes: $formData.useCustomAttributes,
-                    customAttributes: $formData.customAttributes,
-                    focusedField: $focusedField
-                )
-            }
-            
-            Section {
-                FormCombatStatsSection(
-                    currentHP: $formData.currentHP,
-                    maxHP: $formData.maxHP,
-                    defenseValue: $formData.defenseValue,
-                    movement: $formData.movement,
-                    saveColor: $formData.saveColor,
-                    focusedField: $focusedField
-                )
-            }
-            
-            Section {
-                FormWeaponsSection(weapons: $formData.weapons)
-            }
-            
-            Section {
-                FormArmorSection(armor: $formData.armor)
-            }
-            
-            Section {
-                FormEquipmentSection(gear: $formData.gear)
-            }
-            
-            Section {
-                FormLanguagesSection(
-                    languages: $formData.languages,
-                    newLanguage: $formData.newLanguage,
-                    focusedField: $focusedField
-                )
-            }
-            
-            Section {
-                FormOtherInformationSection(
-                    experience: $formData.experience,
-                    corruption: $formData.corruption,
-                    focusedField: $focusedField
-                )
-            }
-            
-            if formData.selectedClass == .wise {
-                Section {
-                    FormWiseMiracleSection(
-                        characterClass: formData.selectedClass,
-                        level: Int(formData.level) ?? 1,
-                        willpower: $formData.willpower,
-                        useCustomAttributes: $formData.useCustomAttributes,
-                        miracleSlots: $formData.miracleSlots
-                    )
+            ScrollView {
+                VStack(spacing: 20) {
+                    switch selectedTab {
+                    case .info:
+                        FormBasicInfoSection(
+                            name: $formData.name,
+                            playerName: $formData.playerName,
+                            selectedClass: $formData.selectedClass,
+                            level: $formData.level,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        FormAttributesSection(
+                            useCustomAttributes: $formData.useCustomAttributes,
+                            customAttributes: $formData.customAttributes,
+                            strength: $formData.strength,
+                            agility: $formData.agility,
+                            toughness: $formData.toughness,
+                            intelligence: $formData.intelligence,
+                            willpower: $formData.willpower,
+                            charisma: $formData.charisma
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        FormCharacterGroupsSection(
+                            speciesGroup: $formData.speciesGroup,
+                            vocationGroup: $formData.vocationGroup,
+                            affiliationGroups: $formData.affiliationGroups,
+                            newAffiliationGroup: $formData.newAffiliationGroup,
+                            attributeGroupPairs: $formData.attributeGroupPairs,
+                            selectedAttribute: $formData.selectedAttribute,
+                            newAttributeGroup: $formData.newAttributeGroup,
+                            isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                            isVocationGroupAdded: $formData.isVocationGroupAdded,
+                            useCustomAttributes: $formData.useCustomAttributes,
+                            customAttributes: $formData.customAttributes,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        FormLanguagesSection(
+                            languages: $formData.languages,
+                            newLanguage: $formData.newLanguage,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        if formData.selectedClass == .wise {
+                            FormWiseMiracleSection(
+                                characterClass: formData.selectedClass,
+                                level: Int(formData.level) ?? 1,
+                                willpower: $formData.willpower,
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                miracleSlots: $formData.miracleSlots
+                            )
+                            .frame(maxWidth: .infinity)
+                        }
+                        
+                        FormNotesSection(
+                            notes: $formData.notes,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                    case .combat:
+                        FormCombatStatsSection(
+                            currentHP: $formData.currentHP,
+                            maxHP: $formData.maxHP,
+                            defenseValue: $formData.defenseValue,
+                            movement: $formData.movement,
+                            saveColor: $formData.saveColor,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        FormOtherInformationSection(
+                            experience: $formData.experience,
+                            corruption: $formData.corruption,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                    case .equipment:
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.sword.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Weapons")
+                            }
+                            .font(.headline)
+                            
+                            FormWeaponsSection(weapons: $formData.weapons)
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.shieldStar.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Armor")
+                            }
+                            .font(.headline)
+                            
+                            FormArmorSection(armor: $formData.armor)
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
+                                Ph.bagSimple.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Equipment")
+                            }
+                            .font(.headline)
+                            
+                            FormEquipmentSection(gear: $formData.gear)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
                 }
-            }
-            
-            Section {
-                FormNotesSection(
-                    notes: $formData.notes,
-                    focusedField: $focusedField
-                )
+                .padding()
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
@@ -503,5 +566,62 @@ private struct AttributeRowView: View {
                 }
             }
         }
+    }
+}
+
+private struct FormTabPicker: View {
+    @Binding var selection: FormTab
+    
+    var body: some View {
+        GeometryReader { geometry in
+            HStack(spacing: 8) {
+                ForEach(FormTab.allCases, id: \.id) { tab in
+                    FormTabButton(
+                        title: tab.title,
+                        icon: tab.icon,
+                        isSelected: selection == tab
+                    ) {
+                        withAnimation {
+                            selection = tab
+                        }
+                    }
+                }
+            }
+            .frame(width: geometry.size.width, alignment: .center)
+        }
+        .frame(height: 60)
+    }
+}
+
+private struct FormTabButton: View {
+    let title: String
+    let icon: Image
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                IconFrame(icon: icon, color: isSelected ? .accentColor : .secondary)
+                Text(title)
+                    .font(.footnote)
+                    .foregroundColor(isSelected ? .primary : .secondary)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            #if os(iOS)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : .clear)
+            )
+            #else
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : .clear)
+            )
+            #endif
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.plain)
     }
 }
