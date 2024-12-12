@@ -163,13 +163,6 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.sword.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Weapons")
-                            }
-                            .font(.headline)
-                            
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
                                 .macOSCardStyle()
@@ -328,13 +321,6 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.sword.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Weapons")
-                            }
-                            .font(.headline)
-                            
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
                         }

@@ -1308,6 +1308,18 @@ struct FormWeaponsSection: View {
                     }
                 }
             }
+        } header: {
+            HStack {
+                Spacer()
+                HStack(spacing: 8) {
+                    Ph.sword.bold
+                        .frame(width: 20, height: 20)
+                    Text("Weapons")
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                Spacer()
+            }
         }
     }
 }
