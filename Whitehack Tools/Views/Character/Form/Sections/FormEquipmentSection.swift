@@ -6,9 +6,9 @@ public struct FormEquipmentSection: View {
     @State private var editingGearId: UUID?
     @State private var isAddingNew = false {
         didSet {
-            print("📦 isAddingNew changed to: \(isAddingNew)")
+            print("📦 Equipment: isAddingNew changed from \(oldValue) to \(isAddingNew)")
             if !isAddingNew {
-                print("🧹 Cleaning up gear states")
+                print("🧹 Equipment: Cleaning up states")
                 selectedGearName = nil
                 editingNewGear = nil
             }
@@ -16,21 +16,20 @@ public struct FormEquipmentSection: View {
     }
     @State private var editingNewGear: Gear? {
         didSet {
-            print("📦 editingNewGear changed: \(String(describing: oldValue?.name)) -> \(String(describing: editingNewGear?.name))")
+            print("📦 Equipment: editingNewGear changed from \(String(describing: oldValue?.name)) to \(String(describing: editingNewGear?.name))")
         }
     }
     @State private var selectedGearName: String? {
         didSet {
-            print("🎯 selectedGearName changed: \(String(describing: oldValue)) -> \(String(describing: selectedGearName))")
+            print("🎯 Equipment: selectedGearName changed from \(String(describing: oldValue)) to \(String(describing: selectedGearName))")
             if selectedGearName == nil {
-                print("⚠️ No gear selected")
-                editingNewGear = nil
+                print("⚠️ Equipment: No gear selected")
             }
         }
     }
     
     private func createGearFromSelection(_ gearName: String) {
-        print("🎯 Creating gear from selection: \(gearName)")
+        print("🎯 Equipment: Creating gear from selection: \(gearName)")
         
         if gearName == "custom" {
             // Handle custom gear creation
@@ -47,80 +46,61 @@ public struct FormEquipmentSection: View {
                 isContainer: false
             )
             editingNewGear = gear
-        } else if let gearItem = GearData.gear.first(where: { $0.name == gearName }) {
-            print("📦 Found gear data: \(gearItem)")
+        } else if let gearData = GearData.gear.first(where: { $0.name == gearName }) {
+            print("📦 Equipment: Found gear data: \(gearData)")
             let newGear = Gear(
                 id: UUID(),
-                name: gearItem.name,
-                weight: gearItem.weight,
-                special: gearItem.special,
+                name: gearData.name,
+                weight: gearData.weight,
+                special: gearData.special,
                 quantity: 1,
                 isEquipped: false,
                 isStashed: false,
                 isMagical: false,
                 isCursed: false,
-                isContainer: gearItem.isContainer
+                isContainer: gearData.isContainer
             )
-            print("🛠️ Created gear:")
+            print("🛠️ Equipment: Created gear:")
             print("   Name: \(newGear.name)")
             print("   Weight: \(newGear.weight)")
+            print("   Special: \(newGear.special)")
             print("   Container: \(newGear.isContainer)")
             
             withAnimation {
-                editingNewGear = newGear
+                // For non-custom items, add them directly to the gear array
+                gear.append(newGear)
             }
         }
     }
     
     public var body: some View {
         VStack(spacing: 16) {
-            if gear.isEmpty && !isAddingNew {
-                VStack(spacing: 12) {
-                    Image(systemName: "bag.badge.minus")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Equipment")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        print("📱 Add First Item tapped")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Your First Item", systemImage: "plus.circle.fill")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-            } else {
-                // Equipment list
+            // Equipment list
+            if !gear.isEmpty {
                 VStack(spacing: 12) {
                     ForEach(gear) { gearItem in
                         Group {
                             if editingGearId == gearItem.id {
-                                GearEditRow(gear: gearItem) { updatedGear in
-                                    print("💾 Saving updated gear: \(updatedGear.name)")
-                                    if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                        print("🔄 Updating gear at index: \(index)")
-                                        gear[index] = updatedGear
+                                GearEditRow(
+                                    gear: gearItem,
+                                    onSave: { updatedGear in
+                                        if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                            gear[index] = updatedGear
+                                        }
+                                        editingGearId = nil
+                                    },
+                                    onCancel: {
+                                        editingGearId = nil
                                     }
-                                    editingGearId = nil
-                                } onCancel: {
-                                    print("❌ Canceling gear edit - reverting to original state")
-                                    editingGearId = nil
-                                }
-                                .id("\(gearItem.id)-\(editingGearId != nil)")
+                                )
                             } else {
-                                GearRow(gear: gearItem,
+                                GearRow(
+                                    gear: gearItem,
                                     onEdit: {
-                                        print("✏️ Starting edit for gear: \(gearItem.name)")
                                         editingGearId = gearItem.id
                                     },
                                     onDelete: {
-                                        gear.removeAll(where: { $0.id == gearItem.id })
+                                        gear.removeAll { $0.id == gearItem.id }
                                     }
                                 )
                             }
@@ -132,443 +112,428 @@ public struct FormEquipmentSection: View {
                 .background(Color(nsColor: .windowBackgroundColor))
                 .cornerRadius(12)
                 #endif
-                
-                if isAddingNew {
-                    if let editingGear = editingNewGear {
-                        GearEditRow(gear: editingGear) { newGear in
-                            print("🟢 [FormEquipmentSection] Save action received for: \(newGear.name)")
-                            gear.append(newGear)
-                            print("✅ [FormEquipmentSection] Gear added to array")
-                            withAnimation {
-                                print("🔄 [FormEquipmentSection] Resetting form state after save")
-                                isAddingNew = false
-                            }
-                        } onCancel: {
-                            print("🔴 [FormEquipmentSection] Cancel action received")
-                            withAnimation {
-                                print("🔄 [FormEquipmentSection] Resetting form state after cancel")
-                                selectedGearName = nil
-                                editingNewGear = nil
-                                isAddingNew = false
-                            }
-                        }
-                        .id("\(editingGear.id)-\(editingGearId != nil)")
-                    } else {
-                        VStack(spacing: 12) {
-                            Text("Select Item Type")
-                                .font(.headline)
-                            
-                            Picker("Select Item", selection: $selectedGearName) {
-                                Text("Select an Item").tag(nil as String?)
-                                ForEach(GearData.gear.map { $0.name }.sorted(), id: \.self) { name in
-                                    Text(name).tag(name as String?)
-                                }
-                                Text("Custom Item").tag("custom" as String?)
-                            }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                            .onChange(of: selectedGearName) { newValue in
-                                if let gearName = newValue {
-                                    createGearFromSelection(gearName)
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    print("❌ Cancel button tapped")
-                                    withAnimation {
-                                        isAddingNew = false
-                                    }
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
-                                }
+            } else if !isAddingNew && editingNewGear == nil {
+                VStack(spacing: 8) {
+                    IconFrame(icon: Ph.bagSimple.bold, color: .gray)
+                    Text("No Equipment")
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
+            }
+            
+            if let editingGear = editingNewGear {
+                GearEditRow(
+                    gear: editingGear,
+                    onSave: { newGear in
+                        gear.append(newGear)
+                        editingNewGear = nil
+                        isAddingNew = false
+                    },
+                    onCancel: {
+                        editingNewGear = nil
+                        isAddingNew = false
+                    }
+                )
+                .padding()
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
+            }
+            
+            if isAddingNew {
+                VStack {
+                    Menu {
+                        ForEach(GearData.gear, id: \.name) { gearItem in
+                            Button(gearItem.name) {
+                                selectedGearName = gearItem.name
+                                createGearFromSelection(gearItem.name)
                             }
                         }
-                        .padding(.vertical, 8)
+                        
+                        Divider()
+                        
+                        Button("Custom Item") {
+                            selectedGearName = "custom"
+                            createGearFromSelection("custom")
+                        }
+                    } label: {
+                        Text("Select Item")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .menuStyle(.borderlessButton)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
+                    
+                    Button(action: {
+                        isAddingNew = false
+                    }) {
+                        Label("Cancel", systemImage: "xmark.circle.fill")
+                            .foregroundColor(.red)
                     }
                 }
-                
-                if !isAddingNew {
-                    Button(action: {
-                        print("🔄 Adding new gear")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Another Item", systemImage: "plus.circle.fill")
+            } else if !gear.isEmpty {
+                Button(action: {
+                    print("➕ Equipment: Add Another Item tapped")
+                    withAnimation {
+                        isAddingNew = true
                     }
+                }) {
+                    Label("Add Another Item", systemImage: "plus.circle.fill")
+                        .foregroundColor(.primary)
+                }
+            } else {
+                Button(action: {
+                    print("➕ Equipment: Add First Item tapped")
+                    withAnimation {
+                        isAddingNew = true
+                    }
+                }) {
+                    Label("Add Your First Item", systemImage: "plus.circle.fill")
+                        .foregroundColor(.primary)
                 }
             }
         }
     }
+}
+
+struct GearRow: View {
+    let gear: Gear
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     
-    struct GearRow: View {
-        let gear: Gear
-        let onEdit: () -> Void
-        let onDelete: () -> Void
-        
-        var body: some View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Content Area
             VStack(alignment: .leading, spacing: 12) {
-                // Content Area
-                VStack(alignment: .leading, spacing: 12) {
-                    // Name Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Item Name")
+                // Name Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Item Name")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(gear.name)
+                    } icon: {
+                        IconFrame(icon: gear.isContainer ? Ph.package.bold : Ph.bagSimple.bold,
+                                color: gear.isContainer ? .orange : .purple)
+                    }
+                }
+                
+                // Weight Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Weight")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(gear.weight)
+                    } icon: {
+                        IconFrame(icon: Ph.scales.bold, color: .blue)
+                    }
+                }
+                
+                // Quantity Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quantity")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(gear.quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .green)
+                    }
+                }
+                
+                // Status Section
+                HStack {
+                    // Equipped Status
+                    HStack(spacing: 4) {
+                        IconFrame(icon: gear.isEquipped ? Ph.bagSimple.bold : Ph.bagSimple.bold,
+                                color: gear.isEquipped ? .green : .gray)
+                        Text(gear.isEquipped ? "Equipped" : "Unequipped")
+                            .foregroundColor(gear.isEquipped ? .green : .secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    // Location Status
+                    HStack(spacing: 4) {
+                        IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                color: gear.isStashed ? .orange : .gray)
+                        Text(gear.isStashed ? "Stashed" : "On Person")
+                            .foregroundColor(gear.isStashed ? .orange : .secondary)
+                    }
+                }
+                .font(.callout)
+                
+                if gear.isMagical || gear.isCursed {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Magical Properties")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        HStack {
-                            Label {
-                                Text(gear.name)
-                            } icon: {
-                                IconFrame(icon: Ph.package.bold, color: .blue)
-                            }
-                            if gear.quantity > 1 {
-                                Text("× \(gear.quantity)")
-                                    .foregroundColor(.secondary)
-                                    .font(.subheadline)
-                            }
-                        }
-                    }
-                    
-                    // Weight Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label {
-                            Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.scales.bold, color: .secondary)
-                        }
-                        .foregroundColor(.secondary)
-                    }
-                    
-                    // Special Section
-                    if !gear.special.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Label {
-                                Text(gear.special)
-                                    .font(.subheadline)
-                            } icon: {
-                                IconFrame(icon: Ph.star.bold, color: .yellow)
-                            }
-                            .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    // Status Flags
-                    HStack(spacing: 16) {
-                        // Equipped Status
-                        Label {
-                            Text(gear.isEquipped ? "Equipped" : "Not Equipped")
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: gear.isEquipped ? Ph.checkCircle.bold : Ph.circle.bold,
-                                    color: gear.isEquipped ? .green : .secondary)
-                        }
-                        .foregroundColor(gear.isEquipped ? .green : .secondary)
-                        
-                        // Stashed Status
-                        Label {
-                            Text(gear.isStashed ? "Stashed" : "On Person")
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold, color: gear.isStashed ? .orange : .secondary)
-                        }
-                        .foregroundColor(gear.isStashed ? .orange : .secondary)
-                    }
-                    
-                    // Container Status
-                    if gear.isContainer {
-                        Label {
-                            Text("Container")
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.package.bold, color: .blue)
-                        }
-                        .foregroundColor(.blue)
-                    }
-                    
-                    // Magical and Cursed Status
-                    if gear.isMagical || gear.isCursed {
-                        HStack(spacing: 16) {
+                        HStack(spacing: 12) {
                             if gear.isMagical {
                                 Label {
                                     Text("Magical")
-                                        .font(.subheadline)
                                 } icon: {
-                                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
+                                    IconFrame(icon: Ph.sparkle.bold, color: .blue)
                                 }
-                                .foregroundColor(.purple)
                             }
                             
                             if gear.isCursed {
                                 Label {
                                     Text("Cursed")
-                                        .font(.subheadline)
                                 } icon: {
                                     IconFrame(icon: Ph.skull.bold, color: .red)
                                 }
-                                .foregroundColor(.red)
                             }
                         }
                     }
                 }
-                .allowsHitTesting(false)  // Disable touch interaction for content area only
                 
-                Divider()
-                
-                // Action Buttons
-                HStack(spacing: 20) {
-                    Button(action: onEdit) {
+                if !gear.special.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Special Properties")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                         Label {
-                            Text("Edit")
-                                .fontWeight(.medium)
+                            Text(gear.special)
                         } icon: {
-                            Image(systemName: "pencil.circle.fill")
+                            IconFrame(icon: Ph.star.bold, color: .purple)
                         }
-                        .foregroundColor(.blue)
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: onDelete) {
-                        Label {
-                            Text("Delete")
-                                .fontWeight(.medium)
-                        } icon: {
-                            Image(systemName: "trash.circle.fill")
-                        }
-                        .foregroundColor(.red)
                     }
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal)
             }
-            .padding()
-            #if os(iOS)
-            .background(Color(uiColor: .secondarySystemBackground))
-            #else
-            .background(Color(nsColor: .controlBackgroundColor))
-            #endif
-            .cornerRadius(10)
+            .allowsHitTesting(false)
+            
+            Divider()
+            
+            // Action Buttons
+            HStack(spacing: 20) {
+                Button(action: onEdit) {
+                    Label {
+                        Text("Edit")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                    }
+                    .foregroundColor(.blue)
+                }
+                
+                Spacer()
+                
+                Button(action: onDelete) {
+                    Label {
+                        Text("Delete")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                    }
+                    .foregroundColor(.red)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 4)
         }
+        .padding()
+        #if os(iOS)
+        .background(Color(.secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
+        .cornerRadius(10)
+    }
+}
+
+struct GearEditRow: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    let gear: Gear
+    let onSave: (Gear) -> Void
+    let onCancel: () -> Void
+    
+    @State private var name: String
+    @State private var weight: String
+    @State private var special: String
+    @State private var isEquipped: Bool
+    @State private var isStashed: Bool
+    @State private var isMagical: Bool
+    @State private var isCursed: Bool
+    @State private var isContainer: Bool
+    @State private var quantity: Int
+    @State private var isProcessingAction = false
+    
+    init(gear: Gear, onSave: @escaping (Gear) -> Void, onCancel: @escaping () -> Void) {
+        self.gear = gear
+        self.onSave = onSave
+        self.onCancel = onCancel
+        
+        _name = State(initialValue: gear.name)
+        _weight = State(initialValue: gear.weight)
+        _special = State(initialValue: gear.special)
+        _isEquipped = State(initialValue: gear.isEquipped)
+        _isStashed = State(initialValue: gear.isStashed)
+        _isMagical = State(initialValue: gear.isMagical)
+        _isCursed = State(initialValue: gear.isCursed)
+        _isContainer = State(initialValue: gear.isContainer)
+        _quantity = State(initialValue: gear.quantity)
     }
     
-    struct GearEditRow: View {
-        @Environment(\.dismiss) private var dismiss
-        
-        let gear: Gear
-        let onSave: (Gear) -> Void
-        let onCancel: () -> Void
-        
-        // Basic Properties
-        @State private var name: String
-        @State private var weight: String
-        @State private var special: String
-        @State private var isEquipped: Bool
-        @State private var isStashed: Bool
-        @State private var isMagical: Bool
-        @State private var isCursed: Bool
-        @State private var isContainer: Bool
-        @State private var quantityString: String
-        
-        // Button state tracking
-        @State private var isProcessingAction = false
-        
-        // Initialize with gear
-        init(gear: Gear, onSave: @escaping (Gear) -> Void, onCancel: @escaping () -> Void) {
-            self.gear = gear
-            self.onSave = onSave
-            self.onCancel = onCancel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Name Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Item Name")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Item name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            }
             
-            // Initialize state properties
-            _name = State(initialValue: gear.name)
-            _weight = State(initialValue: gear.weight)
-            _special = State(initialValue: gear.special)
-            _isEquipped = State(initialValue: gear.isEquipped)
-            _isStashed = State(initialValue: gear.isStashed)
-            _isMagical = State(initialValue: gear.isMagical)
-            _isCursed = State(initialValue: gear.isCursed)
-            _isContainer = State(initialValue: gear.isContainer)
-            _quantityString = State(initialValue: String(gear.quantity))
-        }
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                // Name Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Item Name")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        TextField("Item Name", text: $name)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    } icon: {
-                        IconFrame(icon: Ph.package.bold, color: .blue)
-                    }
-                }
-                
-                // Weight Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Weight")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Picker("Weight", selection: $weight) {
-                        ForEach(["No size", "Light", "Medium", "Heavy", "Very Heavy"], id: \.self) { option in
-                            Text(FormEquipmentSection.getWeightDisplayText(option))
-                                .tag(option)
+            // Weight Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Weight", text: $weight)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                HStack {
+                    Button(action: {
+                        if quantity > 1 {
+                            quantity -= 1
                         }
-                    }
-                    .pickerStyle(.menu)
-                }
-                
-                // Special Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Special Properties")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        TextField("Special Properties", text: $special)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                    } icon: {
-                        IconFrame(icon: Ph.star.bold, color: .yellow)
-                    }
-                }
-                
-                // Status Section
-                Section {
-                    // Equipped Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                        Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                    }) {
+                        Image(systemName: "minus.circle.fill")
+                            .foregroundColor(.red)
                     }
                     
-                    // Stashed Toggle with Icon
-                    HStack {
-                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                color: isStashed ? .orange : .gray)
-                        Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
-                    }
-                }
-                
-                // Magical Properties Section
-                Section {
-                    // Magical Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
-                        Toggle("Magical", isOn: $isMagical)
-                    }
+                    Text("\(quantity)")
+                        .frame(width: 40)
+                        .multilineTextAlignment(.center)
                     
-                    // Cursed Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                        Toggle(isOn: $isCursed) {
-                            Text("Cursed")
-                        }
-                    }
-                    
-                    // Container Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.package.bold, color: isContainer ? .blue : .gray)
-                        Toggle(isOn: $isContainer) {
-                            Text("Container")
-                        }
+                    Button(action: {
+                        quantity += 1
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.green)
                     }
                 }
-                
-                // Quantity Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Quantity")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    HStack {
-                        TextField("", text: $quantityString)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .textFieldStyle(.roundedBorder)
-                        Stepper("", value: .init(get: { Int(quantityString) ?? 1 }, set: { quantityString = "\($0)" }), in: 1...Int.max)
-                            .labelsHidden()
-                    }
+            }
+            
+            // Special Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Special Properties")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Special properties", text: $special)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            // Toggles Section
+            VStack(alignment: .leading, spacing: 8) {
+                // Container Toggle
+                HStack {
+                    IconFrame(icon: Ph.package.bold, color: isContainer ? .orange : .gray)
+                    Toggle(isContainer ? "Container" : "Not a Container", isOn: $isContainer)
                 }
                 
-                Divider()
+                // Equipped Toggle
+                HStack {
+                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                }
                 
-                // Action Buttons
-                HStack(spacing: 20) {
-                    Button {
-                        guard !isProcessingAction else { return }
-                        isProcessingAction = true
-                        print("🔴 Cancel action starting")
-                        onCancel()
-                        isProcessingAction = false
-                    } label: {
-                        Label {
-                            Text("Cancel")
-                                .fontWeight(.medium)
-                        } icon: {
-                            Image(systemName: "xmark.circle.fill")
-                        }
+                // Location Toggle
+                HStack {
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: isStashed ? .orange : .gray)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                }
+                
+                // Magical Toggle
+                HStack {
+                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .blue : .gray)
+                    Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
+                }
+                
+                // Cursed Toggle
+                HStack {
+                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                    Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
+                }
+            }
+            
+            Divider()
+            
+            // Action Buttons
+            HStack(spacing: 20) {
+                Button {
+                    guard !isProcessingAction else { return }
+                    isProcessingAction = true
+                    print("🔴 Cancel action starting")
+                    onCancel()
+                } label: {
+                    Label("Cancel", systemImage: "xmark.circle.fill")
                         .foregroundColor(.red)
-                    }
-                    
-                    Spacer()
-                    
-                    Button {
-                        guard !isProcessingAction else { return }
-                        isProcessingAction = true
-                        print("🟢 Save action starting")
-                        
-                        // Create new gear with updated values
-                        let updatedGear = Gear(
-                            id: gear.id,
-                            name: name,
-                            weight: weight,
-                            special: special,
-                            quantity: Int(quantityString) ?? 1,
-                            isEquipped: isEquipped,
-                            isStashed: isStashed,
-                            isMagical: isMagical,
-                            isCursed: isCursed,
-                            isContainer: isContainer
-                        )
-                        
-                        onSave(updatedGear)
-                        isProcessingAction = false
-                    } label: {
-                        Label {
-                            Text("Save")
-                                .fontWeight(.medium)
-                        } icon: {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                        .foregroundColor(.blue)
-                    }
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal)
+                
+                Spacer()
+                
+                Button {
+                    guard !isProcessingAction else { return }
+                    isProcessingAction = true
+                    print("✅ Save action starting")
+                    
+                    let updatedGear = Gear(
+                        id: gear.id,
+                        name: name,
+                        weight: weight,
+                        special: special,
+                        quantity: quantity,
+                        isEquipped: isEquipped,
+                        isStashed: isStashed,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        isContainer: isContainer
+                    )
+                    
+                    onSave(updatedGear)
+                } label: {
+                    Label("Save", systemImage: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                }
             }
-            .padding()
-            #if os(iOS)
-            .background(Color(uiColor: .secondarySystemBackground))
-            #else
-            .background(Color(nsColor: .controlBackgroundColor))
-            #endif
-            .cornerRadius(10)
-            .onAppear {
-                // Reset state to match the input gear
-                name = gear.name
-                weight = gear.weight
-                special = gear.special
-                isEquipped = gear.isEquipped
-                isStashed = gear.isStashed
-                isMagical = gear.isMagical
-                isCursed = gear.isCursed
-                isContainer = gear.isContainer
-                quantityString = String(gear.quantity)
-            }
+        }
+        .padding()
+        #if os(iOS)
+        .background(Color(uiColor: .secondarySystemBackground))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
+        .cornerRadius(10)
+        .onAppear {
+            // Reset state to match the input gear
+            name = gear.name
+            weight = gear.weight
+            special = gear.special
+            isEquipped = gear.isEquipped
+            isStashed = gear.isStashed
+            isMagical = gear.isMagical
+            isCursed = gear.isCursed
+            isContainer = gear.isContainer
+            quantity = gear.quantity
         }
     }
 }

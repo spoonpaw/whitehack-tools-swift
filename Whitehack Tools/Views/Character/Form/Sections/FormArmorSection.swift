@@ -807,6 +807,18 @@ struct ArmorRow: View {
                     Text(armor.name.isEmpty ? "Unnamed Armor" : armor.name)
                 }
                 
+                // Quantity Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quantity")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(armor.quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .green)
+                    }
+                }
+                
                 // Defense Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Defense")
