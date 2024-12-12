@@ -10,15 +10,6 @@ struct FormLanguagesSection: View {
     @State private var editingLanguage: String? = nil
     @State private var tempLanguage = ""
     
-    private var sectionHeader: some View {
-        HStack(spacing: 8) {
-            Ph.scroll.bold
-                .frame(width: 20, height: 20)
-            Text("Languages")
-        }
-        .font(.headline)
-    }
-    
     private var headerView: some View {
         HStack {
             Text("Languages")
@@ -170,7 +161,11 @@ struct FormLanguagesSection: View {
     }
 
     var body: some View {
-        Section(header: sectionHeader) {
+        VStack(spacing: 0) {
+            // Header
+            SectionHeader(title: "Languages", icon: Ph.translate.bold)
+            
+            // Content
             VStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
                     headerView

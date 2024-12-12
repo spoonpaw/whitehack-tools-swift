@@ -261,16 +261,9 @@ struct FormAttributesSection: View {
     @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             // Header
-            HStack(spacing: 8) {
-                Ph.chartBar.bold
-                    .frame(width: 20, height: 20)
-                Text("Attributes")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .padding(.vertical, 4)
+            SectionHeader(title: "Attributes", icon: Ph.chartBar.bold)
             
             // Content
             VStack(spacing: 16) {

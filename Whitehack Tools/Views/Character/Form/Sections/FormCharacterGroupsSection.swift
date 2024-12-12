@@ -73,7 +73,9 @@ struct FormCharacterGroupsSection: View {
     }
     
     var body: some View {
-        Section {
+        VStack(spacing: 0) {
+            SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)
+            
             VStack(spacing: 16) {
                 FormSpeciesGroupView(
                     speciesGroup: $speciesGroup,
@@ -127,15 +129,6 @@ struct FormCharacterGroupsSection: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
             .padding(.vertical, 8)
-        } header: {
-            HStack(spacing: 8) {
-                Ph.usersThree.bold
-                    .frame(width: 20, height: 20)
-                Text("Character Groups")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .padding(.vertical, 4)
         }
     }
 }

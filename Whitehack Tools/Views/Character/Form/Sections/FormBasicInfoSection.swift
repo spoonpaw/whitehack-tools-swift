@@ -23,7 +23,7 @@ struct FormBasicInfoSection: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             // Header
             SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
             

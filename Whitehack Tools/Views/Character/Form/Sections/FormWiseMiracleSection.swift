@@ -55,14 +55,14 @@ struct FormWiseMiracleSection: View {
     
     var body: some View {
         if characterClass == .wise {
-            Section {
-                ForEach(slotIndices, id: \.0) { index, slot in
-                    miracleSlotView(index: index, slot: slot)
+            VStack(spacing: 0) {
+                SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
+                
+                VStack(spacing: 16) {
+                    ForEach(slotIndices, id: \.0) { index, slot in
+                        miracleSlotView(index: index, slot: slot)
+                    }
                 }
-            } header: {
-                SectionHeader(title: "The Wise", icon: Ph.magicWand.bold)
-            } footer: {
-                Text(footerText)
             }
         }
     }
