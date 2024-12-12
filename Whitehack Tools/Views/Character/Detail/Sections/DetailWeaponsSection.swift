@@ -31,7 +31,8 @@ struct DetailWeaponsSection: View {
                     ForEach(weapons) { weapon in
                         WeaponDetailRow(weapon: weapon)
                             .padding()
-                            .groupCardStyle()
+                            .background(Color.white)
+                            .cornerRadius(8)
                             .shadow(radius: 2)
                     }
                 }
