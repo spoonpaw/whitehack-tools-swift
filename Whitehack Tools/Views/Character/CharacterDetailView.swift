@@ -142,92 +142,94 @@ struct CharacterDetailView: View {
     }
     
     var body: some View {
-        ScrollView {
-            if let character = character {
-                VStack(spacing: 0) {
-                    TabPicker(selection: $selectedTab)
-                        .padding(.horizontal)
-                    
-                    switch selectedTab {
-                    case .info:
-                        VStack(spacing: 32) {
-                            VStack(alignment: .leading, spacing: 12) {
-                                SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+        VStack(spacing: 0) {
+            TabPicker(selection: $selectedTab)
+                .padding(.horizontal)
+            
+            ScrollView {
+                if let character = character {
+                    VStack(spacing: 0) {
+                        switch selectedTab {
+                        case .info:
+                            VStack(spacing: 32) {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+                                        .padding(.horizontal, 16)
+                                    DetailHeaderSection(character: character)
+                                        .padding(.horizontal, 16)
+                                }
+                                
+                                DetailStatsSection(character: character)
                                     .padding(.horizontal, 16)
-                                DetailHeaderSection(character: character)
+                                
+                                DetailGroupsSection(character: character)
+                                    .padding(.horizontal, 16)
+                                
+                                DetailWiseMiracleSection(character: character)
                                     .padding(.horizontal, 16)
                             }
-                            
-                            DetailStatsSection(character: character)
-                                .padding(.horizontal, 16)
-                            
-                            DetailGroupsSection(character: character)
-                                .padding(.horizontal, 16)
-                            
-                            DetailWiseMiracleSection(character: character)
-                                .padding(.horizontal, 16)
-                        }
-                        .padding(.vertical, 16)
-                    case .combat:
-                        DetailCombatSection(character: character)
+                            .padding(.vertical, 16)
+                        case .combat:
+                            DetailCombatSection(character: character)
+                                .padding()
+                        case .equipment:
+                            VStack(spacing: 32) {
+                                DetailWeaponsSection(weapons: character.weapons)
+                                DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
+                                DetailEquipmentSection(character: character)
+                            }
                             .padding()
-                    case .equipment:
-                        VStack(spacing: 32) {
-                            DetailWeaponsSection(weapons: character.weapons)
-                            DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
-                            DetailEquipmentSection(character: character)
                         }
-                        .padding()
+                    }
+                    .frame(maxWidth: .infinity)
+                } else {
+                    ProgressView()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            #if os(macOS)
+            .background(.white)
+            #endif
+            .navigationTitle(character?.name ?? "Character Details")
+            .frame(maxWidth: .infinity)
+            .toolbar {
+                #if os(iOS)
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        currentView = .list
+                    } label: {
+                        Label("Back", systemImage: "chevron.left")
                     }
                 }
-                .frame(maxWidth: .infinity)
-            } else {
-                ProgressView()
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        #if os(macOS)
-        .background(.white)
-        #endif
-        .navigationTitle(character?.name ?? "Character Details")
-        .frame(maxWidth: .infinity)
-        .toolbar {
-            #if os(iOS)
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    currentView = .list
-                } label: {
-                    Label("Back", systemImage: "chevron.left")
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
                 }
-            }
-            
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
-                } label: {
-                    Label("Edit", systemImage: "pencil")
+                #else
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        currentView = .list
+                    } label: {
+                        Label("Back", systemImage: "chevron.left")
+                    }
                 }
-            }
-            #else
-            ToolbarItem(placement: .automatic) {
-                Button {
-                    currentView = .list
-                } label: {
-                    Label("Back", systemImage: "chevron.left")
+                
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                    }
                 }
+                #endif
             }
-            
-            ToolbarItem(placement: .automatic) {
-                Button {
-                    currentView = .form(characterId, selectedTab: FormTab(rawValue: selectedTab.rawValue) ?? .info)
-                } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-            }
-            #endif
         }
     }
 }
