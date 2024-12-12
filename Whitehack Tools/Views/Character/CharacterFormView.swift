@@ -175,6 +175,7 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
                         
                         // Armor Section
                         VStack(spacing: 12) {
@@ -190,6 +191,7 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
                         
                         // Equipment Section
                         VStack(spacing: 12) {
@@ -342,6 +344,7 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
                         
                         // Armor Section
                         VStack(spacing: 12) {
@@ -357,6 +360,7 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
                         
                         // Equipment Section
                         VStack(spacing: 12) {
