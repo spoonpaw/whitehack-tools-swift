@@ -137,6 +137,13 @@ struct CharacterFormView: View {
                             .frame(maxWidth: .infinity)
                         }
                         
+                        FormOtherInformationSection(
+                            experience: $formData.experience,
+                            corruption: $formData.corruption,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
                         FormNotesSection(
                             notes: $formData.notes,
                             focusedField: $focusedField
@@ -149,13 +156,6 @@ struct CharacterFormView: View {
                             maxHP: $formData.maxHP,
                             movement: $formData.movement,
                             saveColor: $formData.saveColor,
-                            focusedField: $focusedField
-                        )
-                        .frame(maxWidth: .infinity)
-                        
-                        FormOtherInformationSection(
-                            experience: $formData.experience,
-                            corruption: $formData.corruption,
                             focusedField: $focusedField
                         )
                         .frame(maxWidth: .infinity)
@@ -304,6 +304,13 @@ struct CharacterFormView: View {
                             .frame(maxWidth: .infinity)
                         }
                         
+                        FormOtherInformationSection(
+                            experience: $formData.experience,
+                            corruption: $formData.corruption,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
                         FormNotesSection(
                             notes: $formData.notes,
                             focusedField: $focusedField
@@ -316,13 +323,6 @@ struct CharacterFormView: View {
                             maxHP: $formData.maxHP,
                             movement: $formData.movement,
                             saveColor: $formData.saveColor,
-                            focusedField: $focusedField
-                        )
-                        .frame(maxWidth: .infinity)
-                        
-                        FormOtherInformationSection(
-                            experience: $formData.experience,
-                            corruption: $formData.corruption,
                             focusedField: $focusedField
                         )
                         .frame(maxWidth: .infinity)
