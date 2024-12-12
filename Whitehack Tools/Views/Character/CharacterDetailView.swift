@@ -165,6 +165,11 @@ struct CharacterDetailView: View {
                                 DetailGroupsSection(character: character)
                                     .padding(.horizontal, 16)
                                 
+                                if character.characterClass == .deft {
+                                    DetailDeftAttunementSection(character: character)
+                                        .padding(.horizontal, 16)
+                                }
+                                
                                 DetailWiseMiracleSection(character: character)
                                     .padding(.horizontal, 16)
                             }
