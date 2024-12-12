@@ -192,11 +192,13 @@ struct CharacterFormView: View {
                         }
                         
                         // Equipment Section
-                        HStack {
-                            IconFrame(icon: Ph.backpack.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.backpack.bold
+                                .frame(width: 20, height: 20)
                             Text("Equipment")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormEquipmentSection(gear: $formData.gear)
@@ -357,11 +359,13 @@ struct CharacterFormView: View {
                         }
                         
                         // Equipment Section
-                        HStack {
-                            IconFrame(icon: Ph.backpack.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.backpack.bold
+                                .frame(width: 20, height: 20)
                             Text("Equipment")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormEquipmentSection(gear: $formData.gear)
