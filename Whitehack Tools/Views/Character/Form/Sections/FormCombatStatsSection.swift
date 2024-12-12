@@ -155,7 +155,9 @@ struct FormCombatStatsSection: View {
                 Ph.boxingGlove.bold
                     .frame(width: 20, height: 20)
                 Text("Combat Stats")
+                    .font(.headline)
             }
+            .frame(maxWidth: .infinity)
         }
     }
     
