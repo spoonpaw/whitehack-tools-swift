@@ -30,7 +30,7 @@ struct DetailEquipmentSection: View {
                     ForEach(character.gear) { gearItem in
                         GearDetailRow(gear: gearItem)
                             .padding()
-                            .background(Color(uiColor: .systemBackground))
+                            .background(backgroundColor)
                             .cornerRadius(12)
                             .shadow(radius: 2)
                     }
@@ -38,11 +38,19 @@ struct DetailEquipmentSection: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color(uiColor: .systemBackground))
+            .background(backgroundColor)
             .cornerRadius(12)
             .shadow(radius: 4)
         }
         .padding(.horizontal)
+    }
+    
+    private var backgroundColor: Color {
+        #if os(iOS)
+        Color(.systemBackground)
+        #else
+        Color(nsColor: .windowBackgroundColor)
+        #endif
     }
 }
 
