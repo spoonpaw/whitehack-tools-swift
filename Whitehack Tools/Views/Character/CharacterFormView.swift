@@ -141,8 +141,7 @@ struct CharacterFormView: View {
                             FormDeftAttunementSection(
                                 characterClass: formData.selectedClass,
                                 level: Int(formData.level) ?? 1,
-                                attunementSlots: $formData.attunementSlots,
-                                hasUsedAttunementToday: $formData.hasUsedAttunementToday
+                                attunementSlots: $formData.attunementSlots
                             )
                             .frame(maxWidth: .infinity)
                         }
@@ -320,8 +319,7 @@ struct CharacterFormView: View {
                             FormDeftAttunementSection(
                                 characterClass: formData.selectedClass,
                                 level: Int(formData.level) ?? 1,
-                                attunementSlots: $formData.attunementSlots,
-                                hasUsedAttunementToday: $formData.hasUsedAttunementToday
+                                attunementSlots: $formData.attunementSlots
                             )
                             .frame(maxWidth: .infinity)
                         }
@@ -447,7 +445,6 @@ struct CharacterFormView: View {
             affiliationGroups: formData.affiliationGroups,
             attributeGroupPairs: formData.attributeGroupPairs,
             attunementSlots: formData.attunementSlots,
-            hasUsedAttunementToday: formData.hasUsedAttunementToday,
             languages: formData.languages,
             notes: formData.notes,
             experience: Int(formData.experience) ?? 0,
@@ -478,7 +475,6 @@ private class FormData: ObservableObject {
     
     // Deft
     @Published var attunementSlots: [AttunementSlot]
-    @Published var hasUsedAttunementToday: Bool
     
     // Attributes
     @Published var useCustomAttributes: Bool
@@ -528,7 +524,6 @@ private class FormData: ObservableObject {
         
         // Deft
         self.attunementSlots = character?.attunementSlots ?? []
-        self.hasUsedAttunementToday = character?.hasUsedAttunementToday ?? false
         
         // Attributes
         self.useCustomAttributes = character?.useCustomAttributes ?? false

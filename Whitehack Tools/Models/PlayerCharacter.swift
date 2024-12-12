@@ -742,9 +742,9 @@ class PlayerCharacter: Identifiable, Codable {
     // Combat Stats
     var currentHP: Int
     var maxHP: Int
-    var _attackValue: Int // Stored property for backward compatibility
+    private var _attackValue: Int // Stored property for backward compatibility
     var movement: Int
-    var _saveValue: Int // Stored property for backward compatibility
+    private var _saveValue: Int // Stored property for backward compatibility
     var saveColor: String
     
     // Computed combat values
@@ -775,7 +775,6 @@ class PlayerCharacter: Identifiable, Codable {
     
     // Deft Class Specific Properties
     var attunementSlots: [AttunementSlot]
-    var hasUsedAttunementToday: Bool
     
     /// Switches the active state between primary and secondary attunements in a slot
     /// - Parameter slotIndex: The index of the slot to switch
@@ -790,7 +789,7 @@ class PlayerCharacter: Identifiable, Codable {
         return true
     }
     
-    /// Get the number of available attunement slots based on character level
+    // Get the number of available attunement slots based on character level
     var availableAttunementSlots: Int {
         let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
         return stats.slots
@@ -967,7 +966,6 @@ class PlayerCharacter: Identifiable, Codable {
                     hasUsedDailyPower: slot.hasUsedDailyPower
                 )
             },
-            hasUsedAttunementToday: hasUsedAttunementToday,
             currentConflictLoot: currentConflictLoot,
             strongCombatOptions: strongCombatOptions,
             wiseMiracleSlots: wiseMiracleSlots.map { slot in
@@ -1211,7 +1209,6 @@ class PlayerCharacter: Identifiable, Codable {
         
         // Class Specific Properties
         try container.encode(attunementSlots, forKey: .attunementSlots)
-        try container.encode(hasUsedAttunementToday, forKey: .hasUsedAttunementToday)
         try container.encode(currentConflictLoot, forKey: .currentConflictLoot)
         try container.encode(strongCombatOptions, forKey: .strongCombatOptions)
         try container.encode(wiseMiracleSlots, forKey: .wiseMiracleSlots)
@@ -1242,7 +1239,7 @@ class PlayerCharacter: Identifiable, Codable {
         case strength, agility, toughness, intelligence, willpower, charisma
         case currentHP, maxHP, _attackValue, movement, _saveValue, saveColor
         case speciesGroup, vocationGroup, affiliationGroups, attributeGroupPairs
-        case attunementSlots, hasUsedAttunementToday
+        case attunementSlots
         case currentConflictLoot, strongCombatOptions
         case wiseMiracleSlots
         case braveQuirkOptions, cleverKnackOptions
@@ -1292,7 +1289,6 @@ class PlayerCharacter: Identifiable, Codable {
         
         // Class Specific Properties
         attunementSlots = try container.decodeIfPresent([AttunementSlot].self, forKey: .attunementSlots) ?? []
-        hasUsedAttunementToday = try container.decodeIfPresent(Bool.self, forKey: .hasUsedAttunementToday) ?? false
         currentConflictLoot = try container.decodeIfPresent(ConflictLoot.self, forKey: .currentConflictLoot)
         strongCombatOptions = try container.decodeIfPresent(StrongCombatOptions.self, forKey: .strongCombatOptions) ?? StrongCombatOptions()
         wiseMiracleSlots = try container.decodeIfPresent([WiseMiracleSlot].self, forKey: .wiseMiracleSlots) ?? []
@@ -1344,7 +1340,6 @@ class PlayerCharacter: Identifiable, Codable {
         affiliationGroups: [String] = [],
         attributeGroupPairs: [AttributeGroupPair] = [],
         attunementSlots: [AttunementSlot] = [],
-        hasUsedAttunementToday: Bool = false,
         currentConflictLoot: ConflictLoot? = nil,
         strongCombatOptions: StrongCombatOptions = StrongCombatOptions(),
         wiseMiracleSlots: [WiseMiracleSlot] = [],
@@ -1389,7 +1384,6 @@ class PlayerCharacter: Identifiable, Codable {
         self.affiliationGroups = affiliationGroups
         self.attributeGroupPairs = attributeGroupPairs
         self.attunementSlots = attunementSlots
-        self.hasUsedAttunementToday = hasUsedAttunementToday
         self.currentConflictLoot = currentConflictLoot
         self.strongCombatOptions = strongCombatOptions
         self.wiseMiracleSlots = wiseMiracleSlots

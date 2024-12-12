@@ -5,7 +5,6 @@ struct FormDeftAttunementSection: View {
     let characterClass: CharacterClass
     let level: Int
     @Binding var attunementSlots: [AttunementSlot]
-    @Binding var hasUsedAttunementToday: Bool
     
     var body: some View {
         if characterClass == .deft {
