@@ -193,11 +193,7 @@ struct CharacterDetailView: View {
             #if os(macOS)
             .background(.white)
             #endif
-            #if os(iOS)
             .navigationTitle("Character Details")
-            #else
-            .navigationTitle(character?.name ?? "Character Details")
-            #endif
             .frame(maxWidth: .infinity)
             .toolbar {
                 #if os(iOS)
