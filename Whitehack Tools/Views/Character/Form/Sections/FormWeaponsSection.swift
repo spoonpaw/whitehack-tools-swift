@@ -1162,8 +1162,7 @@ struct FormWeaponsSection: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Weapons list
+        VStack(spacing: 12) {
             if !weapons.isEmpty {
                 VStack(spacing: 12) {
                     ForEach(weapons) { weapon in

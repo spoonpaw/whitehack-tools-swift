@@ -162,45 +162,45 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         // Weapons Section
-                        HStack(spacing: 8) {
-                            Ph.sword.bold
-                                .frame(width: 20, height: 20)
-                            Text("Weapons")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.sword.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Weapons")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
                         
                         // Armor Section
-                        HStack(spacing: 8) {
-                            Ph.shield.bold
-                                .frame(width: 20, height: 20)
-                            Text("Armor")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.shield.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Armor")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
                         
                         // Equipment Section
-                        HStack(spacing: 8) {
-                            Ph.backpack.bold
-                                .frame(width: 20, height: 20)
-                            Text("Equipment")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.backpack.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Equipment")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
@@ -329,45 +329,45 @@ struct CharacterFormView: View {
                         
                     case .equipment:
                         // Weapons Section
-                        HStack(spacing: 8) {
-                            Ph.sword.bold
-                                .frame(width: 20, height: 20)
-                            Text("Weapons")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.sword.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Weapons")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
                         
                         // Armor Section
-                        HStack(spacing: 8) {
-                            Ph.shield.bold
-                                .frame(width: 20, height: 20)
-                            Text("Armor")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.shield.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Armor")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
                         
                         // Equipment Section
-                        HStack(spacing: 8) {
-                            Ph.backpack.bold
-                                .frame(width: 20, height: 20)
-                            Text("Equipment")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        
-                        VStack(alignment: .leading, spacing: 8) {
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.backpack.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Equipment")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
