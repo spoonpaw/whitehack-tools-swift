@@ -228,6 +228,18 @@ struct FormArmorSection: View {
                     }
                 }
             }
+        } header: {
+            HStack {
+                Spacer()
+                HStack(spacing: 8) {
+                    Ph.shieldStar.bold
+                        .frame(width: 20, height: 20)
+                    Text("Armor")
+                }
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                Spacer()
+            }
         }
     }
 }

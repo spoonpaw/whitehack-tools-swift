@@ -169,26 +169,12 @@ struct CharacterFormView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.shieldStar.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Armor")
-                            }
-                            .font(.headline)
-                            
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
                                 .macOSCardStyle()
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.bagSimple.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Equipment")
-                            }
-                            .font(.headline)
-                            
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
                                 .macOSCardStyle()
@@ -326,25 +312,11 @@ struct CharacterFormView: View {
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.shieldStar.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Armor")
-                            }
-                            .font(.headline)
-                            
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 8) {
-                                Ph.bagSimple.bold
-                                    .frame(width: 20, height: 20)
-                                Text("Equipment")
-                            }
-                            .font(.headline)
-                            
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
                         }
