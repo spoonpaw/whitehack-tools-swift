@@ -109,138 +109,165 @@ struct FormArmorSection: View {
     }
     
     var body: some View {
-        Section {
-            if armor.isEmpty && !isAddingNew {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
+        VStack(spacing: 16) {
+            if armor.isEmpty {
+                VStack(spacing: 8) {
+                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Armor")
-                        .font(.headline)
                         .foregroundColor(.secondary)
                     
-                    Button(action: {
-                        print("📱 Add First Armor tapped")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
+                    Button {
+                        armor.append(Armor(
+                            id: UUID(),
+                            name: "",
+                            df: 0,
+                            weight: 0,
+                            special: "",
+                            quantity: 1,
+                            isEquipped: false,
+                            isStashed: false,
+                            isMagical: false,
+                            isCursed: false,
+                            bonus: 0,
+                            isShield: false
+                        ))
+                    } label: {
                         Label("Add Your First Armor", systemImage: "plus.circle.fill")
                     }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
             } else {
-                ForEach(armor) { armorItem in
-                    Group {
-                        if editingArmorId == armorItem.id {
-                            ArmorEditRow(armor: armorItem) { updatedArmor in
-                                logArmorEdit(original: armorItem, updated: updatedArmor)
-                                if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
+                // Armor list
+                VStack(spacing: 12) {
+                    ForEach(armor) { armorItem in
+                        Group {
+                            if editingArmorId == armorItem.id {
+                                ArmorEditRow(armor: armorItem) { updatedArmor in
+                                    logArmorEdit(original: armorItem, updated: updatedArmor)
+                                    if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
+                                        withAnimation {
+                                            armor[index] = updatedArmor
+                                            editingArmorId = nil
+                                            print("🛡️ [FormArmorSection] Updated armor at index \(index)")
+                                        }
+                                    }
+                                } onCancel: {
+                                    print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
                                     withAnimation {
-                                        armor[index] = updatedArmor
                                         editingArmorId = nil
-                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
                                     }
                                 }
-                            } onCancel: {
-                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
-                                withAnimation {
-                                    editingArmorId = nil
-                                }
+                                .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
+                            } else {
+                                ArmorRow(armor: armorItem,
+                                    onEdit: {
+                                        print("✏️ Starting edit for armor: \(armorItem.name)")
+                                        editingArmorId = armorItem.id
+                                    },
+                                    onDelete: {
+                                        armor.removeAll(where: { $0.id == armorItem.id })
+                                    }
+                                )
                             }
-                            .id("\(armorItem.id)-\(editingArmorId != nil)")  // Force view recreation when editing starts/stops
-                        } else {
-                            ArmorRow(armor: armorItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for armor: \(armorItem.name)")
-                                    editingArmorId = armorItem.id
-                                },
-                                onDelete: {
-                                    armor.removeAll(where: { $0.id == armorItem.id })
-                                }
-                            )
                         }
                     }
                 }
+                .padding()
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
                 
-                if isAddingNew {
-                    if let editingArmor = editingNewArmor {
-                        ArmorEditRow(armor: editingArmor) { newArmor in
-                            logNewArmorCreation(newArmor)
-                            withAnimation {
-                                armor.append(newArmor)
-                                isAddingNew = false
-                                print("🛡️ [FormArmorSection] Added to armor array, total count: \(armor.count)")
-                            }
-                        } onCancel: {
-                            print("🛡️ [FormArmorSection] Add armor cancelled")
-                            withAnimation {
-                                isAddingNew = false
-                            }
-                        }
-                    } else {
-                        VStack(spacing: 12) {
-                            Text("Select Armor Type")
-                                .font(.headline)
-                            
-                            Picker("Select Armor", selection: $selectedArmorName) {
-                                Text("Select an Armor").tag(nil as String?)
-                                ForEach(ArmorData.armors.map { $0.name }.sorted(), id: \.self) { name in
-                                    Text(name).tag(name as String?)
-                                }
-                                Text("Custom Armor").tag("custom" as String?)
-                            }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                            .onChange(of: selectedArmorName) { newValue in
-                                if let armorName = newValue {
-                                    createArmorFromSelection(armorName)
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    print("❌ Cancel button tapped")
-                                    withAnimation {
-                                        isAddingNew = false
-                                    }
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }
-                        .padding(.vertical, 8)
-                    }
-                }
-                
-                if !isAddingNew {
-                    Button(action: {
-                        print("🔄 Adding new armor")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Another Armor", systemImage: "plus.circle.fill")
-                    }
+                // Add armor button (only shown when there's existing armor)
+                Button {
+                    armor.append(Armor(
+                        id: UUID(),
+                        name: "",
+                        df: 0,
+                        weight: 0,
+                        special: "",
+                        quantity: 1,
+                        isEquipped: false,
+                        isStashed: false,
+                        isMagical: false,
+                        isCursed: false,
+                        bonus: 0,
+                        isShield: false
+                    ))
+                } label: {
+                    Label("Add Another Armor", systemImage: "plus.circle.fill")
                 }
             }
-        } header: {
-            HStack {
-                Spacer()
-                HStack(spacing: 8) {
-                    Ph.shieldStar.bold
-                        .frame(width: 20, height: 20)
-                    Text("Armor")
+            
+            if isAddingNew {
+                if let editingArmor = editingNewArmor {
+                    ArmorEditRow(armor: editingArmor) { newArmor in
+                        logNewArmorCreation(newArmor)
+                        withAnimation {
+                            armor.append(newArmor)
+                            isAddingNew = false
+                            print("🛡️ [FormArmorSection] Added to armor array, total count: \(armor.count)")
+                        }
+                    } onCancel: {
+                        print("🛡️ [FormArmorSection] Add armor cancelled")
+                        withAnimation {
+                            isAddingNew = false
+                        }
+                    }
+                } else {
+                    VStack(spacing: 12) {
+                        Text("Select Armor Type")
+                            .font(.headline)
+                        
+                        Picker("Select Armor", selection: $selectedArmorName) {
+                            Text("Select an Armor").tag(nil as String?)
+                            ForEach(ArmorData.armors.map { $0.name }.sorted(), id: \.self) { name in
+                                Text(name).tag(name as String?)
+                            }
+                            Text("Custom Armor").tag("custom" as String?)
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .onChange(of: selectedArmorName) { newValue in
+                            if let armorName = newValue {
+                                createArmorFromSelection(armorName)
+                            }
+                        }
+                        
+                        HStack {
+                            Spacer()
+                            Button(action: {
+                                print("❌ Cancel button tapped")
+                                withAnimation {
+                                    isAddingNew = false
+                                }
+                            }) {
+                                Text("Cancel")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 8)
                 }
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                Spacer()
             }
         }
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(.systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
     }
 }
 
@@ -736,7 +763,7 @@ struct ArmorEditRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(Color(.secondarySystemBackground))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif
@@ -922,7 +949,7 @@ struct ArmorRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(Color(.secondarySystemBackground))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif

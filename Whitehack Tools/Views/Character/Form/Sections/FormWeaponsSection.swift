@@ -205,7 +205,7 @@ struct WeaponRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(Color(.secondarySystemBackground))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif
@@ -466,8 +466,6 @@ struct WeaponEditRow: View {
                         }
                     ))
                 }
-            } header: {
-                Text("Status")
             }
             
             // Magical Properties Section
@@ -483,8 +481,6 @@ struct WeaponEditRow: View {
                     IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
                     Toggle("Cursed", isOn: $isCursed)
                 }
-            } header: {
-                Text("Magical Properties")
             }
             
             // Bonus/Penalty Section
@@ -525,8 +521,6 @@ struct WeaponEditRow: View {
                     ), in: 0...Int.max)  // Add range constraint
                     .labelsHidden()
                 }
-            } header: {
-                Text("Bonus/Penalty")
             }
             
             // Save/Cancel Buttons
@@ -592,7 +586,7 @@ struct WeaponEditRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(Color(.secondarySystemBackground))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif
@@ -707,10 +701,6 @@ struct CustomWeaponForm: View {
                             }
                         }
                     }
-                } header: {
-                    if !weapons.isEmpty {
-                        Text("Existing Weapons")
-                    }
                 }
                 
                 Section {
@@ -755,8 +745,6 @@ struct CustomWeaponForm: View {
                             .font(.caption)
                         TextField("e.g., Close, Near, Far", text: $range)
                     }
-                } header: {
-                    Text("Combat Stats")
                 }
                 
                 Section {
@@ -798,8 +786,6 @@ struct CustomWeaponForm: View {
                             .labelsHidden()
                         }
                     }
-                } header: {
-                    Text("Magical Properties")
                 }
                 
                 Section {
@@ -819,8 +805,6 @@ struct CustomWeaponForm: View {
                             .font(.caption)
                         Toggle(isStashed ? "Stashed" : "On Person", isOn: .constant(false))
                     }
-                } header: {
-                    Text("Status")
                 }
                 
                 Section {
@@ -831,8 +815,6 @@ struct CustomWeaponForm: View {
                             .font(.caption)
                         TextField("Special Properties", text: $special)
                     }
-                } header: {
-                    Text("Special")
                 }
             }
             .navigationTitle(editingWeapon == nil ? "Add Weapon" : "Edit Weapon")
@@ -982,8 +964,6 @@ struct WeaponPickerView: View {
                             WeaponDataRow(weaponData: weaponData)
                         }
                     }
-                } header: {
-                    Text("Standard Weapons")
                 }
             }
             .navigationTitle("Add Weapon")
@@ -1185,141 +1165,72 @@ struct FormWeaponsSection: View {
     }
     
     var body: some View {
-        Section {
-            if weapons.isEmpty && !isAddingNew {
-                VStack(spacing: 12) {
-                    Image(systemName: "shield.slash")
-                        .font(.system(size: 40))
-                        .foregroundColor(.secondary)
-                    
+        VStack(spacing: 16) {
+            if weapons.isEmpty {
+                VStack(spacing: 8) {
+                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Weapons")
-                        .font(.headline)
                         .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        print("📱 Add First Weapon tapped")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Your First Weapon", systemImage: "plus.circle.fill")
-                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
             } else {
-                ForEach(weapons) { weapon in
-                    if editingWeaponId == weapon.id {
+                // Weapons list
+                VStack(spacing: 12) {
+                    ForEach(weapons) { weapon in
                         Group {
-                            WeaponEditRow(weapon: weapon, onSave: { updatedWeapon in
-                                print("💾 Saving updated weapon: \(updatedWeapon.name)")
-                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                    print("🔄 Updating weapon at index: \(index)")
-                                    weapons[index] = updatedWeapon
-                                }
-                                editingWeaponId = nil
-                            }, onCancel: {
-                                print("❌ Canceling weapon edit - reverting to original state")
-                                editingWeaponId = nil
-                            })
-                            .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
-                        }
-                    } else {
-                        WeaponRow(weapon: weapon, onEdit: {
-                            editingWeaponId = weapon.id
-                        }, onDelete: {
-                            withAnimation {
-                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                    print("🔄 Removing weapon at index: \(index)")
-                                    weapons.remove(at: index)
-                                }
-                            }
-                        })
-                        .buttonStyle(PlainButtonStyle())  // Prevent button-like behavior
-                    }
-                }
-                .onDelete(perform: nil)
-                
-                if isAddingNew {
-                    if let weapon = editingNewWeapon {
-                        WeaponEditRow(weapon: weapon, onSave: { newWeapon in
-                            print("🟢 [FormWeaponsSection] Save action received for: \(newWeapon.name)")
-                            weapons.append(newWeapon)
-                            print("✅ [FormWeaponsSection] Weapon added to array")
-                            withAnimation {
-                                print("🔄 [FormWeaponsSection] Resetting form state after save")
-                                isAddingNew = false
-                            }
-                        }, onCancel: {
-                            print("🔴 [FormWeaponsSection] Cancel action received")
-                            withAnimation {
-                                print("🔄 [FormWeaponsSection] Resetting form state after cancel")
-                                selectedWeaponName = nil
-                                editingNewWeapon = nil
-                                isAddingNew = false
-                            }
-                        })
-                        .id("\(weapon.id)-\(editingWeaponId != nil)")  // Force view recreation when editing starts/stops
-                    } else {
-                        VStack(spacing: 12) {
-                            Text("Select Weapon Type")
-                                .font(.headline)
-                            
-                            Picker("Select Weapon", selection: $selectedWeaponName) {
-                                Text("Select a Weapon").tag(nil as String?)
-                                ForEach(WeaponData.weapons.map { $0["name"] ?? "" }.sorted(), id: \.self) { name in
-                                    Text(name).tag(name as String?)
-                                }
-                                Text("Custom Weapon").tag("custom" as String?)
-                            }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                            .onChange(of: selectedWeaponName) { newValue in
-                                if let weaponName = newValue {
-                                    createWeaponFromSelection(weaponName)
-                                }
-                            }
-                            
-                            HStack {
-                                Spacer()
-                                Button(action: {
-                                    print("❌ Cancel button tapped")
-                                    withAnimation {
-                                        isAddingNew = false
+                            if editingWeaponId == weapon.id {
+                                WeaponEditRow(weapon: weapon) { updatedWeapon in
+                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                        weapons[index] = updatedWeapon
                                     }
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
+                                    editingWeaponId = nil
+                                } onCancel: {
+                                    editingWeaponId = nil
                                 }
+                                .id("\(weapon.id)-\(editingWeaponId != nil)")
+                            } else {
+                                WeaponRow(weapon: weapon,
+                                    onEdit: {
+                                        editingWeaponId = weapon.id
+                                    },
+                                    onDelete: {
+                                        weapons.removeAll(where: { $0.id == weapon.id })
+                                    }
+                                )
                             }
                         }
-                        .padding(.vertical, 8)
                     }
                 }
-                
-                if !isAddingNew {
-                    Button(action: {
-                        print("🔄 Adding new weapon")
-                        withAnimation {
-                            isAddingNew = true
-                        }
-                    }) {
-                        Label("Add Another Weapon", systemImage: "plus.circle.fill")
-                    }
-                }
+                .padding()
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
             }
-        } header: {
-            HStack {
-                Spacer()
-                HStack(spacing: 8) {
-                    Ph.sword.bold
-                        .frame(width: 20, height: 20)
-                    Text("Weapons")
-                }
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                Spacer()
+            
+            // Add weapon button
+            Button {
+                weapons.append(Weapon())
+            } label: {
+                Label("Add another weapon", systemImage: "plus.circle.fill")
             }
         }
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(.systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
     }
 }

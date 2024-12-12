@@ -73,7 +73,7 @@ public struct FormEquipmentSection: View {
     }
     
     public var body: some View {
-        Section {
+        VStack(spacing: 16) {
             if gear.isEmpty && !isAddingNew {
                 VStack(spacing: 12) {
                     Image(systemName: "bag.badge.minus")
@@ -96,34 +96,42 @@ public struct FormEquipmentSection: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
             } else {
-                ForEach(gear) { gearItem in
-                    Group {
-                        if editingGearId == gearItem.id {
-                            GearEditRow(gear: gearItem) { updatedGear in
-                                print("💾 Saving updated gear: \(updatedGear.name)")
-                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                    print("🔄 Updating gear at index: \(index)")
-                                    gear[index] = updatedGear
+                // Equipment list
+                VStack(spacing: 12) {
+                    ForEach(gear) { gearItem in
+                        Group {
+                            if editingGearId == gearItem.id {
+                                GearEditRow(gear: gearItem) { updatedGear in
+                                    print("💾 Saving updated gear: \(updatedGear.name)")
+                                    if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                        print("🔄 Updating gear at index: \(index)")
+                                        gear[index] = updatedGear
+                                    }
+                                    editingGearId = nil
+                                } onCancel: {
+                                    print("❌ Canceling gear edit - reverting to original state")
+                                    editingGearId = nil
                                 }
-                                editingGearId = nil
-                            } onCancel: {
-                                print("❌ Canceling gear edit - reverting to original state")
-                                editingGearId = nil
+                                .id("\(gearItem.id)-\(editingGearId != nil)")
+                            } else {
+                                GearRow(gear: gearItem,
+                                    onEdit: {
+                                        print("✏️ Starting edit for gear: \(gearItem.name)")
+                                        editingGearId = gearItem.id
+                                    },
+                                    onDelete: {
+                                        gear.removeAll(where: { $0.id == gearItem.id })
+                                    }
+                                )
                             }
-                            .id("\(gearItem.id)-\(editingGearId != nil)")
-                        } else {
-                            GearRow(gear: gearItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for gear: \(gearItem.name)")
-                                    editingGearId = gearItem.id
-                                },
-                                onDelete: {
-                                    gear.removeAll(where: { $0.id == gearItem.id })
-                                }
-                            )
                         }
                     }
                 }
+                .padding()
+                #if os(macOS)
+                .background(Color(nsColor: .windowBackgroundColor))
+                .cornerRadius(12)
+                #endif
                 
                 if isAddingNew {
                     if let editingGear = editingNewGear {
@@ -192,18 +200,6 @@ public struct FormEquipmentSection: View {
                         Label("Add Another Item", systemImage: "plus.circle.fill")
                     }
                 }
-            }
-        } header: {
-            HStack {
-                Spacer()
-                HStack(spacing: 8) {
-                    Ph.bagSimple.bold
-                        .frame(width: 20, height: 20)
-                    Text("Equipment")
-                }
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                Spacer()
             }
         }
     }
@@ -577,7 +573,18 @@ public struct FormEquipmentSection: View {
     }
 }
 
-// MARK: - Weight Display Helper
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            #if os(iOS)
+            .background(Color(.systemBackground))
+            #else
+            .background(Color(nsColor: .windowBackgroundColor))
+            #endif
+            .cornerRadius(12)
+    }
+}
+
 extension FormEquipmentSection {
     public static func getWeightDisplayText(_ weight: String) -> String {
         switch weight {

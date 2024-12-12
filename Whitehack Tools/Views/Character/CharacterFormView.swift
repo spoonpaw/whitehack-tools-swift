@@ -162,22 +162,43 @@ struct CharacterFormView: View {
                         .frame(maxWidth: .infinity)
                         
                     case .equipment:
+                        // Weapons Section
+                        HStack {
+                            IconFrame(icon: Ph.sword.bold, color: .blue)
+                            Text("Weapons")
+                                .font(.headline)
+                        }
+                        
                         VStack(alignment: .leading, spacing: 8) {
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
-                                .macOSCardStyle()
+                                .groupCardStyle()
+                        }
+                        
+                        // Armor Section
+                        HStack {
+                            IconFrame(icon: Ph.shield.bold, color: .blue)
+                            Text("Armor")
+                                .font(.headline)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
-                                .macOSCardStyle()
+                                .groupCardStyle()
+                        }
+                        
+                        // Equipment Section
+                        HStack {
+                            IconFrame(icon: Ph.backpack.bold, color: .blue)
+                            Text("Equipment")
+                                .font(.headline)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
-                                .macOSCardStyle()
+                                .groupCardStyle()
                         }
                     }
                 }
@@ -306,19 +327,43 @@ struct CharacterFormView: View {
                         .frame(maxWidth: .infinity)
                         
                     case .equipment:
+                        // Weapons Section
+                        HStack {
+                            IconFrame(icon: Ph.sword.bold, color: .blue)
+                            Text("Weapons")
+                                .font(.headline)
+                        }
+                        
                         VStack(alignment: .leading, spacing: 8) {
                             FormWeaponsSection(weapons: $formData.weapons)
                                 .frame(maxWidth: .infinity)
+                                .groupCardStyle()
+                        }
+                        
+                        // Armor Section
+                        HStack {
+                            IconFrame(icon: Ph.shield.bold, color: .blue)
+                            Text("Armor")
+                                .font(.headline)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormArmorSection(armor: $formData.armor)
                                 .frame(maxWidth: .infinity)
+                                .groupCardStyle()
+                        }
+                        
+                        // Equipment Section
+                        HStack {
+                            IconFrame(icon: Ph.backpack.bold, color: .blue)
+                            Text("Equipment")
+                                .font(.headline)
                         }
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormEquipmentSection(gear: $formData.gear)
                                 .frame(maxWidth: .infinity)
+                                .groupCardStyle()
                         }
                     }
                 }
@@ -482,16 +527,16 @@ private class FormData: ObservableObject {
 
 private extension View {
     @ViewBuilder
-    func macOSCardStyle() -> some View {
-        #if os(macOS)
+    func groupCardStyle() -> some View {
         self
             .padding()
+            #if os(iOS)
+            .background(Color(.secondarySystemBackground))
+            #else
             .background(Color(nsColor: .windowBackgroundColor))
+            #endif
             .cornerRadius(12)
             .shadow(radius: 2)
-        #else
-        self
-        #endif
     }
 }
 
