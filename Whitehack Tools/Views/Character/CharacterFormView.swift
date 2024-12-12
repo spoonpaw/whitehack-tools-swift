@@ -177,11 +177,13 @@ struct CharacterFormView: View {
                         }
                         
                         // Armor Section
-                        HStack {
-                            IconFrame(icon: Ph.shield.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.shield.bold
+                                .frame(width: 20, height: 20)
                             Text("Armor")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormArmorSection(armor: $formData.armor)
@@ -340,11 +342,13 @@ struct CharacterFormView: View {
                         }
                         
                         // Armor Section
-                        HStack {
-                            IconFrame(icon: Ph.shield.bold, color: .blue)
+                        HStack(spacing: 8) {
+                            Ph.shield.bold
+                                .frame(width: 20, height: 20)
                             Text("Armor")
                                 .font(.headline)
                         }
+                        .frame(maxWidth: .infinity)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             FormArmorSection(armor: $formData.armor)
