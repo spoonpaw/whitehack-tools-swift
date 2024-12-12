@@ -52,11 +52,10 @@ private struct WeaponDetailRow: View {
         VStack(alignment: .leading, spacing: 8) {
             // Name and Quantity
             HStack {
-                Label {
+                HStack(spacing: 4) {
+                    IconFrame(icon: Ph.sword.bold, color: .blue)
                     Text(weapon.name)
                         .font(.title3)
-                } icon: {
-                    IconFrame(icon: Ph.sword.bold, color: .blue)
                 }
                 
                 Spacer()
@@ -69,140 +68,114 @@ private struct WeaponDetailRow: View {
             // Status Section
             HStack {
                 // Equipped Status
-                Label {
-                    Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                        .foregroundColor(weapon.isEquipped ? .green : .secondary)
-                } icon: {
+                HStack(spacing: 4) {
                     IconFrame(icon: weapon.isEquipped ? Ph.shieldCheckered.bold : Ph.shield.bold,
                             color: weapon.isEquipped ? .green : .gray)
+                    Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                        .foregroundColor(weapon.isEquipped ? .green : .secondary)
                 }
                 
                 Spacer()
                 
                 // Location Status
-                Label {
-                    Text(weapon.isStashed ? "Stashed" : "On Person")
-                        .foregroundColor(weapon.isStashed ? .orange : .secondary)
-                } icon: {
+                HStack(spacing: 4) {
                     IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
                             color: weapon.isStashed ? .orange : .gray)
+                    Text(weapon.isStashed ? "Stashed" : "On Person")
+                        .foregroundColor(weapon.isStashed ? .orange : .secondary)
                 }
             }
             .font(.callout)
             
             // Weight and Slots
-            HStack {
+            HStack(spacing: 4) {
+                IconFrame(icon: Ph.scales.bold, color: .blue)
                 Text("Weight:")
                     .foregroundColor(.secondary)
                     .font(.callout)
-                Label {
-                    Text(getWeightDisplayText(weapon.weight))
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-                .foregroundColor(.secondary)
-                .font(.callout)
+                Text(getWeightDisplayText(weapon.weight))
+                    .foregroundColor(.secondary)
+                    .font(.callout)
             }
             
             // Combat Stats
             VStack(alignment: .leading, spacing: 4) {
                 // Magical Status
                 if weapon.isMagical {
-                    HStack {
+                    HStack(spacing: 4) {
+                        IconFrame(icon: Ph.sparkle.bold, color: .purple)
                         Text("Status:")
                             .foregroundColor(.secondary)
-                        Label {
-                            Text("Magical")
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                        }
-                        .foregroundStyle(.purple)
+                        Text("Magical")
+                            .font(.subheadline)
+                            .foregroundStyle(.purple)
                     }
                 }
                 
                 // Cursed Status
                 if weapon.isCursed {
-                    HStack {
+                    HStack(spacing: 4) {
+                        IconFrame(icon: Ph.skull.bold, color: .red)
                         Text("Status:")
                             .foregroundColor(.secondary)
-                        Label {
-                            Text("Cursed")
-                                .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.skull.bold, color: .red)
-                        }
-                        .foregroundStyle(.red)
+                        Text("Cursed")
+                            .font(.subheadline)
+                            .foregroundStyle(.red)
                     }
                 }
                 
                 // Bonus/Penalty
                 if weapon.bonus != 0 {
-                    HStack {
+                    HStack(spacing: 4) {
+                        IconFrame(icon: Ph.plusMinus.bold, color: .purple)
                         Text("Modifier:")
                             .foregroundColor(.secondary)
-                        Label {
-                            HStack(spacing: 4) {
-                                Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
-                                Text("\(abs(weapon.bonus))")
-                            }
-                            .font(.subheadline)
-                        } icon: {
-                            IconFrame(icon: Ph.plusMinus.bold, color: .purple)
+                        HStack(spacing: 4) {
+                            Text(weapon.bonus >= 0 ? "Bonus" : "Penalty")
+                            Text("\(abs(weapon.bonus))")
                         }
+                        .font(.subheadline)
                         .foregroundStyle(.purple)
                     }
                 }
                 
-                HStack {
+                HStack(spacing: 4) {
+                    IconFrame(icon: Ph.target.bold, color: .red)
                     Text("Damage:")
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(weapon.damage)
-                    } icon: {
-                        IconFrame(icon: Ph.target.bold, color: .red)
-                    }
-                    .foregroundStyle(.red)
+                    Text(weapon.damage)
+                        .foregroundStyle(.red)
                 }
                 
-                HStack {
+                HStack(spacing: 4) {
+                    IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
                     Text("Range:")
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(weapon.range)
-                    } icon: {
-                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: .purple)
-                    }
-                    .foregroundStyle(.purple)
+                    Text(weapon.range)
+                        .foregroundStyle(.purple)
                 }
                 
-                HStack {
+                HStack(spacing: 4) {
+                    IconFrame(icon: Ph.timer.bold, color: .green)
                     Text("Rate of Fire:")
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(weapon.rateOfFire)
-                    } icon: {
-                        IconFrame(icon: Ph.timer.bold, color: .green)
-                    }
-                    .foregroundStyle(.green)
+                    Text(weapon.rateOfFire)
+                        .foregroundStyle(.green)
                 }
             }
             .font(.subheadline)
             
             // Special Properties
             if !weapon.special.isEmpty {
-                HStack {
+                HStack(spacing: 4) {
+                    IconFrame(icon: Ph.star.bold, color: .purple)
                     Text("Special:")
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(weapon.special)
-                            .italic()
-                    } icon: {
-                        IconFrame(icon: Ph.star.bold, color: .purple)
-                    }
+                    Text(weapon.special)
+                        .italic()
+                        .foregroundStyle(.purple)
                 }
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.subheadline)
             }
         }
         .padding()
