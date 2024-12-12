@@ -30,7 +30,6 @@ struct DetailWeaponsSection: View {
                 } else {
                     ForEach(weapons) { weapon in
                         WeaponDetailRow(weapon: weapon)
-                            .padding()
                             .background(Color.white)
                             .cornerRadius(8)
                             .shadow(radius: 2)
