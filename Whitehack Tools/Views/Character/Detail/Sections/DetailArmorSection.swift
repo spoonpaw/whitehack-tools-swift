@@ -6,8 +6,9 @@ struct DetailArmorSection: View {
     let totalDefenseValue: Int
     
     private var armorDefenseValue: Int {
+        // Each armor piece contributes its defense value once, regardless of quantity
         armor.reduce(into: 0) { total, armor in
-            total += armor.df
+            total += armor.df // Not multiplying by quantity
         }
     }
     
@@ -57,12 +58,18 @@ private struct ArmorDetailRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Name and Defense Value
+            // Name, Quantity and Defense Value
             HStack {
                 HStack(spacing: 4) {
                     IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                     Text(armor.name)
                         .font(.title3)
+                }
+                
+                if armor.quantity > 1 {
+                    Text("×\(armor.quantity)")
+                        .foregroundColor(.secondary)
+                        .font(.callout)
                 }
                 
                 Spacer()
