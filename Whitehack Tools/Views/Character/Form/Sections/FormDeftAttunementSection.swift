@@ -8,12 +8,12 @@ struct FormDeftAttunementSection: View {
     
     var body: some View {
         if characterClass == .deft {
-            VStack(spacing: 0) {
+            VStack(spacing: 16) {
                 // Header
                 SectionHeader(title: "The Deft", icon: Ph.detective.bold)
                 
                 // Content
-                VStack(spacing: 16) {
+                VStack(spacing: 24) {
                     ForEach(0..<level, id: \.self) { index in
                         if index < attunementSlots.count {
                             AttunementSlotView(
@@ -23,6 +23,7 @@ struct FormDeftAttunementSection: View {
                         }
                     }
                 }
+                .padding(.horizontal)
             }
             .task {
                 initializeSlotsIfNeeded()
@@ -49,7 +50,7 @@ private struct AttunementSlotView: View {
     @Binding var attunementSlots: [AttunementSlot]
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 16) {
             PrimaryAttunementView(index: index, attunementSlots: $attunementSlots)
             SecondaryAttunementView(index: index, attunementSlots: $attunementSlots)
             TertiaryAttunementView(index: index, attunementSlots: $attunementSlots)
