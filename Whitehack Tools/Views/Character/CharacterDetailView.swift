@@ -36,8 +36,9 @@ public struct TabPicker: View {
                 }
             }
             .frame(width: geometry.size.width, alignment: .center)
+            .padding(.vertical, 8)
         }
-        .frame(height: 60)
+        .frame(height: 76)
     }
 }
 
@@ -55,20 +56,19 @@ public struct TabButton: View {
                     .font(.footnote)
                     .foregroundColor(isSelected ? .primary : .secondary)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 6)
             .padding(.horizontal, 12)
-            #if os(iOS)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : .clear)
-            )
-            #else
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : .clear)
-            )
-            #endif
             .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    #if os(iOS)
+                    .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : Color(uiColor: .systemBackground))
+                    #else
+                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : Color(nsColor: .windowBackgroundColor))
+                    #endif
+            )
+            .contentShape(Rectangle())
+            .padding(4)
         }
         .buttonStyle(.plain)
     }

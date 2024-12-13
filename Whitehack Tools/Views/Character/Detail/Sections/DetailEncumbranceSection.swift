@@ -168,6 +168,24 @@ struct DetailEncumbranceSection: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         
+                        Divider()
+                        
+                        // Max Slots
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Max Slots")
+                                .font(.system(.subheadline))
+                                .foregroundColor(.secondary)
+                            Text(String(format: "%.0f", maxSlots))
+                                .font(.system(.title2, design: .rounded).weight(.medium))
+                                .foregroundColor(.primary)
+                            Text(character.gear.contains(where: { $0.isContainer && $0.isEquipped }) ? 
+                                "15 slots with equipped container" : 
+                                "10 slots without container")
+                                .font(.system(.caption))
+                                .foregroundColor(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
                         if excessSlots > 0 {
                             Divider()
                             
