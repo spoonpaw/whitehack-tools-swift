@@ -5,7 +5,9 @@ struct DetailAdditionalInfoSection: View {
     let character: PlayerCharacter
     
     var body: some View {
-        Section(header: SectionHeader(title: "Additional Information", icon: Ph.info.bold)) {
+        VStack(alignment: .leading, spacing: 16) {
+            SectionHeader(title: "Additional Information", icon: Ph.info.bold)
+            
             VStack(spacing: 8) {
                 HStack(spacing: 16) {
                     StatCard(label: "Experience", value: "\(character.experience) XP", icon: Ph.star.bold)
@@ -37,8 +39,8 @@ struct DetailAdditionalInfoSection: View {
                     }
                 }
             }
-            .padding(.vertical, 8)
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
