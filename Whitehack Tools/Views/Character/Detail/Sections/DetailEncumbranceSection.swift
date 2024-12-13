@@ -130,7 +130,9 @@ struct DetailEncumbranceSection: View {
     }
     
     var body: some View {
-        Section(header: SectionHeader(title: "Encumbrance", icon: Ph.barbell.bold)) {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Encumbrance", icon: Ph.barbell.bold)
+            
             VStack(spacing: 16) {
                 // Slots Overview
                 VStack(alignment: .leading, spacing: 12) {
@@ -187,13 +189,9 @@ struct DetailEncumbranceSection: View {
                         }
                     }
                 }
-                .padding(12)
-                #if os(iOS)
-                .background(Color(uiColor: .secondarySystemBackground))
-                #else
-                .background(Color(nsColor: .controlBackgroundColor))
-                #endif
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .padding()
+                .background(.white)
+                .cornerRadius(8)
                 
                 // Current Burden Status
                 VStack(alignment: .leading, spacing: 12) {
@@ -216,9 +214,9 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
+                .padding()
                 .background(burdenLevel.color.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .cornerRadius(8)
                 
                 // Movement Rates
                 VStack(alignment: .leading, spacing: 12) {
@@ -270,13 +268,9 @@ struct DetailEncumbranceSection: View {
                         }
                     }
                 }
-                .padding(12)
-                #if os(iOS)
-                .background(Color(uiColor: .secondarySystemBackground))
-                #else
-                .background(Color(nsColor: .controlBackgroundColor))
-                #endif
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .padding()
+                .background(.white)
+                .cornerRadius(8)
                 
                 // Movement Options
                 VStack(alignment: .leading, spacing: 12) {
@@ -339,13 +333,9 @@ struct DetailEncumbranceSection: View {
                         .font(.system(.subheadline))
                     }
                 }
-                .padding(12)
-                #if os(iOS)
-                .background(Color(uiColor: .secondarySystemBackground))
-                #else
-                .background(Color(nsColor: .controlBackgroundColor))
-                #endif
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .padding()
+                .background(.white)
+                .cornerRadius(8)
                 
                 // Burden Status
                 if excessSlots > 0 {
@@ -385,17 +375,18 @@ struct DetailEncumbranceSection: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .padding(12)
-                    #if os(iOS)
-                    .background(Color(uiColor: .secondarySystemBackground))
-                    #else
-                    .background(Color(nsColor: .controlBackgroundColor))
-                    #endif
-                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(8)
                 }
             }
-            .padding(.vertical, 8)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
+            .shadow(radius: 4)
         }
+        .padding(.horizontal)
     }
     
     private var tableHeaderRow: some View {
