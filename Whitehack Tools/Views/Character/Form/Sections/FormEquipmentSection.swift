@@ -69,6 +69,9 @@ public struct FormEquipmentSection: View {
             withAnimation {
                 // For non-custom items, add them directly to the gear array
                 gear.append(newGear)
+                // Reset the adding state
+                isAddingNew = false
+                selectedGearName = nil
             }
         }
     }
@@ -146,7 +149,7 @@ public struct FormEquipmentSection: View {
                 #endif
             }
             
-            if isAddingNew {
+            if isAddingNew && editingNewGear == nil {
                 VStack {
                     Menu {
                         ForEach(GearData.gear, id: \.name) { gearItem in
