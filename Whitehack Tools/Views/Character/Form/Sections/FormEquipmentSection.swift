@@ -76,6 +76,16 @@ public struct FormEquipmentSection: View {
         }
     }
     
+    public static func getWeightDisplayText(_ weight: String) -> String {
+        switch weight {
+        case "No size": return "No size (100/slot)"
+        case "Minor": return "Minor (2/slot)"
+        case "Regular": return "Regular (1 slot)"
+        case "Heavy": return "Heavy (2 slots)"
+        default: return weight
+        }
+    }
+    
     public var body: some View {
         VStack(spacing: 16) {
             // Equipment list
@@ -233,7 +243,7 @@ struct GearRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(gear.weight)
+                        Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
                     } icon: {
                         IconFrame(icon: Ph.scales.bold, color: .blue)
                     }
@@ -403,8 +413,18 @@ struct GearEditRow: View {
                 Text("Weight")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Weight", text: $weight)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    Picker("", selection: $weight) {
+                        Text("No size (100/slot)").tag("No size")
+                        Text("Minor (2/slot)").tag("Minor")
+                        Text("Regular (1 slot)").tag("Regular")
+                        Text("Heavy (2 slots)").tag("Heavy")
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
             }
             
             // Quantity Section
@@ -550,18 +570,5 @@ private extension View {
             .background(Color(nsColor: .windowBackgroundColor))
             #endif
             .cornerRadius(12)
-    }
-}
-
-extension FormEquipmentSection {
-    public static func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
-        case "No size": return "No size (100/slot)"
-        case "Light": return "Light (10/slot)"
-        case "Medium": return "Medium (5/slot)"
-        case "Heavy": return "Heavy (2/slot)"
-        case "Very Heavy": return "Very Heavy (1/slot)"
-        default: return weight
-        }
     }
 }

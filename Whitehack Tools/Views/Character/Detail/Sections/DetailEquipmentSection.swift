@@ -29,10 +29,6 @@ struct DetailEquipmentSection: View {
                 } else {
                     ForEach(character.gear) { gearItem in
                         GearDetailRow(gear: gearItem)
-                            .padding()
-                            .background(backgroundColor)
-                            .cornerRadius(12)
-                            .shadow(radius: 2)
                     }
                 }
             }
@@ -177,9 +173,9 @@ private struct GearDetailRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .systemBackground))
+        .background(Color(.systemBackground))
         #else
-        .background(Color(nsColor: .windowBackgroundColor))
+        .background(Color(nsColor: .controlBackgroundColor))
         #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .shadow(radius: 2)
