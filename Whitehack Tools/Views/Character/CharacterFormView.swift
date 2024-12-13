@@ -77,10 +77,16 @@ struct CharacterFormView: View {
         VStack(spacing: 0) {
             FormTabPicker(selection: $selectedTab)
                 .padding(.horizontal)
+                .background(.background)
+                .overlay(
+                    Divider()
+                        .opacity(0.5), 
+                    alignment: .bottom
+                )
             
             ScrollView {
                 ScrollViewReader { proxy in
-                    VStack(spacing: 20) {
+                    LazyVStack(spacing: 20) {
                         Color.clear
                             .frame(height: 0)
                             .id("scroll-to-top")
@@ -241,7 +247,7 @@ struct CharacterFormView: View {
                         }
                     }
                     .onChange(of: selectedTab) { _ in
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.2)) {
                             proxy.scrollTo("scroll-to-top", anchor: .top)
                         }
                     }
@@ -283,10 +289,16 @@ struct CharacterFormView: View {
         VStack(spacing: 0) {
             FormTabPicker(selection: $selectedTab)
                 .padding(.horizontal)
+                .background(.background)
+                .overlay(
+                    Divider()
+                        .opacity(0.5), 
+                    alignment: .bottom
+                )
             
             ScrollView {
                 ScrollViewReader { proxy in
-                    VStack(spacing: 20) {
+                    LazyVStack(spacing: 20) {
                         Color.clear
                             .frame(height: 0)
                             .id("scroll-to-top")
@@ -447,7 +459,7 @@ struct CharacterFormView: View {
                         }
                     }
                     .onChange(of: selectedTab) { _ in
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.2)) {
                             proxy.scrollTo("scroll-to-top", anchor: .top)
                         }
                     }
@@ -670,23 +682,23 @@ private struct FormTabPicker: View {
     
     var body: some View {
         GeometryReader { geometry in
-            HStack(spacing: 8) {
+            HStack(spacing: 12) {
                 ForEach(FormTab.allCases, id: \.id) { tab in
                     FormTabButton(
                         title: tab.title,
                         icon: tab.icon,
                         isSelected: selection == tab
                     ) {
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.2)) {
                             selection = tab
                         }
                     }
                 }
             }
             .frame(width: geometry.size.width, alignment: .center)
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
         }
-        .frame(height: 76)
+        .frame(height: 84)
     }
 }
 
@@ -698,25 +710,25 @@ private struct FormTabButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 IconFrame(icon: icon, color: isSelected ? .accentColor : .secondary)
                 Text(title)
                     .font(.footnote)
+                    .fontWeight(isSelected ? .medium : .regular)
                     .foregroundColor(isSelected ? .primary : .secondary)
             }
-            .padding(.vertical, 6)
-            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    #if os(iOS)
-                    .fill(isSelected ? Color(uiColor: .secondarySystemBackground) : Color(uiColor: .systemBackground))
-                    #else
-                    .fill(isSelected ? Color(nsColor: .controlBackgroundColor) : Color(nsColor: .windowBackgroundColor))
-                    #endif
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(isSelected ? Color.accentColor.opacity(0.2) : Color.clear, lineWidth: 1)
             )
             .contentShape(Rectangle())
-            .padding(4)
         }
         .buttonStyle(.plain)
     }
