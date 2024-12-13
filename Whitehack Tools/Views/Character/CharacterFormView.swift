@@ -205,7 +205,7 @@ struct CharacterFormView: View {
                         // Equipment Section
                         VStack(spacing: 12) {
                             HStack(spacing: 8) {
-                                Ph.backpack.bold
+                                Ph.bagSimple.bold
                                     .frame(width: 20, height: 20)
                                 Text("Equipment")
                                     .font(.headline)
@@ -216,6 +216,23 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
+                        
+                        // Gold Section
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.coins.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Gold")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
+                            FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                .frame(maxWidth: .infinity)
+                                .groupCardStyle()
+                        }
+                        .padding(.bottom, 12)
                     }
                 }
                 .padding()
@@ -383,7 +400,7 @@ struct CharacterFormView: View {
                         // Equipment Section
                         VStack(spacing: 12) {
                             HStack(spacing: 8) {
-                                Ph.backpack.bold
+                                Ph.bagSimple.bold
                                     .frame(width: 20, height: 20)
                                 Text("Equipment")
                                     .font(.headline)
@@ -394,6 +411,23 @@ struct CharacterFormView: View {
                                 .frame(maxWidth: .infinity)
                                 .groupCardStyle()
                         }
+                        .padding(.bottom, 12)
+                        
+                        // Gold Section
+                        VStack(spacing: 12) {
+                            HStack(spacing: 8) {
+                                Ph.coins.bold
+                                    .frame(width: 20, height: 20)
+                                Text("Gold")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            
+                            FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                .frame(maxWidth: .infinity)
+                                .groupCardStyle()
+                        }
+                        .padding(.bottom, 12)
                     }
                 }
                 .padding()
@@ -513,6 +547,8 @@ private class FormData: ObservableObject {
     @Published var weapons: [Weapon]
     @Published var armor: [Armor]
     @Published var gear: [Gear]
+    @Published var coinsOnHand: Int
+    @Published var stashedCoins: Int
     
     @Published var notes: String
     
@@ -558,6 +594,8 @@ private class FormData: ObservableObject {
         self.weapons = character?.weapons ?? []
         self.armor = character?.armor ?? []
         self.gear = character?.gear ?? []
+        self.coinsOnHand = character?.coinsOnHand ?? 0
+        self.stashedCoins = character?.stashedCoins ?? 0
     }
 }
 
