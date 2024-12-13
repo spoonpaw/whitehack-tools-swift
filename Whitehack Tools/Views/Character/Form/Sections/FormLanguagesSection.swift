@@ -71,7 +71,13 @@ struct FormLanguagesSection: View {
                     .disabled(newLanguage.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
                 .padding()
-                .background(Color(nsColor: .windowBackgroundColor))
+                .background {
+                    #if os(iOS)
+                        Color(uiColor: .systemBackground)
+                    #else
+                        Color(nsColor: .windowBackgroundColor)
+                    #endif
+                }
                 .cornerRadius(8)
             }
         }
@@ -82,77 +88,101 @@ struct FormLanguagesSection: View {
             if !languages.isEmpty {
                 VStack(spacing: 12) {
                     ForEach(languages, id: \.self) { language in
-                        HStack {
-                            if editingLanguage == language {
-                                TextField("Edit language", text: $tempLanguage)
-                                    .textFieldStyle(.roundedBorder)
-                                    #if os(iOS)
-                                    .textInputAutocapitalization(.words)
-                                    #endif
-                                    .focused($focusedField, equals: .languageName)
-                                    .onAppear { tempLanguage = language }
-                                
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        editingLanguage = nil
-                                    }
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .imageScale(.medium)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        updateLanguage(language)
-                                    }
-                                } label: {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .imageScale(.medium)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.green)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                .disabled(tempLanguage.trimmingCharacters(in: .whitespaces).isEmpty)
-                            } else {
-                                Text(language)
-                                    .foregroundColor(.primary)
-                                Spacer()
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        editingLanguage = language
-                                        tempLanguage = language
-                                    }
-                                } label: {
-                                    Image(systemName: "pencil.circle.fill")
-                                        .imageScale(.medium)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.blue)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        removeLanguage(language)
-                                    }
-                                } label: {
-                                    Image(systemName: "trash.circle.fill")
-                                        .imageScale(.medium)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                            }
-                        }
-                        .padding()
-                        .background(Color(nsColor: .windowBackgroundColor))
-                        .cornerRadius(8)
-                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        languageRow(for: language)
                     }
                 }
             }
+        }
+    }
+    
+    private func languageRow(for language: String) -> some View {
+        HStack {
+            if editingLanguage == language {
+                editingLanguageField
+            } else {
+                Text(language)
+                    .foregroundColor(.primary)
+                Spacer()
+                languageRowButtons(for: language)
+            }
+        }
+        .padding()
+        .background {
+            #if os(iOS)
+                Color(uiColor: .systemBackground)
+            #else
+                Color(nsColor: .windowBackgroundColor)
+            #endif
+        }
+        .cornerRadius(8)
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+    
+    private var editingLanguageField: some View {
+        HStack {
+            TextField("Edit language", text: $tempLanguage)
+                .textFieldStyle(.roundedBorder)
+                #if os(iOS)
+                .textInputAutocapitalization(.words)
+                #endif
+                .focused($focusedField, equals: .languageName)
+                .onAppear { tempLanguage = editingLanguage ?? "" }
+            
+            Button {
+                withAnimation(.easeInOut) {
+                    editingLanguage = nil
+                }
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+            
+            Button {
+                withAnimation(.easeInOut) {
+                    if let oldLanguage = editingLanguage {
+                        updateLanguage(oldLanguage)
+                    }
+                }
+            } label: {
+                Image(systemName: "checkmark.circle.fill")
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundColor(.green)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+            .disabled(tempLanguage.trimmingCharacters(in: .whitespaces).isEmpty)
+        }
+    }
+    
+    private func languageRowButtons(for language: String) -> some View {
+        HStack(spacing: 8) {
+            Button {
+                withAnimation(.easeInOut) {
+                    editingLanguage = language
+                    tempLanguage = language
+                }
+            } label: {
+                Image(systemName: "pencil.circle.fill")
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+            
+            Button {
+                withAnimation(.easeInOut) {
+                    removeLanguage(language)
+                }
+            } label: {
+                Image(systemName: "trash.circle.fill")
+                    .imageScale(.medium)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(BorderlessButtonStyle())
         }
     }
     
@@ -173,7 +203,13 @@ struct FormLanguagesSection: View {
                 }
             }
             .padding()
-            .background(Color(nsColor: .controlBackgroundColor))
+            .background {
+                #if os(iOS)
+                    Color(uiColor: .secondarySystemBackground)
+                #else
+                    Color(nsColor: .controlBackgroundColor)
+                #endif
+            }
             .cornerRadius(12)
         }
     }

@@ -400,7 +400,13 @@ struct DetailEncumbranceSection: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background {
+                #if os(iOS)
+                Color(uiColor: .systemBackground)
+                #else
+                Color(nsColor: .windowBackgroundColor)
+                #endif
+            }
             .cornerRadius(12)
             .shadow(radius: 4)
         }
