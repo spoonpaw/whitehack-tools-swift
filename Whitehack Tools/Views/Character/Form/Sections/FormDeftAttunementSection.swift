@@ -114,19 +114,25 @@ private struct AttunementFieldsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            TextField("Name", text: Binding(
-                get: { 
-                    guard index < attunementSlots.count else { return "" }
-                    return getAttunement(attunementSlots).name
-                },
-                set: { newValue in
-                    guard index < attunementSlots.count else { return }
-                    var attunement = getAttunement(attunementSlots)
-                    attunement.name = newValue
-                    setAttunement(&attunementSlots, attunement)
-                }
-            ))
-            .textFieldStyle(.roundedBorder)
+            HStack(spacing: 8) {
+                Text("Name")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                TextField("", text: Binding(
+                    get: { 
+                        guard index < attunementSlots.count else { return "" }
+                        return getAttunement(attunementSlots).name
+                    },
+                    set: { newValue in
+                        guard index < attunementSlots.count else { return }
+                        var attunement = getAttunement(attunementSlots)
+                        attunement.name = newValue
+                        setAttunement(&attunementSlots, attunement)
+                    }
+                ))
+                .textFieldStyle(.roundedBorder)
+            }
             
             HStack(spacing: 8) {
                 Text("Type")
