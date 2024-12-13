@@ -13,9 +13,27 @@ struct DetailAdditionalInfoSection: View {
                 }
                 
                 if character.level < 10 {
-                    HStack(spacing: 16) {
-                        StatCard(label: "Next Level", value: "\(character.xpForNextLevel) XP", icon: Ph.arrowCircleUp.bold)
-                        StatCard(label: "Remaining", value: "\(character.xpForNextLevel - character.experience) XP", icon: Ph.hourglassSimple.bold)
+                    if character.canLevelUp {
+                        HStack(spacing: 16) {
+                            StatCard(
+                                label: "Status",
+                                value: "Advance to Level \(character.level + 1)",
+                                icon: Ph.arrowCircleUp.bold
+                            )
+                        }
+                    } else {
+                        HStack(spacing: 16) {
+                            StatCard(
+                                label: "Next Level",
+                                value: "\(character.xpForNextLevel) XP",
+                                icon: Ph.arrowCircleUp.bold
+                            )
+                            StatCard(
+                                label: "Remaining",
+                                value: "\(character.xpForNextLevel - character.experience) XP",
+                                icon: Ph.hourglassSimple.bold
+                            )
+                        }
                     }
                 }
             }
