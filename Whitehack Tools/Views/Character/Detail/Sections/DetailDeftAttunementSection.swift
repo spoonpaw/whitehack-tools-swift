@@ -21,7 +21,7 @@ struct DetailDeftAttunementSection: View {
     
     var body: some View {
         if character.characterClass == .deft {
-            VStack(spacing: 12) {
+            VStack(spacing: 0) {
                 DetailSectionHeader(title: "The Deft", icon: Ph.detective.bold)
                 
                 VStack(alignment: .leading, spacing: 16) {
