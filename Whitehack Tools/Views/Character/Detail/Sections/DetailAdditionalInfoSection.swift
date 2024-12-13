@@ -18,13 +18,16 @@ struct DetailAdditionalInfoSection: View {
                         Text(character.notes)
                             .font(.body)
                             .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(16)
                     .background(.secondary.opacity(0.1))
                     .cornerRadius(12)
+                    .frame(maxWidth: .infinity)
                 }
             }
             .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
         } header: {
             HStack(spacing: 8) {
                 Ph.info.bold

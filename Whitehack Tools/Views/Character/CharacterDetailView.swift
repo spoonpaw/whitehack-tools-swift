@@ -172,6 +172,9 @@ struct CharacterDetailView: View {
                                 
                                 DetailWiseMiracleSection(character: character)
                                     .padding(.horizontal, 16)
+                                
+                                DetailNotesSection(character: character)
+                                    .padding(.horizontal, 16)
                             }
                             .padding(.vertical, 16)
                         case .combat:
