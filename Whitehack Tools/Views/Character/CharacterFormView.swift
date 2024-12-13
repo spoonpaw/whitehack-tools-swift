@@ -244,6 +244,7 @@ struct CharacterFormView: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.top, 16)
             }
             .frame(maxWidth: .infinity)
         }
@@ -448,6 +449,7 @@ struct CharacterFormView: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.top, 16)
             }
             .frame(maxWidth: .infinity)
         }
