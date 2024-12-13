@@ -476,17 +476,13 @@ struct CharacterFormView: View {
             vocationGroup: formData.vocationGroup,
             affiliationGroups: formData.affiliationGroups,
             attributeGroupPairs: formData.attributeGroupPairs,
-            notes: formData.notes,
-            languages: formData.languages,
+            attunementSlots: formData.attunementSlots,
+            wiseMiracleSlots: formData.miracleSlots,
+            languages: formData.languages, notes: formData.notes,
             experience: Int(formData.experience) ?? 0,
             corruption: Int(formData.corruption) ?? 0,
-            wiseMiracleSlots: formData.miracleSlots,
-            attunementSlots: formData.attunementSlots,
-            weapons: formData.weapons,
-            armor: formData.armor,
-            gear: formData.gear,
-            coinsOnHand: formData.coinsOnHand,
-            stashedCoins: formData.stashedCoins
+            coinsOnHand: formData.coinsOnHand, stashedCoins: formData.stashedCoins, gear: formData.gear, weapons: formData.weapons,
+            armor: formData.armor
         )
         
         // Update additional properties
