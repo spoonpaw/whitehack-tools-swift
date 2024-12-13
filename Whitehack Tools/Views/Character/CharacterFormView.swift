@@ -181,69 +181,71 @@ struct CharacterFormView: View {
                             )
                             .frame(maxWidth: .infinity)
                         case .equipment:
-                            // Weapons Section
                             VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.sword.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Weapons")
-                                        .font(.headline)
-                                }
-                                .frame(maxWidth: .infinity)
-                                
-                                FormWeaponsSection(weapons: $formData.weapons)
+                                // Weapons Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.sword.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Weapons")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Armor Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.shield.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Armor")
-                                        .font(.headline)
+                                    
+                                    FormWeaponsSection(weapons: $formData.weapons)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormArmorSection(armor: $formData.armor)
+                                // Armor Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.shield.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Armor")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Equipment Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.bagSimple.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Equipment")
-                                        .font(.headline)
+                                    
+                                    FormArmorSection(armor: $formData.armor)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormEquipmentSection(gear: $formData.gear)
+                                // Equipment Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.bagSimple.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Equipment")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Gold Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.coins.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Gold")
-                                        .font(.headline)
+                                    
+                                    FormEquipmentSection(gear: $formData.gear)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                // Gold Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.coins.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Gold")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
+                                    
+                                    FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
+                                }
+                                .padding(.bottom, 12)
                             }
-                            .padding(.bottom, 12)
                         }
                     }
                     .onChange(of: selectedTab) { _ in
@@ -254,6 +256,7 @@ struct CharacterFormView: View {
                 }
                 .padding(.horizontal)
             }
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .toolbar {
@@ -393,69 +396,71 @@ struct CharacterFormView: View {
                             )
                             .frame(maxWidth: .infinity)
                         case .equipment:
-                            // Weapons Section
                             VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.sword.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Weapons")
-                                        .font(.headline)
-                                }
-                                .frame(maxWidth: .infinity)
-                                
-                                FormWeaponsSection(weapons: $formData.weapons)
+                                // Weapons Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.sword.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Weapons")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Armor Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.shield.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Armor")
-                                        .font(.headline)
+                                    
+                                    FormWeaponsSection(weapons: $formData.weapons)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormArmorSection(armor: $formData.armor)
+                                // Armor Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.shield.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Armor")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Equipment Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.bagSimple.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Equipment")
-                                        .font(.headline)
+                                    
+                                    FormArmorSection(armor: $formData.armor)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormEquipmentSection(gear: $formData.gear)
+                                // Equipment Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.bagSimple.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Equipment")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
-                            }
-                            .padding(.bottom, 12)
-                            
-                            // Gold Section
-                            VStack(spacing: 12) {
-                                HStack(spacing: 8) {
-                                    Ph.coins.bold
-                                        .frame(width: 20, height: 20)
-                                    Text("Gold")
-                                        .font(.headline)
+                                    
+                                    FormEquipmentSection(gear: $formData.gear)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
                                 }
-                                .frame(maxWidth: .infinity)
+                                .padding(.bottom, 12)
                                 
-                                FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                // Gold Section
+                                VStack(spacing: 12) {
+                                    HStack(spacing: 8) {
+                                        Ph.coins.bold
+                                            .frame(width: 20, height: 20)
+                                        Text("Gold")
+                                            .font(.headline)
+                                    }
                                     .frame(maxWidth: .infinity)
-                                    .groupCardStyle()
+                                    
+                                    FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                        .frame(maxWidth: .infinity)
+                                        .groupCardStyle()
+                                }
+                                .padding(.bottom, 12)
                             }
-                            .padding(.bottom, 12)
                         }
                     }
                     .onChange(of: selectedTab) { _ in
@@ -466,6 +471,7 @@ struct CharacterFormView: View {
                 }
                 .padding(.horizontal)
             }
+            .frame(maxHeight: .infinity, alignment: .top)
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .navigationBarTitleDisplayMode(.inline)
