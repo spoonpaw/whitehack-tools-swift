@@ -85,178 +85,167 @@ struct CharacterFormView: View {
                 )
             
             ScrollView {
-                ScrollViewReader { proxy in
-                    LazyVStack(spacing: 16) {
-                        Color.clear
-                            .frame(height: 0)
-                            .id("scroll-to-top")
-                        
-                        switch selectedTab {
-                        case .info:
-                            VStack(spacing: 20) {
-                                FormBasicInfoSection(
-                                    name: $formData.name,
-                                    playerName: $formData.playerName,
-                                    selectedClass: $formData.selectedClass,
-                                    level: $formData.level,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormAttributesSection(
-                                    useCustomAttributes: $formData.useCustomAttributes,
-                                    customAttributes: $formData.customAttributes,
-                                    strength: $formData.strength,
-                                    agility: $formData.agility,
-                                    toughness: $formData.toughness,
-                                    intelligence: $formData.intelligence,
-                                    willpower: $formData.willpower,
-                                    charisma: $formData.charisma
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormCharacterGroupsSection(
-                                    speciesGroup: $formData.speciesGroup,
-                                    vocationGroup: $formData.vocationGroup,
-                                    affiliationGroups: $formData.affiliationGroups,
-                                    newAffiliationGroup: $formData.newAffiliationGroup,
-                                    attributeGroupPairs: $formData.attributeGroupPairs,
-                                    selectedAttribute: $formData.selectedAttribute,
-                                    newAttributeGroup: $formData.newAttributeGroup,
-                                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                                    isVocationGroupAdded: $formData.isVocationGroupAdded,
-                                    useCustomAttributes: $formData.useCustomAttributes,
-                                    customAttributes: $formData.customAttributes,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormLanguagesSection(
-                                    languages: $formData.languages,
-                                    newLanguage: $formData.newLanguage,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                if formData.selectedClass == .wise {
-                                    FormWiseMiracleSection(
-                                        characterClass: formData.selectedClass,
-                                        level: Int(formData.level) ?? 1,
-                                        willpower: $formData.willpower,
-                                        useCustomAttributes: $formData.useCustomAttributes,
-                                        miracleSlots: $formData.miracleSlots
-                                    )
-                                    .frame(maxWidth: .infinity)
-                                }
-                                
-                                if formData.selectedClass == .deft {
-                                    FormDeftAttunementSection(
-                                        characterClass: formData.selectedClass,
-                                        level: Int(formData.level) ?? 1,
-                                        attunementSlots: $formData.attunementSlots
-                                    )
-                                    .frame(maxWidth: .infinity)
-                                }
-                                
-                                FormOtherInformationSection(
-                                    experience: $formData.experience,
-                                    corruption: $formData.corruption,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormNotesSection(
-                                    notes: $formData.notes,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                            }
-                        case .combat:
-                            FormCombatStatsSection(
-                                currentHP: $formData.currentHP,
-                                maxHP: $formData.maxHP,
-                                movement: $formData.movement,
-                                saveColor: $formData.saveColor,
+                VStack(spacing: 16) {
+                    switch selectedTab {
+                    case .info:
+                        VStack(spacing: 20) {
+                            FormBasicInfoSection(
+                                name: $formData.name,
+                                playerName: $formData.playerName,
+                                selectedClass: $formData.selectedClass,
+                                level: $formData.level,
                                 focusedField: $focusedField
                             )
                             .frame(maxWidth: .infinity)
-                        case .equipment:
-                            VStack(spacing: 12) {
-                                // Weapons Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.sword.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Weapons")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormWeaponsSection(weapons: $formData.weapons)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Armor Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.shield.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Armor")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormArmorSection(armor: $formData.armor)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Equipment Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.bagSimple.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Equipment")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormEquipmentSection(gear: $formData.gear)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Gold Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.coins.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Gold")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
+                            
+                            FormAttributesSection(
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                customAttributes: $formData.customAttributes,
+                                strength: $formData.strength,
+                                agility: $formData.agility,
+                                toughness: $formData.toughness,
+                                intelligence: $formData.intelligence,
+                                willpower: $formData.willpower,
+                                charisma: $formData.charisma
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormCharacterGroupsSection(
+                                speciesGroup: $formData.speciesGroup,
+                                vocationGroup: $formData.vocationGroup,
+                                affiliationGroups: $formData.affiliationGroups,
+                                newAffiliationGroup: $formData.newAffiliationGroup,
+                                attributeGroupPairs: $formData.attributeGroupPairs,
+                                selectedAttribute: $formData.selectedAttribute,
+                                newAttributeGroup: $formData.newAttributeGroup,
+                                isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                                isVocationGroupAdded: $formData.isVocationGroupAdded,
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                customAttributes: $formData.customAttributes,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormLanguagesSection(
+                                languages: $formData.languages,
+                                newLanguage: $formData.newLanguage,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            if formData.selectedClass == .wise {
+                                FormWiseMiracleSection(
+                                    characterClass: formData.selectedClass,
+                                    level: Int(formData.level) ?? 1,
+                                    willpower: $formData.willpower,
+                                    useCustomAttributes: $formData.useCustomAttributes,
+                                    miracleSlots: $formData.miracleSlots
+                                )
+                                .frame(maxWidth: .infinity)
                             }
+                            
+                            if formData.selectedClass == .deft {
+                                FormDeftAttunementSection(
+                                    characterClass: formData.selectedClass,
+                                    level: Int(formData.level) ?? 1,
+                                    attunementSlots: $formData.attunementSlots
+                                )
+                                .frame(maxWidth: .infinity)
+                            }
+                            
+                            FormOtherInformationSection(
+                                experience: $formData.experience,
+                                corruption: $formData.corruption,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormNotesSection(
+                                notes: $formData.notes,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
                         }
-                    }
-                    .onChange(of: selectedTab) { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            proxy.scrollTo("scroll-to-top", anchor: .top)
+                    case .combat:
+                        FormCombatStatsSection(
+                            currentHP: $formData.currentHP,
+                            maxHP: $formData.maxHP,
+                            movement: $formData.movement,
+                            saveColor: $formData.saveColor,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                    case .equipment:
+                        VStack(spacing: 12) {
+                            // Weapons Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.sword.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Weapons")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormWeaponsSection(weapons: $formData.weapons)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
+                            
+                            // Armor Section
+                            /*VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.shield.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Armor")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormArmorSection(armor: $formData.armor)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
+                            
+                            // Equipment Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.bagSimple.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Equipment")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormEquipmentSection(gear: $formData.gear)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)*/
+                            
+                            // Gold Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.coins.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Gold")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
                         }
                     }
                 }
                 .padding(.horizontal)
             }
-            .frame(maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity)
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .toolbar {
@@ -300,178 +289,167 @@ struct CharacterFormView: View {
                 )
             
             ScrollView {
-                ScrollViewReader { proxy in
-                    LazyVStack(spacing: 16) {
-                        Color.clear
-                            .frame(height: 0)
-                            .id("scroll-to-top")
-                        
-                        switch selectedTab {
-                        case .info:
-                            VStack(spacing: 20) {
-                                FormBasicInfoSection(
-                                    name: $formData.name,
-                                    playerName: $formData.playerName,
-                                    selectedClass: $formData.selectedClass,
-                                    level: $formData.level,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormAttributesSection(
-                                    useCustomAttributes: $formData.useCustomAttributes,
-                                    customAttributes: $formData.customAttributes,
-                                    strength: $formData.strength,
-                                    agility: $formData.agility,
-                                    toughness: $formData.toughness,
-                                    intelligence: $formData.intelligence,
-                                    willpower: $formData.willpower,
-                                    charisma: $formData.charisma
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormCharacterGroupsSection(
-                                    speciesGroup: $formData.speciesGroup,
-                                    vocationGroup: $formData.vocationGroup,
-                                    affiliationGroups: $formData.affiliationGroups,
-                                    newAffiliationGroup: $formData.newAffiliationGroup,
-                                    attributeGroupPairs: $formData.attributeGroupPairs,
-                                    selectedAttribute: $formData.selectedAttribute,
-                                    newAttributeGroup: $formData.newAttributeGroup,
-                                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                                    isVocationGroupAdded: $formData.isVocationGroupAdded,
-                                    useCustomAttributes: $formData.useCustomAttributes,
-                                    customAttributes: $formData.customAttributes,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormLanguagesSection(
-                                    languages: $formData.languages,
-                                    newLanguage: $formData.newLanguage,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                if formData.selectedClass == .wise {
-                                    FormWiseMiracleSection(
-                                        characterClass: formData.selectedClass,
-                                        level: Int(formData.level) ?? 1,
-                                        willpower: $formData.willpower,
-                                        useCustomAttributes: $formData.useCustomAttributes,
-                                        miracleSlots: $formData.miracleSlots
-                                    )
-                                    .frame(maxWidth: .infinity)
-                                }
-                                
-                                if formData.selectedClass == .deft {
-                                    FormDeftAttunementSection(
-                                        characterClass: formData.selectedClass,
-                                        level: Int(formData.level) ?? 1,
-                                        attunementSlots: $formData.attunementSlots
-                                    )
-                                    .frame(maxWidth: .infinity)
-                                }
-                                
-                                FormOtherInformationSection(
-                                    experience: $formData.experience,
-                                    corruption: $formData.corruption,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                                
-                                FormNotesSection(
-                                    notes: $formData.notes,
-                                    focusedField: $focusedField
-                                )
-                                .frame(maxWidth: .infinity)
-                            }
-                        case .combat:
-                            FormCombatStatsSection(
-                                currentHP: $formData.currentHP,
-                                maxHP: $formData.maxHP,
-                                movement: $formData.movement,
-                                saveColor: $formData.saveColor,
+                VStack(spacing: 16) {
+                    switch selectedTab {
+                    case .info:
+                        VStack(spacing: 20) {
+                            FormBasicInfoSection(
+                                name: $formData.name,
+                                playerName: $formData.playerName,
+                                selectedClass: $formData.selectedClass,
+                                level: $formData.level,
                                 focusedField: $focusedField
                             )
                             .frame(maxWidth: .infinity)
-                        case .equipment:
-                            VStack(spacing: 12) {
-                                // Weapons Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.sword.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Weapons")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormWeaponsSection(weapons: $formData.weapons)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Armor Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.shield.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Armor")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormArmorSection(armor: $formData.armor)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Equipment Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.bagSimple.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Equipment")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormEquipmentSection(gear: $formData.gear)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
-                                
-                                // Gold Section
-                                VStack(spacing: 12) {
-                                    HStack(spacing: 8) {
-                                        Ph.coins.bold
-                                            .frame(width: 20, height: 20)
-                                        Text("Gold")
-                                            .font(.headline)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    
-                                    FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
-                                        .frame(maxWidth: .infinity)
-                                        .groupCardStyle()
-                                }
-                                .padding(.bottom, 12)
+                            
+                            FormAttributesSection(
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                customAttributes: $formData.customAttributes,
+                                strength: $formData.strength,
+                                agility: $formData.agility,
+                                toughness: $formData.toughness,
+                                intelligence: $formData.intelligence,
+                                willpower: $formData.willpower,
+                                charisma: $formData.charisma
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormCharacterGroupsSection(
+                                speciesGroup: $formData.speciesGroup,
+                                vocationGroup: $formData.vocationGroup,
+                                affiliationGroups: $formData.affiliationGroups,
+                                newAffiliationGroup: $formData.newAffiliationGroup,
+                                attributeGroupPairs: $formData.attributeGroupPairs,
+                                selectedAttribute: $formData.selectedAttribute,
+                                newAttributeGroup: $formData.newAttributeGroup,
+                                isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                                isVocationGroupAdded: $formData.isVocationGroupAdded,
+                                useCustomAttributes: $formData.useCustomAttributes,
+                                customAttributes: $formData.customAttributes,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormLanguagesSection(
+                                languages: $formData.languages,
+                                newLanguage: $formData.newLanguage,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            if formData.selectedClass == .wise {
+                                FormWiseMiracleSection(
+                                    characterClass: formData.selectedClass,
+                                    level: Int(formData.level) ?? 1,
+                                    willpower: $formData.willpower,
+                                    useCustomAttributes: $formData.useCustomAttributes,
+                                    miracleSlots: $formData.miracleSlots
+                                )
+                                .frame(maxWidth: .infinity)
                             }
+                            
+                            if formData.selectedClass == .deft {
+                                FormDeftAttunementSection(
+                                    characterClass: formData.selectedClass,
+                                    level: Int(formData.level) ?? 1,
+                                    attunementSlots: $formData.attunementSlots
+                                )
+                                .frame(maxWidth: .infinity)
+                            }
+                            
+                            FormOtherInformationSection(
+                                experience: $formData.experience,
+                                corruption: $formData.corruption,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
+                            
+                            FormNotesSection(
+                                notes: $formData.notes,
+                                focusedField: $focusedField
+                            )
+                            .frame(maxWidth: .infinity)
                         }
-                    }
-                    .onChange(of: selectedTab) { _ in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            proxy.scrollTo("scroll-to-top", anchor: .top)
+                    case .combat:
+                        FormCombatStatsSection(
+                            currentHP: $formData.currentHP,
+                            maxHP: $formData.maxHP,
+                            movement: $formData.movement,
+                            saveColor: $formData.saveColor,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                    case .equipment:
+                        VStack(spacing: 12) {
+                            // Weapons Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.sword.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Weapons")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormWeaponsSection(weapons: $formData.weapons)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
+                            
+                            // Armor Section
+                            /*VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.shield.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Armor")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormArmorSection(armor: $formData.armor)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
+                            
+                            // Equipment Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.bagSimple.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Equipment")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormEquipmentSection(gear: $formData.gear)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)*/
+                            
+                            // Gold Section
+                            VStack(spacing: 12) {
+                                HStack(spacing: 8) {
+                                    Ph.coins.bold
+                                        .frame(width: 20, height: 20)
+                                    Text("Gold")
+                                        .font(.headline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                
+                                FormGoldSection(coinsOnHand: $formData.coinsOnHand, stashedCoins: $formData.stashedCoins)
+                                    .frame(maxWidth: .infinity)
+                                    .groupCardStyle()
+                            }
+                            .padding(.bottom, 12)
                         }
                     }
                 }
                 .padding(.horizontal)
             }
-            .frame(maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity)
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
         .navigationBarTitleDisplayMode(.inline)

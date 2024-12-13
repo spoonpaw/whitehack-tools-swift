@@ -453,7 +453,7 @@ struct WeaponEditRow: View {
                 
                 // Location Toggle with Icon
                 HStack {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
                             color: isStashed ? .orange : .gray)
                     Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
@@ -796,7 +796,7 @@ struct CustomWeaponForm: View {
                     }
                     
                     HStack {
-                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold, 
+                        IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
                                 color: isStashed ? Color.orange : Color.gray)
                         Text("Location")
                             .foregroundStyle(Color.secondary)
@@ -1251,7 +1251,7 @@ struct FormWeaponsSection: View {
             Button {
                 isAddingNew.toggle()
             } label: {
-                Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"), 
+                Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"),
                       systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
                     .foregroundColor(isAddingNew ? .red : .primary)
             }
