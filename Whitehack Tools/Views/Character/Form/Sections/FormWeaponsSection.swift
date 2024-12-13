@@ -524,7 +524,7 @@ struct WeaponEditRow: View {
             }
             
             // Save/Cancel Buttons
-            HStack(spacing: 20) {  // Added explicit spacing
+            HStack(spacing: 20) {
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
@@ -542,7 +542,6 @@ struct WeaponEditRow: View {
                     }
                     .foregroundColor(.red)
                 }
-                .buttonStyle(.borderless)  // Explicit button style
                 
                 Spacer()
                 
@@ -578,11 +577,10 @@ struct WeaponEditRow: View {
                     }
                     .foregroundColor(.blue)
                 }
-                .buttonStyle(.borderless)  // Explicit button style
                 .disabled(name.isEmpty || damage.isEmpty)
             }
             .padding(.horizontal)
-            .padding(.top, 16)
+            .padding(.top, 4)
         }
         .padding()
         #if os(iOS)
