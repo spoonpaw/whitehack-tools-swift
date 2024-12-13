@@ -19,17 +19,18 @@ struct DetailLanguagesSection: View {
                     .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     .padding(.horizontal)
             } else {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 8)], spacing: 8) {
+                HStack(spacing: 12) {
+                    Spacer(minLength: 0)
                     ForEach(character.languages, id: \.self) { language in
                         Text(language)
                             .font(.subheadline)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .frame(maxWidth: .infinity)
                             .background(Color.green.opacity(0.1))
                             .cornerRadius(12)
                             .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     }
+                    Spacer(minLength: 0)
                 }
                 .padding(.horizontal)
             }
