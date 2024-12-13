@@ -382,7 +382,7 @@ struct DetailEncumbranceSection: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color.gray.opacity(0.1))
+            .background(Color(nsColor: .windowBackgroundColor))
             .cornerRadius(12)
             .shadow(radius: 4)
         }
