@@ -147,59 +147,69 @@ struct CharacterDetailView: View {
                 .padding(.horizontal)
             
             ScrollView {
-                if let character = character {
-                    VStack(spacing: 0) {
-                        switch selectedTab {
-                        case .info:
-                            VStack(spacing: 32) {
-                                VStack(alignment: .leading, spacing: 12) {
-                                    SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+                ScrollViewReader { proxy in
+                    if let character = character {
+                        VStack(spacing: 0) {
+                            Color.clear
+                                .frame(height: 0)
+                                .id("scroll-to-top")
+                            
+                            switch selectedTab {
+                            case .info:
+                                VStack(spacing: 32) {
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+                                            .padding(.horizontal, 16)
+                                        DetailHeaderSection(character: character)
+                                            .padding(.horizontal, 16)
+                                    }
+                                    
+                                    DetailStatsSection(character: character)
                                         .padding(.horizontal, 16)
-                                    DetailHeaderSection(character: character)
+                                    
+                                    DetailGroupsSection(character: character)
+                                        .padding(.horizontal, 16)
+                                    
+                                    DetailLanguagesSection(character: character)
+                                        .padding(.horizontal, 16)
+                                    
+                                    if character.characterClass == .deft {
+                                        DetailDeftAttunementSection(character: character)
+                                            .padding(.horizontal, 16)
+                                    }
+                                    
+                                    DetailWiseMiracleSection(character: character)
+                                        .padding(.horizontal, 16)
+                                    
+                                    DetailAdditionalInfoSection(character: character)
+                                        .padding(.horizontal, 16)
+                                    
+                                    DetailNotesSection(character: character)
                                         .padding(.horizontal, 16)
                                 }
-                                
-                                DetailStatsSection(character: character)
-                                    .padding(.horizontal, 16)
-                                
-                                DetailGroupsSection(character: character)
-                                    .padding(.horizontal, 16)
-                                
-                                DetailLanguagesSection(character: character)
-                                    .padding(.horizontal, 16)
-                                
-                                if character.characterClass == .deft {
-                                    DetailDeftAttunementSection(character: character)
-                                        .padding(.horizontal, 16)
+                                .padding(.vertical, 16)
+                            case .combat:
+                                DetailCombatSection(character: character)
+                                    .padding()
+                            case .equipment:
+                                VStack(spacing: 32) {
+                                    DetailWeaponsSection(weapons: character.weapons)
+                                    DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
+                                    DetailEquipmentSection(character: character)
+                                    DetailGoldSection(character: character)
+                                    DetailEncumbranceSection(character: character)
                                 }
-                                
-                                DetailWiseMiracleSection(character: character)
-                                    .padding(.horizontal, 16)
-                                
-                                DetailAdditionalInfoSection(character: character)
-                                    .padding(.horizontal, 16)
-                                
-                                DetailNotesSection(character: character)
-                                    .padding(.horizontal, 16)
-                            }
-                            .padding(.vertical, 16)
-                        case .combat:
-                            DetailCombatSection(character: character)
                                 .padding()
-                        case .equipment:
-                            VStack(spacing: 32) {
-                                DetailWeaponsSection(weapons: character.weapons)
-                                DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
-                                DetailEquipmentSection(character: character)
-                                DetailGoldSection(character: character)
-                                DetailEncumbranceSection(character: character)
                             }
-                            .padding()
                         }
+                        .onChange(of: selectedTab) { _ in
+                            withAnimation {
+                                proxy.scrollTo("scroll-to-top", anchor: .top)
+                            }
+                        }
+                    } else {
+                        ProgressView()
                     }
-                    .frame(maxWidth: .infinity)
-                } else {
-                    ProgressView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
