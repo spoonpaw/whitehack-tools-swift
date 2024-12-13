@@ -173,6 +173,9 @@ struct CharacterDetailView: View {
                                 DetailWiseMiracleSection(character: character)
                                     .padding(.horizontal, 16)
                                 
+                                DetailAdditionalInfoSection(character: character)
+                                    .padding(.horizontal, 16)
+                                
                                 DetailNotesSection(character: character)
                                     .padding(.horizontal, 16)
                             }
