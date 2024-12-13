@@ -470,26 +470,26 @@ struct CharacterFormView: View {
             charisma: Int(formData.charisma) ?? 10,
             currentHP: Int(formData.currentHP) ?? 0,
             maxHP: Int(formData.maxHP) ?? 0,
-            _attackValue: 10,
             movement: Int(formData.movement) ?? 30,
-            _saveValue: 7,
             saveColor: formData.saveColor,
             speciesGroup: formData.speciesGroup,
             vocationGroup: formData.vocationGroup,
             affiliationGroups: formData.affiliationGroups,
             attributeGroupPairs: formData.attributeGroupPairs,
-            attunementSlots: formData.attunementSlots,
-            languages: formData.languages,
             notes: formData.notes,
+            languages: formData.languages,
             experience: Int(formData.experience) ?? 0,
-            corruption: Int(formData.corruption) ?? 0
+            corruption: Int(formData.corruption) ?? 0,
+            wiseMiracleSlots: formData.miracleSlots,
+            attunementSlots: formData.attunementSlots,
+            weapons: formData.weapons,
+            armor: formData.armor,
+            gear: formData.gear,
+            coinsOnHand: formData.coinsOnHand,
+            stashedCoins: formData.stashedCoins
         )
         
         // Update additional properties
-        character.wiseMiracleSlots = formData.miracleSlots
-        character.weapons = formData.weapons
-        character.armor = formData.armor
-        character.gear = formData.gear
         
         if characterId != nil {
             characterStore.updateCharacter(character)
