@@ -194,7 +194,7 @@ struct CharacterFormView: View {
                             .padding(.bottom, 12)
                             
                             // Armor Section
-                            /*VStack(spacing: 12) {
+                            VStack(spacing: 12) {
                                 HStack(spacing: 8) {
                                     Ph.shield.bold
                                         .frame(width: 20, height: 20)
@@ -223,7 +223,7 @@ struct CharacterFormView: View {
                                     .frame(maxWidth: .infinity)
                                     .groupCardStyle()
                             }
-                            .padding(.bottom, 12)*/
+                            .padding(.bottom, 12)
                             
                             // Gold Section
                             VStack(spacing: 12) {
@@ -398,7 +398,7 @@ struct CharacterFormView: View {
                             .padding(.bottom, 12)
                             
                             // Armor Section
-                            /*VStack(spacing: 12) {
+                            VStack(spacing: 12) {
                                 HStack(spacing: 8) {
                                     Ph.shield.bold
                                         .frame(width: 20, height: 20)
@@ -427,7 +427,7 @@ struct CharacterFormView: View {
                                     .frame(maxWidth: .infinity)
                                     .groupCardStyle()
                             }
-                            .padding(.bottom, 12)*/
+                            .padding(.bottom, 12)
                             
                             // Gold Section
                             VStack(spacing: 12) {
