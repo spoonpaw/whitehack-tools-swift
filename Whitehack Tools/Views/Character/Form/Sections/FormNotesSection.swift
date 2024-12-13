@@ -16,6 +16,11 @@ struct FormNotesSection: View {
                 TextEditor(text: $notes)
                     .frame(minHeight: 100)
                     .focused($focusedField, equals: .notes)
+                    .padding(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color(uiColor: .systemGray4), lineWidth: 1)
+                    )
             }
         }
     }
