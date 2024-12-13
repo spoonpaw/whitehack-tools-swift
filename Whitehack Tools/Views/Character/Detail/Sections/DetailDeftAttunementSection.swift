@@ -21,15 +21,15 @@ struct DetailDeftAttunementSection: View {
     
     var body: some View {
         if character.characterClass == .deft {
-            Section {
+            VStack(spacing: 12) {
+                DetailSectionHeader(title: "The Deft", icon: Ph.detective.bold)
+                
                 VStack(alignment: .leading, spacing: 16) {
                     ClassInfoCard()
                     DeftFeaturesCard()
                     AttunementSlotsCard(character: character)
                 }
                 .padding(.vertical)
-            } header: {
-                DetailSectionHeader(title: "The Deft", icon: Ph.detective.bold)
             }
         }
     }
