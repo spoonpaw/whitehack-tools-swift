@@ -202,20 +202,20 @@ struct DetailEncumbranceSection: View {
                             .foregroundColor(.primary)
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(burdenLevel.title)
-                            .font(.system(.title2, design: .rounded))
-                            .fontWeight(.semibold)
+                            .font(.title2)
+                            .fontWeight(.medium)
                             .foregroundColor(burdenLevel.color)
                         
                         Text(burdenLevel.description)
-                            .font(.system(.subheadline))
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                .background(burdenLevel.color.opacity(0.1))
+                .background(.white)
                 .cornerRadius(8)
                 
                 // Movement Rates
