@@ -192,6 +192,7 @@ struct CharacterDetailView: View {
                                 DetailArmorSection(armor: character.armor, totalDefenseValue: character.defenseValue)
                                 DetailEquipmentSection(character: character)
                                 DetailGoldSection(character: character)
+                                DetailEncumbranceSection(character: character)
                             }
                             .padding()
                         }
