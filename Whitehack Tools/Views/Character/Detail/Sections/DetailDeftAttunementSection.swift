@@ -29,7 +29,6 @@ struct DetailDeftAttunementSection: View {
                     DeftFeaturesCard()
                     AttunementSlotsCard(character: character)
                 }
-                .padding(.vertical)
             }
         }
     }
