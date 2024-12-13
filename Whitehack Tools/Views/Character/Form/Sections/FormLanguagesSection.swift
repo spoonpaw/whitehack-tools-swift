@@ -163,7 +163,7 @@ struct FormLanguagesSection: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            SectionHeader(title: "Languages", icon: Ph.translate.bold)
+            SectionHeader(title: "Languages", icon: Ph.scroll.bold)
             
             // Content
             VStack(spacing: 16) {
