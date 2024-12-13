@@ -86,90 +86,91 @@ struct CharacterFormView: View {
             
             ScrollView {
                 ScrollViewReader { proxy in
-                    LazyVStack(spacing: 20) {
+                    LazyVStack(spacing: 16) {
                         Color.clear
                             .frame(height: 0)
                             .id("scroll-to-top")
                         
                         switch selectedTab {
                         case .info:
-                            FormBasicInfoSection(
-                                name: $formData.name,
-                                playerName: $formData.playerName,
-                                selectedClass: $formData.selectedClass,
-                                level: $formData.level,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormAttributesSection(
-                                useCustomAttributes: $formData.useCustomAttributes,
-                                customAttributes: $formData.customAttributes,
-                                strength: $formData.strength,
-                                agility: $formData.agility,
-                                toughness: $formData.toughness,
-                                intelligence: $formData.intelligence,
-                                willpower: $formData.willpower,
-                                charisma: $formData.charisma
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormCharacterGroupsSection(
-                                speciesGroup: $formData.speciesGroup,
-                                vocationGroup: $formData.vocationGroup,
-                                affiliationGroups: $formData.affiliationGroups,
-                                newAffiliationGroup: $formData.newAffiliationGroup,
-                                attributeGroupPairs: $formData.attributeGroupPairs,
-                                selectedAttribute: $formData.selectedAttribute,
-                                newAttributeGroup: $formData.newAttributeGroup,
-                                isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                                isVocationGroupAdded: $formData.isVocationGroupAdded,
-                                useCustomAttributes: $formData.useCustomAttributes,
-                                customAttributes: $formData.customAttributes,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormLanguagesSection(
-                                languages: $formData.languages,
-                                newLanguage: $formData.newLanguage,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            if formData.selectedClass == .wise {
-                                FormWiseMiracleSection(
-                                    characterClass: formData.selectedClass,
-                                    level: Int(formData.level) ?? 1,
-                                    willpower: $formData.willpower,
+                            VStack(spacing: 20) {
+                                FormBasicInfoSection(
+                                    name: $formData.name,
+                                    playerName: $formData.playerName,
+                                    selectedClass: $formData.selectedClass,
+                                    level: $formData.level,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormAttributesSection(
                                     useCustomAttributes: $formData.useCustomAttributes,
-                                    miracleSlots: $formData.miracleSlots
+                                    customAttributes: $formData.customAttributes,
+                                    strength: $formData.strength,
+                                    agility: $formData.agility,
+                                    toughness: $formData.toughness,
+                                    intelligence: $formData.intelligence,
+                                    willpower: $formData.willpower,
+                                    charisma: $formData.charisma
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormCharacterGroupsSection(
+                                    speciesGroup: $formData.speciesGroup,
+                                    vocationGroup: $formData.vocationGroup,
+                                    affiliationGroups: $formData.affiliationGroups,
+                                    newAffiliationGroup: $formData.newAffiliationGroup,
+                                    attributeGroupPairs: $formData.attributeGroupPairs,
+                                    selectedAttribute: $formData.selectedAttribute,
+                                    newAttributeGroup: $formData.newAttributeGroup,
+                                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                                    isVocationGroupAdded: $formData.isVocationGroupAdded,
+                                    useCustomAttributes: $formData.useCustomAttributes,
+                                    customAttributes: $formData.customAttributes,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormLanguagesSection(
+                                    languages: $formData.languages,
+                                    newLanguage: $formData.newLanguage,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                if formData.selectedClass == .wise {
+                                    FormWiseMiracleSection(
+                                        characterClass: formData.selectedClass,
+                                        level: Int(formData.level) ?? 1,
+                                        willpower: $formData.willpower,
+                                        useCustomAttributes: $formData.useCustomAttributes,
+                                        miracleSlots: $formData.miracleSlots
+                                    )
+                                    .frame(maxWidth: .infinity)
+                                }
+                                
+                                if formData.selectedClass == .deft {
+                                    FormDeftAttunementSection(
+                                        characterClass: formData.selectedClass,
+                                        level: Int(formData.level) ?? 1,
+                                        attunementSlots: $formData.attunementSlots
+                                    )
+                                    .frame(maxWidth: .infinity)
+                                }
+                                
+                                FormOtherInformationSection(
+                                    experience: $formData.experience,
+                                    corruption: $formData.corruption,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormNotesSection(
+                                    notes: $formData.notes,
+                                    focusedField: $focusedField
                                 )
                                 .frame(maxWidth: .infinity)
                             }
-                            
-                            if formData.selectedClass == .deft {
-                                FormDeftAttunementSection(
-                                    characterClass: formData.selectedClass,
-                                    level: Int(formData.level) ?? 1,
-                                    attunementSlots: $formData.attunementSlots
-                                )
-                                .frame(maxWidth: .infinity)
-                            }
-                            
-                            FormOtherInformationSection(
-                                experience: $formData.experience,
-                                corruption: $formData.corruption,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormNotesSection(
-                                notes: $formData.notes,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
                         case .combat:
                             FormCombatStatsSection(
                                 currentHP: $formData.currentHP,
@@ -179,7 +180,6 @@ struct CharacterFormView: View {
                                 focusedField: $focusedField
                             )
                             .frame(maxWidth: .infinity)
-                            
                         case .equipment:
                             // Weapons Section
                             VStack(spacing: 12) {
@@ -252,7 +252,7 @@ struct CharacterFormView: View {
                         }
                     }
                 }
-                .padding()
+                .padding(.horizontal)
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
@@ -298,90 +298,91 @@ struct CharacterFormView: View {
             
             ScrollView {
                 ScrollViewReader { proxy in
-                    LazyVStack(spacing: 20) {
+                    LazyVStack(spacing: 16) {
                         Color.clear
                             .frame(height: 0)
                             .id("scroll-to-top")
                         
                         switch selectedTab {
                         case .info:
-                            FormBasicInfoSection(
-                                name: $formData.name,
-                                playerName: $formData.playerName,
-                                selectedClass: $formData.selectedClass,
-                                level: $formData.level,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormAttributesSection(
-                                useCustomAttributes: $formData.useCustomAttributes,
-                                customAttributes: $formData.customAttributes,
-                                strength: $formData.strength,
-                                agility: $formData.agility,
-                                toughness: $formData.toughness,
-                                intelligence: $formData.intelligence,
-                                willpower: $formData.willpower,
-                                charisma: $formData.charisma
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormCharacterGroupsSection(
-                                speciesGroup: $formData.speciesGroup,
-                                vocationGroup: $formData.vocationGroup,
-                                affiliationGroups: $formData.affiliationGroups,
-                                newAffiliationGroup: $formData.newAffiliationGroup,
-                                attributeGroupPairs: $formData.attributeGroupPairs,
-                                selectedAttribute: $formData.selectedAttribute,
-                                newAttributeGroup: $formData.newAttributeGroup,
-                                isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
-                                isVocationGroupAdded: $formData.isVocationGroupAdded,
-                                useCustomAttributes: $formData.useCustomAttributes,
-                                customAttributes: $formData.customAttributes,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormLanguagesSection(
-                                languages: $formData.languages,
-                                newLanguage: $formData.newLanguage,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            if formData.selectedClass == .wise {
-                                FormWiseMiracleSection(
-                                    characterClass: formData.selectedClass,
-                                    level: Int(formData.level) ?? 1,
-                                    willpower: $formData.willpower,
+                            VStack(spacing: 20) {
+                                FormBasicInfoSection(
+                                    name: $formData.name,
+                                    playerName: $formData.playerName,
+                                    selectedClass: $formData.selectedClass,
+                                    level: $formData.level,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormAttributesSection(
                                     useCustomAttributes: $formData.useCustomAttributes,
-                                    miracleSlots: $formData.miracleSlots
+                                    customAttributes: $formData.customAttributes,
+                                    strength: $formData.strength,
+                                    agility: $formData.agility,
+                                    toughness: $formData.toughness,
+                                    intelligence: $formData.intelligence,
+                                    willpower: $formData.willpower,
+                                    charisma: $formData.charisma
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormCharacterGroupsSection(
+                                    speciesGroup: $formData.speciesGroup,
+                                    vocationGroup: $formData.vocationGroup,
+                                    affiliationGroups: $formData.affiliationGroups,
+                                    newAffiliationGroup: $formData.newAffiliationGroup,
+                                    attributeGroupPairs: $formData.attributeGroupPairs,
+                                    selectedAttribute: $formData.selectedAttribute,
+                                    newAttributeGroup: $formData.newAttributeGroup,
+                                    isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
+                                    isVocationGroupAdded: $formData.isVocationGroupAdded,
+                                    useCustomAttributes: $formData.useCustomAttributes,
+                                    customAttributes: $formData.customAttributes,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormLanguagesSection(
+                                    languages: $formData.languages,
+                                    newLanguage: $formData.newLanguage,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                if formData.selectedClass == .wise {
+                                    FormWiseMiracleSection(
+                                        characterClass: formData.selectedClass,
+                                        level: Int(formData.level) ?? 1,
+                                        willpower: $formData.willpower,
+                                        useCustomAttributes: $formData.useCustomAttributes,
+                                        miracleSlots: $formData.miracleSlots
+                                    )
+                                    .frame(maxWidth: .infinity)
+                                }
+                                
+                                if formData.selectedClass == .deft {
+                                    FormDeftAttunementSection(
+                                        characterClass: formData.selectedClass,
+                                        level: Int(formData.level) ?? 1,
+                                        attunementSlots: $formData.attunementSlots
+                                    )
+                                    .frame(maxWidth: .infinity)
+                                }
+                                
+                                FormOtherInformationSection(
+                                    experience: $formData.experience,
+                                    corruption: $formData.corruption,
+                                    focusedField: $focusedField
+                                )
+                                .frame(maxWidth: .infinity)
+                                
+                                FormNotesSection(
+                                    notes: $formData.notes,
+                                    focusedField: $focusedField
                                 )
                                 .frame(maxWidth: .infinity)
                             }
-                            
-                            if formData.selectedClass == .deft {
-                                FormDeftAttunementSection(
-                                    characterClass: formData.selectedClass,
-                                    level: Int(formData.level) ?? 1,
-                                    attunementSlots: $formData.attunementSlots
-                                )
-                                .frame(maxWidth: .infinity)
-                            }
-                            
-                            FormOtherInformationSection(
-                                experience: $formData.experience,
-                                corruption: $formData.corruption,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            FormNotesSection(
-                                notes: $formData.notes,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
-                            
                         case .combat:
                             FormCombatStatsSection(
                                 currentHP: $formData.currentHP,
@@ -391,7 +392,6 @@ struct CharacterFormView: View {
                                 focusedField: $focusedField
                             )
                             .frame(maxWidth: .infinity)
-                            
                         case .equipment:
                             // Weapons Section
                             VStack(spacing: 12) {
@@ -464,7 +464,7 @@ struct CharacterFormView: View {
                         }
                     }
                 }
-                .padding()
+                .padding(.horizontal)
             }
         }
         .navigationTitle(characterId == nil ? "New Character" : "Edit Character")
