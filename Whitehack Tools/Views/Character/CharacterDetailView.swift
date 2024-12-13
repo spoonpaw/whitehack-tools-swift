@@ -165,6 +165,9 @@ struct CharacterDetailView: View {
                                 DetailGroupsSection(character: character)
                                     .padding(.horizontal, 16)
                                 
+                                DetailLanguagesSection(character: character)
+                                    .padding(.horizontal, 16)
+                                
                                 if character.characterClass == .deft {
                                     DetailDeftAttunementSection(character: character)
                                         .padding(.horizontal, 16)
@@ -254,10 +257,10 @@ private struct BasicInfoTabView: View {
             DetailHeaderSection(character: character)
             DetailStatsSection(character: character)
             DetailFortunateSection(character: character)
-            DetailDeftAttunementSection(character: character)
-            DetailWiseMiracleSection(character: character)
             DetailGroupsSection(character: character)
             DetailLanguagesSection(character: character)
+            DetailDeftAttunementSection(character: character)
+            DetailWiseMiracleSection(character: character)
             DetailAdditionalInfoSection(character: character)
         }
         .padding(.horizontal)
