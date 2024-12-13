@@ -4,11 +4,21 @@ import PhosphorSwift
 struct DetailGoldSection: View {
     let character: PlayerCharacter
     
+    private var backgroundColor: Color {
+        #if os(iOS)
+        Color(.systemBackground)
+        #else
+        Color(nsColor: .windowBackgroundColor)
+        #endif
+    }
+    
     var body: some View {
-        Section {
+        VStack(spacing: 12) {
+            SectionHeader(title: "Gold", icon: Ph.coins.bold)
+            
             VStack(spacing: 16) {
                 // On Hand and Stashed
-                HStack(spacing: 24) {
+                HStack(spacing: 16) {
                     // On Hand
                     VStack(alignment: .leading, spacing: 4) {
                         Label {
@@ -16,13 +26,17 @@ struct DetailGoldSection: View {
                                 .font(.footnote)
                                 .foregroundColor(.secondary)
                         } icon: {
-                            IconFrame(icon: Ph.wallet.bold, color: .yellow)
+                            IconFrame(icon: Ph.wallet.bold, color: Color.yellow.opacity(0.8))
                                 .scaleEffect(0.8)
                         }
-                        Text("\(character.coinsOnHand)gp")
-                            .font(.title2.monospacedDigit())
-                            .foregroundColor(.primary)
+                        Text("\(character.coinsOnHand) GP")
+                            .font(.title3)
+                            .fontWeight(.medium)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(8)
                     
                     // Stashed
                     VStack(alignment: .leading, spacing: 4) {
@@ -31,38 +45,44 @@ struct DetailGoldSection: View {
                                 .font(.footnote)
                                 .foregroundColor(.secondary)
                         } icon: {
-                            IconFrame(icon: Ph.vault.bold, color: .yellow)
+                            IconFrame(icon: Ph.vault.bold, color: Color.yellow.opacity(0.8))
                                 .scaleEffect(0.8)
                         }
-                        Text("\(character.stashedCoins)gp")
-                            .font(.title2.monospacedDigit())
-                            .foregroundColor(.primary)
+                        Text("\(character.stashedCoins) GP")
+                            .font(.title3)
+                            .fontWeight(.medium)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(8)
                 }
                 
                 // Total
-                VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     Label {
-                        Text("Total")
+                        Text("Total Gold")
                             .font(.footnote)
                             .foregroundColor(.secondary)
                     } icon: {
-                        IconFrame(icon: Ph.coins.bold, color: .yellow)
+                        IconFrame(icon: Ph.coins.bold, color: Color.yellow.opacity(0.8))
                             .scaleEffect(0.8)
                     }
-                    Text("\(character.coinsOnHand + character.stashedCoins)gp")
-                        .font(.title2.monospacedDigit())
-                        .foregroundColor(.primary)
+                    Spacer()
+                    Text("\(character.coinsOnHand + character.stashedCoins) GP")
+                        .font(.title3)
+                        .fontWeight(.medium)
                 }
+                .padding()
+                .background(.white)
+                .cornerRadius(8)
             }
-            .padding(.vertical, 8)
-        } header: {
-            HStack(spacing: 8) {
-                Ph.coins.bold
-                    .frame(width: 20, height: 20)
-                Text("Gold")
-                    .font(.headline)
-            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(backgroundColor)
+            .cornerRadius(12)
+            .shadow(radius: 4)
         }
+        .padding(.horizontal)
     }
 }
