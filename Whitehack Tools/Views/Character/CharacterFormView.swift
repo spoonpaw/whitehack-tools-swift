@@ -106,6 +106,7 @@ struct CharacterFormView: View {
                                 FormAttributesSection(
                                     useCustomAttributes: $formData.useCustomAttributes,
                                     customAttributes: $formData.customAttributes,
+                                    attributeGroupPairs: $formData.attributeGroupPairs,
                                     strength: $formData.strength,
                                     agility: $formData.agility,
                                     toughness: $formData.toughness,
@@ -121,8 +122,6 @@ struct CharacterFormView: View {
                                     affiliationGroups: $formData.affiliationGroups,
                                     newAffiliationGroup: $formData.newAffiliationGroup,
                                     attributeGroupPairs: $formData.attributeGroupPairs,
-                                    selectedAttribute: $formData.selectedAttribute,
-                                    newAttributeGroup: $formData.newAttributeGroup,
                                     isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
                                     isVocationGroupAdded: $formData.isVocationGroupAdded,
                                     useCustomAttributes: $formData.useCustomAttributes,
@@ -321,6 +320,7 @@ struct CharacterFormView: View {
                                 FormAttributesSection(
                                     useCustomAttributes: $formData.useCustomAttributes,
                                     customAttributes: $formData.customAttributes,
+                                    attributeGroupPairs: $formData.attributeGroupPairs,
                                     strength: $formData.strength,
                                     agility: $formData.agility,
                                     toughness: $formData.toughness,
@@ -336,8 +336,6 @@ struct CharacterFormView: View {
                                     affiliationGroups: $formData.affiliationGroups,
                                     newAffiliationGroup: $formData.newAffiliationGroup,
                                     attributeGroupPairs: $formData.attributeGroupPairs,
-                                    selectedAttribute: $formData.selectedAttribute,
-                                    newAttributeGroup: $formData.newAttributeGroup,
                                     isSpeciesGroupAdded: $formData.isSpeciesGroupAdded,
                                     isVocationGroupAdded: $formData.isVocationGroupAdded,
                                     useCustomAttributes: $formData.useCustomAttributes,
@@ -568,8 +566,6 @@ private class FormData: ObservableObject {
     @Published var affiliationGroups: [String]
     @Published var newAffiliationGroup: String
     @Published var attributeGroupPairs: [AttributeGroupPair]
-    @Published var selectedAttribute: String
-    @Published var newAttributeGroup: String
     @Published var isSpeciesGroupAdded: Bool
     @Published var isVocationGroupAdded: Bool
     
@@ -615,8 +611,6 @@ private class FormData: ObservableObject {
         self.affiliationGroups = character?.affiliationGroups ?? []
         self.newAffiliationGroup = ""
         self.attributeGroupPairs = character?.attributeGroupPairs ?? []
-        self.selectedAttribute = ""
-        self.newAttributeGroup = ""
         self.isSpeciesGroupAdded = !((character?.speciesGroup ?? "").isEmpty)
         self.isVocationGroupAdded = !((character?.vocationGroup ?? "").isEmpty)
         self.notes = character?.notes ?? ""

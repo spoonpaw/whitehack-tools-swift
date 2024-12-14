@@ -94,16 +94,18 @@ struct CustomAttributeEditor: View {
     let attribute: CustomAttribute
     let onDelete: () -> Void
     let onUpdate: (CustomAttribute) -> Void
+    @Binding var attributeGroupPairs: [AttributeGroupPair]
     @State private var showIconPicker = false
     @State private var localAttribute: CustomAttribute
     @State private var textValue: String
     @FocusState private var isFocused: Bool
     
-    init(attribute: CustomAttribute, onDelete: @escaping () -> Void, onUpdate: @escaping (CustomAttribute) -> Void) {
+    init(attribute: CustomAttribute, onDelete: @escaping () -> Void, onUpdate: @escaping (CustomAttribute) -> Void, attributeGroupPairs: Binding<[AttributeGroupPair]>) {
         print(" [CUSTOM ATTRIBUTE EDITOR] Initializing editor for attribute: \(attribute.id)")
         self.attribute = attribute
         self.onDelete = onDelete
         self.onUpdate = onUpdate
+        self._attributeGroupPairs = attributeGroupPairs
         self._localAttribute = State(initialValue: attribute)
         self._textValue = State(initialValue: String(attribute.value))
     }
@@ -175,19 +177,12 @@ struct CustomAttributeEditor: View {
                     Text("Name")
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    TextField("Enter name", text: Binding(
-                        get: { 
-                            print(" [CUSTOM ATTRIBUTE EDITOR] Getting name for attribute: \(attribute.id)")
-                            return localAttribute.name 
-                        },
-                        set: { newValue in
-                            print(" [CUSTOM ATTRIBUTE EDITOR] Setting name for attribute: \(attribute.id) to: \(newValue)")
-                            localAttribute.name = newValue
+                    TextField("Name", text: $localAttribute.name)
+                        .textFieldStyle(.roundedBorder)
+                        .onChange(of: localAttribute.name) { newName in
+                            updateAttributeGroupPairs(oldName: attribute.name, newName: newName)
                             onUpdate(localAttribute)
                         }
-                    ))
-                    .textFieldStyle(.roundedBorder)
-                    .multilineTextAlignment(.center)
                 }
                 
                 // Value section
@@ -262,6 +257,17 @@ struct CustomAttributeEditor: View {
         }
     }
     
+    private func updateAttributeGroupPairs(oldName: String, newName: String) {
+        attributeGroupPairs = attributeGroupPairs.map { pair in
+            if pair.attribute == oldName {
+                var updatedPair = pair
+                updatedPair.attribute = newName
+                return updatedPair
+            }
+            return pair
+        }
+    }
+    
     private var systemFillColor: Color {
         #if os(iOS)
         return Color(uiColor: .secondarySystemBackground)
@@ -286,6 +292,7 @@ struct CustomAttributeEditor: View {
 struct FormAttributesSection: View {
     @Binding var useCustomAttributes: Bool
     @Binding var customAttributes: [CustomAttribute]
+    @Binding var attributeGroupPairs: [AttributeGroupPair]
     @Binding var strength: String
     @Binding var agility: String
     @Binding var toughness: String
@@ -311,24 +318,19 @@ struct FormAttributesSection: View {
                 if useCustomAttributes {
                     VStack(spacing: 16) {
                         LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
-                            ForEach(customAttributes) { attribute in
+                            ForEach(customAttributes.indices, id: \.self) { index in
                                 CustomAttributeEditor(
-                                    attribute: attribute,
+                                    attribute: customAttributes[index],
                                     onDelete: {
-                                        print(" [FORM ATTRIBUTES SECTION] Deleting attribute with id: \(attribute.id)")
-                                        if let index = customAttributes.firstIndex(where: { $0.id == attribute.id }) {
-                                            customAttributes.remove(at: index)
-                                            print(" [FORM ATTRIBUTES SECTION] Attribute deleted successfully")
-                                            print(" [FORM ATTRIBUTES SECTION] Remaining attributes: \(customAttributes.map { $0.id })")
-                                        }
+                                        print(" [FORM ATTRIBUTES SECTION] Deleting attribute at index \(index)")
+                                        customAttributes.remove(at: index)
                                     },
                                     onUpdate: { updatedAttribute in
-                                        print(" [FORM ATTRIBUTES SECTION] Updating attribute with id: \(attribute.id)")
-                                        if let index = customAttributes.firstIndex(where: { $0.id == attribute.id }) {
-                                            customAttributes[index] = updatedAttribute
-                                            print(" [FORM ATTRIBUTES SECTION] Attribute updated successfully")
-                                        }
-                                    }
+                                        print(" [FORM ATTRIBUTES SECTION] Updating attribute at index \(index)")
+                                        customAttributes[index] = updatedAttribute
+                                        print(" [FORM ATTRIBUTES SECTION] Attribute updated successfully")
+                                    },
+                                    attributeGroupPairs: $attributeGroupPairs
                                 )
                             }
                         }

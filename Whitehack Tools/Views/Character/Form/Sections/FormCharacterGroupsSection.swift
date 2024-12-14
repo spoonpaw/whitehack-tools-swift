@@ -7,8 +7,6 @@ struct FormCharacterGroupsSection: View {
     @Binding var affiliationGroups: [String]
     @Binding var newAffiliationGroup: String
     @Binding var attributeGroupPairs: [AttributeGroupPair]
-    @Binding var selectedAttribute: String
-    @Binding var newAttributeGroup: String
     @Binding var isSpeciesGroupAdded: Bool
     @Binding var isVocationGroupAdded: Bool
     @Binding var useCustomAttributes: Bool
@@ -19,12 +17,8 @@ struct FormCharacterGroupsSection: View {
     
     private var availableGroups: [String] {
         var groups: [String] = []
-        if isSpeciesGroupAdded, !speciesGroup.isEmpty {
-            groups.append(speciesGroup)
-        }
-        if isVocationGroupAdded, !vocationGroup.isEmpty {
-            groups.append(vocationGroup)
-        }
+        if !speciesGroup.isEmpty { groups.append(speciesGroup) }
+        if !vocationGroup.isEmpty { groups.append(vocationGroup) }
         groups.append(contentsOf: affiliationGroups)
         return groups
     }
@@ -38,37 +32,8 @@ struct FormCharacterGroupsSection: View {
     }
     
     private var filteredAttributeGroupPairs: [AttributeGroupPair] {
-        if useCustomAttributes {
-            let customAttributeNames = customAttributes.map { $0.name }
-            return attributeGroupPairs.filter { customAttributeNames.contains($0.attribute) }
-        } else {
-            return attributeGroupPairs.filter { defaultAttributes.contains($0.attribute) }
-        }
-    }
-    
-    private func removeSpeciesGroup() {
-        withAnimation {
-            let oldGroup = speciesGroup
-            speciesGroup = ""
-            isSpeciesGroupAdded = false
-            
-            // Remove any attribute group pairs that reference the removed species group
-            attributeGroupPairs.removeAll { pair in
-                pair.group == oldGroup
-            }
-        }
-    }
-    
-    private func removeVocationGroup() {
-        withAnimation {
-            let oldGroup = vocationGroup
-            vocationGroup = ""
-            isVocationGroupAdded = false
-            
-            // Remove any attribute group pairs that reference the removed vocation group
-            attributeGroupPairs.removeAll { pair in
-                pair.group == oldGroup
-            }
+        attributeGroupPairs.filter { pair in
+            availableAttributes.contains(pair.attribute) && availableGroups.contains(pair.group)
         }
     }
     
@@ -77,58 +42,156 @@ struct FormCharacterGroupsSection: View {
             SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)
             
             VStack(spacing: 16) {
-                FormSpeciesGroupView(
-                    speciesGroup: $speciesGroup,
-                    isSpeciesGroupAdded: $isSpeciesGroupAdded,
-                    attributeGroupPairs: $attributeGroupPairs,
-                    focusedField: $focusedField,
-                    onRemove: removeSpeciesGroup
-                )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(.background)
-                .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                // Species Group
+                if !isSpeciesGroupAdded {
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isSpeciesGroupAdded = true
+                        }
+                    } label: {
+                        HStack {
+                            Text("Add Species Group")
+                                .foregroundColor(.blue)
+                            Spacer()
+                            Image(systemName: "plus.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.blue)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                } else {
+                    GroupCard(title: "Species Group") {
+                        HStack {
+                            TextField("Species Group", text: $speciesGroup)
+                                #if os(iOS)
+                                .textInputAutocapitalization(.words)
+                                #endif
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    speciesGroup = ""
+                                    isSpeciesGroupAdded = false
+                                }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .imageScale(.medium)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
+                }
                 
-                FormVocationGroupView(
-                    vocationGroup: $vocationGroup,
-                    isVocationGroupAdded: $isVocationGroupAdded,
-                    attributeGroupPairs: $attributeGroupPairs,
-                    focusedField: $focusedField,
-                    onRemove: removeVocationGroup
-                )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(.background)
-                .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                // Vocation Group
+                if !isVocationGroupAdded {
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isVocationGroupAdded = true
+                        }
+                    } label: {
+                        HStack {
+                            Text("Add Vocation Group")
+                                .foregroundColor(.blue)
+                            Spacer()
+                            Image(systemName: "plus.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.blue)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                } else {
+                    GroupCard(title: "Vocation Group") {
+                        HStack {
+                            TextField("Vocation Group", text: $vocationGroup)
+                                #if os(iOS)
+                                .textInputAutocapitalization(.words)
+                                #endif
+                                .textFieldStyle(.roundedBorder)
+                            
+                            Button {
+                                withAnimation(.easeInOut) {
+                                    vocationGroup = ""
+                                    isVocationGroupAdded = false
+                                }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .imageScale(.medium)
+                                    .symbolRenderingMode(.hierarchical)
+                                    .foregroundColor(.red)
+                            }
+                            .buttonStyle(BorderlessButtonStyle())
+                        }
+                    }
+                }
                 
-                FormAffiliationGroupsView(
-                    affiliationGroups: $affiliationGroups,
-                    newAffiliationGroup: $newAffiliationGroup,
-                    attributeGroupPairs: $attributeGroupPairs
-                )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(.background)
-                .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                // Affiliation Groups
+                GroupCard(title: "Affiliation Groups") {
+                    FormAffiliationGroupsView(
+                        affiliationGroups: $affiliationGroups,
+                        newAffiliationGroup: $newAffiliationGroup,
+                        attributeGroupPairs: $attributeGroupPairs
+                    )
+                }
                 
-                FormAttributeGroupPairsView(
-                    attributes: availableAttributes,
-                    attributeGroupPairs: $attributeGroupPairs,
-                    availableGroups: availableGroups,
-                    displayedPairs: filteredAttributeGroupPairs,
-                    selectedAttribute: $selectedAttribute,
-                    newAttributeGroup: $newAttributeGroup
-                )
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(.background)
-                .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                // Attribute Group Pairs
+                GroupCard(title: "Attribute Groups") {
+                    FormAttributeGroupPairsView(
+                        attributes: availableAttributes,
+                        attributeGroupPairs: $attributeGroupPairs,
+                        availableGroups: availableGroups,
+                        displayedPairs: filteredAttributeGroupPairs
+                    )
+                }
             }
-            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(.background)
+            .cornerRadius(10)
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        }
+    }
+}
+
+struct GroupCard<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(.subheadline, design: .rounded))
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+            
+            content
+                .padding(12)
+                .background({
+                    #if os(iOS)
+                    Color(uiColor: .systemGray6)
+                    #else
+                    Color(nsColor: .windowBackgroundColor)
+                    #endif
+                }())
+                .cornerRadius(8)
         }
     }
 }
