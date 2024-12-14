@@ -13,6 +13,10 @@ struct FormCharacterGroupsSection: View {
     @Binding var customAttributes: [CustomAttribute]
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
+    // Track previous values for group updates
+    @State private var previousSpeciesGroup: String = ""
+    @State private var previousVocationGroup: String = ""
+    
     private let defaultAttributes = ["Strength", "Agility", "Toughness", "Intelligence", "Willpower", "Charisma"]
     
     private var availableGroups: [String] {
@@ -73,9 +77,24 @@ struct FormCharacterGroupsSection: View {
                                 .textInputAutocapitalization(.words)
                                 #endif
                                 .textFieldStyle(.roundedBorder)
+                                .onAppear {
+                                    previousSpeciesGroup = speciesGroup
+                                }
+                                .onChange(of: speciesGroup) { newValue in
+                                    // Update any attribute pairs using this group
+                                    attributeGroupPairs = attributeGroupPairs.map { pair in
+                                        if pair.group == previousSpeciesGroup {
+                                            return AttributeGroupPair(attribute: pair.attribute, group: newValue)
+                                        }
+                                        return pair
+                                    }
+                                    previousSpeciesGroup = newValue
+                                }
                             
                             Button {
                                 withAnimation(.easeInOut) {
+                                    // Remove any attribute pairs using this species group
+                                    attributeGroupPairs.removeAll { $0.group == speciesGroup }
                                     speciesGroup = ""
                                     isSpeciesGroupAdded = false
                                 }
@@ -121,9 +140,24 @@ struct FormCharacterGroupsSection: View {
                                 .textInputAutocapitalization(.words)
                                 #endif
                                 .textFieldStyle(.roundedBorder)
+                                .onAppear {
+                                    previousVocationGroup = vocationGroup
+                                }
+                                .onChange(of: vocationGroup) { newValue in
+                                    // Update any attribute pairs using this group
+                                    attributeGroupPairs = attributeGroupPairs.map { pair in
+                                        if pair.group == previousVocationGroup {
+                                            return AttributeGroupPair(attribute: pair.attribute, group: newValue)
+                                        }
+                                        return pair
+                                    }
+                                    previousVocationGroup = newValue
+                                }
                             
                             Button {
                                 withAnimation(.easeInOut) {
+                                    // Remove any attribute pairs using this vocation group
+                                    attributeGroupPairs.removeAll { $0.group == vocationGroup }
                                     vocationGroup = ""
                                     isVocationGroupAdded = false
                                 }

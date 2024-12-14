@@ -104,13 +104,15 @@ struct AffiliationItemView: View {
                     withAnimation(.easeInOut) {
                         let trimmed = tempAffiliationText.trimmingCharacters(in: .whitespaces)
                         if !trimmed.isEmpty {
-                            affiliationGroups[index] = trimmed
+                            // Update any attribute pairs using this group
                             attributeGroupPairs = attributeGroupPairs.map { pair in
                                 if pair.group == group {
                                     return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
                                 }
                                 return pair
                             }
+                            // Update the affiliation group name
+                            affiliationGroups[index] = trimmed
                         }
                         editingAffiliationIndex = nil
                     }
@@ -121,6 +123,7 @@ struct AffiliationItemView: View {
                         .foregroundColor(.green)
                 }
                 .buttonStyle(BorderlessButtonStyle())
+                .disabled(tempAffiliationText.trimmingCharacters(in: .whitespaces).isEmpty)
             } else {
                 Text(group)
                     .foregroundColor(.primary)
@@ -150,15 +153,11 @@ struct AffiliationItemView: View {
                 .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .padding(10)
-        .background({
-            #if os(iOS)
-            Color(uiColor: .systemGray6)
-            #else
-            Color(nsColor: .windowBackgroundColor)
-            #endif
-        }())
-        .cornerRadius(8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.background)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -174,30 +173,28 @@ struct FormAffiliationGroupsView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Header with Add button
-            HStack {
-                Text("Affiliation Groups")
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.medium)
-                    .foregroundColor(.secondary)
-                Spacer()
-                if !isAddingAffiliation {
-                    Button {
-                        withAnimation(.easeInOut) {
-                            isAddingAffiliation = true
-                            focusedField = .newAffiliationGroup
-                        }
-                    } label: {
+            // Add new affiliation button
+            if !isAddingAffiliation {
+                Button {
+                    withAnimation(.easeInOut) {
+                        isAddingAffiliation = true
+                        focusedField = .newAffiliationGroup
+                    }
+                } label: {
+                    HStack {
+                        Text("Add Affiliation Group")
+                            .foregroundColor(.blue)
+                        Spacer()
                         Image(systemName: "plus.circle.fill")
                             .imageScale(.medium)
                             .symbolRenderingMode(.hierarchical)
                             .foregroundColor(.blue)
                     }
-                    .buttonStyle(BorderlessButtonStyle())
                 }
+                .buttonStyle(BorderlessButtonStyle())
             }
             
-            // Add new affiliation
+            // Add new affiliation form
             if isAddingAffiliation {
                 HStack {
                     TextField("Add Affiliation Group", text: $newAffiliationGroup)
@@ -265,14 +262,15 @@ struct FormAffiliationGroupsView: View {
                             withAnimation(.easeInOut) {
                                 let trimmed = tempAffiliationText.trimmingCharacters(in: .whitespaces)
                                 if !trimmed.isEmpty {
-                                    affiliationGroups[index] = trimmed
-                                    // Update group references in attribute pairs
+                                    // Update any attribute pairs using this group
                                     attributeGroupPairs = attributeGroupPairs.map { pair in
                                         if pair.group == affiliation {
                                             return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
                                         }
                                         return pair
                                     }
+                                    // Update the affiliation group name
+                                    affiliationGroups[index] = trimmed
                                 }
                                 editingAffiliationIndex = nil
                             }
@@ -319,15 +317,11 @@ struct FormAffiliationGroupsView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
-                .padding(10)
-                .background({
-                    #if os(iOS)
-                    Color(uiColor: .systemGray6)
-                    #else
-                    Color(nsColor: .windowBackgroundColor)
-                    #endif
-                }())
-                .cornerRadius(8)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
         }
     }
