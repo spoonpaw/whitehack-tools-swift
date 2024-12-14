@@ -193,10 +193,26 @@ struct CustomAttributeEditor: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     HStack {
-                        Text("\(localAttribute.value)")
-                            .font(.title3)
-                            .fontWeight(.medium)
-                            .frame(minWidth: 32)
+                        TextField("", value: Binding(
+                            get: {
+                                print(" [CUSTOM ATTRIBUTE EDITOR] Getting value for attribute: \(attribute.id)")
+                                return localAttribute.value
+                            },
+                            set: { newValue in
+                                print(" [CUSTOM ATTRIBUTE EDITOR] Setting value for attribute: \(attribute.id) to: \(newValue)")
+                                let clamped = max(attributeRange.lowerBound, min(attributeRange.upperBound, newValue))
+                                localAttribute.value = clamped
+                                onUpdate(localAttribute)
+                            }
+                        ), formatter: NumberFormatter())
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 60)
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
+                        .multilineTextAlignment(.center)
+                        .font(.title3)
+                        .fontWeight(.medium)
                         
                         Stepper("", value: Binding(
                             get: { 
@@ -300,28 +316,28 @@ struct FormAttributesSection: View {
                         }
                         
                         Button {
-                            print(" [FORM ATTRIBUTES SECTION] Adding new attribute")
-                            let newAttribute = CustomAttribute(
-                                name: "",
-                                value: 10,
-                                icon: .star
-                            )
-                            customAttributes.append(newAttribute)
-                            print(" [FORM ATTRIBUTES SECTION] New attribute added with id: \(newAttribute.id)")
-                            print(" [FORM ATTRIBUTES SECTION] Current attributes: \(customAttributes.map { $0.id })")
+                            print(" [FORM ATTRIBUTES] Add Custom Attribute button tapped")
+                            withAnimation {
+                                let newAttribute = CustomAttribute(
+                                    id: UUID(),
+                                    name: "",
+                                    value: 10,
+                                    icon: .star
+                                )
+                                customAttributes.append(newAttribute)
+                            }
                         } label: {
-                            HStack(spacing: 4) {
-                                Ph.plus.bold
-                                    .frame(width: 16, height: 16)
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
                                 Text("Add Attribute")
                             }
-                            .font(.body)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(systemFillColor)
-                            .cornerRadius(8)
+                            .padding(.vertical, 12)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.borderedProminent)
+                        .tint(.blue.opacity(0.1))
+                        .foregroundColor(.blue)
+                        .padding(.horizontal)
                     }
                 } else {
                     VStack(spacing: 16) {
