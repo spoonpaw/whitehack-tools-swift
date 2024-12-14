@@ -80,7 +80,7 @@ struct FormCharacterGroupsSection: View {
                                     isSpeciesGroupAdded = false
                                 }
                             } label: {
-                                Image(systemName: "minus.circle.fill")
+                                Image(systemName: "trash.circle.fill")
                                     .imageScale(.medium)
                                     .symbolRenderingMode(.hierarchical)
                                     .foregroundColor(.red)
@@ -128,7 +128,7 @@ struct FormCharacterGroupsSection: View {
                                     isVocationGroupAdded = false
                                 }
                             } label: {
-                                Image(systemName: "minus.circle.fill")
+                                Image(systemName: "trash.circle.fill")
                                     .imageScale(.medium)
                                     .symbolRenderingMode(.hierarchical)
                                     .foregroundColor(.red)
@@ -143,7 +143,8 @@ struct FormCharacterGroupsSection: View {
                     FormAffiliationGroupsView(
                         affiliationGroups: $affiliationGroups,
                         newAffiliationGroup: $newAffiliationGroup,
-                        attributeGroupPairs: $attributeGroupPairs
+                        attributeGroupPairs: $attributeGroupPairs,
+                        focusedField: $focusedField
                     )
                 }
                 

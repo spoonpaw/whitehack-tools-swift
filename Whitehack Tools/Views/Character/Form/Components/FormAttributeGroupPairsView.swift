@@ -325,7 +325,7 @@ struct FormAttributeGroupPairsView: View {
                                 attributeGroupPairs.removeAll { $0.id == pair.id }
                             }
                         } label: {
-                            Image(systemName: "minus.circle.fill")
+                            Image(systemName: "trash.circle.fill")
                                 .imageScale(.medium)
                                 .symbolRenderingMode(.hierarchical)
                                 .foregroundColor(.red)

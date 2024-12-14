@@ -166,123 +166,168 @@ struct FormAffiliationGroupsView: View {
     @Binding var affiliationGroups: [String]
     @Binding var newAffiliationGroup: String
     @Binding var attributeGroupPairs: [AttributeGroupPair]
+    @FocusState.Binding var focusedField: CharacterFormView.Field?
     
+    @State private var isAddingAffiliation = false
     @State private var editingAffiliationIndex: Int?
     @State private var tempAffiliationText = ""
     
-    private func deleteAffiliation(at index: Int) {
-        withAnimation(.easeInOut) {
-            let removedGroup = affiliationGroups[index]
-            affiliationGroups.remove(at: index)
-            
-            // Remove any attribute group pairs that reference the removed group
-            attributeGroupPairs.removeAll { pair in
-                pair.group == removedGroup
-            }
-        }
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            // Header with Add button
             HStack {
                 Text("Affiliation Groups")
                     .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.medium)
                     .foregroundColor(.secondary)
                 Spacer()
-                Button {
-                    withAnimation(.easeInOut) {
-                        affiliationGroups.append("")
-                        editingAffiliationIndex = affiliationGroups.count - 1
-                        tempAffiliationText = ""
+                if !isAddingAffiliation {
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isAddingAffiliation = true
+                            focusedField = .newAffiliationGroup
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundColor(.blue)
                     }
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .imageScale(.large)
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundColor(.blue)
+                    .buttonStyle(BorderlessButtonStyle())
                 }
-                .buttonStyle(BorderlessButtonStyle())
             }
             
+            // Add new affiliation
+            if isAddingAffiliation {
+                HStack {
+                    TextField("Add Affiliation Group", text: $newAffiliationGroup)
+                        #if os(iOS)
+                        .textInputAutocapitalization(.words)
+                        #endif
+                        .focused($focusedField, equals: .newAffiliationGroup)
+                        .textFieldStyle(.roundedBorder)
+                    
+                    Button {
+                        withAnimation(.easeInOut) {
+                            newAffiliationGroup = ""
+                            isAddingAffiliation = false
+                        }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    
+                    Button {
+                        withAnimation(.easeInOut) {
+                            let trimmed = newAffiliationGroup.trimmingCharacters(in: .whitespaces)
+                            if !trimmed.isEmpty {
+                                affiliationGroups.append(trimmed)
+                            }
+                            newAffiliationGroup = ""
+                            isAddingAffiliation = false
+                        }
+                    } label: {
+                        Image(systemName: "checkmark.circle.fill")
+                            .imageScale(.medium)
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundColor(.green)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    .disabled(newAffiliationGroup.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+            
+            // Existing affiliations
             ForEach(Array(affiliationGroups.enumerated()), id: \.offset) { index, affiliation in
                 HStack {
                     if editingAffiliationIndex == index {
-                        HStack {
-                            TextField("Edit Affiliation Group", text: $tempAffiliationText)
-                                .textFieldStyle(.roundedBorder)
-                                #if os(iOS)
-                                .textInputAutocapitalization(.words)
-                                #endif
-                            
-                            HStack(spacing: 12) {
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        editingAffiliationIndex = nil
-                                        tempAffiliationText = ""
-                                    }
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .imageScale(.large)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.red)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                                
-                                Button {
-                                    withAnimation(.easeInOut) {
-                                        let trimmed = tempAffiliationText.trimmingCharacters(in: .whitespaces)
-                                        if !trimmed.isEmpty {
-                                            // Update any attribute pairs that were using the old group name
-                                            attributeGroupPairs = attributeGroupPairs.map { pair in
-                                                if pair.group == affiliationGroups[index] {
-                                                    return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
-                                                }
-                                                return pair
-                                            }
-                                            affiliationGroups[index] = trimmed
-                                        }
-                                        editingAffiliationIndex = nil
-                                        tempAffiliationText = ""
-                                    }
-                                } label: {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .imageScale(.large)
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundColor(.green)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
+                        // Edit mode
+                        TextField("Edit Affiliation Group", text: $tempAffiliationText)
+                            .textFieldStyle(.roundedBorder)
+                            .onAppear { tempAffiliationText = affiliation }
+                        
+                        Button {
+                            withAnimation(.easeInOut) {
+                                editingAffiliationIndex = nil
                             }
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.red)
                         }
-                    } else {
-                        Text(affiliation)
-                            .font(.title3)
-                        Spacer()
-                        HStack(spacing: 12) {
-                            Button {
-                                withAnimation(.easeInOut) {
-                                    editingAffiliationIndex = index
-                                    tempAffiliationText = affiliation
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        Button {
+                            withAnimation(.easeInOut) {
+                                let trimmed = tempAffiliationText.trimmingCharacters(in: .whitespaces)
+                                if !trimmed.isEmpty {
+                                    affiliationGroups[index] = trimmed
+                                    // Update group references in attribute pairs
+                                    attributeGroupPairs = attributeGroupPairs.map { pair in
+                                        if pair.group == affiliation {
+                                            return AttributeGroupPair(attribute: pair.attribute, group: trimmed)
+                                        }
+                                        return pair
+                                    }
                                 }
-                            } label: {
-                                Image(systemName: "pencil.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.blue)
+                                editingAffiliationIndex = nil
                             }
-                            
-                            Button {
-                                deleteAffiliation(at: index)
-                            } label: {
-                                Image(systemName: "trash.circle.fill")
-                                    .imageScale(.large)
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundColor(.red)
+                        } label: {
+                            Image(systemName: "checkmark.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        .disabled(tempAffiliationText.trimmingCharacters(in: .whitespaces).isEmpty)
+                    } else {
+                        // Display mode
+                        Text(affiliation)
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                        
+                        Button {
+                            withAnimation(.easeInOut) {
+                                editingAffiliationIndex = index
+                                tempAffiliationText = affiliation
                             }
+                        } label: {
+                            Image(systemName: "pencil.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        Button {
+                            withAnimation(.easeInOut) {
+                                // Remove both the affiliation and any attribute pairs that reference it
+                                attributeGroupPairs.removeAll { $0.group == affiliation }
+                                affiliationGroups.remove(at: index)
+                            }
+                        } label: {
+                            Image(systemName: "trash.circle.fill")
+                                .imageScale(.medium)
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundColor(.red)
                         }
                         .buttonStyle(BorderlessButtonStyle())
                     }
                 }
+                .padding(10)
+                .background({
+                    #if os(iOS)
+                    Color(uiColor: .systemGray6)
+                    #else
+                    Color(nsColor: .windowBackgroundColor)
+                    #endif
+                }())
+                .cornerRadius(8)
             }
         }
     }
