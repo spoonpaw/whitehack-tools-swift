@@ -379,6 +379,7 @@ struct GearEditRow: View {
     @State private var isCursed: Bool
     @State private var isContainer: Bool
     @State private var quantity: Int
+    @State private var quantityString: String
     @State private var isProcessingAction = false
     
     init(gear: Gear, onSave: @escaping (Gear) -> Void, onCancel: @escaping () -> Void) {
@@ -395,6 +396,14 @@ struct GearEditRow: View {
         _isCursed = State(initialValue: gear.isCursed)
         _isContainer = State(initialValue: gear.isContainer)
         _quantity = State(initialValue: gear.quantity)
+        _quantityString = State(initialValue: "\(gear.quantity)")
+    }
+    
+    private func validateIntegerInput(_ input: String, current: Int, range: ClosedRange<Int>) -> Int {
+        if let newValue = Int(input) {
+            return max(range.lowerBound, min(range.upperBound, newValue))
+        }
+        return current
     }
     
     var body: some View {
@@ -432,26 +441,26 @@ struct GearEditRow: View {
                 Text("Quantity")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                HStack {
-                    Button(action: {
-                        if quantity > 1 {
-                            quantity -= 1
-                        }
-                    }) {
-                        Image(systemName: "minus.circle.fill")
-                            .foregroundColor(.red)
+                Label {
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(.roundedBorder)
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .frame(maxWidth: 80)
+                            .onChange(of: quantityString) { newValue in
+                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
                     }
-                    
-                    Text("\(quantity)")
-                        .frame(width: 40)
-                        .multilineTextAlignment(.center)
-                    
-                    Button(action: {
-                        quantity += 1
-                    }) {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(.green)
-                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .blue)
                 }
             }
             
