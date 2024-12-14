@@ -526,7 +526,9 @@ struct ArmorEditRow: View {
     // Basic Properties
     @State private var name: String
     @State private var df: Int
+    @State private var dfString: String
     @State private var weight: Int
+    @State private var weightString: String
     @State private var special: String
     @State private var isEquipped: Bool
     @State private var isStashed: Bool
@@ -537,6 +539,7 @@ struct ArmorEditRow: View {
     @State private var isBonus: Bool
     @State private var bonusString: String
     @State private var quantity: Int
+    @State private var quantityString: String
     
     // Button state tracking
     @State private var isProcessingAction = false
@@ -550,7 +553,9 @@ struct ArmorEditRow: View {
         // Initialize state properties
         _name = State(initialValue: armor.name)
         _df = State(initialValue: armor.df)
+        _dfString = State(initialValue: "\(armor.df)")
         _weight = State(initialValue: armor.weight)
+        _weightString = State(initialValue: "\(armor.weight)")
         _special = State(initialValue: armor.special)
         _isEquipped = State(initialValue: armor.isEquipped)
         _isStashed = State(initialValue: armor.isStashed)
@@ -561,6 +566,14 @@ struct ArmorEditRow: View {
         _isBonus = State(initialValue: armor.bonus >= 0)
         _bonusString = State(initialValue: "\(abs(armor.bonus))")
         _quantity = State(initialValue: armor.quantity)
+        _quantityString = State(initialValue: "\(armor.quantity)")
+    }
+    
+    private func validateIntegerInput(_ input: String, current: Int, range: ClosedRange<Int>) -> Int {
+        if let newValue = Int(input) {
+            return max(range.lowerBound, min(range.upperBound, newValue))
+        }
+        return current
     }
     
     private func validateBonusInput(_ input: String) {
@@ -597,8 +610,22 @@ struct ArmorEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Stepper(value: $df, in: 0...10) {
-                        Text("\(df)")
+                    HStack {
+                        TextField("Defense", text: $dfString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .frame(maxWidth: 80)
+                            .onChange(of: dfString) { newValue in
+                                df = validateIntegerInput(newValue, current: df, range: 0...10)
+                                dfString = "\(df)"
+                            }
+                        Stepper("", value: $df, in: 0...10)
+                            .labelsHidden()
+                            .onChange(of: df) { newValue in
+                                dfString = "\(newValue)"
+                            }
                     }
                 } icon: {
                     IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
@@ -611,8 +638,24 @@ struct ArmorEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Stepper(value: $weight, in: 0...10) {
-                        Text("\(weight) slot\(weight == 1 ? "" : "s")")
+                    HStack {
+                        TextField("Weight", text: $weightString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .frame(maxWidth: 80)
+                            .onChange(of: weightString) { newValue in
+                                weight = validateIntegerInput(newValue, current: weight, range: 0...10)
+                                weightString = "\(weight)"
+                            }
+                        Stepper("", value: $weight, in: 0...10)
+                            .labelsHidden()
+                            .onChange(of: weight) { newValue in
+                                weightString = "\(newValue)"
+                            }
+                        Text("slot\(weight == 1 ? "" : "s")")
+                            .foregroundColor(.secondary)
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
@@ -625,8 +668,22 @@ struct ArmorEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Stepper(value: $quantity, in: 1...99) {
-                        Text("\(quantity)")
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .frame(maxWidth: 80)
+                            .onChange(of: quantityString) { newValue in
+                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
                     }
                 } icon: {
                     IconFrame(icon: Ph.stack.bold, color: .blue)
@@ -775,7 +832,9 @@ struct ArmorEditRow: View {
             // Reset state to match the input armor
             name = armor.name
             df = armor.df
+            dfString = "\(armor.df)"
             weight = armor.weight
+            weightString = "\(armor.weight)"
             special = armor.special
             isEquipped = armor.isEquipped
             isStashed = armor.isStashed
@@ -786,6 +845,7 @@ struct ArmorEditRow: View {
             isBonus = armor.bonus >= 0
             bonusString = "\(abs(armor.bonus))"
             quantity = armor.quantity
+            quantityString = "\(armor.quantity)"
         }
     }
 }
