@@ -13,7 +13,27 @@ struct AttributeEditor: View {
                 Text(label)
                     .font(.title3)
                     .fontWeight(.medium)
-                Text(value)
+                TextField("", text: $value)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 60)
+                    #if os(iOS)
+                    .keyboardType(.numberPad)
+                    #endif
+                    .focused($focusedField, equals: field)
+                    .onChange(of: value) { newValue in
+                        // Only allow numeric input
+                        let filtered = newValue.filter { $0.isNumber }
+                        if filtered != newValue {
+                            value = filtered
+                        }
+                        // Validate range
+                        if let intValue = Int(filtered) {
+                            let clamped = max(range.lowerBound, min(range.upperBound, intValue))
+                            if String(clamped) != filtered {
+                                value = String(clamped)
+                            }
+                        }
+                    }
                     .font(.title2)
                     .fontWeight(.bold)
             }
