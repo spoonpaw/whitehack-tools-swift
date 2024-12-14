@@ -20,18 +20,16 @@ struct AttributeEditor: View {
                     .keyboardType(.numberPad)
                     #endif
                     .focused($focusedField, equals: field)
+                    .onChange(of: focusedField) { newValue in
+                        if newValue != field {  // Field lost focus
+                            validateAndFixEmptyInput()
+                        }
+                    }
                     .onChange(of: value) { newValue in
-                        // Only allow numeric input
+                        // Only filter non-numeric while typing
                         let filtered = newValue.filter { $0.isNumber }
                         if filtered != newValue {
                             value = filtered
-                        }
-                        // Validate range
-                        if let intValue = Int(filtered) {
-                            let clamped = max(range.lowerBound, min(range.upperBound, intValue))
-                            if String(clamped) != filtered {
-                                value = String(clamped)
-                            }
                         }
                     }
                     .font(.title2)
@@ -65,17 +63,33 @@ struct AttributeEditor: View {
         .padding()
         .background(Color.blue.opacity(0.1))
         .cornerRadius(12)
+        .onAppear {
+            validateAndFixEmptyInput()
+        }
+    }
+    
+    private func validateAndFixEmptyInput() {
+        if value.isEmpty || Int(value) == nil {
+            value = String(range.lowerBound)
+        } else if let current = Int(value) {
+            let clamped = max(range.lowerBound, min(range.upperBound, current))
+            value = String(clamped)
+        }
     }
     
     private func decrementValue() {
         if let current = Int(value), current > range.lowerBound {
             value = String(current - 1)
+        } else {
+            value = String(range.lowerBound)
         }
     }
     
     private func incrementValue() {
         if let current = Int(value), current < range.upperBound {
             value = String(current + 1)
+        } else {
+            value = String(range.upperBound)
         }
     }
 }
