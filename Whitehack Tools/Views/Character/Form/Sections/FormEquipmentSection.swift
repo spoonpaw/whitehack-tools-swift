@@ -262,18 +262,22 @@ struct GearRow: View {
                 }
                 
                 // Status Section
-                Section {
-                    // Equipped Toggle with Icon
-                    HStack {
-                        IconFrame(icon: Ph.bagSimple.bold, color: gear.isEquipped ? .green : .gray)
-                        Toggle(gear.isEquipped ? "Equipped" : "Unequipped", isOn: .constant(gear.isEquipped))
-                    }
-                    
-                    // Location Toggle with Icon
-                    HStack {
-                        IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                color: gear.isStashed ? .orange : .gray)
-                        Toggle(gear.isStashed ? "Stashed" : "On Person", isOn: .constant(gear.isStashed))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Status")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        Label {
+                            Text(gear.isEquipped ? "Equipped" : "Unequipped")
+                        } icon: {
+                            IconFrame(icon: Ph.bagSimple.bold, color: gear.isEquipped ? .green : .gray)
+                        }
+                        Label {
+                            Text(gear.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: gear.isStashed ? .orange : .gray)
+                        }
                     }
                 }
                 
