@@ -281,13 +281,21 @@ struct GearRow: View {
                     }
                 }
                 
-                if gear.isMagical || gear.isCursed {
+                if gear.isMagical || gear.isCursed || gear.isContainer {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Magical Properties")
+                        Text("Properties")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
                         HStack(spacing: 12) {
+                            if gear.isContainer {
+                                Label {
+                                    Text("Container")
+                                } icon: {
+                                    IconFrame(icon: Ph.package.bold, color: .orange)
+                                }
+                            }
+                            
                             if gear.isMagical {
                                 Label {
                                     Text("Magical")

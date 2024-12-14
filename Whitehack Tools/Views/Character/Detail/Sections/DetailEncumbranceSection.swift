@@ -19,19 +19,19 @@ struct DetailEncumbranceSection: View {
             switch gear.weight.lowercased() {
             case "no size": 
                 slotCount = 0.01 // Will be counted in groups of 100
-                print("🎒 [ENCUMBRANCE] No size item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] No size item: \(gear.name) x\(gear.quantity) = \(String(format: "%.2f", slotCount * Double(gear.quantity))) slots")
             case "minor": 
                 slotCount = 0.5
-                print("🎒 [ENCUMBRANCE] Minor item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Minor item: \(gear.name) x\(gear.quantity) = \(String(format: "%.2f", slotCount * Double(gear.quantity))) slots")
             case "regular": 
                 slotCount = 1.0
-                print("🎒 [ENCUMBRANCE] Regular item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Regular item: \(gear.name) x\(gear.quantity) = \(String(format: "%.2f", slotCount * Double(gear.quantity))) slots")
             case "heavy": 
                 slotCount = 2.0
-                print("🎒 [ENCUMBRANCE] Heavy item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Heavy item: \(gear.name) x\(gear.quantity) = \(String(format: "%.2f", slotCount * Double(gear.quantity))) slots")
             default: 
                 slotCount = 1.0
-                print("🎒 [ENCUMBRANCE] Unknown weight item: \(gear.name) x\(gear.quantity) = \(slotCount * Double(gear.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Unknown weight item: \(gear.name) x\(gear.quantity) = \(String(format: "%.2f", slotCount * Double(gear.quantity))) slots")
             }
             total += slotCount * Double(gear.quantity)
         }
@@ -39,7 +39,7 @@ struct DetailEncumbranceSection: View {
         // Add non-stashed armor slots
         for armor in character.armor where !armor.isStashed {
             let slots = Double(armor.weight * armor.quantity)
-            print("🎒 [ENCUMBRANCE] Armor: \(armor.name) x\(armor.quantity) = \(slots) slots")
+            print("🎒 [ENCUMBRANCE] Armor: \(armor.name) x\(armor.quantity) = \(String(format: "%.2f", slots)) slots")
             total += slots
         }
         
@@ -49,42 +49,42 @@ struct DetailEncumbranceSection: View {
             switch weapon.weight.lowercased() {
             case "no size": 
                 slotCount = 0.01
-                print("🎒 [ENCUMBRANCE] No size weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] No size weapon: \(weapon.name) x\(weapon.quantity) = \(String(format: "%.2f", slotCount * Double(weapon.quantity))) slots")
             case "minor": 
                 slotCount = 0.5
-                print("🎒 [ENCUMBRANCE] Minor weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Minor weapon: \(weapon.name) x\(weapon.quantity) = \(String(format: "%.2f", slotCount * Double(weapon.quantity))) slots")
             case "regular": 
                 slotCount = 1.0
-                print("🎒 [ENCUMBRANCE] Regular weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Regular weapon: \(weapon.name) x\(weapon.quantity) = \(String(format: "%.2f", slotCount * Double(weapon.quantity))) slots")
             case "heavy": 
                 slotCount = 2.0
-                print("🎒 [ENCUMBRANCE] Heavy weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Heavy weapon: \(weapon.name) x\(weapon.quantity) = \(String(format: "%.2f", slotCount * Double(weapon.quantity))) slots")
             default: 
                 slotCount = 1.0
-                print("🎒 [ENCUMBRANCE] Unknown weight weapon: \(weapon.name) x\(weapon.quantity) = \(slotCount * Double(weapon.quantity)) slots")
+                print("🎒 [ENCUMBRANCE] Unknown weight weapon: \(weapon.name) x\(weapon.quantity) = \(String(format: "%.2f", slotCount * Double(weapon.quantity))) slots")
             }
             total += slotCount * Double(weapon.quantity)
         }
         
         // Add coins (100 coins = 1 slot)
         let coinSlots = Double(character.coinsOnHand) / 100.0
-        print("🎒 [ENCUMBRANCE] Coins: \(character.coinsOnHand) coins = \(coinSlots) slots")
+        print("🎒 [ENCUMBRANCE] Coins: \(character.coinsOnHand) coins = \(String(format: "%.2f", coinSlots)) slots")
         total += coinSlots
         
-        print("🎒 [ENCUMBRANCE] Total used slots: \(total)")
+        print("🎒 [ENCUMBRANCE] Total used slots: \(String(format: "%.2f", total))")
         return total
     }
     
     private var maxSlots: Double {
         let hasContainer = character.gear.contains(where: { $0.isContainer && $0.isEquipped })
         let max = hasContainer ? 15.0 : 10.0
-        print("🎒 [ENCUMBRANCE] Max slots: \(max) (Container: \(hasContainer))")
+        print("🎒 [ENCUMBRANCE] Max slots: \(String(format: "%.2f", max)) (Container: \(hasContainer))")
         return max
     }
     
     private var excessSlots: Double {
         let excess = max(0, usedSlots - maxSlots)
-        print("🎒 [ENCUMBRANCE] Excess slots: \(excess)")
+        print("🎒 [ENCUMBRANCE] Excess slots: \(String(format: "%.2f", excess))")
         return excess
     }
     
@@ -150,7 +150,7 @@ struct DetailEncumbranceSection: View {
                                 Text("Used")
                                     .font(.system(.subheadline))
                                     .foregroundColor(.secondary)
-                                Text(String(format: "%.1f", usedSlots))
+                                Text(String(format: "%.2f", usedSlots))
                                     .font(.system(.title2, design: .rounded).weight(.medium))
                                     .foregroundColor(.primary)
                             }
@@ -161,7 +161,7 @@ struct DetailEncumbranceSection: View {
                                 Text("Available")
                                     .font(.system(.subheadline))
                                     .foregroundColor(.secondary)
-                                Text(String(format: "%.1f", max(0, maxSlots - usedSlots)))
+                                Text(String(format: "%.2f", max(0, maxSlots - usedSlots)))
                                     .font(.system(.title2, design: .rounded).weight(.medium))
                                     .foregroundColor(.primary)
                             }
