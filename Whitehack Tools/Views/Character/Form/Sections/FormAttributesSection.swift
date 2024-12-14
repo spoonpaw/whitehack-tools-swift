@@ -96,6 +96,8 @@ struct CustomAttributeEditor: View {
     let onUpdate: (CustomAttribute) -> Void
     @State private var showIconPicker = false
     @State private var localAttribute: CustomAttribute
+    @State private var textValue: String
+    @FocusState private var isFocused: Bool
     
     init(attribute: CustomAttribute, onDelete: @escaping () -> Void, onUpdate: @escaping (CustomAttribute) -> Void) {
         print(" [CUSTOM ATTRIBUTE EDITOR] Initializing editor for attribute: \(attribute.id)")
@@ -103,9 +105,10 @@ struct CustomAttributeEditor: View {
         self.onDelete = onDelete
         self.onUpdate = onUpdate
         self._localAttribute = State(initialValue: attribute)
+        self._textValue = State(initialValue: String(attribute.value))
     }
     
-    private let attributeRange = 1...20
+    private let attributeRange = 3...18
     
     var body: some View {
         VStack(spacing: 16) {
@@ -193,18 +196,19 @@ struct CustomAttributeEditor: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     HStack {
-                        TextField("", value: Binding(
-                            get: {
-                                print(" [CUSTOM ATTRIBUTE EDITOR] Getting value for attribute: \(attribute.id)")
-                                return localAttribute.value
-                            },
-                            set: { newValue in
-                                print(" [CUSTOM ATTRIBUTE EDITOR] Setting value for attribute: \(attribute.id) to: \(newValue)")
-                                let clamped = max(attributeRange.lowerBound, min(attributeRange.upperBound, newValue))
-                                localAttribute.value = clamped
+                        TextField("", text: $textValue)
+                        .onChange(of: textValue) { newValue in
+                            // Only allow numeric characters
+                            let filtered = newValue.filter { $0.isNumber }
+                            if filtered != newValue {
+                                textValue = filtered
+                            }
+                            // Update the actual value if we have a valid number
+                            if let value = Int(filtered) {
+                                localAttribute.value = value
                                 onUpdate(localAttribute)
                             }
-                        ), formatter: NumberFormatter())
+                        }
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 60)
                         #if os(iOS)
@@ -213,6 +217,7 @@ struct CustomAttributeEditor: View {
                         .multilineTextAlignment(.center)
                         .font(.title3)
                         .fontWeight(.medium)
+                        .focused($isFocused)
                         
                         Stepper("", value: Binding(
                             get: { 
@@ -221,7 +226,9 @@ struct CustomAttributeEditor: View {
                             },
                             set: { newValue in
                                 print(" [CUSTOM ATTRIBUTE EDITOR] Setting value for attribute: \(attribute.id) to: \(newValue)")
-                                localAttribute.value = newValue
+                                let clamped = max(attributeRange.lowerBound, min(attributeRange.upperBound, newValue))
+                                localAttribute.value = clamped
+                                textValue = String(clamped)
                                 onUpdate(localAttribute)
                             }
                         ), in: attributeRange)
@@ -242,6 +249,17 @@ struct CustomAttributeEditor: View {
                 .stroke(separatorColor, lineWidth: 0.5)
         )
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .onAppear {
+            validateAndFixEmptyInput()
+        }
+    }
+    
+    private func validateAndFixEmptyInput() {
+        if localAttribute.value < attributeRange.lowerBound || localAttribute.value > attributeRange.upperBound {
+            localAttribute.value = attributeRange.lowerBound
+            textValue = String(attributeRange.lowerBound)
+            onUpdate(localAttribute)
+        }
     }
     
     private var systemFillColor: Color {
