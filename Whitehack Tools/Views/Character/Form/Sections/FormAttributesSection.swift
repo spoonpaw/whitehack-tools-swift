@@ -211,6 +211,7 @@ struct CustomAttributeEditor: View {
                         #endif
                         .multilineTextAlignment(.center)
                         .font(.title3)
+                        .focused($isFocused)
                         #if os(iOS)
                         if #available(iOS 16.0, *) {
                             fontWeight(.medium)
@@ -221,8 +222,6 @@ struct CustomAttributeEditor: View {
                         #else
                         .fontWeight(.medium)
                         #endif
-                        .focused($isFocused)
-                        
                         Stepper("", value: Binding(
                             get: { 
                                 print(" [CUSTOM ATTRIBUTE EDITOR] Getting value for attribute: \(attribute.id)")
