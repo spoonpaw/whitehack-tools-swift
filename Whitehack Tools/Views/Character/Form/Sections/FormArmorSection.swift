@@ -738,28 +738,33 @@ struct ArmorEditRow: View {
                     IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
                     Toggle("Cursed", isOn: $isCursed)
                 }
+            }
+            
+            // Bonus/Penalty Section
+            Section {
+                // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
+                Toggle(isOn: $isBonus) {
+                    Text(isBonus ? "Bonus" : "Penalty")
+                        .foregroundColor(isBonus ? .green : .red)
+                }
+                .onChange(of: isBonus) { newValue in
+                    bonus = newValue ? abs(bonus) : -abs(bonus)
+                }
                 
-                // Bonus/Penalty Section
-                if isMagical {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
-                                    color: isBonus ? .green : .red)
-                            Toggle(isBonus ? "Bonus" : "Penalty", isOn: $isBonus)
+                // Value Control
+                HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
+                    TextField("", text: $bonusString)
+                        .textFieldStyle(.roundedBorder)
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
+                        .onChange(of: bonusString) { newValue in
+                            validateBonusInput(newValue)
                         }
-                        
-                        HStack {
-                            IconFrame(icon: Ph.textT.bold, color: .blue)
-                            TextField("Value", text: $bonusString)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                #if os(iOS)
-                                .keyboardType(.numberPad)
-                                #endif
-                                .onChange(of: bonusString) { newValue in
-                                    validateBonusInput(newValue)
-                                }
-                        }
-                    }
+                    Stepper("", value: $bonus, in: -10...10)
+                        .labelsHidden()
                 }
             }
             
