@@ -112,6 +112,16 @@ struct FormAttributeGroupPairsView: View {
                             }())
                             .cornerRadius(8)
                         }
+                        .onChange(of: availableGroups) { newGroups in
+                            // Update tempGroup if the selected group was renamed
+                            if !tempGroup.isEmpty && !newGroups.contains(tempGroup) {
+                                // Try to find the new name by comparing with old groups
+                                if let oldGroupIndex = availableGroups.firstIndex(of: tempGroup),
+                                   oldGroupIndex < newGroups.count {
+                                    tempGroup = newGroups[oldGroupIndex]
+                                }
+                            }
+                        }
                     }
                     
                     HStack {
@@ -250,6 +260,20 @@ struct FormAttributeGroupPairsView: View {
                                     #endif
                                 }())
                                 .cornerRadius(8)
+                            }
+                            .onChange(of: availableGroups) { newGroups in
+                                // Update pair's group if it was renamed
+                                if !pair.group.isEmpty && !newGroups.contains(pair.group) {
+                                    // Try to find the new name by comparing with old groups
+                                    if let oldGroupIndex = availableGroups.firstIndex(of: pair.group),
+                                       oldGroupIndex < newGroups.count {
+                                        var updatedPair = pair
+                                        updatedPair.group = newGroups[oldGroupIndex]
+                                        if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
+                                            attributeGroupPairs[index] = updatedPair
+                                        }
+                                    }
+                                }
                             }
                         }
                         
