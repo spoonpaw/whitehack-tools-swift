@@ -262,26 +262,20 @@ struct GearRow: View {
                 }
                 
                 // Status Section
-                HStack {
-                    // Equipped Status
-                    HStack(spacing: 4) {
-                        IconFrame(icon: gear.isEquipped ? Ph.bagSimple.bold : Ph.bagSimple.bold,
-                                color: gear.isEquipped ? .green : .gray)
-                        Text(gear.isEquipped ? "Equipped" : "Unequipped")
-                            .foregroundColor(gear.isEquipped ? .green : .secondary)
+                Section {
+                    // Equipped Toggle with Icon
+                    HStack {
+                        IconFrame(icon: Ph.bagSimple.bold, color: gear.isEquipped ? .green : .gray)
+                        Toggle(gear.isEquipped ? "Equipped" : "Unequipped", isOn: .constant(gear.isEquipped))
                     }
                     
-                    Spacer()
-                    
-                    // Location Status
-                    HStack(spacing: 4) {
+                    // Location Toggle with Icon
+                    HStack {
                         IconFrame(icon: gear.isStashed ? Ph.warehouse.bold : Ph.user.bold,
                                 color: gear.isStashed ? .orange : .gray)
-                        Text(gear.isStashed ? "Stashed" : "On Person")
-                            .foregroundColor(gear.isStashed ? .orange : .secondary)
+                        Toggle(gear.isStashed ? "Stashed" : "On Person", isOn: .constant(gear.isStashed))
                     }
                 }
-                .font(.callout)
                 
                 if gear.isMagical || gear.isCursed {
                     VStack(alignment: .leading, spacing: 4) {
@@ -484,14 +478,32 @@ struct GearEditRow: View {
                 // Equipped Toggle
                 HStack {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                        get: { isEquipped },
+                        set: { newValue in
+                            print("🔄 Equipment: Equipped status changed to: \(newValue)")
+                            isEquipped = newValue
+                            if newValue {
+                                isStashed = false
+                            }
+                        }
+                    ))
                 }
                 
                 // Location Toggle
                 HStack {
                     IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
                             color: isStashed ? .orange : .gray)
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                        get: { isStashed },
+                        set: { newValue in
+                            print("🔄 Equipment: Stashed status changed to: \(newValue)")
+                            isStashed = newValue
+                            if newValue {
+                                isEquipped = false
+                            }
+                        }
+                    ))
                 }
                 
                 // Magical Toggle
