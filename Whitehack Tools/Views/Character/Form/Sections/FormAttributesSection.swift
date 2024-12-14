@@ -211,7 +211,16 @@ struct CustomAttributeEditor: View {
                         #endif
                         .multilineTextAlignment(.center)
                         .font(.title3)
+                        #if os(iOS)
+                        if #available(iOS 16.0, *) {
+                            fontWeight(.medium)
+                        } else {
+                            // For iOS 15, we'll use the font system directly
+                            font(.system(.title3, design: .default).weight(.medium))
+                        }
+                        #else
                         .fontWeight(.medium)
+                        #endif
                         .focused($isFocused)
                         
                         Stepper("", value: Binding(
