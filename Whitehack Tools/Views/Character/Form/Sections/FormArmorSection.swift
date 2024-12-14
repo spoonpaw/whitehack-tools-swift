@@ -765,6 +765,9 @@ struct ArmorEditRow: View {
                         }
                     Stepper("", value: $bonus, in: -10...10)
                         .labelsHidden()
+                        .onChange(of: bonus) { newValue in
+                            bonusString = "\(abs(newValue))"
+                        }
                 }
             }
             
