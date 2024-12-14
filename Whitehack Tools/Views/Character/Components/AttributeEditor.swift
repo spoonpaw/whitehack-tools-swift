@@ -34,12 +34,7 @@ struct AttributeEditor: View {
                     }
                     .font(.title2)
                     #if os(iOS)
-                    if #available(iOS 16.0, *) {
-                        fontWeight(.bold)
-                    } else {
-                        // For iOS 15, we'll use the font system directly
-                        font(.system(.title2, design: .default).weight(.bold))
-                    }
+                    .font(Font.system(.title2).weight(.bold))
                     #else
                     .fontWeight(.bold)
                     #endif

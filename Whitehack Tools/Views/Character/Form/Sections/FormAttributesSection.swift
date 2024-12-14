@@ -213,12 +213,7 @@ struct CustomAttributeEditor: View {
                         .font(.title3)
                         .focused($isFocused)
                         #if os(iOS)
-                        if #available(iOS 16.0, *) {
-                            fontWeight(.medium)
-                        } else {
-                            // For iOS 15, we'll use the font system directly
-                            font(.system(.title3, design: .default).weight(.medium))
-                        }
+                        .font(Font.system(.title3).weight(.medium))
                         #else
                         .fontWeight(.medium)
                         #endif
