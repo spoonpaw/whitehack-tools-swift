@@ -1253,7 +1253,7 @@ struct FormWeaponsSection: View {
             } label: {
                 Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"),
                       systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
-                    .foregroundColor(isAddingNew ? .red : .primary)
+                    .foregroundColor(isAddingNew ? .red : .blue)
             }
         }
     }

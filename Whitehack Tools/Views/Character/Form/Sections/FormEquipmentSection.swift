@@ -198,7 +198,7 @@ public struct FormEquipmentSection: View {
                     }
                 }) {
                     Label("Add Another Item", systemImage: "plus.circle.fill")
-                        .foregroundColor(.primary)
+                        .foregroundColor(.blue)
                 }
             } else {
                 Button(action: {
@@ -208,7 +208,7 @@ public struct FormEquipmentSection: View {
                     }
                 }) {
                     Label("Add Your First Item", systemImage: "plus.circle.fill")
-                        .foregroundColor(.primary)
+                        .foregroundColor(.blue)
                 }
             }
         }
