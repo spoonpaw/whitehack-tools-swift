@@ -140,7 +140,6 @@ struct FormArmorSection: View {
                         }
                     }
                 }
-                .padding()
             } else if !isAddingNew && editingNewArmor == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -818,7 +817,6 @@ struct ArmorEditRow: View {
             .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
         .groupCardStyle()
         .onAppear {
             // Reset state to match the input armor
@@ -1000,7 +998,6 @@ struct ArmorRow: View {
             .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
         .groupCardStyle()
     }
 }
