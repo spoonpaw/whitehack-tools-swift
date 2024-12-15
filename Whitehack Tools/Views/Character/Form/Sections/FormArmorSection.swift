@@ -124,7 +124,7 @@ struct FormArmorSection: View {
                                         editingArmorId = nil
                                     }
                                 }
-                                .id("\(armorItem.id)-\(editingArmorId != nil)")
+                                .groupCardStyle()
                             } else {
                                 ArmorRow(armor: armorItem,
                                     onEdit: {
@@ -135,15 +135,12 @@ struct FormArmorSection: View {
                                         armor.removeAll(where: { $0.id == armorItem.id })
                                     }
                                 )
+                                .groupCardStyle()
                             }
                         }
                     }
                 }
                 .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
             } else if !isAddingNew && editingNewArmor == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -152,10 +149,7 @@ struct FormArmorSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if let newArmor = editingNewArmor {
@@ -170,11 +164,7 @@ struct FormArmorSection: View {
                         editingNewArmor = nil
                     }
                 }
-                .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if isAddingNew {
@@ -238,7 +228,7 @@ struct FormArmorSection: View {
                         .foregroundColor(.red)
                     }
                 }
-                .padding(.horizontal)
+                .groupCardStyle()
             }
             
             // Add armor button - only show when not adding new and not editing
@@ -265,12 +255,15 @@ struct FormArmorSection: View {
 private extension View {
     func groupCardStyle() -> some View {
         self
+            .padding()
             #if os(iOS)
-            .background(Color(.systemBackground))
+            .background(Color(.systemBackground))  // White background on iOS
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
             #else
             .background(Color(nsColor: .windowBackgroundColor))
-            #endif
             .cornerRadius(12)
+            #endif
     }
 }
 
@@ -507,11 +500,7 @@ struct CustomArmorForm: View {
             .padding(.top, 16)
         }
         .padding()
-        #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
+        .groupCardStyle()
     }
 }
 
@@ -686,7 +675,7 @@ struct ArmorEditRow: View {
                             }
                     }
                 } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .blue)
+                    IconFrame(icon: Ph.stack.bold, color: .green)
                 }
             }
             
@@ -830,12 +819,7 @@ struct ArmorEditRow: View {
             .padding(.top, 4)
         }
         .padding()
-        #if os(iOS)
-        .background(Color(.secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
-        .cornerRadius(10)
+        .groupCardStyle()
         .onAppear {
             // Reset state to match the input armor
             name = armor.name
@@ -1017,11 +1001,6 @@ struct ArmorRow: View {
             .padding(.top, 4)
         }
         .padding()
-        #if os(iOS)
-        .background(Color(.secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
-        .cornerRadius(10)
+        .groupCardStyle()
     }
 }
