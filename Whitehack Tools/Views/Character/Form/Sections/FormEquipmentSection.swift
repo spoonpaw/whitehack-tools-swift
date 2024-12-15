@@ -106,7 +106,6 @@ public struct FormEquipmentSection: View {
                                         editingGearId = nil
                                     }
                                 )
-                                .groupCardStyle()
                             } else {
                                 GearRow(
                                     gear: gearItem,
@@ -117,7 +116,6 @@ public struct FormEquipmentSection: View {
                                         gear.removeAll { $0.id == gearItem.id }
                                     }
                                 )
-                                .groupCardStyle()
                             }
                         }
                     }
@@ -146,7 +144,6 @@ public struct FormEquipmentSection: View {
                         isAddingNew = false
                     }
                 )
-                .groupCardStyle()
             }
             
             if isAddingNew && editingNewGear == nil {
@@ -171,7 +168,6 @@ public struct FormEquipmentSection: View {
                     }
                     .menuStyle(.borderlessButton)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
                     
                     Button(action: {
                         isAddingNew = false
@@ -203,6 +199,7 @@ public struct FormEquipmentSection: View {
                 }
             }
         }
+        .padding(.horizontal)
     }
 }
 
@@ -324,7 +321,7 @@ struct GearRow: View {
             Divider()
             
             // Action Buttons
-            HStack(spacing: 20) {
+            HStack {
                 Button(action: onEdit) {
                     Label {
                         Text("Edit")
@@ -347,18 +344,9 @@ struct GearRow: View {
                     .foregroundColor(.red)
                 }
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
-        #if os(iOS)
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(10)
-        #endif
+        .groupCardStyle()
     }
 }
 
@@ -580,16 +568,10 @@ struct GearEditRow: View {
                         .foregroundColor(.green)
                 }
             }
+            .padding(.horizontal)
+            .padding(.top, 4)
         }
-        .padding()
-        #if os(iOS)
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        .cornerRadius(10)
-        #endif
+        .groupCardStyle()
         .onAppear {
             // Reset state to match the input gear
             name = gear.name
