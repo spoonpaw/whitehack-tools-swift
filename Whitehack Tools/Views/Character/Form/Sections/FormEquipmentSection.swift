@@ -106,6 +106,7 @@ public struct FormEquipmentSection: View {
                                         editingGearId = nil
                                     }
                                 )
+                                .groupCardStyle()
                             } else {
                                 GearRow(
                                     gear: gearItem,
@@ -116,15 +117,11 @@ public struct FormEquipmentSection: View {
                                         gear.removeAll { $0.id == gearItem.id }
                                     }
                                 )
+                                .groupCardStyle()
                             }
                         }
                     }
                 }
-                .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
             } else if !isAddingNew && editingNewGear == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.bagSimple.bold, color: .gray)
@@ -133,10 +130,7 @@ public struct FormEquipmentSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if let editingGear = editingNewGear {
@@ -152,11 +146,7 @@ public struct FormEquipmentSection: View {
                         isAddingNew = false
                     }
                 )
-                .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if isAddingNew && editingNewGear == nil {
@@ -190,7 +180,8 @@ public struct FormEquipmentSection: View {
                             .foregroundColor(.red)
                     }
                 }
-            } else if !gear.isEmpty {
+                .groupCardStyle()
+            } else if !gear.isEmpty && !isAddingNew && editingNewGear == nil {
                 Button(action: {
                     print("➕ Equipment: Add Another Item tapped")
                     withAnimation {
@@ -200,7 +191,7 @@ public struct FormEquipmentSection: View {
                     Label("Add Another Item", systemImage: "plus.circle.fill")
                         .foregroundColor(.blue)
                 }
-            } else {
+            } else if !isAddingNew && editingNewGear == nil {
                 Button(action: {
                     print("➕ Equipment: Add First Item tapped")
                     withAnimation {
@@ -361,11 +352,13 @@ struct GearRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(.secondarySystemBackground))
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
         #else
         .background(Color(nsColor: .controlBackgroundColor))
-        #endif
         .cornerRadius(10)
+        #endif
     }
 }
 
@@ -590,11 +583,13 @@ struct GearEditRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
         #else
         .background(Color(nsColor: .controlBackgroundColor))
-        #endif
         .cornerRadius(10)
+        #endif
         .onAppear {
             // Reset state to match the input gear
             name = gear.name
@@ -613,11 +608,14 @@ struct GearEditRow: View {
 private extension View {
     func groupCardStyle() -> some View {
         self
+            .padding()
             #if os(iOS)
             .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
             #else
             .background(Color(nsColor: .windowBackgroundColor))
-            #endif
             .cornerRadius(12)
+            #endif
     }
 }
