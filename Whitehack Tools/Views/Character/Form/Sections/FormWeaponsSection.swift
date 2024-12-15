@@ -177,20 +177,33 @@ struct WeaponRow: View {
             Divider()
             
             // Action Buttons
-            HStack {
+            HStack(spacing: 20) {
                 Button(action: onEdit) {
-                    Label("Edit", systemImage: "pencil")
+                    Label {
+                        Text("Edit")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "pencil.circle.fill")
+                    }
+                    .foregroundColor(.blue)
                 }
-                .buttonStyle(.bordered)
+                
+                Spacer()
                 
                 Button(role: .destructive, action: onDelete) {
-                    Label("Delete", systemImage: "trash")
+                    Label {
+                        Text("Delete")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "trash.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
-                .buttonStyle(.bordered)
             }
+            .padding(.horizontal)
+            .padding(.top, 4)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding()
         .groupCardStyle()
     }
 }
