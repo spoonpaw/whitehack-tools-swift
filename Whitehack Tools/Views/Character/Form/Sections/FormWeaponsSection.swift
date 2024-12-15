@@ -1228,7 +1228,6 @@ struct FormWeaponsSection: View {
                         }
                     }
                 }
-                .padding()
             } else if !isAddingNew && editingNewWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -1247,7 +1246,6 @@ struct FormWeaponsSection: View {
                 } onCancel: {
                     editingNewWeapon = nil
                 }
-                .padding()
                 .groupCardStyle()
             }
             
