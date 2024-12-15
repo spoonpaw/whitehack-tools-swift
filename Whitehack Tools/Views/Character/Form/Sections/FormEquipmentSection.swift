@@ -387,6 +387,11 @@ struct GearEditRow: View {
     @State private var quantity: Int
     @State private var quantityString: String
     @State private var isProcessingAction = false
+    @FocusState private var focusedField: Field?
+    
+    private enum Field {
+        case quantity
+    }
     
     init(gear: Gear, onSave: @escaping (Gear) -> Void, onCancel: @escaping () -> Void) {
         self.gear = gear
@@ -405,11 +410,13 @@ struct GearEditRow: View {
         _quantityString = State(initialValue: "\(gear.quantity)")
     }
     
-    private func validateIntegerInput(_ input: String, current: Int, range: ClosedRange<Int>) -> Int {
-        if let newValue = Int(input) {
-            return max(range.lowerBound, min(range.upperBound, newValue))
+    private func validateQuantity() {
+        if let newValue = Int(quantityString) {
+            quantity = max(1, min(99, newValue))
+        } else if quantityString.isEmpty {
+            quantity = 1
         }
-        return current
+        quantityString = "\(quantity)"
     }
     
     var body: some View {
@@ -455,9 +462,18 @@ struct GearEditRow: View {
                             .keyboardType(.numberPad)
                             #endif
                             .frame(maxWidth: 80)
+                            .focused($focusedField, equals: .quantity)
                             .onChange(of: quantityString) { newValue in
-                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
-                                quantityString = "\(quantity)"
+                                // Only allow numeric characters
+                                let filtered = newValue.filter { $0.isNumber }
+                                if filtered != newValue {
+                                    quantityString = filtered
+                                }
+                            }
+                            .onChange(of: focusedField) { field in
+                                if field != .quantity {
+                                    validateQuantity()
+                                }
                             }
                         Stepper("", value: $quantity, in: 1...99)
                             .labelsHidden()
