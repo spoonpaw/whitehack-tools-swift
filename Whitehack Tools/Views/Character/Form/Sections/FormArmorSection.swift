@@ -105,38 +105,34 @@ struct FormArmorSection: View {
         VStack(spacing: 16) {
             // Armor list
             if !armor.isEmpty {
-                VStack(spacing: 12) {
-                    ForEach(armor) { armorItem in
-                        Group {
-                            if editingArmorId == armorItem.id {
-                                ArmorEditRow(armor: armorItem) { updatedArmor in
-                                    logArmorEdit(original: armorItem, updated: updatedArmor)
-                                    if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
-                                        withAnimation {
-                                            armor[index] = updatedArmor
-                                            editingArmorId = nil
-                                            print("🛡️ [FormArmorSection] Updated armor at index \(index)")
-                                        }
-                                    }
-                                } onCancel: {
-                                    print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
+                ForEach(armor) { armorItem in
+                    Group {
+                        if editingArmorId == armorItem.id {
+                            ArmorEditRow(armor: armorItem) { updatedArmor in
+                                logArmorEdit(original: armorItem, updated: updatedArmor)
+                                if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
                                     withAnimation {
+                                        armor[index] = updatedArmor
                                         editingArmorId = nil
+                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
                                     }
                                 }
-                                .groupCardStyle()
-                            } else {
-                                ArmorRow(armor: armorItem,
-                                    onEdit: {
-                                        print("✏️ Starting edit for armor: \(armorItem.name)")
-                                        editingArmorId = armorItem.id
-                                    },
-                                    onDelete: {
-                                        armor.removeAll(where: { $0.id == armorItem.id })
-                                    }
-                                )
-                                .groupCardStyle()
+                            } onCancel: {
+                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
+                                withAnimation {
+                                    editingArmorId = nil
+                                }
                             }
+                        } else {
+                            ArmorRow(armor: armorItem,
+                                onEdit: {
+                                    print("✏️ Starting edit for armor: \(armorItem.name)")
+                                    editingArmorId = armorItem.id
+                                },
+                                onDelete: {
+                                    armor.removeAll(where: { $0.id == armorItem.id })
+                                }
+                            )
                         }
                     }
                 }
@@ -148,7 +144,6 @@ struct FormArmorSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .groupCardStyle()
             }
             
             if let newArmor = editingNewArmor {
@@ -163,7 +158,6 @@ struct FormArmorSection: View {
                         editingNewArmor = nil
                     }
                 }
-                .groupCardStyle()
             }
             
             if isAddingNew {
@@ -227,7 +221,6 @@ struct FormArmorSection: View {
                         .foregroundColor(.red)
                     }
                 }
-                .groupCardStyle()
             }
             
             // Add armor button - only show when not adding new and not editing
@@ -817,7 +810,7 @@ struct ArmorEditRow: View {
             .padding(.horizontal)
             .padding(.top, 4)
         }
-        .groupCardStyle()
+        .padding()
         .onAppear {
             // Reset state to match the input armor
             name = armor.name
@@ -837,6 +830,7 @@ struct ArmorEditRow: View {
             quantity = armor.quantity
             quantityString = "\(armor.quantity)"
         }
+        .groupCardStyle()
     }
 }
 
@@ -998,6 +992,7 @@ struct ArmorRow: View {
             .padding(.horizontal)
             .padding(.top, 4)
         }
+        .padding()
         .groupCardStyle()
     }
 }
