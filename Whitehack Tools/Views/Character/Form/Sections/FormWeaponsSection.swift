@@ -177,33 +177,20 @@ struct WeaponRow: View {
             Divider()
             
             // Action Buttons
-            HStack(spacing: 20) {
+            HStack {
                 Button(action: onEdit) {
-                    Label {
-                        Text("Edit")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "pencil.circle.fill")
-                    }
-                    .foregroundColor(.blue)
+                    Label("Edit", systemImage: "pencil")
                 }
+                .buttonStyle(.bordered)
                 
-                Spacer()
-                
-                Button(action: onDelete) {
-                    Label {
-                        Text("Delete")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "trash.circle.fill")
-                    }
-                    .foregroundColor(.red)
+                Button(role: .destructive, action: onDelete) {
+                    Label("Delete", systemImage: "trash")
                 }
+                .buttonStyle(.bordered)
             }
-            .padding(.horizontal)
-            .padding(.top, 4)
         }
-        .padding()
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
         .groupCardStyle()
     }
 }
@@ -1213,7 +1200,6 @@ struct FormWeaponsSection: View {
                                     editingWeaponId = nil
                                 }
                                 .id("\(weapon.id)-\(editingWeaponId != nil)")
-                                .groupCardStyle()
                             } else {
                                 WeaponRow(weapon: weapon,
                                     onEdit: {
@@ -1223,11 +1209,13 @@ struct FormWeaponsSection: View {
                                         weapons.removeAll(where: { $0.id == weapon.id })
                                     }
                                 )
-                                .groupCardStyle()
                             }
                         }
                     }
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
             } else if !isAddingNew && editingNewWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -1236,7 +1224,6 @@ struct FormWeaponsSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .groupCardStyle()
             }
             
             if let newWeapon = editingNewWeapon {
@@ -1246,7 +1233,6 @@ struct FormWeaponsSection: View {
                 } onCancel: {
                     editingNewWeapon = nil
                 }
-                .groupCardStyle()
             }
             
             if isAddingNew {
