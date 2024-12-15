@@ -506,8 +506,8 @@ struct CharacterFormView: View {
             intelligence: Int(formData.intelligence) ?? 10,
             willpower: Int(formData.willpower) ?? 10,
             charisma: Int(formData.charisma) ?? 10,
-            currentHP: Int(formData.currentHP) ?? 0,
-            maxHP: Int(formData.maxHP) ?? 0,
+            currentHP: Int(formData.currentHP) ?? 1,
+            maxHP: Int(formData.maxHP) ?? 1,
             movement: Int(formData.movement) ?? 30,
             saveColor: formData.saveColor,
             speciesGroup: formData.speciesGroup,
@@ -602,8 +602,8 @@ private class FormData: ObservableObject {
         self.intelligence = character?.intelligence.description ?? "10"
         self.willpower = character?.willpower.description ?? "10"
         self.charisma = character?.charisma.description ?? "10"
-        self.currentHP = character?.currentHP.description ?? "0"
-        self.maxHP = character?.maxHP.description ?? "0"
+        self.currentHP = character?.currentHP.description ?? "1"
+        self.maxHP = character?.maxHP.description ?? "1"
         self.movement = character?.movement.description ?? "30"
         self.saveColor = character?.saveColor ?? ""
         self.speciesGroup = character?.speciesGroup ?? ""
