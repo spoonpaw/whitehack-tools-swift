@@ -204,12 +204,7 @@ struct WeaponRow: View {
             .padding(.top, 4)
         }
         .padding()
-        #if os(iOS)
-        .background(Color(.secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
-        .cornerRadius(10)
+        .groupCardStyle()
     }
 }
 
@@ -583,39 +578,7 @@ struct WeaponEditRow: View {
             .padding(.top, 4)
         }
         .padding()
-        #if os(iOS)
-        .background(Color(.secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
-        .onAppear {
-            // Reset state to match the input weapon
-            name = weapon.name
-            damage = weapon.damage
-            weight = weapon.weight
-            range = weapon.range
-            rateOfFire = weapon.rateOfFire
-            special = weapon.special
-            isEquipped = weapon.isEquipped
-            isStashed = weapon.isStashed
-            isMagical = weapon.isMagical
-            isCursed = weapon.isCursed
-            bonus = weapon.bonus
-            quantity = weapon.quantity
-            quantityString = "\(weapon.quantity)"  // Initialize quantityString
-            isBonus = weapon.bonus >= 0
-            bonusString = "\(abs(weapon.bonus))"
-            isProcessingAction = false
-            
-            print("🎭 WeaponEditRow appeared")
-            print("   Name: \(name)")
-            print("   Damage: \(damage)")
-            print("   Weight: \(weight)")
-            print("   Rate of Fire: \(rateOfFire)")
-            print("   Range: \(range)")
-            print("   Special: \(special)")
-            print("   Quantity: \(quantity)")  // Add quantity logging
-        }
+        .groupCardStyle()
     }
 }
 
@@ -1175,6 +1138,7 @@ struct FormWeaponsSection: View {
                                     editingWeaponId = nil
                                 }
                                 .id("\(weapon.id)-\(editingWeaponId != nil)")
+                                .groupCardStyle()
                             } else {
                                 WeaponRow(weapon: weapon,
                                     onEdit: {
@@ -1184,15 +1148,12 @@ struct FormWeaponsSection: View {
                                         weapons.removeAll(where: { $0.id == weapon.id })
                                     }
                                 )
+                                .groupCardStyle()
                             }
                         }
                     }
                 }
                 .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
             } else if !isAddingNew && editingNewWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -1201,10 +1162,7 @@ struct FormWeaponsSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if let newWeapon = editingNewWeapon {
@@ -1215,10 +1173,7 @@ struct FormWeaponsSection: View {
                     editingNewWeapon = nil
                 }
                 .padding()
-                #if os(macOS)
-                .background(Color(nsColor: .windowBackgroundColor))
-                .cornerRadius(12)
-                #endif
+                .groupCardStyle()
             }
             
             if isAddingNew {
@@ -1262,11 +1217,14 @@ struct FormWeaponsSection: View {
 private extension View {
     func groupCardStyle() -> some View {
         self
+            .padding()
             #if os(iOS)
-            .background(Color(.systemBackground))
+            .background(Color(.systemBackground))  // White background on iOS
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
             #else
             .background(Color(nsColor: .windowBackgroundColor))
-            #endif
             .cornerRadius(12)
+            #endif
     }
 }
