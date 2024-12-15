@@ -518,7 +518,11 @@ struct WeaponEditRow: View {
                 }
             }
             
+            Spacer()
+            
             // Save/Cancel Buttons
+            Divider()
+            
             HStack(spacing: 20) {
                 Button {
                     guard !isProcessingAction else { return }
@@ -881,6 +885,77 @@ struct CustomWeaponForm: View {
             }
             #endif
         }
+        Spacer()
+        
+        // Save/Cancel Buttons
+        Divider()
+        
+        HStack(spacing: 20) {
+            Button {
+                isPresented = false
+            } label: {
+                Label {
+                    Text("Cancel")
+                        .fontWeight(.medium)
+                } icon: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .foregroundColor(.red)
+            }
+            
+            Spacer()
+            
+            Button {
+                if let editingWeapon = editingWeapon {
+                    let updatedWeapon = Weapon(
+                        id: editingWeapon.id,
+                        name: name,
+                        damage: damage,
+                        weight: weight,
+                        range: range,
+                        rateOfFire: rateOfFire,
+                        special: special,
+                        isEquipped: isEquipped,
+                        isStashed: isStashed,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        bonus: bonus
+                    )
+                    if let index = weapons.firstIndex(where: { $0.id == editingWeapon.id }) {
+                        print("🔄 Updating weapon at index: \(index)")
+                        weapons[index] = updatedWeapon
+                    }
+                } else {
+                    let newWeapon = Weapon(
+                        name: name,
+                        damage: damage,
+                        weight: weight,
+                        range: range,
+                        rateOfFire: rateOfFire,
+                        special: special,
+                        isEquipped: false,
+                        isStashed: false,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        bonus: bonus
+                    )
+                    print("🎯 Created new weapon: \(newWeapon.name)")
+                    weapons.append(newWeapon)
+                }
+                isPresented = false
+            } label: {
+                Label {
+                    Text(editingWeapon == nil ? "Save" : "Update")
+                        .fontWeight(.medium)
+                } icon: {
+                    Image(systemName: editingWeapon == nil ? "checkmark.circle.fill" : "pencil.circle.fill")
+                }
+                .foregroundColor(.blue)
+            }
+            .disabled(name.isEmpty)
+        }
+        .padding(.horizontal)
+        .padding(.top, 4)
     }
 }
 
