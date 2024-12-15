@@ -135,6 +135,7 @@ struct FormArmorSection: View {
                             )
                         }
                     }
+                    .padding(.horizontal)
                 }
             } else if !isAddingNew && editingNewArmor == nil {
                 VStack(spacing: 8) {
