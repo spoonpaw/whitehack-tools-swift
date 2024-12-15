@@ -955,7 +955,7 @@ struct CustomWeaponForm: View {
             .disabled(name.isEmpty)
         }
         .padding(.horizontal)
-        .padding(.top, 4)
+        .padding(.top, 12)
     }
 }
 
@@ -1198,37 +1198,33 @@ struct FormWeaponsSection: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 0) {
             if !weapons.isEmpty {
-                VStack(spacing: 12) {
-                    ForEach(weapons) { weapon in
-                        Group {
-                            if editingWeaponId == weapon.id {
-                                WeaponEditRow(weapon: weapon) { updatedWeapon in
-                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                        weapons[index] = updatedWeapon
-                                    }
-                                    editingWeaponId = nil
-                                } onCancel: {
-                                    editingWeaponId = nil
+                ForEach(weapons) { weapon in
+                    Group {
+                        if editingWeaponId == weapon.id {
+                            WeaponEditRow(weapon: weapon) { updatedWeapon in
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    weapons[index] = updatedWeapon
                                 }
-                                .id("\(weapon.id)-\(editingWeaponId != nil)")
-                            } else {
-                                WeaponRow(weapon: weapon,
-                                    onEdit: {
-                                        editingWeaponId = weapon.id
-                                    },
-                                    onDelete: {
-                                        weapons.removeAll(where: { $0.id == weapon.id })
-                                    }
-                                )
+                                editingWeaponId = nil
+                            } onCancel: {
+                                editingWeaponId = nil
                             }
+                            .id("\(weapon.id)-\(editingWeaponId != nil)")
+                        } else {
+                            WeaponRow(weapon: weapon,
+                                onEdit: {
+                                    editingWeaponId = weapon.id
+                                },
+                                onDelete: {
+                                    weapons.removeAll(where: { $0.id == weapon.id })
+                                }
+                            )
                         }
                     }
                 }
-                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
-                .padding(.vertical, 20)
             } else if !isAddingNew && editingNewWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -1240,8 +1236,8 @@ struct FormWeaponsSection: View {
             }
             
             if let newWeapon = editingNewWeapon {
-                WeaponEditRow(weapon: newWeapon) { updatedWeapon in
-                    weapons.append(updatedWeapon)
+                WeaponEditRow(weapon: newWeapon) { weapon in
+                    weapons.append(weapon)
                     editingNewWeapon = nil
                 } onCancel: {
                     editingNewWeapon = nil
@@ -1249,38 +1245,41 @@ struct FormWeaponsSection: View {
             }
             
             if isAddingNew {
-                Menu {
-                    ForEach(WeaponData.weapons, id: \.["name"]) { weaponData in
-                        Button(weaponData["name"] ?? "") {
-                            weapons.append(Weapon.fromData(weaponData))
+                VStack(spacing: 8) {
+                    Menu {
+                        ForEach(WeaponData.weapons, id: \.["name"]) { weaponData in
+                            Button(weaponData["name"] ?? "") {
+                                weapons.append(Weapon.fromData(weaponData))
+                                isAddingNew = false
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        Button("Custom Weapon") {
+                            let newWeapon = Weapon()
+                            editingNewWeapon = newWeapon
+                            selectedWeaponName = "custom"
                             isAddingNew = false
                         }
+                    } label: {
+                        Text("Select Weapon")
+                            .frame(maxWidth: .infinity)
                     }
-                    
-                    Divider()
-                    
-                    Button("Custom Weapon") {
-                        let newWeapon = Weapon()
-                        editingNewWeapon = newWeapon
-                        selectedWeaponName = "custom"
-                        isAddingNew = false
-                    }
-                } label: {
-                    Text("Select Weapon")
-                        .frame(maxWidth: .infinity)
+                    .menuStyle(.borderlessButton)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
                 }
-                .menuStyle(.borderlessButton)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
-            }
-            
-            // Add weapon button
-            Button {
-                isAddingNew.toggle()
-            } label: {
-                Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"),
-                      systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
-                    .foregroundColor(isAddingNew ? .red : .blue)
+                .padding(.top, 12)
+            } else {
+                Button {
+                    isAddingNew.toggle()
+                } label: {
+                    Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"),
+                          systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
+                        .foregroundColor(isAddingNew ? .red : .blue)
+                }
+                .padding(.top, 12)
             }
         }
     }
