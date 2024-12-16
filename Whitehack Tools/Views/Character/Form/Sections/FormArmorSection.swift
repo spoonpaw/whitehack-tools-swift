@@ -230,6 +230,7 @@ struct FormArmorSection: View {
                     isAddingNew = true
                 } label: {
                     Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
+                        .foregroundColor(.accentColor)
                 }
                 .padding(.horizontal)
             }
