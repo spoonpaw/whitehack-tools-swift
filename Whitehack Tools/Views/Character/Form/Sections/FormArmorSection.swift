@@ -211,17 +211,16 @@ struct FormArmorSection: View {
                     }
                     .menuStyle(.borderlessButton)
                     .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
                     
-                    Button(role: .cancel) {
+                    Button(action: {
                         isAddingNew = false
-                    } label: {
-                        HStack {
-                            Image(systemName: "xmark.circle.fill")
-                            Text("Cancel")
-                        }
-                        .foregroundColor(.red)
+                    }) {
+                        Label("Cancel", systemImage: "xmark.circle.fill")
+                            .foregroundColor(.red)
                     }
                 }
+                .padding(.top, 12)
             }
             
             // Add armor button - only show when not adding new and not editing
