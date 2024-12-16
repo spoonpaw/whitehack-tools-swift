@@ -128,7 +128,6 @@ public struct FormEquipmentSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .groupCardStyle()
             }
             
             if let editingGear = editingNewGear {
