@@ -105,37 +105,38 @@ struct FormArmorSection: View {
         VStack(spacing: 16) {
             // Armor list
             if !armor.isEmpty {
-                ForEach(armor) { armorItem in
-                    Group {
-                        if editingArmorId == armorItem.id {
-                            ArmorEditRow(armor: armorItem) { updatedArmor in
-                                logArmorEdit(original: armorItem, updated: updatedArmor)
-                                if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
+                VStack(spacing: 12) {
+                    ForEach(armor) { armorItem in
+                        Group {
+                            if editingArmorId == armorItem.id {
+                                ArmorEditRow(armor: armorItem) { updatedArmor in
+                                    logArmorEdit(original: armorItem, updated: updatedArmor)
+                                    if let index = armor.firstIndex(where: { $0.id == armorItem.id }) {
+                                        withAnimation {
+                                            armor[index] = updatedArmor
+                                            editingArmorId = nil
+                                            print("🛡️ [FormArmorSection] Updated armor at index \(index)")
+                                        }
+                                    }
+                                } onCancel: {
+                                    print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
                                     withAnimation {
-                                        armor[index] = updatedArmor
                                         editingArmorId = nil
-                                        print("🛡️ [FormArmorSection] Updated armor at index \(index)")
                                     }
                                 }
-                            } onCancel: {
-                                print("🛡️ [FormArmorSection] Edit cancelled for \(armorItem.name)")
-                                withAnimation {
-                                    editingArmorId = nil
-                                }
+                            } else {
+                                ArmorRow(armor: armorItem,
+                                    onEdit: {
+                                        print("✏️ Starting edit for armor: \(armorItem.name)")
+                                        editingArmorId = armorItem.id
+                                    },
+                                    onDelete: {
+                                        armor.removeAll(where: { $0.id == armorItem.id })
+                                    }
+                                )
                             }
-                        } else {
-                            ArmorRow(armor: armorItem,
-                                onEdit: {
-                                    print("✏️ Starting edit for armor: \(armorItem.name)")
-                                    editingArmorId = armorItem.id
-                                },
-                                onDelete: {
-                                    armor.removeAll(where: { $0.id == armorItem.id })
-                                }
-                            )
                         }
                     }
-                    .padding(.horizontal)
                 }
             } else if !isAddingNew && editingNewArmor == nil {
                 VStack(spacing: 8) {
@@ -311,7 +312,6 @@ struct CustomArmorForm: View {
     @State private var isStashed = false
     @State private var isMagical = false
     @State private var isCursed = false
-    @State private var bonus = 0
     @State private var isShield = false
     
     var body: some View {
@@ -431,12 +431,12 @@ struct CustomArmorForm: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 HStack {
-                    TextField("Bonus", value: $bonus, format: .number)
+                    TextField("Bonus", value: $df, format: .number)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         #if os(iOS)
                         .keyboardType(.numberPad)
                         #endif
-                    Stepper("", value: $bonus)
+                    Stepper("", value: $df)
                         .labelsHidden()
                 }
             }
@@ -472,7 +472,7 @@ struct CustomArmorForm: View {
                         isStashed: isStashed,
                         isMagical: isMagical,
                         isCursed: isCursed,
-                        bonus: bonus,
+                        bonus: df,
                         isShield: isShield
                     )
                     armor.append(newArmor)
@@ -808,7 +808,6 @@ struct ArmorEditRow: View {
                     .foregroundColor(.blue)
                 }
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
         .padding()
@@ -990,10 +989,8 @@ struct ArmorRow: View {
                     .foregroundColor(.red)
                 }
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
         .groupCardStyle()
     }
 }
