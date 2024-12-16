@@ -18,7 +18,6 @@ struct WeaponRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Content Area
             VStack(alignment: .leading, spacing: 12) {
                 // Name Section
                 VStack(alignment: .leading, spacing: 4) {
@@ -99,80 +98,35 @@ struct WeaponRow: View {
                 }
                 
                 // Quantity Section
-                if weapon.quantity > 1 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Quantity")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Label {
-                            Text("\(weapon.quantity)")
-                        } icon: {
-                            IconFrame(icon: Ph.stack.bold, color: .gray)
-                        }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quantity")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(weapon.quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .green)
                     }
                 }
                 
                 // Status Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Status")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    HStack(spacing: 16) {
-                        Label {
-                            Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                        } icon: {
-                            IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                        }
-                        Label {
-                            Text(weapon.isStashed ? "Stashed" : "On Person")
-                        } icon: {
-                            IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                    color: weapon.isStashed ? .orange : .gray)
-                        }
+                HStack(spacing: 20) {
+                    Label {
+                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
                     }
-                }
-                
-                // Magical Properties Section
-                if weapon.isMagical || weapon.isCursed {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Magical Properties")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        HStack(spacing: 16) {
-                            if weapon.isMagical {
-                                Label {
-                                    Text("Magical")
-                                } icon: {
-                                    IconFrame(icon: Ph.sparkle.bold, color: .purple)
-                                }
-                            }
-                            if weapon.isCursed {
-                                Label {
-                                    Text("Cursed")
-                                } icon: {
-                                    IconFrame(icon: Ph.skull.bold, color: .red)
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // Bonus/Penalty Section
-                if weapon.bonus != 0 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(weapon.bonus > 0 ? "Bonus" : "Penalty")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                    
+                    if weapon.isStashed {
                         Label {
-                            Text("\(abs(weapon.bonus))")
+                            Text("On Person")
                         } icon: {
-                            IconFrame(icon: weapon.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
-                                    color: weapon.bonus > 0 ? .green : .red)
+                            IconFrame(icon: Ph.user.bold, color: .gray)
                         }
                     }
                 }
             }
-            .allowsHitTesting(false)  // Disable touch interaction for content area only
+            .allowsHitTesting(false)
             
             Divider()
             
@@ -190,7 +144,7 @@ struct WeaponRow: View {
                 
                 Spacer()
                 
-                Button(role: .destructive, action: onDelete) {
+                Button(action: onDelete) {
                     Label {
                         Text("Delete")
                             .fontWeight(.medium)
@@ -200,10 +154,8 @@ struct WeaponRow: View {
                     .foregroundColor(.red)
                 }
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
         .groupCardStyle()
     }
 }
@@ -428,7 +380,7 @@ struct WeaponEditRow: View {
                         .labelsHidden()
                 }
             }
-
+            
             // Status Section
             Section {
                 // Equipped Toggle with Icon
@@ -578,10 +530,8 @@ struct WeaponEditRow: View {
                 }
                 .disabled(name.isEmpty || damage.isEmpty)
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
-        .padding()
         .groupCardStyle()
     }
 }
@@ -954,7 +904,6 @@ struct CustomWeaponForm: View {
             }
             .disabled(name.isEmpty)
         }
-        .padding(.horizontal)
         .padding(.top, 12)
     }
 }
@@ -1224,7 +1173,6 @@ struct FormWeaponsSection: View {
                         }
                     }
                 }
-                .padding(.horizontal, 20)
             } else if !isAddingNew && editingNewWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -1265,10 +1213,9 @@ struct FormWeaponsSection: View {
                     } label: {
                         Text("Select Weapon")
                             .frame(maxWidth: .infinity)
+                            .padding(.horizontal, 16)
                     }
                     .menuStyle(.borderlessButton)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
                     
                     Button(action: {
                         isAddingNew = false
@@ -1277,6 +1224,7 @@ struct FormWeaponsSection: View {
                             .foregroundColor(.red)
                     }
                 }
+                .padding(.horizontal, 16)
                 .padding(.top, 12)
             } else {
                 Button {
@@ -1286,7 +1234,6 @@ struct FormWeaponsSection: View {
                           systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
                         .foregroundColor(isAddingNew ? .red : .blue)
                 }
-                .padding(.top, 12)
             }
         }
     }
