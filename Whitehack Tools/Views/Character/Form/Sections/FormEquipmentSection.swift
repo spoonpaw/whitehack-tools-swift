@@ -146,7 +146,7 @@ public struct FormEquipmentSection: View {
             }
             
             if isAddingNew && editingNewGear == nil {
-                VStack {
+                VStack(spacing: 8) {
                     Menu {
                         ForEach(GearData.gear, id: \.name) { gearItem in
                             Button(gearItem.name) {
@@ -167,6 +167,7 @@ public struct FormEquipmentSection: View {
                     }
                     .menuStyle(.borderlessButton)
                     .frame(maxWidth: .infinity)
+                    .padding(.horizontal)
                     
                     Button(action: {
                         isAddingNew = false
@@ -175,7 +176,7 @@ public struct FormEquipmentSection: View {
                             .foregroundColor(.red)
                     }
                 }
-                .groupCardStyle()
+                .padding(.top, 12)
             } else if !gear.isEmpty && !isAddingNew && editingNewGear == nil {
                 Button(action: {
                     print("➕ Equipment: Add Another Item tapped")
@@ -198,7 +199,6 @@ public struct FormEquipmentSection: View {
                 }
             }
         }
-        .padding(.horizontal)
     }
 }
 
