@@ -1269,6 +1269,13 @@ struct FormWeaponsSection: View {
                     .menuStyle(.borderlessButton)
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal)
+                    
+                    Button(action: {
+                        isAddingNew = false
+                    }) {
+                        Label("Cancel", systemImage: "xmark.circle.fill")
+                            .foregroundColor(.red)
+                    }
                 }
                 .padding(.top, 12)
             } else {
