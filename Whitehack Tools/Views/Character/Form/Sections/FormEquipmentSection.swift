@@ -413,8 +413,12 @@ struct GearEditRow: View {
                 Text("Item Name")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Item name", text: $name)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    TextField("Name", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                } icon: {
+                    IconFrame(icon: Ph.package.bold, color: .purple)
+                }
             }
             
             // Weight Section
@@ -423,14 +427,23 @@ struct GearEditRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 Label {
-                    Picker("", selection: $weight) {
-                        Text("No size (100/slot)").tag("No size")
-                        Text("Minor (2/slot)").tag("Minor")
-                        Text("Regular (1 slot)").tag("Regular")
-                        Text("Heavy (2 slots)").tag("Heavy")
+                    Menu {
+                        ForEach(["No size", "Minor", "Regular", "Heavy"], id: \.self) { weightOption in
+                            Button(FormEquipmentSection.getWeightDisplayText(weightOption)) {
+                                weight = weightOption
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(FormEquipmentSection.getWeightDisplayText(weight))
+                            Spacer()
+                            Image(systemName: "chevron.up.chevron.down")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(8)
+                        .background(Color(.controlBackgroundColor))
+                        .cornerRadius(6)
                     }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
@@ -443,43 +456,30 @@ struct GearEditRow: View {
                     .foregroundColor(.secondary)
                 Label {
                     HStack {
-                        TextField("Quantity", text: $quantityString)
+                        TextField("Quantity", value: $quantity, format: .number)
                             .textFieldStyle(.roundedBorder)
                             #if os(iOS)
                             .keyboardType(.numberPad)
                             #endif
-                            .frame(maxWidth: 80)
-                            .focused($focusedField, equals: .quantity)
-                            .onChange(of: quantityString) { newValue in
-                                // Only allow numeric characters
-                                let filtered = newValue.filter { $0.isNumber }
-                                if filtered != newValue {
-                                    quantityString = filtered
-                                }
-                            }
-                            .onChange(of: focusedField) { field in
-                                if field != .quantity {
-                                    validateQuantity()
-                                }
-                            }
-                        Stepper("", value: $quantity, in: 1...99)
+                        Stepper("", value: $quantity, in: 1...Int.max)
                             .labelsHidden()
-                            .onChange(of: quantity) { newValue in
-                                quantityString = "\(newValue)"
-                            }
                     }
                 } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .blue)
+                    IconFrame(icon: Ph.stack.bold, color: .green)
                 }
             }
             
-            // Special Section
+            // Special Properties Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Special Properties")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Special properties", text: $special)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    TextField("Special properties", text: $special)
+                        .textFieldStyle(.roundedBorder)
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .orange)
+                }
             }
             
             // Toggles Section
