@@ -136,7 +136,7 @@ struct FormArmorSection: View {
                                 )
                             }
                         }
-                        .padding(.bottom, 8)
+                        .padding(.bottom, 4)
                     }
                 }
             } else if !isAddingNew && editingNewArmor == nil {
@@ -988,6 +988,6 @@ struct ArmorRow: View {
             .padding(.top, 4)
         }
         .groupCardStyle()
-        .padding(.bottom, 8)
+        .padding(.bottom, 4)
     }
 }
