@@ -577,7 +577,7 @@ struct GearEditRow: View {
             .padding(.horizontal)
             .padding(.top, 4)
         }
-        .groupCardStyle()
+        .padding(.vertical)
         .onAppear {
             // Reset state to match the input gear
             name = gear.name
@@ -589,6 +589,21 @@ struct GearEditRow: View {
             isCursed = gear.isCursed
             isContainer = gear.isContainer
             quantity = gear.quantity
+        }
+        .onChange(of: isContainer) { newValue in
+            print("📦 Equipment: Container toggle changed to \(newValue)")
+        }
+        .onChange(of: isStashed) { newValue in
+            print("📦 Equipment: Stashed toggle changed to \(newValue)")
+        }
+        .onChange(of: isEquipped) { newValue in
+            print("📦 Equipment: Equipped toggle changed to \(newValue)")
+        }
+        .onChange(of: isMagical) { newValue in
+            print("📦 Equipment: Magical toggle changed to \(newValue)")
+        }
+        .onChange(of: isCursed) { newValue in
+            print("📦 Equipment: Cursed toggle changed to \(newValue)")
         }
     }
 }
