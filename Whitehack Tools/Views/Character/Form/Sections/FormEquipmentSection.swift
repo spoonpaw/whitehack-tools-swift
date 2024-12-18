@@ -537,15 +537,20 @@ struct GearEditRow: View {
             Divider()
             
             // Action Buttons
-            HStack(spacing: 20) {
+            HStack {
                 Button {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
                     print("🔴 Cancel action starting")
                     onCancel()
                 } label: {
-                    Label("Cancel", systemImage: "xmark.circle.fill")
-                        .foregroundColor(.red)
+                    Label {
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundColor(.red)
                 }
                 
                 Spacer()
@@ -570,11 +575,15 @@ struct GearEditRow: View {
                     
                     onSave(updatedGear)
                 } label: {
-                    Label("Save", systemImage: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                    Label {
+                        Text("Save")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    .foregroundColor(.blue)
                 }
             }
-            .padding(.horizontal)
             .padding(.top, 4)
         }
         .padding(.vertical)
