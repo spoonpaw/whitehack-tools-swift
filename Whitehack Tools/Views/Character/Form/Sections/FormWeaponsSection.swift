@@ -529,12 +529,7 @@ struct WeaponEditRow: View {
                 }
                 .disabled(name.isEmpty || damage.isEmpty)
             }
-            .padding(.top, 4)
         }
-        .padding()
-        .background(.background)
-        .cornerRadius(10)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -1154,15 +1149,23 @@ struct FormWeaponsSection: View {
                 ForEach(weapons) { weapon in
                     Group {
                         if editingWeaponId == weapon.id {
-                            WeaponEditRow(weapon: weapon) { updatedWeapon in
-                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                    weapons[index] = updatedWeapon
+                            WeaponEditRow(
+                                weapon: weapon,
+                                onSave: { updatedWeapon in
+                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                        weapons[index] = updatedWeapon
+                                    }
+                                    editingWeaponId = nil
+                                },
+                                onCancel: {
+                                    editingWeaponId = nil
                                 }
-                                editingWeaponId = nil
-                            } onCancel: {
-                                editingWeaponId = nil
-                            }
-                            .id("\(weapon.id)-\(editingWeaponId != nil)")
+                            )
+                            .padding()
+                            .background(.background)
+                            .cornerRadius(10)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            .padding(.bottom, 8)
                         } else {
                             WeaponRow(weapon: weapon,
                                 onEdit: {
@@ -1198,6 +1201,7 @@ struct FormWeaponsSection: View {
                 } onCancel: {
                     editingNewWeapon = nil
                 }
+                .padding()
             }
             
             if isAddingNew {
