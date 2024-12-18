@@ -87,7 +87,7 @@ public struct FormEquipmentSection: View {
     }
     
     public var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             // Equipment list
             if !gear.isEmpty {
                 VStack(spacing: 12) {

@@ -102,7 +102,7 @@ struct FormArmorSection: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             // Armor list
             if !armor.isEmpty {
                 VStack(spacing: 12) {
