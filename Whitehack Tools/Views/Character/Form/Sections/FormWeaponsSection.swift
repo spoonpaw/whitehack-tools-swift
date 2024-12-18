@@ -1050,7 +1050,7 @@ struct WeaponDataRow: View {
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
     }
 }
 
@@ -1180,7 +1180,8 @@ struct FormWeaponsSection: View {
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
+                .padding(.top, 4)
+                .padding(.bottom, 12)
             }
             
             if let newWeapon = editingNewWeapon {

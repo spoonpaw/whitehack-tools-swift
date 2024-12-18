@@ -127,7 +127,8 @@ public struct FormEquipmentSection: View {
                         .foregroundColor(.secondary)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
+                .padding(.top, 4)
+                .padding(.bottom, 12)
             }
             
             if let editingGear = editingNewGear {
