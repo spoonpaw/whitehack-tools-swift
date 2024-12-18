@@ -113,13 +113,19 @@ public struct FormEquipmentSection: View {
                                         editingGearId = gearItem.id
                                     },
                                     onDelete: {
-                                        gear.removeAll { $0.id == gearItem.id }
+                                        gear.removeAll(where: { $0.id == gearItem.id })
                                     }
                                 )
+                                .padding(.bottom, 4)
                             }
                         }
                     }
                 }
+                .padding(.horizontal)
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .padding(.bottom, 8)
             } else if !isAddingNew && editingNewGear == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
@@ -346,7 +352,7 @@ struct GearRow: View {
             }
             .padding(.top, 4)
         }
-        .groupCardStyle()
+        .padding(.vertical)
     }
 }
 
