@@ -236,14 +236,6 @@ struct FormArmorSection: View {
                 }
                 .padding(.horizontal)
             }
-            
-            // Add armor button
-            // Button {
-            //     isAddingNew = true
-            // } label: {
-            //     Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
-            // }
-            // .padding(.horizontal)
         }
     }
 }
@@ -807,7 +799,8 @@ struct ArmorEditRow: View {
             }
             .padding(.top, 4)
         }
-        .padding()
+        .groupCardStyle()
+        .padding(.bottom, 4)
         .onAppear {
             // Reset state to match the input armor
             name = armor.name
