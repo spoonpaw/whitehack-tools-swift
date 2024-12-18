@@ -122,7 +122,7 @@ public struct FormEquipmentSection: View {
                 }
             } else if !isAddingNew && editingNewGear == nil {
                 VStack(spacing: 8) {
-                    IconFrame(icon: Ph.bagSimple.bold, color: .gray)
+                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Equipment")
                         .foregroundColor(.secondary)
                 }
