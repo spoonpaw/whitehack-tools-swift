@@ -156,7 +156,6 @@ struct WeaponRow: View {
             }
             .padding(.top, 4)
         }
-        .groupCardStyle()
     }
 }
 
@@ -532,7 +531,10 @@ struct WeaponEditRow: View {
             }
             .padding(.top, 4)
         }
-        .groupCardStyle()
+        .padding()
+        .background(.background)
+        .cornerRadius(10)
+        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
@@ -1170,6 +1172,11 @@ struct FormWeaponsSection: View {
                                     weapons.removeAll(where: { $0.id == weapon.id })
                                 }
                             )
+                            .padding()
+                            .background(.background)
+                            .cornerRadius(10)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            .padding(.bottom, 8)
                         }
                     }
                 }
@@ -1244,13 +1251,8 @@ private extension View {
     func groupCardStyle() -> some View {
         self
             .padding()
-            #if os(iOS)
-            .background(Color(.systemBackground))  // White background on iOS
+            .background(.background)
             .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
-            #else
-            .background(Color(nsColor: .windowBackgroundColor))
-            .cornerRadius(12)
-            #endif
+            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
     }
 }
