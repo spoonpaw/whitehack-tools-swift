@@ -31,6 +31,18 @@ struct WeaponRow: View {
                     }
                 }
                 
+                // Quantity Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Quantity")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text("\(weapon.quantity)")
+                    } icon: {
+                        IconFrame(icon: Ph.stack.bold, color: .green)
+                    }
+                }
+                
                 // Damage Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Damage")
@@ -97,31 +109,22 @@ struct WeaponRow: View {
                     }
                 }
                 
-                // Quantity Section
+                // Status Section
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Quantity")
+                    Text("Status")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Label {
-                        Text("\(weapon.quantity)")
-                    } icon: {
-                        IconFrame(icon: Ph.stack.bold, color: .green)
-                    }
-                }
-                
-                // Status Section
-                HStack(spacing: 20) {
-                    Label {
-                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                    }
-                    
-                    if weapon.isStashed {
+                    HStack(spacing: 16) {
                         Label {
-                            Text("On Person")
+                            Text(weapon.isEquipped ? "Equipped" : "Unequipped")
                         } icon: {
-                            IconFrame(icon: Ph.user.bold, color: .gray)
+                            IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                        }
+                        Label {
+                            Text(weapon.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: weapon.isStashed ? .orange : .gray)
                         }
                     }
                 }
@@ -156,6 +159,7 @@ struct WeaponRow: View {
             }
             .padding(.top, 4)
         }
+        .groupCardStyle()
     }
 }
 
@@ -1175,11 +1179,7 @@ struct FormWeaponsSection: View {
                                     weapons.removeAll(where: { $0.id == weapon.id })
                                 }
                             )
-                            .padding()
-                            .background(.background)
-                            .cornerRadius(10)
-                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                            .padding(.bottom, 8)
+                            .padding(.bottom, 4)
                         }
                     }
                 }
