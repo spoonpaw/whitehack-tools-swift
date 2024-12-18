@@ -136,6 +136,7 @@ struct FormArmorSection: View {
                                 )
                             }
                         }
+                        .padding(.bottom, 8)
                     }
                 }
             } else if !isAddingNew && editingNewArmor == nil {
@@ -251,14 +252,9 @@ private extension View {
     func groupCardStyle() -> some View {
         self
             .padding()
-            #if os(iOS)
-            .background(Color(.systemBackground))  // White background on iOS
+            .background(.background)
             .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
-            #else
-            .background(Color(nsColor: .windowBackgroundColor))
-            .cornerRadius(12)
-            #endif
+            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
     }
 }
 
@@ -831,7 +827,6 @@ struct ArmorEditRow: View {
             quantity = armor.quantity
             quantityString = "\(armor.quantity)"
         }
-        .groupCardStyle()
     }
 }
 
@@ -993,5 +988,6 @@ struct ArmorRow: View {
             .padding(.top, 4)
         }
         .groupCardStyle()
+        .padding(.bottom, 8)
     }
 }
