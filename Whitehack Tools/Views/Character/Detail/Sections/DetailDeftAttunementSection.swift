@@ -26,8 +26,11 @@ struct DetailDeftAttunementSection: View {
                 
                 VStack(alignment: .leading, spacing: 16) {
                     ClassInfoCard()
+                        .frame(maxWidth: .infinity)
                     DeftFeaturesCard()
+                        .frame(maxWidth: .infinity)
                     AttunementSlotsCard(character: character)
+                        .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -81,6 +84,7 @@ private struct DeftFeaturesCard: View {
                 Text("Class Features")
                     .font(.headline)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading, spacing: 16) {
                 DeftAttunementFeatureRow(
@@ -89,6 +93,7 @@ private struct DeftFeaturesCard: View {
                     title: "Double Roll",
                     description: "Always use positive double roll for tasks and attacks in line with vocation when properly equipped"
                 )
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 DeftAttunementFeatureRow(
                     icon: "bolt.fill",
@@ -96,6 +101,7 @@ private struct DeftFeaturesCard: View {
                     title: "Combat Advantage",
                     description: "Can swap combat advantage for double damage if vocation is relevant"
                 )
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 DeftAttunementFeatureRow(
                     icon: "shield.lefthalf.filled",
@@ -103,6 +109,7 @@ private struct DeftFeaturesCard: View {
                     title: "Weapon Proficiency",
                     description: "-2 AV with non-attuned two-handed melee weapons. Combat vocations get +1 damage and df from off-hand weapons"
                 )
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 DeftAttunementFeatureRow(
                     icon: "tshirt.fill",
@@ -110,6 +117,7 @@ private struct DeftFeaturesCard: View {
                     title: "Light Armor",
                     description: "Cannot use slot abilities or swap for double damage when using shield or armor heavier than studded leather"
                 )
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 DeftAttunementFeatureRow(
                     icon: "star.circle.fill",
@@ -117,7 +125,9 @@ private struct DeftFeaturesCard: View {
                     title: "Non-Combat Vocation",
                     description: "Once per session, can save to turn a successful task roll into a critical success"
                 )
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity)
         }
         .padding()
         #if os(iOS)
@@ -391,7 +401,9 @@ private struct DeftAttunementFeatureRow: View {
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 4)
     }
 }
