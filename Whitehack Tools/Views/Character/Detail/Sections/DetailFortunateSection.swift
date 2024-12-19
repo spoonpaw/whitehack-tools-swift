@@ -46,6 +46,7 @@ private struct ClassOverviewCard: View {
                 Text("Class Overview")
                     .font(.headline)
             }
+            
             Text("""
                 Fortunate characters are born with the advantages of nobility, fame, destiny, wealth, or a combination thereof. They can be royal heirs, rich and influential merchants, star performers, or religious icons. Once per game session, they may use their good fortune in a major way, like hiring a large ship, performing the will of a god, getting a personal audience with the queen, or being hailed as a friend by a hostile tribe.
 
@@ -54,9 +55,9 @@ private struct ClassOverviewCard: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.orange.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .frame(maxWidth: .infinity)
+                .cornerRadius(8)
 
             VStack(alignment: .leading, spacing: 8) {
                 FeatureRow(
@@ -75,6 +76,12 @@ private struct ClassOverviewCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -90,6 +97,7 @@ private struct FortunePowerCard: View {
                 Text("Fortune Power")
                     .font(.headline)
             }
+            
             Text("""
                 Once per game session, the Fortunate may use their good fortune in a major way, such as:
 
@@ -103,23 +111,30 @@ private struct FortunePowerCard: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.yellow.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .frame(maxWidth: .infinity)
+                .cornerRadius(8)
 
             HStack {
+                Spacer()
                 Ph.check.bold
                     .frame(width: 16, height: 16)
                     .foregroundColor(hasUsedFortune ? .red : .green)
                 Text(hasUsedFortune ? "Fortune power has been used this session" : "Fortune power is available")
                     .foregroundColor(hasUsedFortune ? .red : .green)
+                Spacer()
             }
             .padding(8)
             .background(Color.secondary.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .frame(maxWidth: .infinity)
+            .cornerRadius(8)
         }
         .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -135,12 +150,13 @@ private struct StandingCard: View {
                 Text("Standing")
                     .font(.headline)
             }
+            
             if !standing.isEmpty {
                 Text(standing)
                     .font(.body)
                     .padding(12)
                     .background(Color.purple.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .cornerRadius(8)
                     .frame(maxWidth: .infinity)
 
                 Text("When the referee thinks that the standing is relevant:")
@@ -174,6 +190,12 @@ private struct StandingCard: View {
             }
         }
         .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -194,7 +216,7 @@ private struct SignatureObjectCard: View {
                     .font(.body)
                     .padding(12)
                     .background(Color.orange.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .cornerRadius(8)
                     .frame(maxWidth: .infinity)
 
                 Text("This object has plot immunity and cannot be lost, destroyed, or made irretrievable by the referee unless you wish it to happen.")
@@ -209,6 +231,12 @@ private struct SignatureObjectCard: View {
             }
         }
         .padding()
+        .background(Color.white)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 
@@ -487,12 +515,12 @@ private struct FeatureRow: View {
     let color: Color
     let title: String
     let description: String
-
+    
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             icon
                 .foregroundColor(color)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -501,7 +529,10 @@ private struct FeatureRow: View {
                     .foregroundColor(.secondary)
             }
         }
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(color.opacity(0.1))
+        .cornerRadius(6)
     }
 }
 
@@ -509,12 +540,12 @@ private struct BenefitRow: View {
     let icon: AnyView
     let title: String
     let description: String
-
+    
     var body: some View {
         HStack(alignment: .top, spacing: 8) {
             icon
                 .foregroundColor(.purple)
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -523,6 +554,9 @@ private struct BenefitRow: View {
                     .foregroundColor(.secondary)
             }
         }
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.purple.opacity(0.1))
+        .cornerRadius(6)
     }
 }
