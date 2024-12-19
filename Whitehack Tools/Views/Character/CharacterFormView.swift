@@ -355,7 +355,7 @@ struct CharacterFormView: View {
             strongCombatOptions: formData.strongCombatOptions,
             wiseMiracleSlots: formData.miracleSlots,
             braveQuirkOptions: formData.braveQuirkOptions,
-            cleverKnackOptions: CleverKnackOptions(),
+            cleverKnackOptions: formData.cleverKnackOptions,
             fortunateOptions: FortunateOptions(),
             comebackDice: formData.comebackDice,
             hasUsedSayNo: formData.hasUsedSayNo,
@@ -460,6 +460,8 @@ private class FormData: ObservableObject {
     
     @Published var notes: String = ""
     
+    @Published var cleverKnackOptions = CleverKnackOptions()
+    
     var levelAsInt: Int {
         Int(level) ?? 1
     }
@@ -483,6 +485,9 @@ private class FormData: ObservableObject {
         self.braveQuirkOptions = character?.braveQuirkOptions ?? BraveQuirkOptions()
         self.hasUsedSayNo = character?.hasUsedSayNo ?? false
         self.comebackDice = character?.comebackDice ?? 0
+        
+        // Clever
+        self.cleverKnackOptions = character?.cleverKnackOptions ?? CleverKnackOptions()
         
         // Attributes
         self.useCustomAttributes = character?.useCustomAttributes ?? false
@@ -602,6 +607,15 @@ private extension CharacterFormView {
                     hasUsedSayNo: $formData.hasUsedSayNo,
                     comebackDice: $formData.comebackDice,
                     level: formData.levelAsInt
+                )
+                .frame(maxWidth: .infinity)
+            }
+            
+            if formData.selectedClass == .clever {
+                FormCleverKnacksSection(
+                    characterClass: formData.selectedClass,
+                    level: formData.levelAsInt,
+                    cleverKnackOptions: $formData.cleverKnackOptions
                 )
                 .frame(maxWidth: .infinity)
             }
