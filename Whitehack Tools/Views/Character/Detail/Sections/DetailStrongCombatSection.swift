@@ -8,8 +8,10 @@ struct DetailStrongCombatSection: View {
     
     var body: some View {
         if character.characterClass == .strong {
-            Section {
-                VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                StrongSectionHeader()
+                    .padding(.bottom, 4)
+                VStack(alignment: .leading, spacing: 8) {
                     ClassInfoCard()
                         .frame(maxWidth: .infinity)
                     ClassFeaturesCard()
@@ -21,9 +23,6 @@ struct DetailStrongCombatSection: View {
                     FlowAttacksCard(character: character)
                         .frame(maxWidth: .infinity)
                 }
-                .padding(.vertical)
-            } header: {
-                StrongSectionHeader()
             }
         } else {
             EmptyView()
