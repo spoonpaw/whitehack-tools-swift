@@ -278,6 +278,15 @@ private struct InfoTabView: View {
                     .padding(.horizontal, 16)
             }
             
+            if character.characterClass == .clever {
+                DetailCleverKnacksSection(
+                    characterClass: character.characterClass,
+                    level: character.level,
+                    cleverKnackOptions: character.cleverKnackOptions
+                )
+                .padding(.horizontal, 16)
+            }
+            
             DetailAdditionalInfoSection(character: character)
                 .padding(.horizontal, 16)
             

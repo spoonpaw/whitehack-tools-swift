@@ -5,29 +5,114 @@ struct DetailCleverKnacksSection: View {
     let characterClass: CharacterClass
     let level: Int
     let cleverKnackOptions: CleverKnackOptions
+    @Environment(\.colorScheme) var colorScheme
     
     private var availableSlots: Int {
         AdvancementTables.shared.stats(for: characterClass, at: level).slots
     }
     
     var body: some View {
-        if characterClass == .clever {
-            Section {
-                VStack(alignment: .leading, spacing: 16) {
-                    VocationDescriptionCard()
-                    UnorthodoxSolutionCard(hasUsedUnorthodoxBonus: cleverKnackOptions.hasUsedUnorthodoxBonus)
-                    InformationGatheringCard()
-                    SpecialKnacksCard(
-                        activeKnacks: cleverKnackOptions.activeKnacks,
-                        slots: cleverKnackOptions.slots,
-                        availableSlots: availableSlots
-                    )
-                    AdvancementOptionsCard()
-                    CombatAndSavingThrowsCard()
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "The Clever", icon: Image(systemName: "brain.head.profile"))
+            
+            if characterClass == .clever {
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ClassOverviewCard()
+                        Divider()
+                        UnorthodoxSolutionCard(hasUsedUnorthodoxBonus: cleverKnackOptions.hasUsedUnorthodoxBonus)
+                        Divider()
+                        InformationGatheringCard()
+                        Divider()
+                        SpecialKnacksCard(
+                            activeKnacks: cleverKnackOptions.activeKnacks,
+                            slots: cleverKnackOptions.slots,
+                            availableSlots: availableSlots
+                        )
+                        Divider()
+                        AdvancementOptionsCard()
+                        Divider()
+                        CombatAndSavingThrowsCard()
+                    }
+                    .padding(12)
                 }
-                .padding(.vertical, 8)
-            } header: {
-                SectionHeader(title: "The Clever", icon: Image(systemName: "brain.head.profile"))
+                .groupBoxStyle(DetailCardGroupBoxStyle())
+            }
+        }
+    }
+}
+
+// MARK: - Group Box Style
+private struct DetailCardGroupBoxStyle: GroupBoxStyle {
+    @Environment(\.colorScheme) var colorScheme
+    
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            configuration.content
+        }
+        .frame(maxWidth: .infinity)
+        .background(colorScheme == .dark ? Color.black : Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1.5)
+        )
+        .shadow(color: Color.black.opacity(0.15), radius: 3, x: 0, y: 2)
+    }
+}
+
+// MARK: - Cards
+private struct ClassOverviewCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "brain.head.profile")
+                    .foregroundColor(.green)
+                Text("Class Overview")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+            }
+            
+            DetailCleverFeatureRow(
+                icon: "lightbulb.fill",
+                color: .green,
+                title: "Analytical Minds",
+                description: "Clever characters think in different ways. They may not always have a high intelligence score, but they are curious, crafty, and unafraid of failure."
+            )
+            
+            DetailCleverFeatureRow(
+                icon: "person.fill.questionmark",
+                color: .green,
+                title: "Diverse Backgrounds",
+                description: "Investigators, scientists, engineers, pioneers, and explorers who approach problems with unique perspectives."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.green.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct DetailCleverFeatureRow: View {
+    let icon: String
+    let color: Color
+    let title: String
+    let description: String
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(color)
+                .frame(width: 20)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -65,22 +150,37 @@ private struct UnorthodoxSolutionCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "lightbulb.fill")
-                    .foregroundStyle(.green)
+                    .foregroundColor(.yellow)
                 Text("Unorthodox Solution")
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
             }
             
-            Text("Once per day, the Clever get a hefty +6 bonus for an unorthodox attempt to solve a non-combat related problem. Out of the box thinking can for example involve odd tools or materials, or apply a strange or at least original method. Further modifications can be applied, usually a negative one to account for the fact that a particular idea also a bit bizarre with some serious drawback.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.bottom, 8)
+            DetailCleverFeatureRow(
+                icon: "sparkles",
+                color: .yellow,
+                title: "Daily Power",
+                description: "Once per day, gain a +6 bonus for an unorthodox attempt to solve a non-combat related problem."
+            )
             
-            DailyPowerStatusView(isAvailable: !hasUsedUnorthodoxBonus)
+            DetailCleverFeatureRow(
+                icon: "exclamationmark.triangle",
+                color: .yellow,
+                title: "Drawbacks",
+                description: "Negative modifiers may apply to account for bizarre methods or serious drawbacks."
+            )
+            
+            HStack {
+                Image(systemName: hasUsedUnorthodoxBonus ? "hourglass.circle.fill" : "checkmark.circle.fill")
+                    .foregroundColor(hasUsedUnorthodoxBonus ? .red : .green)
+                Text(hasUsedUnorthodoxBonus ? "Daily power has been used" : "Daily power is available")
+                    .font(.caption)
+                    .foregroundColor(hasUsedUnorthodoxBonus ? .red : .green)
+            }
         }
         .padding(12)
-        .background(Color.green.opacity(0.05))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.yellow.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -91,32 +191,36 @@ private struct InformationGatheringCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "magnifyingglass.circle.fill")
-                    .foregroundStyle(.green)
+                    .foregroundColor(.blue)
                 Text("Information Gathering")
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
             }
             
-            Text("The clever treat all successful or critical rolls for clues, information gathering and detection as a pair, meaning that they get something extra out of it. This something is based on a question from the player, but should be:")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            DetailCleverFeatureRow(
+                icon: "doc.text.magnifyingglass",
+                color: .blue,
+                title: "Enhanced Detection",
+                description: "All successful or critical rolls for clues and information gathering are treated as a pair."
+            )
             
-            VStack(alignment: .leading, spacing: 8) {
-                InfoBulletPoint(text: "Within bounds of the situation")
-                InfoBulletPoint(text: "Proportionate to the quality of the roll")
-                InfoBulletPoint(text: "An addition not surpassing the effect of the regular success")
-            }
-            .padding(.leading, 8)
+            DetailCleverFeatureRow(
+                icon: "questionmark.circle",
+                color: .blue,
+                title: "Player Questions",
+                description: "Get additional information based on player questions, proportionate to roll quality."
+            )
             
-            Text("For example, a clever character using intelligence to get a clue for a puzzle or to extract information from a book, simply gets a minor additional clue or piece of information, in the direction indicated by the player's question.")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 4)
+            DetailCleverFeatureRow(
+                icon: "list.bullet",
+                color: .blue,
+                title: "Requirements",
+                description: "Additional information must be within bounds of the situation and not surpass the regular success."
+            )
         }
         .padding(12)
-        .background(Color.green.opacity(0.05))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.blue.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -127,26 +231,36 @@ private struct AdvancementOptionsCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "arrow.up.forward.circle.fill")
-                    .foregroundStyle(.green)
+                    .foregroundColor(.orange)
                 Text("Advancement Options")
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
             }
             
-            Text("The Clever get an extra language from the start. At even levels, they can eschew the raise either for an additional language or for a ritual based on a slottable scroll, in a language the character knows.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            DetailCleverFeatureRow(
+                icon: "text.book.closed",
+                color: .orange,
+                title: "Extra Language",
+                description: "Start with an additional language from the beginning."
+            )
             
-            VStack(alignment: .leading, spacing: 8) {
-                RitualDetailRow(icon: "clock.fill", text: "Casting time: 10 minutes or double scroll time")
-                RitualDetailRow(icon: "calendar", text: "One week study time required")
-                RitualDetailRow(icon: "hourglass", text: "Can perform each ritual once per day")
-                RitualDetailRow(icon: "heart.fill", text: "HP Cost: (Scroll Cost + 1) × 2")
-            }
+            DetailCleverFeatureRow(
+                icon: "arrow.up.right",
+                color: .orange,
+                title: "Even Level Choice",
+                description: "At even levels, choose between a raise, an additional language, or learning a ritual from a scroll."
+            )
+            
+            DetailCleverFeatureRow(
+                icon: "scroll",
+                color: .orange,
+                title: "Ritual Learning",
+                description: "Can learn rituals from scrolls in known languages. Takes one week to study, costs (Scroll Cost + 1) × 2 HP to cast."
+            )
         }
         .padding(12)
-        .background(Color.green.opacity(0.05))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orange.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -157,22 +271,93 @@ private struct CombatAndSavingThrowsCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "shield.fill")
-                    .foregroundStyle(.green)
+                    .foregroundColor(.red)
                 Text("Combat & Saving Throws")
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
             }
             
-            VStack(alignment: .leading, spacing: 8) {
-                BonusRow(icon: "eye.fill", text: "+2 to saves vs. illusions")
-                BonusRow(icon: "star.fill", text: "+2 to vocation-related appraisal")
-                BonusRow(icon: "shield.lefthalf.filled", text: "Can use any armor")
-                BonusRow(icon: "bolt.fill", text: "2 AV with heavy weapons")
+            DetailCleverFeatureRow(
+                icon: "shield.lefthalf.filled",
+                color: .red,
+                title: "Armor Use",
+                description: "Can use any type of armor without penalty."
+            )
+            
+            DetailCleverFeatureRow(
+                icon: "eye.trianglebadge.exclamationmark",
+                color: .red,
+                title: "Illusion Defense",
+                description: "+2 bonus to saving throws against illusions."
+            )
+            
+            DetailCleverFeatureRow(
+                icon: "star",
+                color: .red,
+                title: "Appraisal Bonus",
+                description: "+2 to vocation-related appraisal checks."
+            )
+            
+            DetailCleverFeatureRow(
+                icon: "bolt",
+                color: .red,
+                title: "Heavy Weapons",
+                description: "2 AV when using heavy weapons."
+            )
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+// MARK: - Special Knacks Card
+private struct SpecialKnacksCard: View {
+    let activeKnacks: [CleverKnack]
+    let slots: [CleverKnackSlot]
+    let availableSlots: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "gearshape.2.fill")
+                    .foregroundColor(.purple)
+                Text("Special Knacks")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Text("\(activeKnacks.count)/\(availableSlots)")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
+            DetailCleverFeatureRow(
+                icon: "brain",
+                color: .purple,
+                title: "Specialized Techniques",
+                description: "Your analytical mind develops specialized techniques as you advance. Each knack represents mastery over a particular domain of clever thinking."
+            )
+            
+            ForEach(0..<availableSlots, id: \.self) { slotIndex in
+                if slotIndex < slots.count, let knack = slots[slotIndex].knack {
+                    KnackCard(
+                        knack: knack,
+                        slotIndex: slotIndex,
+                        hasUsedCombatDie: slots[slotIndex].hasUsedCombatDie
+                    )
+                } else {
+                    EmptyKnackCard(slotIndex: slotIndex)
+                }
             }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.green.opacity(0.05))
+        .background(Color.purple.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
@@ -243,52 +428,7 @@ private struct BonusRow: View {
     }
 }
 
-// MARK: - Special Knacks Card
-private struct SpecialKnacksCard: View {
-    let activeKnacks: [CleverKnack]
-    let slots: [CleverKnackSlot]
-    let availableSlots: Int
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Image(systemName: "gearshape.2.fill")
-                    .foregroundStyle(.green)
-                Text("Special Knacks")
-                    .font(.headline)
-                Spacer()
-                Text("\(activeKnacks.count)/\(availableSlots)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            HStack(alignment: .top, spacing: 8) {
-                Image(systemName: "brain")
-                    .foregroundStyle(.green)
-                    .imageScale(.large)
-                Text("Your analytical mind develops specialized techniques as you advance. Each knack represents mastery over a particular domain of clever thinking.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 4)
-            
-            ForEach(0..<availableSlots, id: \.self) { slotIndex in
-                if slotIndex < slots.count, let knack = slots[slotIndex].knack {
-                    KnackCard(
-                        knack: knack,
-                        slotIndex: slotIndex,
-                        hasUsedCombatDie: slots[slotIndex].hasUsedCombatDie
-                    )
-                } else {
-                    EmptyKnackCard(slotIndex: slotIndex)
-                }
-            }
-        }
-        .padding(.top, 8)
-    }
-}
-
-struct EmptyKnackCard: View {
+private struct EmptyKnackCard: View {
     let slotIndex: Int
     
     var body: some View {
@@ -324,100 +464,7 @@ struct EmptyKnackCard: View {
     }
 }
 
-// MARK: - Class Benefits Card
-private struct ClassBenefitsCard: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "star.circle.fill")
-                    .foregroundStyle(.green)
-                Text("Class Benefits")
-                    .font(.headline)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                CleverBenefitBullet(text: "Double information on successful detection rolls", icon: "binoculars.fill")
-                CleverBenefitBullet(text: "+2 to saves vs. illusions", icon: "eye.trianglebadge.exclamationmark.fill")
-                CleverBenefitBullet(text: "+2 to vocation-related appraisal", icon: "chart.bar.fill")
-                CleverBenefitBullet(text: "Learn one additional language", icon: "text.book.closed.fill")
-                CleverBenefitBullet(text: "Can learn rituals from scrolls at even levels", icon: "scroll.fill")
-            }
-            .padding(.leading, 4)
-        }
-        .padding(.top, 8)
-    }
-}
-
-struct CleverPowerCard: View {
-    let title: String
-    let description: String
-    let isAvailable: Bool
-    let examples: [String]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                    Text(description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer(minLength: 16)
-                if isAvailable {
-                    Image(systemName: "sparkles")
-                        .foregroundColor(.green)
-                        .imageScale(.large)
-                } else {
-                    Image(systemName: "hourglass.circle.fill")
-                        .foregroundColor(.red)
-                        .imageScale(.large)
-                }
-            }
-            
-            HStack(alignment: .firstTextBaseline) {
-                Image(systemName: "list.bullet.circle.fill")
-                    .foregroundStyle(.green)
-                Text("Examples:")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            VStack(alignment: .leading, spacing: 6) {
-                ForEach(examples, id: \.self) { example in
-                    HStack(alignment: .top, spacing: 4) {
-                        Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(.green)
-                            .padding(.top, 2)
-                        Text(example)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-            }
-            .padding(.leading, 4)
-            
-            HStack {
-                Image(systemName: isAvailable ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                    .foregroundColor(isAvailable ? .green : .red)
-                Text(isAvailable ? "Power is available to use" : "Power has been used today")
-                    .font(.caption)
-                    .foregroundColor(isAvailable ? .green : .red)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .padding(12)
-        .background(Color.green.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-}
-
-struct KnackCard: View {
+private struct KnackCard: View {
     let knack: CleverKnack
     let slotIndex: Int
     let hasUsedCombatDie: Bool
@@ -450,7 +497,7 @@ struct KnackCard: View {
     }
 }
 
-struct CombatDieStatus: View {
+private struct CombatDieStatus: View {
     let hasUsedCombatDie: Bool
     
     var body: some View {
@@ -481,7 +528,7 @@ struct CombatDieStatus: View {
     }
 }
 
-struct EmptyKnacksView: View {
+private struct EmptyKnacksView: View {
     var body: some View {
         Text("No knacks selected")
             .font(.subheadline)
@@ -493,7 +540,7 @@ struct EmptyKnacksView: View {
     }
 }
 
-struct CleverBenefitBullet: View {
+private struct CleverBenefitBullet: View {
     let text: String
     let icon: String
     
@@ -505,28 +552,6 @@ struct CleverBenefitBullet: View {
             Text(text)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-        }
-    }
-}
-
-struct CleverFeatureRow: View {
-    let icon: String
-    let title: String
-    let description: String
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 12))
-                .foregroundColor(.green)
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
         }
     }
 }
