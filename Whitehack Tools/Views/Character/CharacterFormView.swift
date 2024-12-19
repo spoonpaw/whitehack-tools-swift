@@ -539,7 +539,25 @@ private class FormData: ObservableObject {
     @Published var name: String
     @Published var playerName: String
     @Published var level: String
-    @Published var selectedClass: CharacterClass
+    @Published var selectedClass: CharacterClass {
+        didSet {
+            // Initialize class-specific data when class changes
+            if selectedClass == .wise && miracleSlots.isEmpty {
+                // Create 3 miracle slots with base miracles
+                miracleSlots = (0..<3).map { index in
+                    var slot = WiseMiracleSlot()
+                    // First slot gets 2 base miracles, others get 1
+                    let baseMiracleCount = index == 0 ? 2 : 1
+                    slot.baseMiracles = (0..<baseMiracleCount).map { _ in
+                        WiseMiracle(id: UUID(), name: "", isActive: false, isAdditional: false)
+                    }
+                    return slot
+                }
+            } else if selectedClass == .deft && attunementSlots.isEmpty {
+                attunementSlots = Array(repeating: AttunementSlot(), count: 3)
+            }
+        }
+    }
     
     // Deft
     @Published var attunementSlots: [AttunementSlot]
