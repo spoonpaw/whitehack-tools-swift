@@ -11,10 +11,15 @@ struct DetailStrongCombatSection: View {
             Section {
                 VStack(alignment: .leading, spacing: 16) {
                     ClassInfoCard()
+                        .frame(maxWidth: .infinity)
                     ClassFeaturesCard()
+                        .frame(maxWidth: .infinity)
                     SpecialAbilitiesCard(character: character)
+                        .frame(maxWidth: .infinity)
                     ConflictLootingCard(character: character)
+                        .frame(maxWidth: .infinity)
                     FlowAttacksCard(character: character)
+                        .frame(maxWidth: .infinity)
                 }
                 .padding(.vertical)
             } header: {
@@ -195,13 +200,13 @@ private struct SpecialAbilitiesCard: View {
                         Image(systemName: currentLoot.type == .substance ? "flask.fill" : 
                                        currentLoot.type == .special ? "star.circle.fill" : "wand.and.stars")
                             .foregroundColor(currentLoot.type == .substance ? .green :
-                                           currentLoot.type == .special ? .yellow : .purple)
+                                           currentLoot.type == .special ? .orange : .purple)
                             .imageScale(.large)
                         
                         Text(currentLoot.type.rawValue.capitalized)
                             .font(.subheadline.bold())
                             .foregroundColor(currentLoot.type == .substance ? .green :
-                                           currentLoot.type == .special ? .yellow : .purple)
+                                           currentLoot.type == .special ? .orange : .purple)
                     }
                     
                     if !currentLoot.keyword.isEmpty {
@@ -219,7 +224,7 @@ private struct SpecialAbilitiesCard: View {
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color(currentLoot.type == .substance ? .green : 
-                                currentLoot.type == .special ? .yellow : .purple).opacity(0.1))
+                                currentLoot.type == .special ? .orange : .purple).opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
@@ -253,11 +258,9 @@ private struct ConflictLootingCard: View {
                         HStack {
                             Image(systemName: option.icon)
                                 .foregroundColor(option.color)
-                                .imageScale(.large)
-                            
                             Text(option.title)
                                 .font(.subheadline.bold())
-                                .foregroundColor(option.color)
+                                .foregroundColor(.primary)
                         }
                         
                         Text(option.text)
@@ -266,6 +269,7 @@ private struct ConflictLootingCard: View {
                             .padding(.leading, 32)
                     }
                     .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(option.color.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
@@ -314,6 +318,7 @@ private struct FlowAttacksCard: View {
                     .foregroundColor(.secondary)
             }
             .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.orange.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }

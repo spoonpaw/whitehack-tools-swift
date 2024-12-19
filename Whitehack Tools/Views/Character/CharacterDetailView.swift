@@ -184,6 +184,11 @@ struct CharacterDetailView: View {
                                             .padding(.horizontal, 16)
                                     }
                                     
+                                    if character.characterClass == .strong {
+                                        DetailStrongCombatSection(character: character)
+                                            .padding(.horizontal, 16)
+                                    }
+                                    
                                     DetailWiseMiracleSection(character: character)
                                         .padding(.horizontal, 16)
                                     
