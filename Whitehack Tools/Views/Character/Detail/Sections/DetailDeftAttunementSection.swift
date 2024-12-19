@@ -23,6 +23,7 @@ struct DetailDeftAttunementSection: View {
         if character.characterClass == .deft {
             VStack(spacing: 0) {
                 DetailSectionHeader(title: "The Deft", icon: Ph.detective.bold)
+                    .padding(.bottom, 4)
                 
                 VStack(alignment: .leading, spacing: 16) {
                     ClassInfoCard()
@@ -32,6 +33,14 @@ struct DetailDeftAttunementSection: View {
                     AttunementSlotsCard(character: character)
                         .frame(maxWidth: .infinity)
                 }
+                .padding()
+                .background(Color.purple.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(radius: 2)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                )
             }
         }
     }
@@ -291,11 +300,7 @@ private struct AttunementSlotsCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        #if os(iOS)
-        .background(Color(uiColor: .systemGray6))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
+        .background(Color.purple.opacity(0.05))
         .cornerRadius(10)
     }
 }
@@ -304,19 +309,23 @@ private struct EmptySlotView: View {
     let slotNumber: Int
     
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading) {
             Text("Slot \(slotNumber)")
                 .font(.headline)
-                .foregroundColor(.purple)
+                .foregroundColor(.blue)
             
-            Text("Empty Slot")
+            Text("Empty")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(12)
-        .background(Color.purple.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        #if os(iOS)
+        .background(Color(uiColor: .systemGray6))
+        #else
+        .background(Color(nsColor: .controlBackgroundColor))
+        #endif
+        .cornerRadius(10)
     }
 }
 
