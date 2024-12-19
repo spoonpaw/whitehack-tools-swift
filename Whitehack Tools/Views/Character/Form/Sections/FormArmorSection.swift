@@ -602,33 +602,6 @@ struct ArmorEditRow: View {
                 }
             }
             
-            // Defense Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Defense")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Defense", text: $dfString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .onChange(of: dfString) { newValue in
-                                df = validateIntegerInput(newValue, current: df, range: 0...10)
-                                dfString = "\(df)"
-                            }
-                        Stepper("", value: $df, in: 0...10)
-                            .labelsHidden()
-                            .onChange(of: df) { newValue in
-                                dfString = "\(newValue)"
-                            }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
-                }
-            }
-            
             // Weight Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Weight")
@@ -655,6 +628,33 @@ struct ArmorEditRow: View {
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+            }
+            
+            // Defense Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Defense")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Defense", text: $dfString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .onChange(of: dfString) { newValue in
+                                df = validateIntegerInput(newValue, current: df, range: 0...10)
+                                dfString = "\(df)"
+                            }
+                        Stepper("", value: $df, in: 0...10)
+                            .labelsHidden()
+                            .onChange(of: df) { newValue in
+                                dfString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                 }
             }
             
@@ -853,18 +853,6 @@ struct ArmorRow: View {
                     }
                 }
                 
-                // Defense Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Defense")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        Text(armor.isShield ? "+\(armor.df)" : "\(armor.df)")
-                    } icon: {
-                        IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
-                    }
-                }
-                
                 // Weight Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Weight")
@@ -874,6 +862,18 @@ struct ArmorRow: View {
                         Text("\(armor.weight) slot\(armor.weight != 1 ? "s" : "")")
                     } icon: {
                         IconFrame(icon: Ph.scales.bold, color: .orange)
+                    }
+                }
+                
+                // Defense Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Defense")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(armor.isShield ? "+\(armor.df)" : "\(armor.df)")
+                    } icon: {
+                        IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
                     }
                 }
                 

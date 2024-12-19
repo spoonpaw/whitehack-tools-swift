@@ -43,18 +43,6 @@ struct WeaponRow: View {
                     }
                 }
                 
-                // Damage Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Damage")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        Text(weapon.damage)
-                    } icon: {
-                        IconFrame(icon: Ph.target.bold, color: .red)
-                    }
-                }
-                
                 // Weight Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Weight")
@@ -64,6 +52,18 @@ struct WeaponRow: View {
                         Text(getWeightDisplayText(weapon.weight))
                     } icon: {
                         IconFrame(icon: Ph.scales.bold, color: .blue)
+                    }
+                }
+                
+                // Damage Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Damage")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(weapon.damage)
+                    } icon: {
+                        IconFrame(icon: Ph.target.bold, color: .red)
                     }
                 }
                 
@@ -311,19 +311,6 @@ struct WeaponEditRow: View {
                 }
             }
             
-            // Damage Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Damage")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    TextField("Damage (e.g. 1d6+1)", text: $damage)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                } icon: {
-                    IconFrame(icon: Ph.target.bold, color: .red)
-                }
-            }
-            
             // Weight Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Weight")
@@ -340,6 +327,19 @@ struct WeaponEditRow: View {
                     .labelsHidden()
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+            }
+            
+            // Damage Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Damage")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    TextField("Damage (e.g. 1d6+1)", text: $damage)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                } icon: {
+                    IconFrame(icon: Ph.target.bold, color: .red)
                 }
             }
             
@@ -634,6 +634,14 @@ struct CustomWeaponForm: View {
                             .foregroundStyle(Color.secondary)
                             .font(.caption)
                         TextField("e.g., 1d6+1", text: $damage)
+                    }
+                    
+                    HStack {
+                        IconFrame(icon: Ph.stack.bold, color: Color.green)
+                        Text("Quantity")
+                            .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                        TextField("Quantity", text: $name)
                     }
                     
                     HStack {
