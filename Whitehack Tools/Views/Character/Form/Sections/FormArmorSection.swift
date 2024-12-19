@@ -676,14 +676,60 @@ struct ArmorEditRow: View {
                 // Equipped Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                    #if os(macOS)
+                    Toggle("", isOn: Binding(
+                        get: { isEquipped },
+                        set: { newValue in
+                            isEquipped = newValue
+                            if newValue {
+                                isStashed = false
+                            }
+                        }
+                    ))
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    Text(isEquipped ? "Equipped" : "Unequipped")
+                    #else
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                        get: { isEquipped },
+                        set: { newValue in
+                            isEquipped = newValue
+                            if newValue {
+                                isStashed = false
+                            }
+                        }
+                    ))
+                    #endif
                 }
                 
                 // Stashed Toggle with Icon
                 HStack {
                     IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
                             color: isStashed ? .orange : .gray)
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                    #if os(macOS)
+                    Toggle("", isOn: Binding(
+                        get: { isStashed },
+                        set: { newValue in
+                            isStashed = newValue
+                            if newValue {
+                                isEquipped = false
+                            }
+                        }
+                    ))
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                    Text(isStashed ? "Stashed" : "On Person")
+                    #else
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                        get: { isStashed },
+                        set: { newValue in
+                            isStashed = newValue
+                            if newValue {
+                                isEquipped = false
+                            }
+                        }
+                    ))
+                    #endif
                 }
             }
             
@@ -692,28 +738,61 @@ struct ArmorEditRow: View {
                 // Shield Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.shieldCheck.bold, color: isShield ? .blue : .gray)
+                    #if os(macOS)
+                    Toggle("", isOn: $isShield)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                    Text(isShield ? "Shield" : "Not Shield")
+                    #else
                     Toggle("Shield", isOn: $isShield)
+                    #endif
                 }
                 
                 // Magical Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
-                    Toggle("Magical", isOn: $isMagical)
+                    #if os(macOS)
+                    Toggle("", isOn: $isMagical)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                    Text(isMagical ? "Magical" : "Not Magical")
+                    #else
+                    Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
+                    #endif
                 }
                 
                 // Cursed Toggle with Icon
                 HStack {
                     IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                    Toggle("Cursed", isOn: $isCursed)
+                    #if os(macOS)
+                    Toggle("", isOn: $isCursed)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
+                    Text(isCursed ? "Cursed" : "Not Cursed")
+                    #else
+                    Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
+                    #endif
                 }
             }
             
             // Bonus/Penalty Section
             Section {
                 // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
-                Toggle(isOn: $isBonus) {
+                HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
+                    #if os(macOS)
+                    Toggle("", isOn: $isBonus)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                     Text(isBonus ? "Bonus" : "Penalty")
                         .foregroundColor(isBonus ? .green : .red)
+                    #else
+                    Toggle(isOn: $isBonus) {
+                        Text(isBonus ? "Bonus" : "Penalty")
+                            .foregroundColor(isBonus ? .green : .red)
+                    }
+                    #endif
                 }
                 .onChange(of: isBonus) { newValue in
                     bonus = newValue ? abs(bonus) : -abs(bonus)

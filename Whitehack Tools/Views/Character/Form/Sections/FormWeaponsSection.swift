@@ -391,7 +391,6 @@ struct WeaponEditRow: View {
                     Toggle("", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
-                            print("🔄 Equipped status changed to: \(newValue)")
                             isEquipped = newValue
                             if newValue {
                                 isStashed = false
@@ -405,7 +404,6 @@ struct WeaponEditRow: View {
                     Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
                         get: { isEquipped },
                         set: { newValue in
-                            print("🔄 Equipped status changed to: \(newValue)")
                             isEquipped = newValue
                             if newValue {
                                 isStashed = false
@@ -423,7 +421,6 @@ struct WeaponEditRow: View {
                     Toggle("", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
-                            print("🔄 Stashed status changed to: \(newValue)")
                             isStashed = newValue
                             if newValue {
                                 isEquipped = false
@@ -437,7 +434,6 @@ struct WeaponEditRow: View {
                     Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
                         get: { isStashed },
                         set: { newValue in
-                            print("🔄 Stashed status changed to: \(newValue)")
                             isStashed = newValue
                             if newValue {
                                 isEquipped = false
