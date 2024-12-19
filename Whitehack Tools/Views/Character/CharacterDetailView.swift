@@ -162,43 +162,8 @@ struct CharacterDetailView: View {
                             
                             switch selectedTab {
                             case .info:
-                                VStack(spacing: 32) {
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
-                                            .padding(.horizontal, 16)
-                                        DetailHeaderSection(character: character)
-                                            .padding(.horizontal, 16)
-                                    }
-                                    
-                                    DetailStatsSection(character: character)
-                                        .padding(.horizontal, 16)
-                                    
-                                    DetailGroupsSection(character: character)
-                                        .padding(.horizontal, 16)
-                                    
-                                    DetailLanguagesSection(character: character)
-                                        .padding(.horizontal, 16)
-                                    
-                                    if character.characterClass == .deft {
-                                        DetailDeftAttunementSection(character: character)
-                                            .padding(.horizontal, 16)
-                                    }
-                                    
-                                    if character.characterClass == .strong {
-                                        DetailStrongCombatSection(character: character)
-                                            .padding(.horizontal, 16)
-                                    }
-                                    
-                                    DetailWiseMiracleSection(character: character)
-                                        .padding(.horizontal, 16)
-                                    
-                                    DetailAdditionalInfoSection(character: character)
-                                        .padding(.horizontal, 16)
-                                    
-                                    DetailNotesSection(character: character)
-                                        .padding(.horizontal, 16)
-                                }
-                                .padding(.vertical, 16)
+                                InfoTabView(character: character)
+                                    .padding(.vertical, 16)
                             case .combat:
                                 DetailCombatSection(character: character)
                                     .padding()
@@ -272,20 +237,52 @@ struct CharacterDetailView: View {
 }
 
 // MARK: - Tab Views
-private struct BasicInfoTabView: View {
+private struct InfoTabView: View {
     let character: PlayerCharacter
     
     var body: some View {
-        VStack(spacing: 16) {
-            DetailHeaderSection(character: character)
+        VStack(spacing: 32) {
+            VStack(alignment: .leading, spacing: 12) {
+                SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
+                    .padding(.horizontal, 16)
+                DetailHeaderSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
             DetailStatsSection(character: character)
-            DetailFortunateSection(character: character)
+                .padding(.horizontal, 16)
+            
             DetailGroupsSection(character: character)
+                .padding(.horizontal, 16)
+            
             DetailLanguagesSection(character: character)
-            DetailDeftAttunementSection(character: character)
-            DetailWiseMiracleSection(character: character)
+                .padding(.horizontal, 16)
+            
+            if character.characterClass == .deft {
+                DetailDeftAttunementSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
+            if character.characterClass == .strong {
+                DetailStrongCombatSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
+            if character.characterClass == .wise {
+                DetailWiseMiracleSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
+            if character.characterClass == .brave {
+                DetailBraveQuirksSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
             DetailAdditionalInfoSection(character: character)
+                .padding(.horizontal, 16)
+            
+            DetailNotesSection(character: character)
+                .padding(.horizontal, 16)
         }
-        .padding(.horizontal)
     }
 }

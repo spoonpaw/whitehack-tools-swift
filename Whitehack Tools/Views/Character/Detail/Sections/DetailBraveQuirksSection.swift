@@ -9,30 +9,53 @@ struct DetailBraveQuirksSection: View {
     let hasUsedSayNo: Bool
     @Environment(\.colorScheme) var colorScheme
     
+    init(characterClass: CharacterClass, level: Int, braveQuirkOptions: BraveQuirkOptions, comebackDice: Int, hasUsedSayNo: Bool) {
+        self.characterClass = characterClass
+        self.level = level
+        self.braveQuirkOptions = braveQuirkOptions
+        self.comebackDice = comebackDice
+        self.hasUsedSayNo = hasUsedSayNo
+    }
+    
+    init(character: PlayerCharacter) {
+        self.characterClass = character.characterClass
+        self.level = character.level
+        self.braveQuirkOptions = character.braveQuirkOptions
+        self.comebackDice = character.comebackDice
+        self.hasUsedSayNo = character.hasUsedSayNo
+    }
+    
     private var availableSlots: Int {
         AdvancementTables.shared.stats(for: characterClass, at: level).slots
     }
     
     var body: some View {
-        return Group {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
+            
             if characterClass == .brave {
-                Section {
+                GroupBox {
                     VStack(alignment: .leading, spacing: 16) {
                         ClassOverviewCard()
+                        Divider()
                         AttributesCard()
+                        Divider()
                         ArmorCard()
+                        Divider()
                         QuirksCard(braveQuirkOptions: braveQuirkOptions, availableSlots: availableSlots)
+                        Divider()
                         ComebackDiceCard(comebackDice: comebackDice)
+                        Divider()
                         SayNoPowerCard(hasUsedSayNo: hasUsedSayNo)
                         
                         if hasArmorPenalty {
+                            Divider()
                             ArmorPenaltyWarning()
                         }
                     }
-                    .padding(.vertical, 8)
-                } header: {
-                    SectionHeader(title: "The Brave", icon: Image(systemName: "heart.fill"))
+                    .padding(12)
                 }
+                .groupBoxStyle(CardGroupBoxStyle())
             }
         }
     }
@@ -293,54 +316,55 @@ private struct ComebackDiceCard: View {
 
 private struct SayNoPowerCard: View {
     let hasUsedSayNo: Bool
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        return VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: "hand.raised.fill")
                     .foregroundColor(.red)
                 Text("Say No Power")
-                    .font(.headline)
-                    .foregroundColor(.primary)
+                    .fontWeight(.medium)
+                
                 Spacer()
-                HStack(spacing: 12) {
-                    Image(systemName: hasUsedSayNo ? "xmark.circle.fill" : "checkmark.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(hasUsedSayNo ? .red : .green)
-                    
-                    VStack(alignment: .leading) {
-                        Text(hasUsedSayNo ? "Power Used" : "Power Available")
-                            .font(.subheadline)
-                            .foregroundColor(hasUsedSayNo ? .red : .green)
-                        Text(hasUsedSayNo ? "Resets next session" : "Ready to defy fate")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                
+                if hasUsedSayNo {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.red)
+                        Text("Power Used")
+                            .font(.caption)
+                            .foregroundColor(.red)
                     }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.red.opacity(0.1))
+                    .cornerRadius(6)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(hasUsedSayNo ? Color.red.opacity(0.1) : Color.green.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
-            BraveFeatureRow(
-                icon: "xmark.shield.fill",
-                color: .red,
-                title: "Deny Effects",
-                description: "Once per session, deny an enemy's successful attack, miraculous effect, or fear effect."
-            )
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Deny Effects")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Once per session, deny an enemy's successful attack, miraculous effect, or fear effect.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             
-            BraveFeatureRow(
-                icon: "person.fill.questionmark",
-                color: .red,
-                title: "Explain Action",
-                description: "Must explain how your character plausibly avoids or resists the effect."
-            )
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Explain Action")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("Must explain how your character plausibly avoids or resists the effect.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.red.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(colorScheme == .dark ? Color(white: 0.2) : Color(red: 1.0, green: 0.95, blue: 0.95))
+        .cornerRadius(8)
     }
 }
 
@@ -441,5 +465,28 @@ private struct ArmorPenaltyWarning: View {
         .padding(.horizontal, 12)
         .background(Color.red.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private struct CardGroupBoxStyle: GroupBoxStyle {
+    @Environment(\.colorScheme) var colorScheme
+    
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading) {
+            configuration.content
+        }
+        .frame(maxWidth: .infinity)
+        .background(colorScheme == .dark ? Color(white: 0.15) : .white)
+        .cornerRadius(10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(Color.primary.opacity(colorScheme == .dark ? 0.2 : 0.1), lineWidth: 1)
+        )
+        .shadow(
+            color: Color.black.opacity(colorScheme == .dark ? 0.4 : 0.15),
+            radius: 3,
+            x: 0,
+            y: 2
+        )
     }
 }
