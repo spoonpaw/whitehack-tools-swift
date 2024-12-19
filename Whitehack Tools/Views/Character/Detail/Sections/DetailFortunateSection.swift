@@ -11,26 +11,31 @@ struct DetailFortunateSection: View {
 
     var body: some View {
         if character.characterClass == .fortunate {
-            VStack(spacing: 16) {
-                ClassOverviewCard()
-                FortunePowerCard(hasUsedFortune: character.fortunateOptions.hasUsedFortune)
-                StandingCard(standing: character.fortunateOptions.standing)
-                SignatureObjectCard(signatureObject: character.fortunateOptions.signatureObject)
-                RetainersCard(
-                    retainers: character.fortunateOptions.retainers,
-                    availableSlots: availableSlots
+            VStack(alignment: .center, spacing: 4) {
+                HStack {
+                    Ph.crown.bold
+                        .frame(width: 24, height: 24)
+                    Text("The Fortunate")
+                        .font(.title3.bold())
+                }
+                .frame(maxWidth: .infinity)
+                
+                VStack(spacing: 16) {
+                    ClassOverviewCard()
+                    FortunePowerCard(hasUsedFortune: character.fortunateOptions.hasUsedFortune)
+                    StandingCard(standing: character.fortunateOptions.standing)
+                    SignatureObjectCard(signatureObject: character.fortunateOptions.signatureObject)
+                    RetainersCard(character: character)
+                }
+                .padding(20)
+                .background(Color.purple.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
+                .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
             }
-            .padding(20)
-            .background(Color.purple.opacity(0.05))
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-            )
-            .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
         }
     }
 }
@@ -241,272 +246,147 @@ private struct SignatureObjectCard: View {
 }
 
 private struct RetainersCard: View {
-    let retainers: [Retainer]
-    let availableSlots: Int
+    let character: PlayerCharacter
     
-    private var nonEmptyRetainerCount: Int {
-        retainers.filter { !$0.name.isEmpty }.count
+    var maxRetainers: Int {
+        AdvancementTables.shared.stats(for: .fortunate, at: character.level).slots
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // Header
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                HStack(spacing: 4) {
-                    Ph.users.bold
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.blue)
-                    Text("Retainers")
-                        .font(.headline)
-                }
-                
-                Spacer()
-                
-                HStack(spacing: 4) {
-                    Text("\(nonEmptyRetainerCount)/\(availableSlots)")
-                        .font(.subheadline)
-                        .foregroundColor(Color.secondary)
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(6)
+                Ph.users.bold
+                    .frame(width: 24, height: 24)
+                Text("Retainers")
+                    .font(.title3.bold())
             }
             
             Text("Retainers can grow in strength and serve as valuable allies. They have their own stats, attitudes, and can be played as alternate characters.")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-                .multilineTextAlignment(.leading)
-            
-            if retainers.isEmpty {
-                // No retainers message
-                HStack {
-                    Ph.warningCircle.bold
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.secondary)
-                    Text("No retainers")
-                        .font(.subheadline)
-                        .foregroundColor(Color.secondary)
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(6)
-            } else if availableSlots == 0 {
-                // No slots available message
-                HStack {
-                    Ph.warningCircle.bold
-                        .frame(width: 16, height: 16)
-                        .foregroundColor(Color.secondary)
-                    Text("No retainer slots available at current level")
-                        .font(.subheadline)
-                        .foregroundColor(Color.secondary)
-                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
                 .padding()
                 .frame(maxWidth: .infinity)
-                .background(Color.secondary.opacity(0.1))
-                .cornerRadius(8)
-            } else {
-                // Retainer slots
-                VStack(spacing: 12) {
-                    ForEach(0..<availableSlots, id: \.self) { index in
-                        if index < retainers.count {
-                            RetainerDetailView(retainer: retainers[index], slotNumber: index + 1)
-                        } else {
-                            RetainerDetailView(retainer: Retainer(), slotNumber: index + 1)
-                        }
-                    }
+                .background(Color.blue.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            
+            ForEach(0..<maxRetainers, id: \.self) { index in
+                if index < character.fortunateOptions.retainers.count {
+                    RetainerDetailView(retainer: character.fortunateOptions.retainers[index])
+                } else {
+                    EmptyRetainerSlot()
                 }
             }
         }
         .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-        )
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
-// MARK: - Retainer Views
+private struct EmptyRetainerSlot: View {
+    var body: some View {
+        Text("Empty Retainer Slot")
+            .font(.headline)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue.opacity(0.05))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
 private struct RetainerDetailView: View {
     let retainer: Retainer
-    let slotNumber: Int
-    
-    private var isEmpty: Bool {
-        retainer.name.isEmpty
-    }
     
     var body: some View {
-        if isEmpty {
-            emptySlotView
+        if retainer.name.isEmpty {
+            Text("Empty Retainer Slot")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.blue.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
         } else {
-            filledSlotView
-        }
-    }
-    
-    private var emptySlotView: some View {
-        HStack {
-            Ph.warningCircle.bold
-                .frame(width: 16, height: 16)
-                .foregroundColor(Color.secondary)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Empty Slot \(slotNumber)")
+            VStack(alignment: .center, spacing: 12) {
+                Text(retainer.name)
                     .font(.headline)
-                Text("Add a retainer")
-                    .font(.subheadline)
-                    .foregroundColor(Color.secondary)
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(8)
-    }
-    
-    private var filledSlotView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Header with name and type
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack(spacing: 4) {
-                        Ph.user.bold
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(.blue)
-                        Text(retainer.name)
-                            .font(.headline)
-                    }
-                    
-                    HStack(spacing: 4) {
-                        Ph.users.bold
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(.orange)
-                        Text(retainer.type)
-                            .font(.headline)
-                    }
-                }
                 
-                Spacer()
-                
-                Text("#\(slotNumber)")
-                    .font(.caption)
-                    .padding(6)
-                    .background(Color.secondary.opacity(0.1))
-                    .clipShape(Circle())
-            }
-            
-            Divider()
-            
-            // Stats row
-            HStack(spacing: 12) {
-                StatBadge(
-                    label: "HD",
-                    value: "\(retainer.hitDice)",
-                    icon: AnyView(Ph.diceFive.bold.frame(width: 16, height: 16))
-                )
-                
-                StatBadge(
-                    label: "DF",
-                    value: "\(retainer.defenseFactor)",
-                    icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16))
-                )
-                
-                StatBadge(
-                    label: "MV",
-                    value: "\(retainer.movement)",
-                    icon: AnyView(Ph.arrowsOutCardinal.bold.frame(width: 16, height: 16))
-                )
-            }
-            
-            // Keywords
-            if !retainer.keywords.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Keywords")
+                if !retainer.type.isEmpty {
+                    Text(retainer.type)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    Text(retainer.keywords.joined(separator: ", "))
-                        .font(.body)
-                        .padding(8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(6)
+                        .foregroundStyle(.secondary)
                 }
-            }
-            
-            // Notes
-            if !retainer.notes.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Notes")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    Text(retainer.notes)
-                        .font(.body)
-                        .padding(8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.secondary.opacity(0.1))
-                        .cornerRadius(6)
-                }
-            }
-            
-            // HP
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Hit Points")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
                 
                 HStack {
-                    Text("\(retainer.currentHP)/\(retainer.maxHP)")
-                        .font(.title3)
-                        .fontWeight(.medium)
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 4) {
-                        Ph.heartbeat.bold
+                    Ph.heart.bold
+                        .frame(width: 16, height: 16)
+                    Text(retainer.attitude)
+                }
+                
+                if !retainer.keywords.isEmpty {
+                    HStack {
+                        Ph.tag.bold
                             .frame(width: 16, height: 16)
-                            .foregroundColor(.red)
-                        Text("HP")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text(retainer.keywords.joined(separator: ", "))
                     }
                 }
-                .padding(8)
-                .background(Color.red.opacity(0.1))
-                .cornerRadius(6)
+                
+                if !retainer.notes.isEmpty {
+                    HStack {
+                        Ph.note.bold
+                            .frame(width: 16, height: 16)
+                        Text(retainer.notes)
+                    }
+                }
+
+                HStack(spacing: 12) {
+                    StatBadge(
+                        icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16)),
+                        value: "\(retainer.defenseFactor)",
+                        label: "DF"
+                    )
+                    StatBadge(
+                        icon: AnyView(Ph.arrowsOutCardinal.bold.frame(width: 16, height: 16)),
+                        value: "\(retainer.movement)",
+                        label: "MV"
+                    )
+                    StatBadge(
+                        icon: AnyView(Ph.heartbeat.bold.frame(width: 16, height: 16)),
+                        value: "\(retainer.currentHP)/\(retainer.maxHP)",
+                        label: "HP"
+                    )
+                }
             }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.blue.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .padding()
-        .background(Color.secondary.opacity(0.05))
-        .cornerRadius(8)
     }
 }
 
 private struct StatBadge: View {
-    let label: String
-    let value: String
     let icon: AnyView
-
+    let value: String
+    let label: String
+    
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 4) {
-                icon
+        HStack(spacing: 4) {
+            icon
+                .foregroundColor(.blue)
+            VStack(alignment: .leading, spacing: 2) {
                 Text(value)
-                    .font(.system(.body, design: .monospaced))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Text(label)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(.secondary)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(Color.secondary.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(8)
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(6)
     }
 }
 
