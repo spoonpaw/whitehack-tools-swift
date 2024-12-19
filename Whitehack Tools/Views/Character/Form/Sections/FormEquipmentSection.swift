@@ -1,5 +1,8 @@
 import SwiftUI
 import PhosphorSwift
+#if os(iOS)
+import UIKit
+#endif
 
 public struct FormEquipmentSection: View {
     @Binding var gear: [Gear]
@@ -90,121 +93,142 @@ public struct FormEquipmentSection: View {
         VStack(spacing: 0) {
             // Equipment list
             if !gear.isEmpty {
-                VStack(spacing: 12) {
-                    ForEach(gear) { gearItem in
-                        Group {
-                            if editingGearId == gearItem.id {
-                                GearEditRow(
-                                    gear: gearItem,
-                                    onSave: { updatedGear in
-                                        if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                            gear[index] = updatedGear
-                                        }
-                                        editingGearId = nil
-                                    },
-                                    onCancel: {
-                                        editingGearId = nil
-                                    }
-                                )
-                            } else {
-                                GearRow(
-                                    gear: gearItem,
-                                    onEdit: {
-                                        editingGearId = gearItem.id
-                                    },
-                                    onDelete: {
-                                        gear.removeAll(where: { $0.id == gearItem.id })
-                                    }
-                                )
-                                .padding(.bottom, 4)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .background(.background)
-                .cornerRadius(10)
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                .padding(.bottom, 8)
+                equipmentListView
             } else if !isAddingNew && editingNewGear == nil {
-                VStack(spacing: 8) {
-                    IconFrame(icon: Ph.prohibit.bold, color: .gray)
-                    Text("No Equipment")
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.top, 4)
-                .padding(.bottom, 12)
+                emptyStateView
             }
             
             if let editingGear = editingNewGear {
-                GearEditRow(
-                    gear: editingGear,
-                    onSave: { newGear in
-                        gear.append(newGear)
-                        editingNewGear = nil
-                        isAddingNew = false
-                    },
-                    onCancel: {
-                        editingNewGear = nil
-                        isAddingNew = false
-                    }
-                )
+                editingGearView(editingGear)
             }
             
             if isAddingNew && editingNewGear == nil {
-                VStack(spacing: 8) {
-                    Menu {
-                        ForEach(GearData.gear, id: \.name) { gearItem in
-                            Button(gearItem.name) {
-                                selectedGearName = gearItem.name
-                                createGearFromSelection(gearItem.name)
-                            }
-                        }
-                        
-                        Divider()
-                        
-                        Button("Custom Item") {
-                            selectedGearName = "custom"
-                            createGearFromSelection("custom")
-                        }
-                    } label: {
-                        Text("Select Item")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .menuStyle(.borderlessButton)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
-                    
-                    Button(action: {
-                        isAddingNew = false
-                    }) {
-                        Label("Cancel", systemImage: "xmark.circle.fill")
-                            .foregroundColor(.red)
-                    }
-                }
-                .padding(.top, 12)
+                addGearMenu
             } else if !gear.isEmpty && !isAddingNew && editingNewGear == nil {
-                Button(action: {
-                    print("➕ Equipment: Add Another Item tapped")
-                    withAnimation {
-                        isAddingNew = true
-                    }
-                }) {
-                    Label("Add Another Item", systemImage: "plus.circle.fill")
-                        .foregroundColor(.blue)
-                }
+                addAnotherButton
             } else if !isAddingNew && editingNewGear == nil {
-                Button(action: {
-                    print("➕ Equipment: Add First Item tapped")
-                    withAnimation {
-                        isAddingNew = true
+                addFirstButton
+            }
+        }
+    }
+    
+    private var equipmentListView: some View {
+        VStack(spacing: 12) {
+            ForEach(gear) { gearItem in
+                Group {
+                    if editingGearId == gearItem.id {
+                        GearEditRow(
+                            gear: gearItem,
+                            onSave: { updatedGear in
+                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                    gear[index] = updatedGear
+                                }
+                                editingGearId = nil
+                            },
+                            onCancel: {
+                                editingGearId = nil
+                            }
+                        )
+                        .groupCardStyle()
+                        .padding(.bottom, 4)
+                    } else {
+                        GearRow(
+                            gear: gearItem,
+                            onEdit: {
+                                editingGearId = gearItem.id
+                            },
+                            onDelete: {
+                                gear.removeAll(where: { $0.id == gearItem.id })
+                            }
+                        )
+                        .groupCardStyle()
+                        .padding(.bottom, 4)
                     }
-                }) {
-                    Label("Add Your First Item", systemImage: "plus.circle.fill")
-                        .foregroundColor(.blue)
                 }
             }
+        }
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: 8) {
+            IconFrame(icon: Ph.prohibit.bold, color: .gray)
+            Text("No Equipment")
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 4)
+        .padding(.bottom, 12)
+    }
+    
+    private func editingGearView(_ editingGear: Gear) -> some View {
+        GearEditRow(
+            gear: editingGear,
+            onSave: { newGear in
+                gear.append(newGear)
+                editingNewGear = nil
+                isAddingNew = false
+            },
+            onCancel: {
+                editingNewGear = nil
+                isAddingNew = false
+            }
+        )
+    }
+    
+    private var addGearMenu: some View {
+        VStack(spacing: 8) {
+            Menu {
+                ForEach(GearData.gear, id: \.name) { gearItem in
+                    Button(gearItem.name) {
+                        selectedGearName = gearItem.name
+                        createGearFromSelection(gearItem.name)
+                    }
+                }
+                
+                Divider()
+                
+                Button("Custom Item") {
+                    selectedGearName = "custom"
+                    createGearFromSelection("custom")
+                }
+            } label: {
+                Text("Select Item")
+                    .frame(maxWidth: .infinity)
+            }
+            .menuStyle(.borderlessButton)
+            .frame(maxWidth: .infinity)
+            
+            Button(action: {
+                isAddingNew = false
+            }) {
+                Label("Cancel", systemImage: "xmark.circle.fill")
+                    .foregroundColor(.red)
+            }
+        }
+        .padding(.top, 12)
+    }
+    
+    private var addAnotherButton: some View {
+        Button(action: {
+            print("➕ Equipment: Add Another Item tapped")
+            withAnimation {
+                isAddingNew = true
+            }
+        }) {
+            Label("Add Another Item", systemImage: "plus.circle.fill")
+                .foregroundColor(.blue)
+        }
+    }
+    
+    private var addFirstButton: some View {
+        Button(action: {
+            print("➕ Equipment: Add First Item tapped")
+            withAnimation {
+                isAddingNew = true
+            }
+        }) {
+            Label("Add Your First Item", systemImage: "plus.circle.fill")
+                .foregroundColor(.blue)
         }
     }
 }
@@ -407,193 +431,14 @@ struct GearEditRow: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Name Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Item Name")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    TextField("Name", text: $name)
-                        .textFieldStyle(.roundedBorder)
-                } icon: {
-                    IconFrame(icon: Ph.package.bold, color: .purple)
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Quantity", text: $quantityString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .onChange(of: quantityString) { newValue in
-                                if let newQuantity = Int(newValue) {
-                                    quantity = max(1, min(99, newQuantity))
-                                }
-                                quantityString = "\(quantity)"
-                            }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
-                                quantityString = "\(newValue)"
-                            }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .green)
-                }
-            }
-            
-            // Weight Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Weight")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    Menu {
-                        ForEach(["No size", "Minor", "Regular", "Heavy"], id: \.self) { weightOption in
-                            Button(FormEquipmentSection.getWeightDisplayText(weightOption)) {
-                                weight = weightOption
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(FormEquipmentSection.getWeightDisplayText(weight))
-                            Spacer()
-                            Image(systemName: "chevron.up.chevron.down")
-                                .foregroundColor(.gray)
-                        }
-                        .padding(8)
-                        .background(Color(.controlBackgroundColor))
-                        .cornerRadius(6)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-            }
-            
-            // Special Properties Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Special Properties")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    TextField("Special properties", text: $special)
-                        .textFieldStyle(.roundedBorder)
-                } icon: {
-                    IconFrame(icon: Ph.star.bold, color: .orange)
-                }
-            }
-            
-            // Toggles Section
-            VStack(alignment: .leading, spacing: 8) {
-                // Container Toggle
-                HStack {
-                    IconFrame(icon: Ph.package.bold, color: isContainer ? .orange : .gray)
-                    Toggle(isContainer ? "Container" : "Not a Container", isOn: $isContainer)
-                }
-                
-                // Equipped Toggle
-                HStack {
-                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
-                        get: { isEquipped },
-                        set: { newValue in
-                            print("🔄 Equipment: Equipped status changed to: \(newValue)")
-                            isEquipped = newValue
-                            if newValue {
-                                isStashed = false
-                            }
-                        }
-                    ))
-                }
-                
-                // Location Toggle
-                HStack {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: isStashed ? .orange : .gray)
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
-                        get: { isStashed },
-                        set: { newValue in
-                            print("🔄 Equipment: Stashed status changed to: \(newValue)")
-                            isStashed = newValue
-                            if newValue {
-                                isEquipped = false
-                            }
-                        }
-                    ))
-                }
-                
-                // Magical Toggle
-                HStack {
-                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .blue : .gray)
-                    Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
-                }
-                
-                // Cursed Toggle
-                HStack {
-                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                    Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
-                }
-            }
-            
+        VStack(spacing: 16) {
+            nameSection
+            quantitySection
+            weightSection
+            specialPropertiesSection
+            propertiesSection
             Divider()
-            
-            // Action Buttons
-            HStack {
-                Button {
-                    guard !isProcessingAction else { return }
-                    isProcessingAction = true
-                    print("🔴 Cancel action starting")
-                    onCancel()
-                } label: {
-                    Label {
-                        Text("Cancel")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundColor(.red)
-                }
-                
-                Spacer()
-                
-                Button {
-                    guard !isProcessingAction else { return }
-                    isProcessingAction = true
-                    print("✅ Save action starting")
-                    
-                    let updatedGear = Gear(
-                        id: gear.id,
-                        name: name,
-                        weight: weight,
-                        special: special,
-                        quantity: quantity,
-                        isEquipped: isEquipped,
-                        isStashed: isStashed,
-                        isMagical: isMagical,
-                        isCursed: isCursed,
-                        isContainer: isContainer
-                    )
-                    
-                    onSave(updatedGear)
-                } label: {
-                    Label {
-                        Text("Save")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                    }
-                    .foregroundColor(.blue)
-                }
-            }
-            .padding(.top, 4)
+            actionButtons
         }
         .padding(.vertical)
         .onAppear {
@@ -624,19 +469,242 @@ struct GearEditRow: View {
             print("📦 Equipment: Cursed toggle changed to \(newValue)")
         }
     }
+    
+    private var nameSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Item Name")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Label {
+                TextField("Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            } icon: {
+                IconFrame(icon: Ph.package.bold, color: .purple)
+            }
+        }
+    }
+    
+    private var quantitySection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Quantity")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Label {
+                HStack {
+                    TextField("Quantity", text: $quantityString)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
+                        .onChange(of: quantityString) { newValue in
+                            if let newQuantity = Int(newValue) {
+                                quantity = max(1, min(99, newQuantity))
+                            }
+                            quantityString = "\(quantity)"
+                        }
+                    Stepper("", value: $quantity, in: 1...99)
+                        .labelsHidden()
+                        .onChange(of: quantity) { newValue in
+                            quantityString = "\(newValue)"
+                        }
+                }
+            } icon: {
+                IconFrame(icon: Ph.stack.bold, color: .green)
+            }
+        }
+    }
+    
+    private var weightSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Weight")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Label {
+                weightMenu
+            } icon: {
+                IconFrame(icon: Ph.scales.bold, color: .blue)
+            }
+        }
+    }
+    
+    private var weightMenu: some View {
+        Menu {
+            ForEach(["No size", "Minor", "Regular", "Heavy"], id: \.self) { option in
+                Button(action: {
+                    weight = option
+                }) {
+                    Text(FormEquipmentSection.getWeightDisplayText(option))
+                }
+            }
+        } label: {
+            HStack {
+                Text(FormEquipmentSection.getWeightDisplayText(weight))
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "chevron.up.chevron.down")
+                    .foregroundColor(.gray)
+            }
+            .padding(8)
+            .background(Color(uiColor: .systemGray6))
+            .cornerRadius(6)
+        }
+    }
+    
+    private var specialPropertiesSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Special Properties")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Label {
+                TextField("Special properties", text: $special)
+                    .textFieldStyle(.roundedBorder)
+            } icon: {
+                IconFrame(icon: Ph.star.bold, color: .orange)
+            }
+        }
+    }
+    
+    private var propertiesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Properties")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            GearEditTogglesSection(
+                isEquipped: $isEquipped,
+                isStashed: $isStashed,
+                isMagical: $isMagical,
+                isCursed: $isCursed,
+                isContainer: $isContainer
+            )
+        }
+    }
+    
+    private var actionButtons: some View {
+        HStack {
+            cancelButton
+            Spacer()
+            saveButton
+        }
+        .padding(.top, 4)
+    }
+    
+    private var cancelButton: some View {
+        Button(action: {
+            guard !isProcessingAction else { return }
+            isProcessingAction = true
+            print("🔴 Cancel action starting")
+            onCancel()
+        }) {
+            Label {
+                Text("Cancel")
+                    .fontWeight(.medium)
+            } icon: {
+                Image(systemName: "xmark.circle.fill")
+            }
+            .foregroundColor(.red)
+        }
+    }
+    
+    private var saveButton: some View {
+        Button(action: {
+            guard !isProcessingAction else { return }
+            isProcessingAction = true
+            print("💾 Save action starting")
+            
+            let updatedGear = Gear(
+                id: gear.id,
+                name: name,
+                weight: weight,
+                special: special,
+                quantity: quantity,
+                isEquipped: isEquipped,
+                isStashed: isStashed,
+                isMagical: isMagical,
+                isCursed: isCursed,
+                isContainer: isContainer
+            )
+            
+            onSave(updatedGear)
+        }) {
+            Label {
+                Text("Save")
+                    .fontWeight(.medium)
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+            }
+            .foregroundColor(.blue)
+        }
+    }
+}
+
+struct GearEditTogglesSection: View {
+    @Binding var isEquipped: Bool
+    @Binding var isStashed: Bool
+    @Binding var isMagical: Bool
+    @Binding var isCursed: Bool
+    @Binding var isContainer: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Container Toggle
+            HStack {
+                IconFrame(icon: Ph.package.bold, color: isContainer ? .orange : .gray)
+                Toggle(isContainer ? "Container" : "Not a Container", isOn: $isContainer)
+            }
+            
+            // Equipped Toggle
+            HStack {
+                IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
+                Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                    get: { isEquipped },
+                    set: { newValue in
+                        print("🔄 Equipment: Equipped status changed to: \(newValue)")
+                        isEquipped = newValue
+                        if newValue {
+                            isStashed = false
+                        }
+                    }
+                ))
+            }
+            
+            // Location Toggle
+            HStack {
+                IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                        color: isStashed ? .orange : .gray)
+                Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                    get: { isStashed },
+                    set: { newValue in
+                        print("🔄 Equipment: Stashed status changed to: \(newValue)")
+                        isStashed = newValue
+                        if newValue {
+                            isEquipped = false
+                        }
+                    }
+                ))
+            }
+            
+            // Magical Toggle
+            HStack {
+                IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .blue : .gray)
+                Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
+            }
+            
+            // Cursed Toggle
+            HStack {
+                IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
+            }
+        }
+    }
 }
 
 private extension View {
     func groupCardStyle() -> some View {
         self
             .padding()
-            #if os(iOS)
-            .background(Color(.systemBackground))
+            .background(.background)
             .cornerRadius(12)
-            .shadow(color: Color.black.opacity(0.05), radius: 3, x: 0, y: 1)
-            #else
-            .background(Color(nsColor: .windowBackgroundColor))
-            .cornerRadius(12)
-            #endif
+            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)
     }
 }
