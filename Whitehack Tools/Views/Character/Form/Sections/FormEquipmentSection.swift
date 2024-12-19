@@ -543,9 +543,17 @@ struct GearEditRow: View {
                     .foregroundColor(.gray)
             }
             .padding(8)
-            .background(Color(uiColor: .systemGray6))
+            .background(platformBackgroundColor)
             .cornerRadius(6)
         }
+    }
+    
+    private var platformBackgroundColor: Color {
+        #if os(iOS)
+        Color(uiColor: .systemGray6)
+        #else
+        Color(nsColor: .windowBackgroundColor)
+        #endif
     }
     
     private var specialPropertiesSection: some View {
