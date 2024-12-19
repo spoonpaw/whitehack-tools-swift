@@ -95,14 +95,7 @@ struct CharacterFormView: View {
                         case .info:
                             infoTabView
                         case .combat:
-                            FormCombatStatsSection(
-                                currentHP: $formData.currentHP,
-                                maxHP: $formData.maxHP,
-                                movement: $formData.movement,
-                                saveColor: $formData.saveColor,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
+                            combatTabView
                         case .equipment:
                             VStack(spacing: 12) {
                                 // Weapons Section
@@ -233,14 +226,7 @@ struct CharacterFormView: View {
                         case .info:
                             infoTabView
                         case .combat:
-                            FormCombatStatsSection(
-                                currentHP: $formData.currentHP,
-                                maxHP: $formData.maxHP,
-                                movement: $formData.movement,
-                                saveColor: $formData.saveColor,
-                                focusedField: $focusedField
-                            )
-                            .frame(maxWidth: .infinity)
+                            combatTabView
                         case .equipment:
                             VStack(spacing: 12) {
                                 // Weapons Section
@@ -345,7 +331,7 @@ struct CharacterFormView: View {
             name: formData.name,
             playerName: formData.playerName,
             characterClass: formData.selectedClass,
-            level: Int(formData.level) ?? 1,
+            level: formData.levelAsInt,
             useCustomAttributes: formData.useCustomAttributes,
             customAttributes: formData.customAttributes,
             strength: Int(formData.strength) ?? 10,
@@ -356,7 +342,9 @@ struct CharacterFormView: View {
             charisma: Int(formData.charisma) ?? 10,
             currentHP: Int(formData.currentHP) ?? 1,
             maxHP: Int(formData.maxHP) ?? 1,
+            _attackValue: 10,
             movement: Int(formData.movement) ?? 30,
+            _saveValue: 7,
             saveColor: formData.saveColor,
             speciesGroup: formData.speciesGroup,
             vocationGroup: formData.vocationGroup,
@@ -366,10 +354,17 @@ struct CharacterFormView: View {
             currentConflictLoot: formData.currentConflictLoot,
             strongCombatOptions: formData.strongCombatOptions,
             wiseMiracleSlots: formData.miracleSlots,
+            braveQuirkOptions: formData.braveQuirkOptions,
+            cleverKnackOptions: CleverKnackOptions(),
+            fortunateOptions: FortunateOptions(),
+            comebackDice: formData.comebackDice,
+            hasUsedSayNo: formData.hasUsedSayNo,
             languages: formData.languages,
             notes: formData.notes,
             experience: Int(formData.experience) ?? 0,
             corruption: Int(formData.corruption) ?? 0,
+            inventory: [],
+            maxEncumbrance: 15,
             coinsOnHand: formData.coinsOnHand,
             stashedCoins: formData.stashedCoins,
             gear: formData.gear,
@@ -390,10 +385,14 @@ struct CharacterFormView: View {
 }
 
 private class FormData: ObservableObject {
-    @Published var name: String
-    @Published var playerName: String
-    @Published var level: String
-    @Published var selectedClass: CharacterClass {
+    @Published var name: String = ""
+    @Published var playerName: String = ""
+    @Published var level: String = "1" {
+        didSet {
+            print("Level changed to: \(level), as int: \(levelAsInt)")
+        }
+    }
+    @Published var selectedClass: CharacterClass = .deft {
         didSet {
             // Initialize class-specific data when class changes
             if selectedClass == .wise && miracleSlots.isEmpty {
@@ -414,56 +413,63 @@ private class FormData: ObservableObject {
     }
     
     // Deft
-    @Published var attunementSlots: [AttunementSlot]
+    @Published var attunementSlots: [AttunementSlot] = []
     
     // Strong
-    @Published var strongCombatOptions: StrongCombatOptions
+    @Published var strongCombatOptions: StrongCombatOptions = StrongCombatOptions()
     @Published var currentConflictLoot: ConflictLoot?
     
+    // Brave
+    @Published var braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions()
+    @Published var hasUsedSayNo: Bool = false
+    @Published var comebackDice: Int = 0
+    
     // Attributes
-    @Published var useCustomAttributes: Bool
-    @Published var customAttributes: [CustomAttribute]
-    @Published var strength: String
-    @Published var agility: String
-    @Published var toughness: String
-    @Published var intelligence: String
-    @Published var willpower: String
-    @Published var charisma: String
-    
-    // Combat Stats
-    @Published var currentHP: String
-    @Published var maxHP: String
-    @Published var movement: String
-    @Published var saveColor: String
-    
-    // Groups
-    @Published var speciesGroup: String
-    @Published var vocationGroup: String
-    @Published var affiliationGroups: [String]
-    @Published var newAffiliationGroup: String
-    @Published var attributeGroupPairs: [AttributeGroupPair]
-    @Published var isSpeciesGroupAdded: Bool
-    @Published var isVocationGroupAdded: Bool
+    @Published var useCustomAttributes: Bool = false
+    @Published var customAttributes: [CustomAttribute] = []
+    @Published var strength: String = "10"
+    @Published var agility: String = "10"
+    @Published var toughness: String = "10"
+    @Published var intelligence: String = "10"
+    @Published var willpower: String = "10"
+    @Published var charisma: String = "10"
+    @Published var currentHP: String = "1"
+    @Published var maxHP: String = "1"
+    @Published var movement: String = "30"
+    @Published var saveColor: String = ""
+    @Published var speciesGroup: String = ""
+    @Published var vocationGroup: String = ""
+    @Published var affiliationGroups: [String] = []
+    @Published var newAffiliationGroup: String = ""
+    @Published var attributeGroupPairs: [AttributeGroupPair] = []
+    @Published var isSpeciesGroupAdded: Bool = false
+    @Published var isVocationGroupAdded: Bool = false
     
     // Additional Info
-    @Published var languages: [String]
-    @Published var newLanguage: String
-    @Published var experience: String
-    @Published var corruption: String
-    @Published var miracleSlots: [WiseMiracleSlot]
+    @Published var languages: [String] = []
+    @Published var newLanguage: String = ""
+    @Published var experience: String = "0"
+    @Published var corruption: String = "0"
+    @Published var miracleSlots: [WiseMiracleSlot] = []
     
-    @Published var weapons: [Weapon]
-    @Published var armor: [Armor]
-    @Published var gear: [Gear]
-    @Published var coinsOnHand: Int
-    @Published var stashedCoins: Int
+    @Published var weapons: [Weapon] = []
+    @Published var armor: [Armor] = []
+    @Published var gear: [Gear] = []
+    @Published var coinsOnHand: Int = 0
+    @Published var stashedCoins: Int = 0
     
-    @Published var notes: String
+    @Published var notes: String = ""
+    
+    var levelAsInt: Int {
+        Int(level) ?? 1
+    }
     
     init(character: PlayerCharacter? = nil) {
+        print("Initializing FormData with character: \(character?.name ?? "nil")")
         self.name = character?.name ?? ""
         self.playerName = character?.playerName ?? ""
         self.level = "\(character?.level ?? 1)"
+        print("Setting level to: \(self.level)")
         self.selectedClass = character?.characterClass ?? .deft
         
         // Deft
@@ -473,19 +479,24 @@ private class FormData: ObservableObject {
         self.strongCombatOptions = character?.strongCombatOptions ?? StrongCombatOptions()
         self.currentConflictLoot = character?.currentConflictLoot
         
+        // Brave
+        self.braveQuirkOptions = character?.braveQuirkOptions ?? BraveQuirkOptions()
+        self.hasUsedSayNo = character?.hasUsedSayNo ?? false
+        self.comebackDice = character?.comebackDice ?? 0
+        
         // Attributes
         self.useCustomAttributes = character?.useCustomAttributes ?? false
         self.customAttributes = character?.customAttributes ?? []
-        self.strength = character?.strength.description ?? "10"
-        self.agility = character?.agility.description ?? "10"
-        self.toughness = character?.toughness.description ?? "10"
-        self.intelligence = character?.intelligence.description ?? "10"
-        self.willpower = character?.willpower.description ?? "10"
-        self.charisma = character?.charisma.description ?? "10"
-        self.currentHP = character?.currentHP.description ?? "1"
-        self.maxHP = character?.maxHP.description ?? "1"
-        self.movement = character?.movement.description ?? "30"
-        self.saveColor = character?.saveColor ?? ""
+        self.strength = "\(character?.strength ?? 10)"
+        self.agility = "\(character?.agility ?? 10)"
+        self.toughness = "\(character?.toughness ?? 10)"
+        self.intelligence = "\(character?.intelligence ?? 10)"
+        self.willpower = "\(character?.willpower ?? 10)"
+        self.charisma = "\(character?.charisma ?? 10)"
+        self.currentHP = "\(character?.currentHP ?? 1)"
+        self.maxHP = "\(character?.maxHP ?? 1)"
+        self.movement = "\(character?.movement ?? 30)"
+        self.saveColor = character?.saveColor ?? "black"
         self.speciesGroup = character?.speciesGroup ?? ""
         self.vocationGroup = character?.vocationGroup ?? ""
         self.affiliationGroups = character?.affiliationGroups ?? []
@@ -496,8 +507,8 @@ private class FormData: ObservableObject {
         self.notes = character?.notes ?? ""
         self.languages = character?.languages ?? []
         self.newLanguage = ""
-        self.experience = character?.experience.description ?? "0"
-        self.corruption = character?.corruption.description ?? "0"
+        self.experience = "\(character?.experience ?? 0)"
+        self.corruption = "\(character?.corruption ?? 0)"
         
         self.miracleSlots = character?.wiseMiracleSlots ?? []
         
@@ -558,7 +569,7 @@ private extension CharacterFormView {
             if formData.selectedClass == .wise {
                 FormWiseMiracleSection(
                     characterClass: formData.selectedClass,
-                    level: Int(formData.level) ?? 1,
+                    level: formData.levelAsInt,
                     willpower: $formData.willpower,
                     useCustomAttributes: $formData.useCustomAttributes,
                     miracleSlots: $formData.miracleSlots
@@ -569,7 +580,7 @@ private extension CharacterFormView {
             if formData.selectedClass == .deft {
                 FormDeftAttunementSection(
                     characterClass: formData.selectedClass,
-                    level: Int(formData.level) ?? 1,
+                    level: formData.levelAsInt,
                     attunementSlots: $formData.attunementSlots
                 )
                 .frame(maxWidth: .infinity)
@@ -578,9 +589,19 @@ private extension CharacterFormView {
             if formData.selectedClass == .strong {
                 FormStrongCombatSection(
                     characterClass: formData.selectedClass,
-                    level: Int(formData.level) ?? 1,
+                    level: formData.levelAsInt,
                     strongCombatOptions: $formData.strongCombatOptions,
                     currentConflictLoot: $formData.currentConflictLoot
+                )
+                .frame(maxWidth: .infinity)
+            }
+            
+            if formData.selectedClass == .brave {
+                FormBraveQuirksSection(
+                    braveQuirkOptions: $formData.braveQuirkOptions,
+                    hasUsedSayNo: $formData.hasUsedSayNo,
+                    comebackDice: $formData.comebackDice,
+                    level: formData.levelAsInt
                 )
                 .frame(maxWidth: .infinity)
             }
@@ -597,6 +618,35 @@ private extension CharacterFormView {
                 focusedField: $focusedField
             )
             .frame(maxWidth: .infinity)
+        }
+    }
+    
+    var combatTabView: some View {
+        VStack(spacing: 16) {
+            FormCombatStatsSection(
+                currentHP: $formData.currentHP,
+                maxHP: $formData.maxHP,
+                movement: $formData.movement,
+                saveColor: $formData.saveColor,
+                focusedField: $focusedField
+            )
+            .frame(maxWidth: .infinity)
+            
+            if formData.selectedClass == .brave {
+                FormBraveQuirksSection(
+                    braveQuirkOptions: $formData.braveQuirkOptions,
+                    hasUsedSayNo: $formData.hasUsedSayNo,
+                    comebackDice: $formData.comebackDice,
+                    level: formData.levelAsInt
+                )
+                .frame(maxWidth: .infinity)
+                .shadow(
+                    color: Color.orange.opacity(0.1),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
+            }
         }
     }
 }

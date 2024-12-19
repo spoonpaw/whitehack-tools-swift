@@ -90,6 +90,7 @@ struct QuirkSlotView: View {
 
 struct ComebackDiceView: View {
     @Binding var comebackDice: Int
+    @State private var diceText: String = ""
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -100,16 +101,55 @@ struct ComebackDiceView: View {
                     .font(.headline)
                     .foregroundColor(.green)
                 Spacer()
-                Text("\(comebackDice)d6")
-                    .font(.title2)
-                    .foregroundColor(.green)
+                HStack(spacing: 4) {
+                    Button(action: { 
+                        if comebackDice > 0 {
+                            comebackDice -= 1 
+                            diceText = String(comebackDice)
+                        }
+                    }) {
+                        Image(systemName: "minus.circle.fill")
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(.plain)
+                    
+                    TextField("", text: $diceText)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 50)
+                        .multilineTextAlignment(.center)
+                        .onAppear {
+                            diceText = String(comebackDice)
+                        }
+                        .onChange(of: diceText) { newValue in
+                            let filtered = newValue.filter { $0.isNumber }
+                            if filtered != newValue {
+                                diceText = filtered
+                            }
+                            if let value = Int(filtered) {
+                                comebackDice = value
+                            } else if filtered.isEmpty {
+                                comebackDice = 0
+                            }
+                        }
+                    
+                    Button(action: { 
+                        comebackDice += 1 
+                        diceText = String(comebackDice)
+                    }) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.green)
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Text("d6")
+                        .font(.title2)
+                        .foregroundColor(.green)
+                }
             }
             
             Text("Gain a d6 when losing an auction, failing a task roll, or failing a save (not attacks). Can be added to any attribute, saving throw, attack value, or to supplant a damage die. Only the best die counts when using multiple dice.")
                 .font(.caption)
                 .foregroundColor(.secondary)
-            
-            Stepper("Available Dice: \(comebackDice)", value: $comebackDice, in: 0...10)
         }
         .padding(16)
         .background({
@@ -171,33 +211,53 @@ struct FormBraveQuirksSection: View {
     @Binding var braveQuirkOptions: BraveQuirkOptions
     @Binding var hasUsedSayNo: Bool
     @Binding var comebackDice: Int
-    @Binding var hasArmorPenalty: Bool
+    let level: Int
+    
+    init(braveQuirkOptions: Binding<BraveQuirkOptions>, hasUsedSayNo: Binding<Bool>, comebackDice: Binding<Int>, level: Int) {
+        print("Creating FormBraveQuirksSection with level: \(level)")
+        self._braveQuirkOptions = braveQuirkOptions
+        self._hasUsedSayNo = hasUsedSayNo
+        self._comebackDice = comebackDice
+        self.level = level
+    }
+    
+    private var availableSlots: Int {
+        let stats = AdvancementTables.shared.stats(for: .brave, at: level)
+        print("Getting slots for level \(level): \(stats.slots)")
+        return stats.slots
+    }
+    
+    private var slotIndices: [Int] {
+        Array(0..<availableSlots)
+    }
     
     var body: some View {
-        Section {
+        VStack(spacing: 0) {
+            DetailSectionHeader(title: "The Brave", icon: Ph.shield.bold)
+                .padding(.bottom, 4)
+            
             VStack(spacing: 16) {
-                ForEach(0..<3) { index in
+                ForEach(slotIndices, id: \.self) { index in
                     QuirkSlotView(slotIndex: index, braveQuirkOptions: $braveQuirkOptions)
                 }
                 
                 ComebackDiceView(comebackDice: $comebackDice)
                 SayNoPowerView(hasUsedSayNo: $hasUsedSayNo)
             }
-            .padding(.vertical, 8)
-        } header: {
-            HStack(spacing: 8) {
-                Ph.sparkle.bold
-                    .frame(width: 20, height: 20)
-                Text("The Brave")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-            }
-            .padding(.vertical, 4)
-        } footer: {
-            if hasArmorPenalty {
-                Text("Wearing armor heavier than cloth: -2 penalty to all task rolls")
-                    .foregroundColor(.secondary)
-            }
+            .padding()
+            .background(Color.orange.opacity(0.05))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(radius: 2)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+            )
+            .shadow(
+                color: Color.orange.opacity(0.1),
+                radius: 8,
+                x: 0,
+                y: 4
+            )
         }
     }
 }

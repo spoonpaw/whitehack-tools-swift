@@ -73,16 +73,35 @@ struct FormBasicInfoSection: View {
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
                             .onChange(of: level) { newValue in
-                                // Only allow numbers
-                                let filtered = newValue.filter { $0.isNumber }
+                                // First filter out non-numeric characters
+                                var filtered = newValue.filter { $0.isNumber }
+                                
+                                // Ensure it's not empty
+                                if filtered.isEmpty {
+                                    level = "1"
+                                    return
+                                }
+                                
+                                // Clamp to valid range
+                                if let intValue = Int(filtered) {
+                                    if intValue < 1 {
+                                        filtered = "1"
+                                    } else if intValue > 10 {
+                                        filtered = "10"
+                                    }
+                                }
+                                
+                                // Update if different
                                 if filtered != newValue {
                                     level = filtered
                                 }
-                                
-                                // Convert to int and clamp between 1-10
-                                if let intValue = Int(filtered) {
-                                    let clamped = min(10, max(1, intValue))
-                                    level = String(clamped)
+                            }
+                            .onSubmit {
+                                // Ensure valid value on submit
+                                if let intValue = Int(level) {
+                                    level = String(min(10, max(1, intValue)))
+                                } else {
+                                    level = "1"
                                 }
                             }
                         Spacer()
