@@ -363,11 +363,17 @@ struct CharacterFormView: View {
             affiliationGroups: formData.affiliationGroups,
             attributeGroupPairs: formData.attributeGroupPairs,
             attunementSlots: formData.attunementSlots,
+            currentConflictLoot: formData.currentConflictLoot,
+            strongCombatOptions: formData.strongCombatOptions,
             wiseMiracleSlots: formData.miracleSlots,
-            languages: formData.languages, notes: formData.notes,
+            languages: formData.languages,
+            notes: formData.notes,
             experience: Int(formData.experience) ?? 0,
             corruption: Int(formData.corruption) ?? 0,
-            coinsOnHand: formData.coinsOnHand, stashedCoins: formData.stashedCoins, gear: formData.gear, weapons: formData.weapons,
+            coinsOnHand: formData.coinsOnHand,
+            stashedCoins: formData.stashedCoins,
+            gear: formData.gear,
+            weapons: formData.weapons,
             armor: formData.armor
         )
         
