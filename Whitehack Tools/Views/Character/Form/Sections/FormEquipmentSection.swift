@@ -231,18 +231,6 @@ struct GearRow: View {
                     }
                 }
                 
-                // Weight Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Weight")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Label {
-                        Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
-                    } icon: {
-                        IconFrame(icon: Ph.scales.bold, color: .blue)
-                    }
-                }
-                
                 // Quantity Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Quantity")
@@ -252,6 +240,18 @@ struct GearRow: View {
                         Text("\(gear.quantity)")
                     } icon: {
                         IconFrame(icon: Ph.stack.bold, color: .green)
+                    }
+                }
+                
+                // Weight Section
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Weight")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(FormEquipmentSection.getWeightDisplayText(gear.weight))
+                    } icon: {
+                        IconFrame(icon: Ph.scales.bold, color: .blue)
                     }
                 }
                 
@@ -421,6 +421,35 @@ struct GearEditRow: View {
                 }
             }
             
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .onChange(of: quantityString) { newValue in
+                                if let newQuantity = Int(newValue) {
+                                    quantity = max(1, min(99, newQuantity))
+                                }
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .green)
+                }
+            }
+            
             // Weight Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Weight")
@@ -446,26 +475,6 @@ struct GearEditRow: View {
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Quantity", value: $quantity, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                        Stepper("", value: $quantity, in: 1...Int.max)
-                            .labelsHidden()
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .green)
                 }
             }
             

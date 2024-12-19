@@ -575,6 +575,33 @@ struct ArmorEditRow: View {
                 }
             }
             
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .onChange(of: quantityString) { newValue in
+                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .green)
+                }
+            }
+            
             // Defense Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Defense")
@@ -587,7 +614,6 @@ struct ArmorEditRow: View {
                             #if os(iOS)
                             .keyboardType(.numberPad)
                             #endif
-                            .frame(maxWidth: 80)
                             .onChange(of: dfString) { newValue in
                                 df = validateIntegerInput(newValue, current: df, range: 0...10)
                                 dfString = "\(df)"
@@ -615,7 +641,6 @@ struct ArmorEditRow: View {
                             #if os(iOS)
                             .keyboardType(.numberPad)
                             #endif
-                            .frame(maxWidth: 80)
                             .onChange(of: weightString) { newValue in
                                 weight = validateIntegerInput(newValue, current: weight, range: 0...10)
                                 weightString = "\(weight)"
@@ -630,34 +655,6 @@ struct ArmorEditRow: View {
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Quantity", text: $quantityString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .frame(maxWidth: 80)
-                            .onChange(of: quantityString) { newValue in
-                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
-                                quantityString = "\(quantity)"
-                            }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
-                                quantityString = "\(newValue)"
-                            }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .green)
                 }
             }
             

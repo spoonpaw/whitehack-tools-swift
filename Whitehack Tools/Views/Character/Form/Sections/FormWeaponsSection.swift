@@ -282,6 +282,35 @@ struct WeaponEditRow: View {
                 }
             }
             
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        TextField("Quantity", text: $quantityString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            #if os(iOS)
+                            .keyboardType(.numberPad)
+                            #endif
+                            .onChange(of: quantityString) { newValue in
+                                if let newQuantity = Int(newValue) {
+                                    quantity = max(1, min(99, newQuantity))
+                                }
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .green)
+                }
+            }
+            
             // Damage Section
             VStack(alignment: .leading, spacing: 4) {
                 Text("Damage")
@@ -350,37 +379,6 @@ struct WeaponEditRow: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 } icon: {
                     IconFrame(icon: Ph.star.bold, color: .yellow)
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    Label {
-                        TextField("", text: $quantityString)
-                            .textFieldStyle(.roundedBorder)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.leading)
-                            #endif
-                            .onChange(of: quantityString) { newValue in
-                                validateQuantityInput(newValue)
-                            }
-                            .onSubmit {
-                                validateAndUpdateQuantity()
-                            }
-                            .onChange(of: quantity) { newValue in
-                                quantityString = "\(newValue)"
-                            }
-                    } icon: {
-                        IconFrame(icon: Ph.stack.bold, color: .gray)
-                    }
-                    Spacer()
-                    Stepper("", value: $quantity, in: 1...Int.max)  // Allow any positive number
-                        .labelsHidden()
                 }
             }
             
