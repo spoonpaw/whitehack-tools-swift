@@ -356,7 +356,7 @@ struct CharacterFormView: View {
             wiseMiracleSlots: formData.miracleSlots,
             braveQuirkOptions: formData.braveQuirkOptions,
             cleverKnackOptions: formData.cleverKnackOptions,
-            fortunateOptions: FortunateOptions(),
+            fortunateOptions: formData.fortunateOptions,
             comebackDice: formData.comebackDice,
             hasUsedSayNo: formData.hasUsedSayNo,
             languages: formData.languages,
@@ -424,6 +424,9 @@ private class FormData: ObservableObject {
     @Published var hasUsedSayNo: Bool = false
     @Published var comebackDice: Int = 0
     
+    // Clever
+    @Published var cleverKnackOptions: CleverKnackOptions = CleverKnackOptions()
+    
     // Attributes
     @Published var useCustomAttributes: Bool = false
     @Published var customAttributes: [CustomAttribute] = []
@@ -460,7 +463,7 @@ private class FormData: ObservableObject {
     
     @Published var notes: String = ""
     
-    @Published var cleverKnackOptions = CleverKnackOptions()
+    @Published var fortunateOptions = FortunateOptions()
     
     var levelAsInt: Int {
         Int(level) ?? 1
@@ -522,6 +525,11 @@ private class FormData: ObservableObject {
         self.gear = character?.gear ?? []
         self.coinsOnHand = character?.coinsOnHand ?? 0
         self.stashedCoins = character?.stashedCoins ?? 0
+        
+        // Fortunate
+        self.fortunateOptions = character?.fortunateOptions ?? FortunateOptions()
+        
+        self.notes = character?.notes ?? ""
     }
 }
 
@@ -616,6 +624,15 @@ private extension CharacterFormView {
                     characterClass: formData.selectedClass,
                     level: formData.levelAsInt,
                     cleverKnackOptions: $formData.cleverKnackOptions
+                )
+                .frame(maxWidth: .infinity)
+            }
+            
+            if formData.selectedClass == .fortunate {
+                FormFortunateSection(
+                    characterClass: formData.selectedClass,
+                    level: formData.levelAsInt,
+                    fortunateOptions: $formData.fortunateOptions
                 )
                 .frame(maxWidth: .infinity)
             }

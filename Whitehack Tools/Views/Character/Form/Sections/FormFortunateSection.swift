@@ -63,9 +63,10 @@ struct FormFortunateStandingCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(Color.systemBackground)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
         .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
@@ -111,9 +112,10 @@ struct FormFortunateSignatureObjectCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(Color.systemBackground)
+        .background(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
         .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
@@ -152,25 +154,39 @@ struct FormFortunateSection: View {
     var body: some View {
         if characterClass == .fortunate {
             Section {
-                // Standing & Fortune Card
-                FormFortunateStandingCard(
-                    standing: $fortunateOptions.standing,
-                    hasUsedFortune: $fortunateOptions.hasUsedFortune
-                )
-                
-                // Signature Object Card
-                FormFortunateSignatureObjectCard(
-                    signatureObject: $fortunateOptions.signatureObject
-                )
-                
-                // Show retainer forms
-                ForEach(Array(displayedRetainers.enumerated()), id: \.element.id) { index, retainer in
-                    RetainerView(slotNumber: index + 1, retainer: binding(for: index))
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .padding(.vertical, 8)
+                VStack(spacing: 16) {
+                    // Standing & Fortune Card
+                    FormFortunateStandingCard(
+                        standing: $fortunateOptions.standing,
+                        hasUsedFortune: $fortunateOptions.hasUsedFortune
+                    )
+                    
+                    // Signature Object Card
+                    FormFortunateSignatureObjectCard(
+                        signatureObject: $fortunateOptions.signatureObject
+                    )
+                    
+                    // Show retainer forms
+                    ForEach(Array(displayedRetainers.enumerated()), id: \.element.id) { index, retainer in
+                        RetainerView(slotNumber: index + 1, retainer: binding(for: index))
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 8)
+                    }
                 }
+                .padding(20)
+                .background(Color.purple.opacity(0.05))
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: Color.primary.opacity(0.05), radius: 2, x: 0, y: 1)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .padding(.vertical, 8)
             } header: {
                 SectionHeader(title: "The Fortunate", icon: Ph.crown.bold)
             }
