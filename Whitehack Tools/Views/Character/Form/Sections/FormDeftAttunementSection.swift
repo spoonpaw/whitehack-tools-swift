@@ -173,7 +173,27 @@ private struct AttunementFieldsView: View {
                         guard index < attunementSlots.count else { return }
                         var attunement = getAttunement(attunementSlots)
                         attunement.isActive = newValue
-                        setAttunement(&attunementSlots, attunement)
+                        
+                        if newValue {
+                            attunement.isLost = false
+                            
+                            // Deactivate all other attunements in this slot
+                            var slot = attunementSlots[index]
+                            slot.primaryAttunement.isActive = false
+                            slot.secondaryAttunement.isActive = false
+                            if slot.hasTertiaryAttunement {
+                                slot.tertiaryAttunement.isActive = false
+                            }
+                            if slot.hasQuaternaryAttunement {
+                                slot.quaternaryAttunement.isActive = false
+                            }
+                            attunementSlots[index] = slot
+                            
+                            // Now set only the current attunement to active
+                            setAttunement(&attunementSlots, attunement)
+                        } else {
+                            setAttunement(&attunementSlots, attunement)
+                        }
                     }
                 )
             )
@@ -189,6 +209,9 @@ private struct AttunementFieldsView: View {
                         guard index < attunementSlots.count else { return }
                         var attunement = getAttunement(attunementSlots)
                         attunement.isLost = newValue
+                        if newValue {
+                            attunement.isActive = false
+                        }
                         setAttunement(&attunementSlots, attunement)
                     }
                 )
@@ -212,6 +235,7 @@ private struct AttunementToggleRow: View {
             Spacer()
             Toggle("", isOn: $isOn)
                 .labelsHidden()
+                .toggleStyle(SwitchToggleStyle(tint: .purple))
         }
     }
 }
@@ -239,6 +263,7 @@ private struct TertiaryAttunementView: View {
                         }
                     ))
                     .labelsHidden()
+                    .toggleStyle(SwitchToggleStyle(tint: .green))
                 }
                 
                 if attunementSlots[index].hasTertiaryAttunement {
@@ -267,6 +292,7 @@ private struct TertiaryAttunementView: View {
                             }
                         ))
                         .labelsHidden()
+                        .toggleStyle(SwitchToggleStyle(tint: .orange))
                     }
                     
                     if attunementSlots[index].hasQuaternaryAttunement {
@@ -323,6 +349,7 @@ private struct DailyPowerView: View {
                 }
             ))
             .labelsHidden()
+            .toggleStyle(SwitchToggleStyle(tint: .red))
         }
         .padding(.top, 8)
     }
