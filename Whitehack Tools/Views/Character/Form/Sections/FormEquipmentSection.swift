@@ -429,7 +429,7 @@ struct GearEditRow: View {
     }
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             nameSection
             quantitySection
             weightSection
@@ -438,7 +438,7 @@ struct GearEditRow: View {
             Divider()
             actionButtons
         }
-        .padding(.vertical)
+        .groupCardStyle()
         .onAppear {
             // Reset state to match the input gear
             name = gear.name
