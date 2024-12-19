@@ -129,7 +129,6 @@ public struct FormEquipmentSection: View {
                                 editingGearId = nil
                             }
                         )
-                        .groupCardStyle()
                         .padding(.bottom, 4)
                     } else {
                         GearRow(
@@ -141,7 +140,6 @@ public struct FormEquipmentSection: View {
                                 gear.removeAll(where: { $0.id == gearItem.id })
                             }
                         )
-                        .groupCardStyle()
                         .padding(.bottom, 4)
                     }
                 }
@@ -376,7 +374,7 @@ struct GearRow: View {
             }
             .padding(.top, 4)
         }
-        .padding(.vertical)
+        .groupCardStyle()
     }
 }
 
