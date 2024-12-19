@@ -287,6 +287,11 @@ private struct InfoTabView: View {
                 .padding(.horizontal, 16)
             }
             
+            if character.characterClass == .fortunate {
+                DetailFortunateSection(character: character)
+                    .padding(.horizontal, 16)
+            }
+            
             DetailAdditionalInfoSection(character: character)
                 .padding(.horizontal, 16)
             
