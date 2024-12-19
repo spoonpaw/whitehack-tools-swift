@@ -9,9 +9,7 @@ public struct FormEquipmentSection: View {
     @State private var editingGearId: UUID?
     @State private var isAddingNew = false {
         didSet {
-            print("📦 Equipment: isAddingNew changed from \(oldValue) to \(isAddingNew)")
             if !isAddingNew {
-                print("🧹 Equipment: Cleaning up states")
                 selectedGearName = nil
                 editingNewGear = nil
             }
@@ -19,23 +17,18 @@ public struct FormEquipmentSection: View {
     }
     @State private var editingNewGear: Gear? {
         didSet {
-            print("📦 Equipment: editingNewGear changed from \(String(describing: oldValue?.name)) to \(String(describing: editingNewGear?.name))")
+            selectedGearName = nil
         }
     }
     @State private var selectedGearName: String? {
         didSet {
-            print("🎯 Equipment: selectedGearName changed from \(String(describing: oldValue)) to \(String(describing: selectedGearName))")
             if selectedGearName == nil {
-                print("⚠️ Equipment: No gear selected")
             }
         }
     }
     
     private func createGearFromSelection(_ gearName: String) {
-        print("🎯 Equipment: Creating gear from selection: \(gearName)")
-        
         if gearName == "custom" {
-            // Handle custom gear creation
             let gear = Gear(
                 id: UUID(),
                 name: "",
@@ -50,7 +43,6 @@ public struct FormEquipmentSection: View {
             )
             editingNewGear = gear
         } else if let gearData = GearData.gear.first(where: { $0.name == gearName }) {
-            print("📦 Equipment: Found gear data: \(gearData)")
             let newGear = Gear(
                 id: UUID(),
                 name: gearData.name,
@@ -63,16 +55,8 @@ public struct FormEquipmentSection: View {
                 isCursed: false,
                 isContainer: gearData.isContainer
             )
-            print("🛠️ Equipment: Created gear:")
-            print("   Name: \(newGear.name)")
-            print("   Weight: \(newGear.weight)")
-            print("   Special: \(newGear.special)")
-            print("   Container: \(newGear.isContainer)")
-            
             withAnimation {
-                // For non-custom items, add them directly to the gear array
                 gear.append(newGear)
-                // Reset the adding state
                 isAddingNew = false
                 selectedGearName = nil
             }
@@ -91,7 +75,6 @@ public struct FormEquipmentSection: View {
     
     public var body: some View {
         VStack(spacing: 0) {
-            // Equipment list
             if !gear.isEmpty {
                 equipmentListView
             } else if !isAddingNew && editingNewGear == nil {
@@ -208,7 +191,6 @@ public struct FormEquipmentSection: View {
     
     private var addAnotherButton: some View {
         Button(action: {
-            print("➕ Equipment: Add Another Item tapped")
             withAnimation {
                 isAddingNew = true
             }
@@ -220,7 +202,6 @@ public struct FormEquipmentSection: View {
     
     private var addFirstButton: some View {
         Button(action: {
-            print("➕ Equipment: Add First Item tapped")
             withAnimation {
                 isAddingNew = true
             }
@@ -238,9 +219,7 @@ struct GearRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Content Area
             VStack(alignment: .leading, spacing: 12) {
-                // Name Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Item Name")
                         .font(.subheadline)
@@ -253,7 +232,6 @@ struct GearRow: View {
                     }
                 }
                 
-                // Quantity Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Quantity")
                         .font(.subheadline)
@@ -265,7 +243,6 @@ struct GearRow: View {
                     }
                 }
                 
-                // Weight Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Weight")
                         .font(.subheadline)
@@ -277,7 +254,6 @@ struct GearRow: View {
                     }
                 }
                 
-                // Status Section
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Status")
                         .font(.subheadline)
@@ -348,7 +324,6 @@ struct GearRow: View {
             
             Divider()
             
-            // Action Buttons
             HStack {
                 Button(action: onEdit) {
                     Label {
@@ -440,7 +415,6 @@ struct GearEditRow: View {
         }
         .groupCardStyle()
         .onAppear {
-            // Reset state to match the input gear
             name = gear.name
             weight = gear.weight
             special = gear.special
@@ -452,19 +426,25 @@ struct GearEditRow: View {
             quantity = gear.quantity
         }
         .onChange(of: isContainer) { newValue in
-            print("📦 Equipment: Container toggle changed to \(newValue)")
+            isContainer = newValue
         }
         .onChange(of: isStashed) { newValue in
-            print("📦 Equipment: Stashed toggle changed to \(newValue)")
+            isStashed = newValue
+            if newValue {
+                isEquipped = false
+            }
         }
         .onChange(of: isEquipped) { newValue in
-            print("📦 Equipment: Equipped toggle changed to \(newValue)")
+            isEquipped = newValue
+            if newValue {
+                isStashed = false
+            }
         }
         .onChange(of: isMagical) { newValue in
-            print("📦 Equipment: Magical toggle changed to \(newValue)")
+            isMagical = newValue
         }
         .onChange(of: isCursed) { newValue in
-            print("📦 Equipment: Cursed toggle changed to \(newValue)")
+            isCursed = newValue
         }
     }
     
@@ -599,7 +579,6 @@ struct GearEditRow: View {
         Button(action: {
             guard !isProcessingAction else { return }
             isProcessingAction = true
-            print("🔴 Cancel action starting")
             onCancel()
         }) {
             Label {
@@ -616,7 +595,6 @@ struct GearEditRow: View {
         Button(action: {
             guard !isProcessingAction else { return }
             isProcessingAction = true
-            print("💾 Save action starting")
             
             let updatedGear = Gear(
                 id: gear.id,
@@ -653,53 +631,97 @@ struct GearEditTogglesSection: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Container Toggle
             HStack {
                 IconFrame(icon: Ph.package.bold, color: isContainer ? .orange : .gray)
+                #if os(macOS)
+                Toggle("", isOn: $isContainer)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                Text(isContainer ? "Container" : "Not a Container")
+                #else
                 Toggle(isContainer ? "Container" : "Not a Container", isOn: $isContainer)
+                #endif
             }
             
-            // Equipped Toggle
             HStack {
                 IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                #if os(macOS)
+                Toggle("", isOn: Binding(
                     get: { isEquipped },
                     set: { newValue in
-                        print("🔄 Equipment: Equipped status changed to: \(newValue)")
                         isEquipped = newValue
                         if newValue {
                             isStashed = false
                         }
                     }
                 ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                Text(isEquipped ? "Equipped" : "Unequipped")
+                #else
+                Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
+                    get: { isEquipped },
+                    set: { newValue in
+                        isEquipped = newValue
+                        if newValue {
+                            isStashed = false
+                        }
+                    }
+                ))
+                #endif
             }
             
-            // Location Toggle
             HStack {
                 IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
                         color: isStashed ? .orange : .gray)
-                Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                #if os(macOS)
+                Toggle("", isOn: Binding(
                     get: { isStashed },
                     set: { newValue in
-                        print("🔄 Equipment: Stashed status changed to: \(newValue)")
                         isStashed = newValue
                         if newValue {
                             isEquipped = false
                         }
                     }
                 ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                Text(isStashed ? "Stashed" : "On Person")
+                #else
+                Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
+                    get: { isStashed },
+                    set: { newValue in
+                        isStashed = newValue
+                        if newValue {
+                            isEquipped = false
+                        }
+                    }
+                ))
+                #endif
             }
             
-            // Magical Toggle
             HStack {
-                IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .blue : .gray)
+                IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
+                #if os(macOS)
+                Toggle("", isOn: $isMagical)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                Text(isMagical ? "Magical" : "Not Magical")
+                #else
                 Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
+                #endif
             }
             
-            // Cursed Toggle
             HStack {
                 IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                #if os(macOS)
+                Toggle("", isOn: $isCursed)
+                    .toggleStyle(.switch)
+                    .labelsHidden()
+                Text(isCursed ? "Cursed" : "Not Cursed")
+                #else
                 Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
+                #endif
             }
         }
     }
