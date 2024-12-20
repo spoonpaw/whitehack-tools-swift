@@ -359,10 +359,13 @@ struct RetainerKeywords: View {
             }
             
             if !retainer.keywords.isEmpty {
-                TagFlowView(data: retainer.keywords, spacing: 8) { keyword in
-                    KeywordTag(keyword: keyword) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                            retainer.keywords.removeAll { $0 == keyword }
+                let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+                LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                    ForEach(retainer.keywords, id: \.self) { keyword in
+                        KeywordTag(keyword: keyword) {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                retainer.keywords.removeAll { $0 == keyword }
+                            }
                         }
                     }
                 }
