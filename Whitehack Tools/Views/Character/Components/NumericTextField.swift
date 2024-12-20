@@ -39,6 +39,18 @@ struct NumericTextField: UIViewRepresentable {
         }
     }
     
+    // Add a function to commit the current value
+    func commitValue(_ uiView: UITextField) {
+        if let currentText = uiView.text {
+            if let intValue = Int(currentText) {
+                let clampedValue = max(minValue, min(maxValue, intValue))
+                text = "\(clampedValue)"
+            } else if currentText.isEmpty {
+                text = "\(minValue)"
+            }
+        }
+    }
+    
     class Coordinator: NSObject, UITextFieldDelegate {
         var parent: NumericTextField
         
@@ -81,7 +93,12 @@ struct NumericTextField: UIViewRepresentable {
             
             // Validate the numeric value
             if let intValue = Int(updatedText) {
-                return intValue >= parent.minValue && intValue <= parent.maxValue
+                let isValid = intValue >= parent.minValue && intValue <= parent.maxValue
+                if isValid {
+                    // Update the binding immediately
+                    parent.text = updatedText
+                }
+                return isValid
             } else if updatedText == "-" {
                 // Allow single minus sign during typing
                 return parent.allowsNegative

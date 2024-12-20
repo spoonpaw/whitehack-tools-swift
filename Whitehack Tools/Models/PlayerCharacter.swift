@@ -743,7 +743,16 @@ class PlayerCharacter: Identifiable, Codable {
     var currentHP: Int
     var maxHP: Int
     private var _attackValue: Int // Stored property for backward compatibility
-    var movement: Int
+    var movement: Int {
+        didSet {
+            // Ensure movement is always between 0 and 999
+            if movement < 0 {
+                movement = 0
+            } else if movement > 999 {
+                movement = 999
+            }
+        }
+    }
     private var _saveValue: Int // Stored property for backward compatibility
     var saveColor: String
     
@@ -1277,7 +1286,11 @@ class PlayerCharacter: Identifiable, Codable {
         currentHP = try container.decodeIfPresent(Int.self, forKey: .currentHP) ?? 1
         maxHP = try container.decodeIfPresent(Int.self, forKey: .maxHP) ?? 1
         _attackValue = try container.decodeIfPresent(Int.self, forKey: ._attackValue) ?? 10
-        movement = try container.decodeIfPresent(Int.self, forKey: .movement) ?? 30
+        
+        // Initialize movement with clamped value
+        let rawMovement = try container.decodeIfPresent(Int.self, forKey: .movement) ?? 30
+        movement = min(999, max(0, rawMovement))  // Clamp between 0 and 999
+        
         _saveValue = try container.decodeIfPresent(Int.self, forKey: ._saveValue) ?? 7
         saveColor = try container.decodeIfPresent(String.self, forKey: .saveColor) ?? ""
         
@@ -1376,7 +1389,7 @@ class PlayerCharacter: Identifiable, Codable {
         self.currentHP = currentHP
         self.maxHP = maxHP
         self._attackValue = _attackValue
-        self.movement = movement
+        self.movement = min(999, max(0, movement))  // Clamp between 0 and 999
         self._saveValue = _saveValue
         self.saveColor = saveColor
         self.speciesGroup = speciesGroup

@@ -101,18 +101,35 @@ struct FormCombatStatsSection: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    TextField("Enter movement", text: $movement)
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                        .focused($focusedField, equals: .movement)
-                        .textFieldStyle(.roundedBorder)
-                        .onChange(of: movement) { newValue in
-                            let filtered = newValue.filter { "0123456789".contains($0) }
-                            if filtered != newValue {
-                                movement = filtered
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            if let value = Int(movement) {
+                                movement = String(max(0, value - 1))
                             }
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.red)
                         }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        NumericTextField(text: $movement, field: .movement, minValue: 0, maxValue: 999, focusedField: $focusedField)
+                            .frame(maxWidth: .infinity)
+                            .onChange(of: movement) { newValue in
+                                validateAndCorrectMovement()
+                            }
+                        
+                        Button(action: {
+                            if let value = Int(movement) {
+                                movement = String(min(999, value + 1))
+                            }
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
@@ -138,6 +155,16 @@ struct FormCombatStatsSection: View {
     private func validateAndCorrectCurrentHP() {
         if let maxValue = Int(maxHP), let intValue = Int(currentHP), intValue > maxValue {
             currentHP = maxHP
+        }
+    }
+    
+    private func validateAndCorrectMovement() {
+        if let value = Int(movement) {
+            if value < 0 {
+                movement = "0"
+            } else if value > 999 {
+                movement = "999"
+            }
         }
     }
 }

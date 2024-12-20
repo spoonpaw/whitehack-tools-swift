@@ -325,6 +325,15 @@ struct CharacterFormView: View {
     }
     
     private func saveCharacter() -> UUID {
+        print("\n [CHARACTER FORM] Saving character")
+        print(" [CHARACTER FORM] Level value in form: \(formData.level)")
+        print(" [CHARACTER FORM] Level parsed as Int: \(formData.levelAsInt)")
+        print(" [CHARACTER FORM] Movement value in form: \(formData.movement)")
+        print(" [CHARACTER FORM] Movement parsed as Int: \(Int(formData.movement) ?? 30)")
+        
+        // Force commit any active text fields
+        focusedField = nil
+        
         // Create basic info
         var character = PlayerCharacter(
             id: characterId ?? UUID(),
@@ -374,9 +383,13 @@ struct CharacterFormView: View {
         
         // Update additional properties
         
+        print(" [CHARACTER FORM] Character movement after creation: \(character.movement)")
+        
         if characterId != nil {
+            print(" [CHARACTER FORM] Updating existing character")
             characterStore.updateCharacter(character)
         } else {
+            print(" [CHARACTER FORM] Adding new character")
             characterStore.addCharacter(character)
         }
         
@@ -438,7 +451,20 @@ private class FormData: ObservableObject {
     @Published var charisma: String = "10"
     @Published var currentHP: String = "1"
     @Published var maxHP: String = "1"
-    @Published var movement: String = "30"
+    @Published var movement: String = "30" {
+        didSet {
+            print(" [CHARACTER FORM] Movement changed to: \(movement)")
+            // Ensure movement is always between 0 and 99
+            if let value = Int(movement) {
+                if value < 0 {
+                    movement = "0"
+                } else if value > 99 {
+                    movement = "99"
+                }
+            }
+            print(" [CHARACTER FORM] Movement after validation: \(movement)")
+        }
+    }
     @Published var saveColor: String = ""
     @Published var speciesGroup: String = ""
     @Published var vocationGroup: String = ""
@@ -503,7 +529,7 @@ private class FormData: ObservableObject {
         self.charisma = "\(character?.charisma ?? 10)"
         self.currentHP = "\(character?.currentHP ?? 1)"
         self.maxHP = "\(character?.maxHP ?? 1)"
-        self.movement = "\(character?.movement ?? 30)"
+        self.movement = "\(character?.movement ?? 30)"  // Fixed: Initialize movement with character's value
         self.saveColor = character?.saveColor ?? "black"
         self.speciesGroup = character?.speciesGroup ?? ""
         self.vocationGroup = character?.vocationGroup ?? ""

@@ -12,6 +12,7 @@ class CharacterStore: ObservableObject {
         print("\n [CHARACTER STORE] Adding new character")
         print(" [CHARACTER STORE] Character name: \(character.name)")
         print(" [CHARACTER STORE] Character ID: \(character.id)")
+        print(" [CHARACTER STORE] Movement: \(character.movement)")
         print(" [CHARACTER STORE] Using custom attributes: \(character.useCustomAttributes)")
         if character.useCustomAttributes {
             print(" [CHARACTER STORE] Custom attributes:")
@@ -29,6 +30,7 @@ class CharacterStore: ObservableObject {
         print("\n [CHARACTER STORE] Updating existing character")
         print(" [CHARACTER STORE] Character name: \(character.name)")
         print(" [CHARACTER STORE] Character ID: \(character.id)")
+        print(" [CHARACTER STORE] Movement: \(character.movement)")
         print(" [CHARACTER STORE] Using custom attributes: \(character.useCustomAttributes)")
         if character.useCustomAttributes {
             print(" [CHARACTER STORE] Custom attributes:")
@@ -76,9 +78,10 @@ class CharacterStore: ObservableObject {
         print("\n [CHARACTER STORE] Saving all characters")
         print(" [CHARACTER STORE] Total character count: \(characters.count)")
         
-        // Log custom attributes for each character before saving
+        // Log movement value for each character before saving
         for character in characters {
             print(" [CHARACTER STORE] Character: \(character.name)")
+            print("   Movement: \(character.movement)")
             print("   Using custom attributes: \(character.useCustomAttributes)")
             if character.useCustomAttributes {
                 print("   Custom attributes:")
@@ -101,6 +104,7 @@ class CharacterStore: ObservableObject {
                 // Verify custom attributes in decoded data
                 for character in decoded {
                     print(" [CHARACTER STORE] Verification - Character: \(character.name)")
+                    print("   Movement: \(character.movement)")
                     print("   Using custom attributes: \(character.useCustomAttributes)")
                     if character.useCustomAttributes {
                         print("   Custom attributes:")
@@ -123,9 +127,10 @@ class CharacterStore: ObservableObject {
             print("\n [CHARACTER STORE] Loading characters from UserDefaults")
             print(" [CHARACTER STORE] Found \(decoded.count) characters")
             
-            // Log custom attributes for loaded characters
+            // Log movement value for loaded characters
             for character in decoded {
                 print(" [CHARACTER STORE] Character: \(character.name)")
+                print("   Movement: \(character.movement)")
                 print("   Using custom attributes: \(character.useCustomAttributes)")
                 if character.useCustomAttributes {
                     print("   Custom attributes:")
@@ -141,6 +146,7 @@ class CharacterStore: ObservableObject {
             print("\n [CHARACTER STORE] Verifying loaded characters")
             for character in characters {
                 print(" [CHARACTER STORE] Character: \(character.name)")
+                print("   Movement: \(character.movement)")
                 print("   Using custom attributes: \(character.useCustomAttributes)")
                 if character.useCustomAttributes {
                     print("   Custom attributes:")
