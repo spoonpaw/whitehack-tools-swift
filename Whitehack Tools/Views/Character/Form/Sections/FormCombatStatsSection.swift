@@ -78,6 +78,12 @@ struct FormCombatStatsSection: View {
                         
                         NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
+                            .onChange(of: maxHP) { newValue in
+                                if let maxValue = Int(newValue), let currentValue = Int(currentHP), currentValue > maxValue {
+                                    currentHP = String(maxValue)
+                                }
+                                validateAndCorrectCurrentHP()
+                            }
                         
                         Button(action: {
                             if let value = Int(maxHP) {
