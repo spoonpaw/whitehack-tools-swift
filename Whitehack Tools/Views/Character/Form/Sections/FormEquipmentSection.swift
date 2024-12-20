@@ -360,22 +360,20 @@ struct GearEditRow: View {
     let onSave: (Gear) -> Void
     let onCancel: () -> Void
     
+    // Basic Properties
     @State private var name: String
     @State private var weight: String
     @State private var special: String
+    @State private var quantity: Int
+    @State private var quantityString: String
     @State private var isEquipped: Bool
     @State private var isStashed: Bool
     @State private var isMagical: Bool
     @State private var isCursed: Bool
     @State private var isContainer: Bool
-    @State private var quantity: Int
-    @State private var quantityString: String
-    @State private var isProcessingAction = false
-    @FocusState private var focusedField: Field?
     
-    private enum Field {
-        case quantity
-    }
+    // Focus state for text fields
+    @FocusState private var focusedField: CharacterFormView.Field?
     
     init(gear: Gear, onSave: @escaping (Gear) -> Void, onCancel: @escaping () -> Void) {
         self.gear = gear
@@ -385,177 +383,66 @@ struct GearEditRow: View {
         _name = State(initialValue: gear.name)
         _weight = State(initialValue: gear.weight)
         _special = State(initialValue: gear.special)
+        _quantity = State(initialValue: gear.quantity)
+        _quantityString = State(initialValue: "\(gear.quantity)")
         _isEquipped = State(initialValue: gear.isEquipped)
         _isStashed = State(initialValue: gear.isStashed)
         _isMagical = State(initialValue: gear.isMagical)
         _isCursed = State(initialValue: gear.isCursed)
         _isContainer = State(initialValue: gear.isContainer)
-        _quantity = State(initialValue: gear.quantity)
-        _quantityString = State(initialValue: "\(gear.quantity)")
-    }
-    
-    private func validateQuantity() {
-        if let newValue = Int(quantityString) {
-            quantity = max(1, min(99, newValue))
-        } else if quantityString.isEmpty {
-            quantity = 1
-        }
-        quantityString = "\(quantity)"
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            nameSection
-            quantitySection
-            weightSection
-            specialPropertiesSection
-            propertiesSection
-            Divider()
-            actionButtons
-        }
-        .groupCardStyle()
-        .onAppear {
-            name = gear.name
-            weight = gear.weight
-            special = gear.special
-            isEquipped = gear.isEquipped
-            isStashed = gear.isStashed
-            isMagical = gear.isMagical
-            isCursed = gear.isCursed
-            isContainer = gear.isContainer
-            quantity = gear.quantity
-        }
-        .onChange(of: isContainer) { newValue in
-            isContainer = newValue
-        }
-        .onChange(of: isStashed) { newValue in
-            isStashed = newValue
-            if newValue {
-                isEquipped = false
-            }
-        }
-        .onChange(of: isEquipped) { newValue in
-            isEquipped = newValue
-            if newValue {
-                isStashed = false
-            }
-        }
-        .onChange(of: isMagical) { newValue in
-            isMagical = newValue
-        }
-        .onChange(of: isCursed) { newValue in
-            isCursed = newValue
-        }
-    }
-    
-    private var nameSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Item Name")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Label {
-                TextField("Name", text: $name)
+            // Name Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Item Name")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Item Name", text: $name)
                     .textFieldStyle(.roundedBorder)
-            } icon: {
-                IconFrame(icon: Ph.package.bold, color: .purple)
             }
-        }
-    }
-    
-    private var quantitySection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Quantity")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Label {
-                HStack {
-                    TextField("Quantity", text: $quantityString)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                        .onChange(of: quantityString) { newValue in
-                            if let newQuantity = Int(newValue) {
-                                quantity = max(1, min(99, newQuantity))
-                            }
-                            quantityString = "\(quantity)"
-                        }
-                    Stepper("", value: $quantity, in: 1...99)
-                        .labelsHidden()
-                        .onChange(of: quantity) { newValue in
-                            quantityString = "\(newValue)"
-                        }
-                }
-            } icon: {
-                IconFrame(icon: Ph.stack.bold, color: .green)
-            }
-        }
-    }
-    
-    private var weightSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Weight")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Label {
-                weightMenu
-            } icon: {
-                IconFrame(icon: Ph.scales.bold, color: .blue)
-            }
-        }
-    }
-    
-    private var weightMenu: some View {
-        Menu {
-            ForEach(["No size", "Minor", "Regular", "Heavy"], id: \.self) { option in
-                Button(action: {
-                    weight = option
-                }) {
-                    Text(FormEquipmentSection.getWeightDisplayText(option))
-                }
-            }
-        } label: {
-            HStack {
-                Text(FormEquipmentSection.getWeightDisplayText(weight))
-                    .foregroundColor(.primary)
-                Spacer()
-                Image(systemName: "chevron.up.chevron.down")
-                    .foregroundColor(.gray)
-            }
-            .padding(8)
-            .background(platformBackgroundColor)
-            .cornerRadius(6)
-        }
-    }
-    
-    private var platformBackgroundColor: Color {
-        #if os(iOS)
-        Color(uiColor: .systemGray6)
-        #else
-        Color(nsColor: .windowBackgroundColor)
-        #endif
-    }
-    
-    private var specialPropertiesSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Special Properties")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            Label {
-                TextField("Special properties", text: $special)
-                    .textFieldStyle(.roundedBorder)
-            } icon: {
-                IconFrame(icon: Ph.star.bold, color: .orange)
-            }
-        }
-    }
-    
-    private var propertiesSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Properties")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
             
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        NumericTextField(text: $quantityString, field: .equipmentQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 60)
+                            .onChange(of: quantityString) { newValue in
+                                if let value = Int(newValue) {
+                                    quantity = max(1, min(99, value))
+                                }
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .green)
+                }
+            }
+            
+            // Weight Section
+            weightSection
+            
+            // Special Properties Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Special Properties")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Special Properties", text: $special)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            // Status Section
             GearEditTogglesSection(
                 isEquipped: $isEquipped,
                 isStashed: $isStashed,
@@ -563,61 +450,87 @@ struct GearEditRow: View {
                 isCursed: $isCursed,
                 isContainer: $isContainer
             )
-        }
-    }
-    
-    private var actionButtons: some View {
-        HStack {
-            cancelButton
+            
             Spacer()
-            saveButton
+            
+            // Save/Cancel Buttons
+            Divider()
+            
+            HStack(spacing: 20) {
+                Button {
+                    onCancel()
+                } label: {
+                    Label {
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundColor(.red)
+                }
+                
+                Spacer()
+                
+                Button {
+                    let updatedGear = Gear(
+                        id: gear.id,
+                        name: name,
+                        weight: weight,
+                        special: special,
+                        quantity: quantity,
+                        isEquipped: isEquipped,
+                        isStashed: isStashed,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        isContainer: isContainer
+                    )
+                    onSave(updatedGear)
+                } label: {
+                    Label {
+                        Text("Save")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    .foregroundColor(.blue)
+                }
+                .disabled(name.isEmpty)
+            }
+            .padding(.top, 12)
         }
-        .padding(.top, 4)
+        .groupCardStyle()
+        .padding(.bottom, 4)
     }
     
-    private var cancelButton: some View {
-        Button(action: {
-            guard !isProcessingAction else { return }
-            isProcessingAction = true
-            onCancel()
-        }) {
-            Label {
-                Text("Cancel")
-                    .fontWeight(.medium)
-            } icon: {
-                Image(systemName: "xmark.circle.fill")
+    private var weightSection: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Weight")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Menu {
+                Button("No size (100/slot)") {
+                    weight = "No size"
+                }
+                Button("Minor (2/slot)") {
+                    weight = "Minor"
+                }
+                Button("Regular (1 slot)") {
+                    weight = "Regular"
+                }
+                Button("Heavy (2 slots)") {
+                    weight = "Heavy"
+                }
+            } label: {
+                Label {
+                    Text(FormEquipmentSection.getWeightDisplayText(weight))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+                .foregroundColor(.primary)
             }
-            .foregroundColor(.red)
-        }
-    }
-    
-    private var saveButton: some View {
-        Button(action: {
-            guard !isProcessingAction else { return }
-            isProcessingAction = true
-            
-            let updatedGear = Gear(
-                id: gear.id,
-                name: name,
-                weight: weight,
-                special: special,
-                quantity: quantity,
-                isEquipped: isEquipped,
-                isStashed: isStashed,
-                isMagical: isMagical,
-                isCursed: isCursed,
-                isContainer: isContainer
-            )
-            
-            onSave(updatedGear)
-        }) {
-            Label {
-                Text("Save")
-                    .fontWeight(.medium)
-            } icon: {
-                Image(systemName: "checkmark.circle.fill")
-            }
-            .foregroundColor(.blue)
+            .menuStyle(.borderlessButton)
+            .frame(maxWidth: .infinity)
         }
     }
 }

@@ -57,6 +57,7 @@ struct CharacterFormView: View {
         case armorQuantity
         case armorDefense
         case armorBonus
+        case equipmentQuantity
     }
     
     @ObservedObject var characterStore: CharacterStore
