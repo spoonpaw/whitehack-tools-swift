@@ -318,12 +318,6 @@ private struct RetainerDetailView: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                HStack {
-                    Ph.heart.bold
-                        .frame(width: 16, height: 16)
-                    Text(retainer.attitude)
-                }
-                
                 if !retainer.keywords.isEmpty {
                     HStack {
                         Ph.tag.bold
