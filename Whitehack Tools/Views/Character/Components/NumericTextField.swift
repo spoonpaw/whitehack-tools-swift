@@ -8,6 +8,10 @@ struct NumericTextField: UIViewRepresentable {
     let maxValue: Int
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
+    private var allowsNegative: Bool {
+        minValue < 0
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -16,7 +20,7 @@ struct NumericTextField: UIViewRepresentable {
         let textField = UITextField()
         textField.delegate = context.coordinator
         textField.borderStyle = .roundedRect
-        textField.keyboardType = .numberPad
+        textField.keyboardType = allowsNegative ? .numbersAndPunctuation : .numberPad
         textField.textAlignment = .center
         textField.text = text
         return textField
@@ -46,32 +50,61 @@ struct NumericTextField: UIViewRepresentable {
             // Allow backspace
             if string.isEmpty { return true }
             
-            // Only allow numbers
-            guard CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) else {
-                return false
-            }
-            
-            // Get the new text if we allow the change
             let currentText = textField.text ?? ""
             guard let stringRange = Range(range, in: currentText) else { return false }
             let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
             
-            // Check if the new value would be valid
-            if let intValue = Int(updatedText) {
-                return intValue >= parent.minValue && intValue <= parent.maxValue
+            // Handle negative numbers
+            if parent.allowsNegative {
+                // Allow minus sign only at the start
+                if string == "-" {
+                    return range.location == 0 && !currentText.contains("-")
+                }
+                
+                // Validate the full string including minus sign
+                let validCharSet = CharacterSet(charactersIn: "-0123456789")
+                guard CharacterSet(charactersIn: updatedText).isSubset(of: validCharSet) else {
+                    return false
+                }
+                
+                // Only one minus sign at the start
+                let minusCount = updatedText.filter { $0 == "-" }.count
+                if minusCount > 1 || (minusCount == 1 && !updatedText.hasPrefix("-")) {
+                    return false
+                }
+            } else {
+                // Positive numbers only
+                guard CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) else {
+                    return false
+                }
             }
             
-            return true
+            // Validate the numeric value
+            if let intValue = Int(updatedText) {
+                return intValue >= parent.minValue && intValue <= parent.maxValue
+            } else if updatedText == "-" {
+                // Allow single minus sign during typing
+                return parent.allowsNegative
+            }
+            
+            return false
         }
         
         func textFieldDidEndEditing(_ textField: UITextField) {
-            let newValue = Int(textField.text ?? "") ?? parent.minValue
-            let clampedValue = max(parent.minValue, min(parent.maxValue, newValue))
+            var finalValue: Int
+            
+            if let enteredValue = Int(textField.text ?? "") {
+                finalValue = max(parent.minValue, min(parent.maxValue, enteredValue))
+            } else {
+                // Default to minValue for empty or invalid input
+                finalValue = parent.minValue
+            }
             
             // Update both the field and binding
-            textField.text = String(clampedValue)
+            let finalText = String(finalValue)
+            textField.text = finalText
             DispatchQueue.main.async {
-                self.parent.text = String(clampedValue)
+                self.parent.text = finalText
             }
         }
     }

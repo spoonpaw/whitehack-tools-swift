@@ -24,7 +24,7 @@ struct FormCombatStatsSection: View {
                     HStack(spacing: 8) {
                         Button(action: {
                             if let value = Int(currentHP) {
-                                currentHP = String(max(-999, value - 1))
+                                currentHP = String(max(-9999, value - 1))
                             }
                         }) {
                             Image(systemName: "minus.circle.fill")
@@ -33,22 +33,9 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        TextField("Enter current HP", text: $currentHP)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .focused($focusedField, equals: .currentHP)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.center)
+                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: currentHP) { newValue in
-                                let filtered = newValue.filter { "-0123456789".contains($0) }
-                                // Only allow one minus sign at the start
-                                if filtered.filter({ $0 == "-" }).count > 1 {
-                                    currentHP = String(filtered.prefix(1)) + filtered.dropFirst().filter { $0 != "-" }
-                                } else if filtered != newValue {
-                                    currentHP = filtered
-                                }
                                 validateAndCorrectCurrentHP()
                             }
                         
@@ -56,7 +43,7 @@ struct FormCombatStatsSection: View {
                             if let value = Int(currentHP) {
                                 let newValue = value + 1
                                 if let maxValue = Int(maxHP), newValue <= maxValue {
-                                    currentHP = String(newValue)
+                                    currentHP = String(min(9999, newValue))
                                 }
                             }
                         }) {
@@ -89,7 +76,7 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 999, focusedField: $focusedField)
+                        NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                         
                         Button(action: {
@@ -149,15 +136,8 @@ struct FormCombatStatsSection: View {
     }
     
     private func validateAndCorrectCurrentHP() {
-        if let intValue = Int(currentHP) {
-            if intValue < -999 {
-                currentHP = "-999"
-            }
-            if let maxValue = Int(maxHP), intValue > maxValue {
-                currentHP = maxHP
-            }
-        } else if currentHP.isEmpty {
-            currentHP = "0"
+        if let maxValue = Int(maxHP), let intValue = Int(currentHP), intValue > maxValue {
+            currentHP = maxHP
         }
     }
 }
