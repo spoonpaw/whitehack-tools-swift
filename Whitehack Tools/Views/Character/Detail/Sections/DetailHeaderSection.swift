@@ -28,7 +28,7 @@ struct DetailHeaderSection: View {
             }
             
             // Level, Class, XP
-            LazyVGrid(columns: columns, spacing: 16) {
+            VStack(spacing: 16) {
                 InfoCard(
                     title: "Level",
                     value: "\(character.level)",
@@ -65,7 +65,7 @@ struct DetailHeaderSection: View {
             .padding(.horizontal)
             
             // Health and XP Progress
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
                 let healthColor: Color = {
                     if character.currentHP <= -10 {
                         return .red.opacity(0.8)  // Death state
@@ -113,10 +113,20 @@ struct DetailHeaderSection: View {
                         isComplete: character.experience >= character.xpForNextLevel,
                         completionMessage: character.experience >= character.xpForNextLevel ? "Ready to level up!" : nil
                     )
+                    .padding(.top, 4)
                 }
             }
             .padding()
-            .groupCardStyle()
+            .background {
+                #if os(iOS)
+                Color(uiColor: .systemBackground)
+                #else
+                Color(nsColor: .windowBackgroundColor)
+                #endif
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
             .padding(.horizontal)
             .padding(.vertical, 8)
         }
