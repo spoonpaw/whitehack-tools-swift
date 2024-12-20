@@ -52,6 +52,8 @@ struct CharacterFormView: View {
         case saveColor
         case currentEncumbrance
         case maxEncumbrance
+        case weaponQuantity
+        case weaponBonus
     }
     
     @ObservedObject var characterStore: CharacterStore
