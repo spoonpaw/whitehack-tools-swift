@@ -4,6 +4,8 @@ import UIKit
 struct NumericTextField: UIViewRepresentable {
     @Binding var text: String
     let field: CharacterFormView.Field
+    let minValue: Int
+    let maxValue: Int
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
     func makeCoordinator() -> Coordinator {
@@ -20,9 +22,11 @@ struct NumericTextField: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextField, context: Context) {
+        // Only update if the external value changed
         if uiView.text != text {
             uiView.text = text
         }
+        
         if focusedField == field {
             uiView.becomeFirstResponder()
         } else {
@@ -39,42 +43,35 @@ struct NumericTextField: UIViewRepresentable {
         
         func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
             // Allow backspace
-            if string.isEmpty {
-                let currentText = textField.text ?? ""
-                guard let stringRange = Range(range, in: currentText) else { return false }
-                let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-                parent.text = updatedText
-                return true
-            }
+            if string.isEmpty { return true }
             
-            // Check if input is numeric
-            let allowedCharacters = CharacterSet.decimalDigits
-            let characterSet = CharacterSet(charactersIn: string)
-            guard allowedCharacters.isSuperset(of: characterSet) else {
+            // Only allow numbers
+            guard CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: string)) else {
                 return false
             }
             
-            // Build the new string
+            // Get the new text if we allow the change
             let currentText = textField.text ?? ""
             guard let stringRange = Range(range, in: currentText) else { return false }
             let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
             
-            // Only allow 2 digits
-            guard updatedText.count <= 2 else {
-                return false
+            // Check if the new value would be valid
+            if let intValue = Int(updatedText) {
+                return intValue >= parent.minValue && intValue <= parent.maxValue
             }
             
-            parent.text = updatedText
             return true
         }
         
         func textFieldDidEndEditing(_ textField: UITextField) {
-            // Convert empty to "0"
-            if parent.text.isEmpty {
-                parent.text = "0"
-            }
+            let newValue = Int(textField.text ?? "") ?? parent.minValue
+            let clampedValue = max(parent.minValue, min(parent.maxValue, newValue))
             
-            parent.focusedField = nil
+            // Update both the field and binding
+            textField.text = String(clampedValue)
+            DispatchQueue.main.async {
+                self.parent.text = String(clampedValue)
+            }
         }
     }
 }

@@ -67,43 +67,9 @@ struct FormBasicInfoSection: View {
                         .foregroundColor(.secondary)
                     HStack {
                         Spacer()
-                        TextField("", text: $level)
-                            .focused($focusedField, equals: .level)
-                            .textFieldStyle(.roundedBorder)
+                        NumericTextField(text: $level, field: .level, minValue: 1, maxValue: 10, focusedField: $focusedField)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
-                            .onChange(of: level) { newValue in
-                                // First filter out non-numeric characters
-                                var filtered = newValue.filter { $0.isNumber }
-                                
-                                // Ensure it's not empty
-                                if filtered.isEmpty {
-                                    level = "1"
-                                    return
-                                }
-                                
-                                // Clamp to valid range
-                                if let intValue = Int(filtered) {
-                                    if intValue < 1 {
-                                        filtered = "1"
-                                    } else if intValue > 10 {
-                                        filtered = "10"
-                                    }
-                                }
-                                
-                                // Update if different
-                                if filtered != newValue {
-                                    level = filtered
-                                }
-                            }
-                            .onSubmit {
-                                // Ensure valid value on submit
-                                if let intValue = Int(level) {
-                                    level = String(min(10, max(1, intValue)))
-                                } else {
-                                    level = "1"
-                                }
-                            }
                         Spacer()
                     }
                     .frame(maxWidth: 300)
@@ -152,4 +118,8 @@ struct FormBasicInfoSection: View {
         }
         .frame(maxWidth: .infinity)
     }
+}
+
+private extension FormBasicInfoSection {
+    // Removed the validateLevel function as it's no longer needed
 }

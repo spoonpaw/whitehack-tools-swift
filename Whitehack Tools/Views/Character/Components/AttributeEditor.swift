@@ -14,7 +14,7 @@ struct AttributeEditor: View {
                 Text(label)
                     .font(.title3)
                     .fontWeight(.medium)
-                NumericTextField(text: $value, field: field, focusedField: $focusedField)
+                NumericTextField(text: $value, field: field, minValue: 1, maxValue: 20, focusedField: $focusedField)
                     .frame(width: 60)
                     .focused($focusedField, equals: field)
                     .onChange(of: focusedField) { newValue in
@@ -64,26 +64,26 @@ struct AttributeEditor: View {
     
     private func validateAndFixEmptyInput() {
         if value.isEmpty || Int(value) == nil {
-            value = String(range.lowerBound)
+            value = String(1)
         } else if let current = Int(value) {
-            let clamped = max(range.lowerBound, min(range.upperBound, current))
+            let clamped = max(1, min(20, current))
             value = String(clamped)
         }
     }
     
     private func decrementValue() {
-        if let current = Int(value), current > range.lowerBound {
+        if let current = Int(value), current > 1 {
             value = String(current - 1)
         } else {
-            value = String(range.lowerBound)
+            value = String(1)
         }
     }
     
     private func incrementValue() {
-        if let current = Int(value), current < range.upperBound {
+        if let current = Int(value), current < 20 {
             value = String(current + 1)
         } else {
-            value = String(range.upperBound)
+            value = String(20)
         }
     }
 }

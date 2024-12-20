@@ -364,6 +364,7 @@ struct FormAttributesSection: View {
                     }
                 } else {
                     VStack(spacing: 16) {
+                        // Checking the AttributeEditor implementation
                         AttributeEditor(
                             label: "Strength",
                             value: $strength,
