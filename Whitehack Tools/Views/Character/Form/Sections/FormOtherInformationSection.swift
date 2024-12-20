@@ -19,11 +19,7 @@ struct FormOtherInformationSection: View {
                         Text("Experience (XP)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        TextField("Enter experience", text: $experience)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .focused($focusedField, equals: .experience)
+                        NumericTextField(text: $experience, field: .experience, minValue: 0, maxValue: 999999, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                     }
                     
@@ -31,11 +27,7 @@ struct FormOtherInformationSection: View {
                         Text("Corruption")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        TextField("Enter corruption", text: $corruption)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .focused($focusedField, equals: .corruption)
+                        NumericTextField(text: $corruption, field: .corruption, minValue: 0, maxValue: 999999, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                     }
                 }

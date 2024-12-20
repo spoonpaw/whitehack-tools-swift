@@ -27,15 +27,16 @@ struct NumericTextField: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextField, context: Context) {
-        // Only update if the external value changed
-        if uiView.text != text {
+        // Only update text if it's different and we're not actively editing
+        if uiView.text != text && !uiView.isFirstResponder {
             uiView.text = text
         }
         
-        if focusedField == field {
-            uiView.becomeFirstResponder()
-        } else {
-            uiView.resignFirstResponder()
+        // Only handle focus changes when explicitly requested
+        if focusedField == field && !uiView.isFirstResponder {
+            DispatchQueue.main.async {
+                uiView.becomeFirstResponder()
+            }
         }
     }
     
