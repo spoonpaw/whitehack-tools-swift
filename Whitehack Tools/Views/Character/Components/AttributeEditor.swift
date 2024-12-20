@@ -4,6 +4,7 @@ struct AttributeEditor: View {
     let label: String
     @Binding var value: String
     let range: ClosedRange<Int>
+    let maxDigits: Int
     @FocusState private var focusedField: CharacterFormView.Field?
     let field: CharacterFormView.Field
     
@@ -13,23 +14,12 @@ struct AttributeEditor: View {
                 Text(label)
                     .font(.title3)
                     .fontWeight(.medium)
-                TextField("", text: $value)
-                    .textFieldStyle(.roundedBorder)
+                NumericTextField(text: $value, field: field, focusedField: $focusedField)
                     .frame(width: 60)
-                    #if os(iOS)
-                    .keyboardType(.numberPad)
-                    #endif
                     .focused($focusedField, equals: field)
                     .onChange(of: focusedField) { newValue in
                         if newValue != field {  // Field lost focus
                             validateAndFixEmptyInput()
-                        }
-                    }
-                    .onChange(of: value) { newValue in
-                        // Only filter non-numeric while typing
-                        let filtered = newValue.filter { $0.isNumber }
-                        if filtered != newValue {
-                            value = filtered
                         }
                     }
                     .font(.title2)

@@ -368,6 +368,7 @@ struct FormAttributesSection: View {
                             label: "Strength",
                             value: $strength,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .strength
                         )
                         .frame(maxWidth: .infinity)
@@ -376,6 +377,7 @@ struct FormAttributesSection: View {
                             label: "Agility",
                             value: $agility,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .agility
                         )
                         .frame(maxWidth: .infinity)
@@ -384,6 +386,7 @@ struct FormAttributesSection: View {
                             label: "Toughness",
                             value: $toughness,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .toughness
                         )
                         .frame(maxWidth: .infinity)
@@ -392,6 +395,7 @@ struct FormAttributesSection: View {
                             label: "Intelligence",
                             value: $intelligence,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .intelligence
                         )
                         .frame(maxWidth: .infinity)
@@ -400,6 +404,7 @@ struct FormAttributesSection: View {
                             label: "Willpower",
                             value: $willpower,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .willpower
                         )
                         .frame(maxWidth: .infinity)
@@ -408,6 +413,7 @@ struct FormAttributesSection: View {
                             label: "Charisma",
                             value: $charisma,
                             range: 3...18,
+                            maxDigits: 2,
                             field: .charisma
                         )
                         .frame(maxWidth: .infinity)

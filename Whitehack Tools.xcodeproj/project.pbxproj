@@ -69,6 +69,7 @@
 		A9F072B92CE75AE4005033F2 /* CharacterDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */; };
 		A9F072BB2CE75AFC005033F2 /* CharacterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */; };
 		A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */; };
+		BEA6C48E2D15521A000768BE /* NumericTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA6C48D2D15521A000768BE /* NumericTextField.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -134,6 +135,7 @@
 		A9F072B82CE75AE4005033F2 /* CharacterDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterDetailView.swift; sourceTree = "<group>"; };
 		A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterFormView.swift; sourceTree = "<group>"; };
 		A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeGroupPair.swift; sourceTree = "<group>"; };
+		BEA6C48D2D15521A000768BE /* NumericTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumericTextField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -266,6 +268,7 @@
 		A99CAAB92CE85A95004163DA /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				BEA6C48D2D15521A000768BE /* NumericTextField.swift */,
 				A98488E52CF157E500A7CD7B /* ProgressBar.swift */,
 				A99CAAB72CE85A7B004163DA /* AttributeEditor.swift */,
 			);
@@ -457,6 +460,7 @@
 				A98489132CF1671F00A7CD7B /* FormCharacterGroupsSection.swift in Sources */,
 				A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */,
 				A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */,
+				BEA6C48E2D15521A000768BE /* NumericTextField.swift in Sources */,
 				A98489122CF1671F00A7CD7B /* FormLanguagesSection.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
 				A99E172F2CF19A8600B69E26 /* DetailStrongCombatSection.swift in Sources */,
