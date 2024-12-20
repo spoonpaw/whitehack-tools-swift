@@ -240,665 +240,6 @@ struct FormArmorSection: View {
     }
 }
 
-private extension View {
-    func groupCardStyle() -> some View {
-        self
-            .padding()
-            .background(.background)
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
-    }
-}
-
-struct ArmorDataRow: View {
-    let armorData: ArmorItem
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Label {
-                    Text(armorData.name)
-                        .font(.headline)
-                } icon: {
-                    IconFrame(icon: armorData.isShield ? Ph.shieldCheck.bold : Ph.shield.bold, color: .blue)
-                }
-                
-                Spacer()
-                
-                Text(armorData.isShield ? "+\(armorData.df)" : "\(armorData.df)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            Label {
-                Text("\(armorData.weight) slot\(armorData.weight == 1 ? "" : "s")")
-                    .font(.subheadline)
-            } icon: {
-                IconFrame(icon: Ph.scales.bold, color: .blue)
-            }
-            .foregroundColor(.secondary)
-        }
-        .padding()
-        #if os(iOS)
-        .background(Color(uiColor: .secondarySystemBackground))
-        #else
-        .background(Color(nsColor: .controlBackgroundColor))
-        #endif
-        .cornerRadius(10)
-    }
-}
-
-struct CustomArmorForm: View {
-    @Binding var armor: [Armor]
-    @Binding var isPresented: Bool
-    
-    @State private var name = ""
-    @State private var df = 0
-    @State private var weight = 1
-    @State private var special = ""
-    @State private var quantity = 1
-    @State private var isEquipped = false
-    @State private var isStashed = false
-    @State private var isMagical = false
-    @State private var isCursed = false
-    @State private var isShield = false
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Name Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Name")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Name", text: $name)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
-            
-            // Defense Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Defense")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Defense", value: $df, format: .number)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                    Stepper("", value: $df, in: 1...Int.max)
-                        .labelsHidden()
-                }
-            }
-            
-            // Weight Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Weight")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Weight", value: $weight, format: .number)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                    Stepper("", value: $weight, in: 0...Int.max)
-                        .labelsHidden()
-                }
-            }
-            
-            // Special Properties
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Special Properties")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("Special Properties", text: $special)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-            }
-            
-            // Toggles Section
-            VStack(alignment: .leading, spacing: 8) {
-                Toggle(isOn: $isEquipped) {
-                    Label {
-                        Text(isEquipped ? "Equipped" : "Unequipped")
-                    } icon: {
-                        IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                    }
-                }
-                
-                Toggle(isOn: $isStashed) {
-                    Label {
-                        Text(isStashed ? "Stashed" : "Not Stashed")
-                    } icon: {
-                        IconFrame(icon: Ph.vault.bold, color: isStashed ? .orange : .gray)
-                    }
-                }
-                
-                Toggle(isOn: $isMagical) {
-                    Label {
-                        Text("Magical")
-                    } icon: {
-                        IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
-                    }
-                }
-                
-                Toggle(isOn: $isCursed) {
-                    Label {
-                        Text("Cursed")
-                    } icon: {
-                        IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                    }
-                }
-                
-                Toggle(isOn: $isShield) {
-                    Label {
-                        Text("Shield")
-                    } icon: {
-                        IconFrame(icon: Ph.shield.bold, color: isShield ? .blue : .gray)
-                    }
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Quantity", value: $quantity, format: .number)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                    Stepper("", value: $quantity, in: 1...Int.max)
-                        .labelsHidden()
-                }
-            }
-            
-            // Bonus Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Bonus/Penalty")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                HStack {
-                    TextField("Bonus", value: $df, format: .number)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                    Stepper("", value: $df)
-                        .labelsHidden()
-                }
-            }
-            
-            Spacer()
-            
-            // Save/Cancel Buttons
-            HStack(spacing: 20) {
-                Button {
-                    isPresented = false
-                } label: {
-                    Label {
-                        Text("Cancel")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundColor(.red)
-                }
-                .buttonStyle(.borderless)
-                
-                Spacer()
-                
-                Button {
-                    let newArmor = Armor(
-                        id: UUID(),
-                        name: name,
-                        df: df,
-                        weight: weight,
-                        special: special,
-                        quantity: quantity,
-                        isEquipped: isEquipped,
-                        isStashed: isStashed,
-                        isMagical: isMagical,
-                        isCursed: isCursed,
-                        bonus: df,
-                        isShield: isShield
-                    )
-                    armor.append(newArmor)
-                    isPresented = false
-                } label: {
-                    Label {
-                        Text("Save")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                    }
-                    .foregroundColor(.blue)
-                }
-                .buttonStyle(.borderless)
-                .disabled(name.isEmpty)
-            }
-            .padding(.horizontal)
-            .padding(.top, 16)
-        }
-        .padding()
-        .groupCardStyle()
-    }
-}
-
-struct ArmorEditRow: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    let onSave: (Armor) -> Void
-    let onCancel: () -> Void
-    
-    let armor: Armor
-    
-    // Basic Properties
-    @State private var name: String
-    @State private var df: Int
-    @State private var dfString: String
-    @State private var weight: Int
-    @State private var weightString: String
-    @State private var special: String
-    @State private var isEquipped: Bool
-    @State private var isStashed: Bool
-    @State private var isMagical: Bool
-    @State private var isCursed: Bool
-    @State private var isShield: Bool
-    @State private var bonus: Int
-    @State private var isBonus: Bool
-    @State private var bonusString: String
-    @State private var quantity: Int
-    @State private var quantityString: String
-    
-    // Button state tracking
-    @State private var isProcessingAction = false
-    
-    // Initialize with armor
-    init(armor: Armor, onSave: @escaping (Armor) -> Void, onCancel: @escaping () -> Void) {
-        self.armor = armor
-        self.onSave = onSave
-        self.onCancel = onCancel
-        
-        // Initialize state properties
-        _name = State(initialValue: armor.name)
-        _df = State(initialValue: armor.df)
-        _dfString = State(initialValue: "\(armor.df)")
-        _weight = State(initialValue: armor.weight)
-        _weightString = State(initialValue: "\(armor.weight)")
-        _special = State(initialValue: armor.special)
-        _isEquipped = State(initialValue: armor.isEquipped)
-        _isStashed = State(initialValue: armor.isStashed)
-        _isMagical = State(initialValue: armor.isMagical)
-        _isCursed = State(initialValue: armor.isCursed)
-        _isShield = State(initialValue: armor.isShield)
-        _bonus = State(initialValue: armor.bonus)
-        _isBonus = State(initialValue: armor.bonus >= 0)
-        _bonusString = State(initialValue: "\(abs(armor.bonus))")
-        _quantity = State(initialValue: armor.quantity)
-        _quantityString = State(initialValue: "\(armor.quantity)")
-    }
-    
-    private func validateIntegerInput(_ input: String, current: Int, range: ClosedRange<Int>) -> Int {
-        if let newValue = Int(input) {
-            return max(range.lowerBound, min(range.upperBound, newValue))
-        }
-        return current
-    }
-    
-    private func validateBonusInput(_ input: String) {
-        if let newValue = Int(input) {
-            // Only allow positive numbers
-            let absValue = max(0, abs(newValue))
-            bonus = isBonus ? absValue : -absValue
-            bonusString = "\(abs(bonus))"
-        } else if !input.isEmpty {
-            // If not a valid number and not empty, revert to previous value
-            bonusString = "\(abs(bonus))"
-        }
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // Name Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Armor Name")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    TextField("Armor Name", text: $name)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                } icon: {
-                    IconFrame(icon: armor.isShield ? Ph.shieldCheck.bold : Ph.shield.bold,
-                            color: armor.isShield ? .blue : .purple)
-                }
-            }
-            
-            // Quantity Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Quantity")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Quantity", text: $quantityString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .onChange(of: quantityString) { newValue in
-                                quantity = validateIntegerInput(newValue, current: quantity, range: 1...99)
-                                quantityString = "\(quantity)"
-                            }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
-                                quantityString = "\(newValue)"
-                            }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.stack.bold, color: .green)
-                }
-            }
-            
-            // Weight Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Weight")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Weight", text: $weightString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .onChange(of: weightString) { newValue in
-                                weight = validateIntegerInput(newValue, current: weight, range: 0...10)
-                                weightString = "\(weight)"
-                            }
-                        Stepper("", value: $weight, in: 0...10)
-                            .labelsHidden()
-                            .onChange(of: weight) { newValue in
-                                weightString = "\(newValue)"
-                            }
-                        Text("slot\(weight == 1 ? "" : "s")")
-                            .foregroundColor(.secondary)
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
-                }
-            }
-            
-            // Defense Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Defense")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    HStack {
-                        TextField("Defense", text: $dfString)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .onChange(of: dfString) { newValue in
-                                df = validateIntegerInput(newValue, current: df, range: 0...10)
-                                dfString = "\(df)"
-                            }
-                        Stepper("", value: $df, in: 0...10)
-                            .labelsHidden()
-                            .onChange(of: df) { newValue in
-                                dfString = "\(newValue)"
-                            }
-                    }
-                } icon: {
-                    IconFrame(icon: Ph.shieldChevron.bold, color: .blue)
-                }
-            }
-            
-            // Special Section
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Special Properties")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Label {
-                    TextField("Special Properties", text: $special)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                } icon: {
-                    IconFrame(icon: Ph.star.bold, color: .yellow)
-                }
-            }
-            
-            // Status Section
-            Section {
-                // Equipped Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
-                    #if os(macOS)
-                    Toggle("", isOn: Binding(
-                        get: { isEquipped },
-                        set: { newValue in
-                            isEquipped = newValue
-                            if newValue {
-                                isStashed = false
-                            }
-                        }
-                    ))
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    Text(isEquipped ? "Equipped" : "Unequipped")
-                    #else
-                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: Binding(
-                        get: { isEquipped },
-                        set: { newValue in
-                            isEquipped = newValue
-                            if newValue {
-                                isStashed = false
-                            }
-                        }
-                    ))
-                    #endif
-                }
-                
-                // Stashed Toggle with Icon
-                HStack {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: isStashed ? .orange : .gray)
-                    #if os(macOS)
-                    Toggle("", isOn: Binding(
-                        get: { isStashed },
-                        set: { newValue in
-                            isStashed = newValue
-                            if newValue {
-                                isEquipped = false
-                            }
-                        }
-                    ))
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    Text(isStashed ? "Stashed" : "On Person")
-                    #else
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: Binding(
-                        get: { isStashed },
-                        set: { newValue in
-                            isStashed = newValue
-                            if newValue {
-                                isEquipped = false
-                            }
-                        }
-                    ))
-                    #endif
-                }
-            }
-            
-            // Magical Properties Section
-            Section {
-                // Shield Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.shieldCheck.bold, color: isShield ? .blue : .gray)
-                    #if os(macOS)
-                    Toggle("", isOn: $isShield)
-                        .toggleStyle(.switch)
-                        .labelsHidden()
-                    Text(isShield ? "Shield" : "Not Shield")
-                    #else
-                    Toggle("Shield", isOn: $isShield)
-                    #endif
-                }
-                
-                // Magical Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
-                    #if os(macOS)
-                    Toggle("", isOn: $isMagical)
-                        .toggleStyle(.switch)
-                        .labelsHidden()
-                    Text(isMagical ? "Magical" : "Not Magical")
-                    #else
-                    Toggle(isMagical ? "Magical" : "Not Magical", isOn: $isMagical)
-                    #endif
-                }
-                
-                // Cursed Toggle with Icon
-                HStack {
-                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
-                    #if os(macOS)
-                    Toggle("", isOn: $isCursed)
-                        .toggleStyle(.switch)
-                        .labelsHidden()
-                    Text(isCursed ? "Cursed" : "Not Cursed")
-                    #else
-                    Toggle(isCursed ? "Cursed" : "Not Cursed", isOn: $isCursed)
-                    #endif
-                }
-            }
-            
-            // Bonus/Penalty Section
-            Section {
-                // Toggle between Penalty/Bonus (left = penalty/red, right = bonus/green)
-                HStack {
-                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
-                            color: isBonus ? .green : .red)
-                    #if os(macOS)
-                    Toggle("", isOn: $isBonus)
-                        .toggleStyle(.switch)
-                        .labelsHidden()
-                    Text(isBonus ? "Bonus" : "Penalty")
-                        .foregroundColor(isBonus ? .green : .red)
-                    #else
-                    Toggle(isOn: $isBonus) {
-                        Text(isBonus ? "Bonus" : "Penalty")
-                            .foregroundColor(isBonus ? .green : .red)
-                    }
-                    #endif
-                }
-                .onChange(of: isBonus) { newValue in
-                    bonus = newValue ? abs(bonus) : -abs(bonus)
-                }
-                
-                // Value Control
-                HStack {
-                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
-                            color: isBonus ? .green : .red)
-                    TextField("", text: $bonusString)
-                        .textFieldStyle(.roundedBorder)
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                        .onChange(of: bonusString) { newValue in
-                            validateBonusInput(newValue)
-                        }
-                    Stepper("", value: $bonus, in: -10...10)
-                        .labelsHidden()
-                        .onChange(of: bonus) { newValue in
-                            bonusString = "\(abs(newValue))"
-                        }
-                }
-            }
-            
-            Divider()
-            
-            // Action Buttons
-            HStack(spacing: 20) {
-                Button {
-                    guard !isProcessingAction else { return }
-                    isProcessingAction = true
-                    print("🔴 Cancel action starting")
-                    onCancel()
-                    isProcessingAction = false
-                } label: {
-                    Label {
-                        Text("Cancel")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "xmark.circle.fill")
-                    }
-                    .foregroundColor(.red)
-                }
-                
-                Spacer()
-                
-                Button {
-                    guard !isProcessingAction else { return }
-                    isProcessingAction = true
-                    print("🟢 Save action starting")
-                    
-                    // Create new armor with updated values
-                    let updatedArmor = Armor(
-                        id: armor.id,
-                        name: name,
-                        df: df,
-                        weight: weight,
-                        special: special,
-                        quantity: quantity,
-                        isEquipped: isEquipped,
-                        isStashed: isStashed,
-                        isMagical: isMagical,
-                        isCursed: isCursed,
-                        bonus: isBonus ? abs(bonus) : -abs(bonus),
-                        isShield: isShield
-                    )
-                    
-                    onSave(updatedArmor)
-                    isProcessingAction = false
-                } label: {
-                    Label {
-                        Text("Save")
-                            .fontWeight(.medium)
-                    } icon: {
-                        Image(systemName: "checkmark.circle.fill")
-                    }
-                    .foregroundColor(.blue)
-                }
-            }
-            .padding(.top, 4)
-        }
-        .groupCardStyle()
-        .padding(.bottom, 4)
-        .onAppear {
-            // Reset state to match the input armor
-            name = armor.name
-            df = armor.df
-            dfString = "\(armor.df)"
-            weight = armor.weight
-            weightString = "\(armor.weight)"
-            special = armor.special
-            isEquipped = armor.isEquipped
-            isStashed = armor.isStashed
-            isMagical = armor.isMagical
-            isCursed = armor.isCursed
-            isShield = armor.isShield
-            bonus = armor.bonus
-            isBonus = armor.bonus >= 0
-            bonusString = "\(abs(armor.bonus))"
-            quantity = armor.quantity
-            quantityString = "\(armor.quantity)"
-        }
-    }
-}
-
 struct ArmorRow: View {
     let armor: Armor
     let onEdit: () -> Void
@@ -975,28 +316,40 @@ struct ArmorRow: View {
                     Text("Status")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    HStack(spacing: 16) {
-                        Label {
-                            Text(armor.isEquipped ? "Equipped" : "Unequipped")
-                        } icon: {
-                            IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
+                    HStack(spacing: 12) {
+                        if armor.isEquipped {
+                            Label {
+                                Text("Equipped")
+                            } icon: {
+                                IconFrame(icon: Ph.bagSimple.bold, color: .green)
+                            }
                         }
-                        Label {
-                            Text(armor.isStashed ? "Stashed" : "On Person")
-                        } icon: {
-                            IconFrame(icon: armor.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                    color: armor.isStashed ? .orange : .gray)
+                        
+                        if armor.isStashed {
+                            Label {
+                                Text("Stashed")
+                            } icon: {
+                                IconFrame(icon: Ph.warehouse.bold, color: .orange)
+                            }
+                        }
+                        
+                        if armor.isShield {
+                            Label {
+                                Text("Shield")
+                            } icon: {
+                                IconFrame(icon: Ph.shield.bold, color: .blue)
+                            }
                         }
                     }
                 }
                 
-                // Magical Properties Section
-                if armor.isMagical || armor.isCursed {
+                // Magic Properties Section
+                if armor.isMagical || armor.isCursed || armor.bonus != 0 {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Magical Properties")
+                        Text("Magic Properties")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        HStack(spacing: 16) {
+                        HStack(spacing: 12) {
                             if armor.isMagical {
                                 Label {
                                     Text("Magical")
@@ -1004,6 +357,7 @@ struct ArmorRow: View {
                                     IconFrame(icon: Ph.sparkle.bold, color: .purple)
                                 }
                             }
+                            
                             if armor.isCursed {
                                 Label {
                                     Text("Cursed")
@@ -1011,21 +365,15 @@ struct ArmorRow: View {
                                     IconFrame(icon: Ph.skull.bold, color: .red)
                                 }
                             }
-                        }
-                    }
-                }
-                
-                // Bonus Section
-                if armor.bonus != 0 {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(armor.bonus > 0 ? "Bonus" : "Penalty")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Label {
-                            Text("\(abs(armor.bonus))")
-                        } icon: {
-                            IconFrame(icon: armor.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
-                                    color: armor.bonus > 0 ? .green : .red)
+                            
+                            if armor.bonus != 0 {
+                                Label {
+                                    Text("\(armor.bonus > 0 ? "+" : "")\(armor.bonus)")
+                                } icon: {
+                                    IconFrame(icon: armor.bonus > 0 ? Ph.plus.bold : Ph.minus.bold,
+                                            color: armor.bonus > 0 ? .green : .red)
+                                }
+                            }
                         }
                     }
                 }
@@ -1062,5 +410,299 @@ struct ArmorRow: View {
         }
         .groupCardStyle()
         .padding(.bottom, 4)
+    }
+}
+
+struct ArmorEditRow: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    let onSave: (Armor) -> Void
+    let onCancel: () -> Void
+    
+    let armor: Armor
+    
+    // Basic Properties
+    @State private var name: String
+    @State private var df: Int
+    @State private var weight: Int
+    @State private var special: String
+    @State private var isEquipped: Bool
+    @State private var isStashed: Bool
+    @State private var isMagical: Bool
+    @State private var isCursed: Bool
+    @State private var bonus: Int
+    @State private var quantity: Int
+    @State private var isShield: Bool
+    @State private var isBonus: Bool
+    
+    // String representations for numeric fields
+    @State private var quantityString: String
+    @State private var dfString: String
+    @State private var weightString: String
+    @State private var bonusString: String
+    
+    // Focus state for text fields
+    @FocusState private var focusedField: CharacterFormView.Field?
+    
+    // Button state tracking
+    @State private var isProcessingAction = false
+    
+    init(armor: Armor, onSave: @escaping (Armor) -> Void, onCancel: @escaping () -> Void) {
+        self.armor = armor
+        self.onSave = onSave
+        self.onCancel = onCancel
+        
+        _name = State(initialValue: armor.name)
+        _df = State(initialValue: armor.df)
+        _weight = State(initialValue: armor.weight)
+        _special = State(initialValue: armor.special)
+        _isEquipped = State(initialValue: armor.isEquipped)
+        _isStashed = State(initialValue: armor.isStashed)
+        _isMagical = State(initialValue: armor.isMagical)
+        _isCursed = State(initialValue: armor.isCursed)
+        _bonus = State(initialValue: armor.bonus)
+        _quantity = State(initialValue: armor.quantity)
+        _isShield = State(initialValue: armor.isShield)
+        _isBonus = State(initialValue: armor.bonus >= 0)
+        
+        _quantityString = State(initialValue: "\(armor.quantity)")
+        _dfString = State(initialValue: "\(armor.df)")
+        _weightString = State(initialValue: "\(armor.weight)")
+        _bonusString = State(initialValue: "\(abs(armor.bonus))")
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Name Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Armor Name")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Armor Name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            // Quantity Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Quantity")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        NumericTextField(text: $quantityString, field: .armorQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 60)
+                            .onChange(of: quantityString) { newValue in
+                                if let value = Int(newValue) {
+                                    quantity = max(1, min(99, value))
+                                }
+                                quantityString = "\(quantity)"
+                            }
+                        Stepper("", value: $quantity, in: 1...99)
+                            .labelsHidden()
+                            .onChange(of: quantity) { newValue in
+                                quantityString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.stack.bold, color: .green)
+                }
+            }
+            
+            // Defense Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Defense")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        NumericTextField(text: $dfString, field: .armorDefense, minValue: 0, maxValue: 99, focusedField: $focusedField)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 60)
+                            .onChange(of: dfString) { newValue in
+                                if let value = Int(newValue) {
+                                    df = max(0, min(99, value))
+                                }
+                                dfString = "\(df)"
+                            }
+                        Stepper("", value: $df, in: 0...99)
+                            .labelsHidden()
+                            .onChange(of: df) { newValue in
+                                dfString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.shield.bold, color: .blue)
+                }
+            }
+            
+            // Weight Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Weight")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Label {
+                    HStack {
+                        NumericTextField(text: $weightString, field: .armorDefense, minValue: 0, maxValue: 99, focusedField: $focusedField)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 60)
+                            .onChange(of: weightString) { newValue in
+                                if let value = Int(newValue) {
+                                    weight = max(0, min(99, value))
+                                }
+                                weightString = "\(weight)"
+                            }
+                        Stepper("", value: $weight, in: 0...99)
+                            .labelsHidden()
+                            .onChange(of: weight) { newValue in
+                                weightString = "\(newValue)"
+                            }
+                    }
+                } icon: {
+                    IconFrame(icon: Ph.scales.bold, color: .blue)
+                }
+            }
+            
+            // Special Properties Section
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Special Properties")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("Special Properties", text: $special)
+                    .textFieldStyle(.roundedBorder)
+            }
+            
+            // Status Section
+            Section {
+                // Equipped Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
+                    Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
+                }
+                
+                // Stashed Toggle with Icon
+                HStack {
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: isStashed ? .orange : .gray)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                }
+                
+                // Shield Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.shield.bold, color: isShield ? .blue : .gray)
+                    Toggle(isShield ? "Shield" : "Armor", isOn: $isShield)
+                }
+            }
+            
+            // Magic Properties Section
+            Section {
+                // Magical Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.sparkle.bold, color: isMagical ? .purple : .gray)
+                    Toggle("Magical", isOn: $isMagical)
+                }
+                
+                // Cursed Toggle with Icon
+                HStack {
+                    IconFrame(icon: Ph.skull.bold, color: isCursed ? .red : .gray)
+                    Toggle("Cursed", isOn: $isCursed)
+                }
+                
+                // Bonus/Penalty Toggle and Value
+                HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
+                    Toggle(isBonus ? "Bonus" : "Penalty", isOn: $isBonus)
+                        .onChange(of: isBonus) { newValue in
+                            bonus = newValue ? abs(bonus) : -abs(bonus)
+                        }
+                }
+                
+                // Value Control
+                HStack {
+                    NumericTextField(text: $bonusString, field: .armorBonus, minValue: 0, maxValue: 99, focusedField: $focusedField)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 60)
+                        .onChange(of: bonusString) { newValue in
+                            if let value = Int(newValue) {
+                                let absValue = abs(value)
+                                bonus = isBonus ? absValue : -absValue
+                            }
+                            bonusString = "\(abs(bonus))"
+                        }
+                    Spacer()
+                    Stepper("", value: Binding(
+                        get: { abs(bonus) },
+                        set: { newValue in
+                            let value = max(0, min(99, newValue))
+                            bonus = isBonus ? value : -value
+                            bonusString = "\(value)"
+                        }
+                    ), in: 0...99)
+                    .labelsHidden()
+                }
+            }
+            
+            Spacer()
+            
+            // Save/Cancel Buttons
+            Divider()
+            
+            HStack(spacing: 20) {
+                Button {
+                    onCancel()
+                } label: {
+                    Label {
+                        Text("Cancel")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                    }
+                    .foregroundColor(.red)
+                }
+                
+                Spacer()
+                
+                Button {
+                    let updatedArmor = Armor(
+                        id: armor.id,
+                        name: name,
+                        df: df,
+                        weight: weight,
+                        special: special,
+                        quantity: quantity,
+                        isEquipped: isEquipped,
+                        isStashed: isStashed,
+                        isMagical: isMagical,
+                        isCursed: isCursed,
+                        bonus: bonus,
+                        isShield: isShield
+                    )
+                    onSave(updatedArmor)
+                } label: {
+                    Label {
+                        Text("Save")
+                            .fontWeight(.medium)
+                    } icon: {
+                        Image(systemName: "checkmark.circle.fill")
+                    }
+                    .foregroundColor(.blue)
+                }
+                .disabled(name.isEmpty)
+            }
+            .padding(.top, 12)
+        }
+        .groupCardStyle()
+        .padding(.bottom, 4)
+    }
+}
+
+private extension View {
+    func groupCardStyle() -> some View {
+        self
+            .padding()
+            .background(.background)
+            .cornerRadius(12)
+            .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 1)  // Subtle shadow for depth
     }
 }
