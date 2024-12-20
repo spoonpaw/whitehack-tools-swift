@@ -19,7 +19,7 @@ struct FormOtherInformationSection: View {
                         Text("Experience (XP)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        NumericTextField(text: $experience, field: .experience, minValue: 0, maxValue: 999999, focusedField: $focusedField)
+                        NumericTextField(text: $experience, field: .experience, minValue: 0, maxValue: 999999999, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                     }
                     
@@ -27,7 +27,7 @@ struct FormOtherInformationSection: View {
                         Text("Corruption")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        NumericTextField(text: $corruption, field: .corruption, minValue: 0, maxValue: 999999, focusedField: $focusedField)
+                        NumericTextField(text: $corruption, field: .corruption, minValue: 0, maxValue: 999999999, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                     }
                 }

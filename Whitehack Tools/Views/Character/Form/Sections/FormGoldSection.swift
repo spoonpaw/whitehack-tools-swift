@@ -25,11 +25,11 @@ struct FormGoldSection: View {
                     .foregroundColor(.secondary)
                 
                 Label {
-                    NumericTextField(text: $coinsOnHandString, field: .goldOnHand, minValue: 0, maxValue: 999999, focusedField: $focusedField)
+                    NumericTextField(text: $coinsOnHandString, field: .goldOnHand, minValue: 0, maxValue: 999999999, focusedField: $focusedField)
                         .textFieldStyle(.roundedBorder)
                         .onChange(of: coinsOnHandString) { newValue in
                             if let value = Int(newValue) {
-                                coinsOnHand = max(0, min(999999, value))
+                                coinsOnHand = max(0, min(999999999, value))
                             }
                             coinsOnHandString = "\(coinsOnHand)"
                         }
@@ -45,11 +45,11 @@ struct FormGoldSection: View {
                     .foregroundColor(.secondary)
                 
                 Label {
-                    NumericTextField(text: $stashedCoinsString, field: .goldStashed, minValue: 0, maxValue: 999999, focusedField: $focusedField)
+                    NumericTextField(text: $stashedCoinsString, field: .goldStashed, minValue: 0, maxValue: 999999999, focusedField: $focusedField)
                         .textFieldStyle(.roundedBorder)
                         .onChange(of: stashedCoinsString) { newValue in
                             if let value = Int(newValue) {
-                                stashedCoins = max(0, min(999999, value))
+                                stashedCoins = max(0, min(999999999, value))
                             }
                             stashedCoinsString = "\(stashedCoins)"
                         }
