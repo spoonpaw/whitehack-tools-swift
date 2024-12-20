@@ -68,7 +68,6 @@ struct FormBasicInfoSection: View {
                     HStack {
                         Spacer()
                         NumericTextField(text: $level, field: .level, minValue: 1, maxValue: 10, focusedField: $focusedField)
-                            .multilineTextAlignment(.center)
                             .frame(maxWidth: .infinity)
                         Spacer()
                     }

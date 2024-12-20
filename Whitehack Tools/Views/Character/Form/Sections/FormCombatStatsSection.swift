@@ -89,21 +89,8 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        TextField("Enter max HP", text: $maxHP)
-                            #if os(iOS)
-                            .keyboardType(.numberPad)
-                            #endif
-                            .focused($focusedField, equals: .maxHP)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.center)
+                        NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
-                            .onChange(of: maxHP) { newValue in
-                                let filtered = newValue.filter { "0123456789".contains($0) }
-                                if filtered != newValue {
-                                    maxHP = filtered
-                                }
-                                validateAndCorrectMaxHP()
-                            }
                         
                         Button(action: {
                             if let value = Int(maxHP) {
@@ -161,23 +148,16 @@ struct FormCombatStatsSection: View {
         }
     }
     
-    private func validateAndCorrectMaxHP() {
-        if let intValue = Int(maxHP) {
-            if intValue < 1 {
-                maxHP = "1"
-            }
-        } else if maxHP.isEmpty {
-            maxHP = "1"
-        }
-    }
-    
     private func validateAndCorrectCurrentHP() {
-        if let currentValue = Int(currentHP), let maxValue = Int(maxHP) {
-            if currentValue > maxValue {
-                currentHP = maxHP
-            } else if currentValue < -999 {
+        if let intValue = Int(currentHP) {
+            if intValue < -999 {
                 currentHP = "-999"
             }
+            if let maxValue = Int(maxHP), intValue > maxValue {
+                currentHP = maxHP
+            }
+        } else if currentHP.isEmpty {
+            currentHP = "0"
         }
     }
 }

@@ -17,6 +17,7 @@ struct NumericTextField: UIViewRepresentable {
         textField.delegate = context.coordinator
         textField.borderStyle = .roundedRect
         textField.keyboardType = .numberPad
+        textField.textAlignment = .center
         textField.text = text
         return textField
     }
