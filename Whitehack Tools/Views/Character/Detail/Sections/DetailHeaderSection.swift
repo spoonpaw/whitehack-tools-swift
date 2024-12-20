@@ -99,9 +99,34 @@ struct DetailHeaderSection: View {
                 )
                 
                 if character.currentHP <= 0 {
-                    Text("Knocked out until healed to positive HP.")
-                        .font(.caption)
-                        .foregroundColor(.red)
+                    VStack(spacing: 4) {
+                        if character.currentHP <= -10 {
+                            Text("Instant death.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .fontWeight(.semibold)
+                        } else if character.currentHP >= -9 && character.currentHP <= -2 {
+                            Text("Knocked out until healed to positive HP. Also injured.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                            Text("Save or die in d6 rounds.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .fontWeight(.semibold)
+                        } else if character.currentHP == -1 {
+                            Text("Knocked out until healed to positive HP.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                            Text("Also injured.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .fontWeight(.semibold)
+                        } else {
+                            Text("Knocked out until healed to positive HP.")
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
                 }
                 
                 if character.level < 10 {
