@@ -71,7 +71,7 @@ struct FormArmorSection: View {
         
         if armorName == "custom" {
             // Handle custom armor creation
-            let newArmor = Armor(
+            editingNewArmor = Armor(
                 id: UUID(),
                 name: "",
                 df: 0,
@@ -85,7 +85,6 @@ struct FormArmorSection: View {
                 bonus: 0,
                 isShield: false
             )
-            editingNewArmor = newArmor
         } else if let armorData = ArmorData.armors.first(where: { $0.name == armorName }) {
             print("📦 Found armor data: \(armorData)")
             let newArmor = Armor(
@@ -203,7 +202,7 @@ struct FormArmorSection: View {
                         Divider()
                         
                         Button("Custom Armor") {
-                            let newArmor = Armor(
+                            editingNewArmor = Armor(
                                 id: UUID(),
                                 name: "",
                                 df: 0,
@@ -217,47 +216,34 @@ struct FormArmorSection: View {
                                 bonus: 0,
                                 isShield: false
                             )
-                            editingNewArmor = newArmor
-                            selectedArmorName = "custom"
                             isAddingNew = false
                         }
                     } label: {
-                        HStack {
-                            Text("Select Armor")
-                                .padding(.horizontal, 8)
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 32)
-                    }
-                    .menuStyle(.borderlessButton)
-                    .background(backgroundColor)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.primary.opacity(0.2), lineWidth: 0.5)
-                    )
-                    .padding(.horizontal, 16)
-                    
-                    Button(action: {
-                        isAddingNew = false
-                    }) {
-                        Label("Cancel", systemImage: "xmark.circle.fill")
+                        Label(armor.isEmpty ? "Add Your First Armor" : "Add Armor",
+                              systemImage: "plus.circle.fill")
                             .foregroundColor(.red)
                     }
                 }
-                .padding(.top, 12)
+                .padding(.vertical, 12)
+            } else {
+                Button(action: { isAddingNew = true }) {
+                    Label(armor.isEmpty ? "Add Your First Armor" : "Add Armor",
+                          systemImage: "plus.circle.fill")
+                        .foregroundColor(.blue)
+                }
+                .padding(.vertical, 12)
             }
             
             // Add armor button - only show when not adding new and not editing
-            if !isAddingNew && editingNewArmor == nil {
-                Button {
-                    isAddingNew = true
-                } label: {
-                    Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
-                        .foregroundColor(.accentColor)
-                }
-                .padding(.horizontal)
-            }
+            // if !isAddingNew && editingNewArmor == nil {
+            //     Button {
+            //         isAddingNew = true
+            //     } label: {
+            //         Label(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor", systemImage: "plus.circle.fill")
+            //             .foregroundColor(.accentColor)
+            //     }
+            //     .padding(.horizontal)
+            // }
         }
     }
 }
