@@ -244,7 +244,15 @@ struct RetainerHPControl: View {
                         NumericTextField(
                             text: Binding(
                                 get: { String(currentHP) },
-                                set: { currentHP = Int($0) ?? 0 }
+                                set: { 
+                                    let newValue = Int($0) ?? 0
+                                    // Don't allow current HP to exceed max HP
+                                    if newValue > maxHP {
+                                        currentHP = maxHP
+                                    } else {
+                                        currentHP = newValue
+                                    }
+                                }
                             ),
                             field: .currentHP,
                             minValue: -9999,
@@ -285,7 +293,14 @@ struct RetainerHPControl: View {
                         NumericTextField(
                             text: Binding(
                                 get: { String(maxHP) },
-                                set: { maxHP = max(1, Int($0) ?? 1) }
+                                set: { 
+                                    let newValue = max(1, Int($0) ?? 1)
+                                    maxHP = newValue
+                                    // If current HP is higher than new max HP, reduce it
+                                    if currentHP > newValue {
+                                        currentHP = newValue
+                                    }
+                                }
                             ),
                             field: .maxHP,
                             minValue: 1,
