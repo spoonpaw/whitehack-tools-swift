@@ -159,7 +159,7 @@ struct FormArmorSection: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 4)
-                .padding(.bottom, 12)
+                .padding(.bottom, 8)
             }
             
             if let newArmor = editingNewArmor {
@@ -229,7 +229,7 @@ struct FormArmorSection: View {
                 Button(action: { isAddingNew = true }) {
                     HStack {
                         Image(systemName: "plus.circle.fill")
-                        Text("Add Armor")
+                        Text(armor.isEmpty ? "Add Your First Armor" : "Add Armor")
                     }
                     .foregroundColor(.blue)
                 }

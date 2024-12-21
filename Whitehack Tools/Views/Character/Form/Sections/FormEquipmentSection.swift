@@ -165,7 +165,7 @@ public struct FormEquipmentSection: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 4)
-        .padding(.bottom, 12)
+        .padding(.bottom, 24)
     }
     
     private func editingGearView(_ editingGear: Gear) -> some View {
@@ -250,6 +250,7 @@ public struct FormEquipmentSection: View {
             Label("Add Your First Item", systemImage: "plus.circle.fill")
                 .foregroundColor(.blue)
         }
+        .padding(.bottom, 8)
     }
 }
 
