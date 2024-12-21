@@ -703,7 +703,8 @@ struct FormWeaponsSection: View {
                         Divider()
                         
                         Button("Custom Weapon") {
-                            let newWeapon = Weapon()
+                            var newWeapon = Weapon()
+                            newWeapon.weight = "No size"  // Set default weight
                             editingWeapon = newWeapon
                             selectedWeaponName = "custom"
                             isAddingNew = false
