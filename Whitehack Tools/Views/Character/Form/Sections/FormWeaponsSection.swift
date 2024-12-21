@@ -604,7 +604,7 @@ struct WeaponRow: View {
 struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
     @State private var isAddingNew = false
-    @State private var editingNewWeapon: Weapon? = nil
+    @State private var editingWeapon: Weapon? = nil
     @State private var selectedWeaponName: String? = nil
     
     private var backgroundColor: Color {
@@ -619,39 +619,37 @@ struct FormWeaponsSection: View {
         VStack(spacing: 0) {
             if !weapons.isEmpty {
                 ForEach(weapons) { weapon in
-                    Group {
-                        if editingNewWeapon?.id == weapon.id {
-                            WeaponEditRow(
-                                weapon: weapon,
-                                onSave: { updatedWeapon in
-                                    if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
-                                        weapons[index] = updatedWeapon
-                                    }
-                                    editingNewWeapon = nil
-                                },
-                                onCancel: {
-                                    editingNewWeapon = nil
+                    if editingWeapon?.id == weapon.id {
+                        WeaponEditRow(
+                            weapon: weapon,
+                            onSave: { updatedWeapon in
+                                if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
+                                    weapons[index] = updatedWeapon
                                 }
-                            )
-                            .padding()
-                            .background(.background)
-                            .cornerRadius(10)
-                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                            .padding(.bottom, 8)
-                        } else {
-                            WeaponRow(weapon: weapon,
-                                onEdit: {
-                                    editingNewWeapon = weapon
-                                },
-                                onDelete: {
-                                    weapons.removeAll(where: { $0.id == weapon.id })
-                                }
-                            )
-                            .padding(.bottom, 4)
-                        }
+                                editingWeapon = nil
+                            },
+                            onCancel: {
+                                editingWeapon = nil
+                            }
+                        )
+                        .padding()
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        .padding(.bottom, 8)
+                    } else {
+                        WeaponRow(weapon: weapon,
+                            onEdit: {
+                                editingWeapon = weapon
+                            },
+                            onDelete: {
+                                weapons.removeAll(where: { $0.id == weapon.id })
+                            }
+                        )
+                        .padding(.bottom, 4)
                     }
                 }
-            } else if !isAddingNew && editingNewWeapon == nil {
+            } else if !isAddingNew && editingWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Weapons")
@@ -660,16 +658,6 @@ struct FormWeaponsSection: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 4)
                 .padding(.bottom, 12)
-            }
-            
-            if let newWeapon = editingNewWeapon {
-                WeaponEditRow(weapon: newWeapon) { weapon in
-                    weapons.append(weapon)
-                    editingNewWeapon = nil
-                } onCancel: {
-                    editingNewWeapon = nil
-                }
-                .padding()
             }
             
             if isAddingNew {
@@ -686,7 +674,7 @@ struct FormWeaponsSection: View {
                         
                         Button("Custom Weapon") {
                             let newWeapon = Weapon()
-                            editingNewWeapon = newWeapon
+                            editingWeapon = newWeapon
                             selectedWeaponName = "custom"
                             isAddingNew = false
                         }
@@ -711,14 +699,12 @@ struct FormWeaponsSection: View {
                     }
                 }
                 .padding(.top, 12)
-            } else {
-                Button {
-                    isAddingNew.toggle()
-                } label: {
-                    Label(isAddingNew ? "Cancel" : (weapons.isEmpty ? "Add Your First Weapon" : "Add another weapon"),
-                          systemImage: isAddingNew ? "xmark.circle.fill" : "plus.circle.fill")
-                        .foregroundColor(isAddingNew ? .red : .blue)
+            } else if !weapons.isEmpty {
+                Button(action: { isAddingNew = true }) {
+                    Label("Add Weapon", systemImage: "plus.circle.fill")
+                        .foregroundColor(.blue)
                 }
+                .padding(.top, 12)
             }
         }
     }
