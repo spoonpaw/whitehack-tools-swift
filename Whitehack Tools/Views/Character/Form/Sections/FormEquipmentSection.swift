@@ -535,7 +535,6 @@ struct GearEditRow: View {
                     }
                     .foregroundColor(.blue)
                 }
-                .disabled(name.isEmpty)
             }
             .padding(.top, 12)
         }

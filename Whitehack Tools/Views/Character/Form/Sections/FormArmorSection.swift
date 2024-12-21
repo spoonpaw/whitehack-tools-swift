@@ -276,11 +276,8 @@ struct ArmorRow: View {
                     Text("Armor Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    Label {
-                        Text(armor.name.isEmpty ? "Unnamed Armor" : armor.name)
-                    } icon: {
-                        IconFrame(icon: Ph.shield.bold, color: .purple)
-                    }
+                    Text(armor.name.isEmpty ? "-" : armor.name)
+                        .font(.headline)
                 }
                 
                 // Quantity Section
@@ -710,7 +707,6 @@ struct ArmorEditRow: View {
                     }
                     .foregroundColor(.blue)
                 }
-                .disabled(name.isEmpty)
             }
             .padding(.top, 4)
         }

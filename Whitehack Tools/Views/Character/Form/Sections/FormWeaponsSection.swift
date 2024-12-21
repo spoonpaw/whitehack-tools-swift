@@ -729,14 +729,14 @@ struct FormWeaponsSection: View {
                             .foregroundColor(.red)
                     }
                 }
-                .padding(.top, 12)
+                .padding(.vertical, 12)  // Add equal padding to top and bottom
             } else {
                 Button(action: { isAddingNew = true }) {
                     Label(weapons.isEmpty ? "Add Your First Weapon" : "Add Weapon", 
                           systemImage: "plus.circle.fill")
                         .foregroundColor(.blue)
                 }
-                .padding(.top, 12)
+                .padding(.vertical, 12)
             }
         }
     }
