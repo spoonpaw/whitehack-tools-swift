@@ -390,8 +390,9 @@ struct WeaponEditRow: View {
                     guard !isProcessingAction else { return }
                     isProcessingAction = true
                     print("🟢 Save action starting")
+                    
                     let updatedWeapon = Weapon(
-                        id: UUID(),
+                        id: weapon.id,
                         name: name,
                         damage: damage,
                         weight: weight,
@@ -418,7 +419,6 @@ struct WeaponEditRow: View {
                     }
                     .foregroundColor(.blue)
                 }
-                .disabled(name.isEmpty || damage.isEmpty)
             }
         }
     }
@@ -444,13 +444,30 @@ struct WeaponRow: View {
     let onEdit: () -> Void
     let onDelete: () -> Void
     
-    private func getWeightDisplayText(_ weight: String) -> String {
-        switch weight {
+    private var displayName: String {
+        weapon.name.isEmpty ? "-" : weapon.name
+    }
+    
+    private var displayDamage: String {
+        weapon.damage.isEmpty ? "-" : weapon.damage
+    }
+    
+    private var displayRange: String {
+        weapon.range.isEmpty ? "-" : weapon.range
+    }
+    
+    private var displayRateOfFire: String {
+        weapon.rateOfFire.isEmpty ? "-" : weapon.rateOfFire
+    }
+    
+    private var displayWeight: String {
+        switch weapon.weight {
+        case "": return "-"
         case "No size": return "No size (100/slot)"
         case "Minor": return "Minor (2/slot)"
         case "Regular": return "Regular (1 slot)"
         case "Heavy": return "Heavy (2 slots)"
-        default: return weight
+        default: return weapon.weight
         }
     }
     
@@ -463,7 +480,7 @@ struct WeaponRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(weapon.name)
+                        Text(displayName)
                     } icon: {
                         IconFrame(icon: Ph.sword.bold, color: .purple)
                     }
@@ -487,7 +504,7 @@ struct WeaponRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(getWeightDisplayText(weapon.weight))
+                        Text(displayWeight)
                     } icon: {
                         IconFrame(icon: Ph.scales.bold, color: .blue)
                     }
@@ -499,41 +516,37 @@ struct WeaponRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Label {
-                        Text(weapon.damage)
+                        Text(displayDamage)
                     } icon: {
                         IconFrame(icon: Ph.target.bold, color: .red)
                     }
                 }
                 
                 // Rate of Fire Section
-                if !weapon.rateOfFire.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Rate of Fire")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Label {
-                            Text(weapon.rateOfFire)
-                        } icon: {
-                            IconFrame(icon: Ph.timer.bold, color: .orange)
-                        }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Rate of Fire")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(displayRateOfFire)
+                    } icon: {
+                        IconFrame(icon: Ph.clock.bold, color: .orange)
                     }
                 }
                 
                 // Range Section
-                if !weapon.range.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Range")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Label {
-                            Text(weapon.range)
-                        } icon: {
-                            IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
-                        }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Range")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    Label {
+                        Text(displayRange)
+                    } icon: {
+                        IconFrame(icon: Ph.arrowsOutSimple.bold, color: .green)
                     }
                 }
                 
-                // Special Section
+                // Special Properties Section
                 if !weapon.special.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Special Properties")
@@ -546,28 +559,28 @@ struct WeaponRow: View {
                         }
                     }
                 }
-                
-                // Status Section
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Status")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    HStack(spacing: 16) {
-                        Label {
-                            Text(weapon.isEquipped ? "Equipped" : "Unequipped")
-                        } icon: {
-                            IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
-                        }
-                        Label {
-                            Text(weapon.isStashed ? "Stashed" : "On Person")
-                        } icon: {
-                            IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                                    color: weapon.isStashed ? .orange : .gray)
-                        }
+            }
+            
+            // Status Section
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Status")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 16) {
+                    Label {
+                        Text(weapon.isEquipped ? "Equipped" : "Unequipped")
+                    } icon: {
+                        IconFrame(icon: Ph.bagSimple.bold, color: weapon.isEquipped ? .green : .gray)
+                    }
+                    
+                    Label {
+                        Text(weapon.isStashed ? "Stashed" : "On Person")
+                    } icon: {
+                        IconFrame(icon: weapon.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                color: weapon.isStashed ? .orange : .gray)
                     }
                 }
             }
-            .allowsHitTesting(false)
             
             Divider()
             
@@ -636,7 +649,7 @@ struct FormWeaponsSection: View {
                         .background(.background)
                         .cornerRadius(10)
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, 16)
                     } else {
                         WeaponRow(weapon: weapon,
                             onEdit: {
@@ -646,10 +659,10 @@ struct FormWeaponsSection: View {
                                 weapons.removeAll(where: { $0.id == weapon.id })
                             }
                         )
-                        .padding(.bottom, 4)
+                        .padding(.bottom, 16)
                     }
                 }
-            } else if !isAddingNew {
+            } else if !isAddingNew && editingWeapon == nil {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Weapons")
@@ -660,7 +673,24 @@ struct FormWeaponsSection: View {
                 .padding(.bottom, 12)
             }
             
-            if isAddingNew {
+            if let weapon = editingWeapon, !weapons.contains(where: { $0.id == weapon.id }) {
+                // This is a new custom weapon being edited
+                WeaponEditRow(
+                    weapon: weapon,
+                    onSave: { newWeapon in
+                        weapons.append(newWeapon)
+                        editingWeapon = nil
+                    },
+                    onCancel: {
+                        editingWeapon = nil
+                    }
+                )
+                .padding()
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .padding(.bottom, 16)
+            } else if isAddingNew {
                 VStack(spacing: 8) {
                     Menu {
                         ForEach(WeaponData.weapons, id: \.["name"]) { weaponData in
