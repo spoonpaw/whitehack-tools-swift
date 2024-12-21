@@ -601,12 +601,21 @@ struct ArmorEditRow: View {
                     IconFrame(icon: Ph.bagSimple.bold, color: isEquipped ? .green : .gray)
                     Toggle(isEquipped ? "Equipped" : "Unequipped", isOn: $isEquipped)
                 }
+                .onChange(of: isEquipped) { newValue in
+                    if newValue {
+                        isStashed = false
+                    }
+                }
                 
                 // Stashed Toggle with Icon
                 HStack {
-                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
-                            color: isStashed ? .orange : .gray)
-                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
+                    IconFrame(icon: Ph.package.bold, color: isStashed ? .brown : .gray)
+                    Toggle(isStashed ? "Stashed" : "", isOn: $isStashed)
+                }
+                .onChange(of: isStashed) { newValue in
+                    if newValue {
+                        isEquipped = false
+                    }
                 }
                 
                 // Shield Toggle with Icon
