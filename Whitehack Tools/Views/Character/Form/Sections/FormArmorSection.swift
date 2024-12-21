@@ -219,8 +219,22 @@ struct FormArmorSection: View {
                             isAddingNew = false
                         }
                     } label: {
-                        Label(armor.isEmpty ? "Add Your First Armor" : "Add Armor",
-                              systemImage: "plus.circle.fill")
+                        HStack {
+                            Text("Select Armor")
+                                .padding(.horizontal, 8)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 32)
+                    }
+                    .menuStyle(.borderlessButton)
+                    .background(backgroundColor)
+                    .cornerRadius(4)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    .padding(.horizontal, 16)
+                    
+                    Button(action: {
+                        isAddingNew = false
+                    }) {
+                        Label("Cancel", systemImage: "xmark.circle.fill")
                             .foregroundColor(.red)
                     }
                 }
