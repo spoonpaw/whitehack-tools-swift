@@ -538,7 +538,7 @@ private class FormData: ObservableObject {
         self.currentHP = "\(character?.currentHP ?? 1)"
         self.maxHP = "\(character?.maxHP ?? 1)"
         self.movement = "\(character?.movement ?? 30)"  // Fixed: Initialize movement with character's value
-        self.saveColor = character?.saveColor ?? "black"
+        self.saveColor = character?.saveColor ?? ""
         self.speciesGroup = character?.speciesGroup ?? ""
         self.vocationGroup = character?.vocationGroup ?? ""
         self.affiliationGroups = character?.affiliationGroups ?? []
