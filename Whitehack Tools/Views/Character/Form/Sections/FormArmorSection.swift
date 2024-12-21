@@ -609,8 +609,9 @@ struct ArmorEditRow: View {
                 
                 // Stashed Toggle with Icon
                 HStack {
-                    IconFrame(icon: Ph.package.bold, color: isStashed ? .brown : .gray)
-                    Toggle(isStashed ? "Stashed" : "", isOn: $isStashed)
+                    IconFrame(icon: isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                            color: isStashed ? .orange : .gray)
+                    Toggle(isStashed ? "Stashed" : "On Person", isOn: $isStashed)
                 }
                 .onChange(of: isStashed) { newValue in
                     if newValue {
