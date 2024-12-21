@@ -127,19 +127,19 @@ public struct FormEquipmentSection: View {
             ForEach(gear) { gearItem in
                 Group {
                     if editingGearId == gearItem.id {
-                        GearEditRow(
-                            gear: gearItem,
-                            onSave: { updatedGear in
-                                if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
-                                    gear[index] = updatedGear
-                                }
-                                editingGearId = nil
-                            },
-                            onCancel: {
+                        GearEditRow(gear: gearItem) { updatedGear in
+                            if let index = gear.firstIndex(where: { $0.id == gearItem.id }) {
+                                gear[index] = updatedGear
                                 editingGearId = nil
                             }
-                        )
-                        .padding(.bottom, 4)
+                        } onCancel: {
+                            editingGearId = nil
+                        }
+                        .padding()
+                        .background(.background)
+                        .cornerRadius(10)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                        .padding(.bottom, 16)
                     } else {
                         GearRow(
                             gear: gearItem,
@@ -169,18 +169,19 @@ public struct FormEquipmentSection: View {
     }
     
     private func editingGearView(_ editingGear: Gear) -> some View {
-        GearEditRow(
-            gear: editingGear,
-            onSave: { newGear in
-                gear.append(newGear)
-                editingNewGear = nil
-                isAddingNew = false
-            },
-            onCancel: {
-                editingNewGear = nil
-                isAddingNew = false
-            }
-        )
+        GearEditRow(gear: editingGear) { updatedGear in
+            gear.append(updatedGear)
+            editingNewGear = nil
+            isAddingNew = false
+        } onCancel: {
+            editingNewGear = nil
+            isAddingNew = false
+        }
+        .padding()
+        .background(.background)
+        .cornerRadius(10)
+        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        .padding(.bottom, 16)
     }
     
     private var addGearMenu: some View {
