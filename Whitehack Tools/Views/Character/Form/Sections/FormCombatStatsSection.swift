@@ -33,7 +33,7 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: 9999, focusedField: $focusedField)
+                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: Int(maxHP) ?? 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: currentHP) { newValue in
                                 validateAndCorrectCurrentHP()
@@ -79,10 +79,14 @@ struct FormCombatStatsSection: View {
                         NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: maxHP) { newValue in
-                                if let maxValue = Int(newValue), let currentValue = Int(currentHP), currentValue > maxValue {
-                                    currentHP = String(maxValue)
+                                // When max HP changes, ensure current HP is not higher
+                                if let maxValue = Int(newValue) {
+                                    if let currentValue = Int(currentHP) {
+                                        if currentValue > maxValue {
+                                            currentHP = newValue
+                                        }
+                                    }
                                 }
-                                validateAndCorrectCurrentHP()
                             }
                         
                         Button(action: {
@@ -159,8 +163,16 @@ struct FormCombatStatsSection: View {
     }
     
     private func validateAndCorrectCurrentHP() {
-        if let maxValue = Int(maxHP), let intValue = Int(currentHP), intValue > maxValue {
-            currentHP = maxHP
+        // Handle empty fields
+        if currentHP.isEmpty || maxHP.isEmpty {
+            return
+        }
+        
+        // Ensure current HP is not higher than max HP
+        if let maxValue = Int(maxHP), let currentValue = Int(currentHP) {
+            if currentValue > maxValue {
+                currentHP = maxHP
+            }
         }
     }
     
