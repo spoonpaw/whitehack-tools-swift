@@ -500,6 +500,7 @@ struct FormFortunateStatField: View {
     @Binding var value: Int
     let systemImage: String
     let color: Color
+    @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -511,14 +512,29 @@ struct FormFortunateStatField: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            TextField("", value: $value, format: .number)
-                .textFieldStyle(.roundedBorder)
-                .font(.system(.body, design: .rounded))
-                .frame(width: 60)
-                .multilineTextAlignment(.center)
-                #if os(iOS)
-                .keyboardType(.numberPad)
-                #endif
+            NumericTextField(
+                text: Binding(
+                    get: { String(value) },
+                    set: { value = Int($0) ?? (label == "HD" ? 1 : 0) }  // Default to 1 for HD, 0 for others
+                ),
+                field: .currentHP,
+                minValue: {
+                    switch label {
+                    case "HD": return 1   // HD starts at 1
+                    case "DF", "MV": return 0  // DF and MV start at 0
+                    default: return 0
+                    }
+                }(),
+                maxValue: {
+                    switch label {
+                    case "HD", "DF": return 99   // HD and DF max at 99
+                    case "MV": return 999        // MV max at 999
+                    default: return 9999         // Others higher
+                    }
+                }(),
+                focusedField: $focusedField
+            )
+            .frame(width: 60)
         }
     }
 }
