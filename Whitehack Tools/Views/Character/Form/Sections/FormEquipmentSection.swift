@@ -2,7 +2,26 @@ import SwiftUI
 import PhosphorSwift
 #if os(iOS)
 import UIKit
+#else
+import AppKit
 #endif
+
+// MARK: - Debug Border Modifier
+extension View {
+    func debugBorder(_ color: Color = .random) -> some View {
+        self.border(color, width: 1)
+    }
+}
+
+extension Color {
+    static var random: Color {
+        Color(
+            red: Double.random(in: 0...1),
+            green: Double.random(in: 0...1),
+            blue: Double.random(in: 0...1)
+        )
+    }
+}
 
 public struct FormEquipmentSection: View {
     @Binding var gear: [Gear]
@@ -25,6 +44,14 @@ public struct FormEquipmentSection: View {
             if selectedGearName == nil {
             }
         }
+    }
+    
+    private var backgroundColor: Color {
+        #if os(iOS)
+        return Color(.white)
+        #else
+        return Color(nsColor: .white)
+        #endif
     }
     
     private func createGearFromSelection(_ gearName: String) {
@@ -173,13 +200,25 @@ public struct FormEquipmentSection: View {
                     createGearFromSelection("custom")
                 }
             } label: {
-                Text("Select Item")
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 16)
+                HStack {
+                    Text("Select Item")
+                        .padding(.horizontal, 8)
+                }
+                .frame(maxWidth: .infinity, minHeight: 32)
             }
             .menuStyle(.borderlessButton)
-            .frame(maxWidth: .infinity)
+            .background(backgroundColor)
+            .cornerRadius(4)
+            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(Color.primary.opacity(0.2), lineWidth: 0.5)
+            )
             .padding(.horizontal, 16)
+            
+            if let selectedGearName = selectedGearName {
+                Text(selectedGearName)
+            }
             
             Button(action: {
                 isAddingNew = false
@@ -188,7 +227,6 @@ public struct FormEquipmentSection: View {
                     .foregroundColor(.red)
             }
         }
-        .padding(.top, 12)
     }
     
     private var addAnotherButton: some View {
@@ -500,8 +538,6 @@ struct GearEditRow: View {
             }
             .padding(.top, 12)
         }
-        .groupCardStyle()
-        .padding(.bottom, 4)
     }
     
     private var weightSection: some View {

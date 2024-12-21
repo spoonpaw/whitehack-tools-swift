@@ -1,5 +1,10 @@
 import SwiftUI
 import PhosphorSwift
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
 
 typealias ArmorItem = ArmorData.ArmorItem
 
@@ -26,6 +31,14 @@ struct FormArmorSection: View {
                 print("⚠️ No armor selected")
             }
         }
+    }
+    
+    private var backgroundColor: Color {
+        #if os(iOS)
+        return Color(.white)
+        #else
+        return Color(nsColor: .white)
+        #endif
     }
     
     private func logArmorArrayUpdate() {
@@ -209,12 +222,21 @@ struct FormArmorSection: View {
                             isAddingNew = false
                         }
                     } label: {
-                        Text("Select Armor")
-                            .frame(maxWidth: .infinity)
+                        HStack {
+                            Text("Select Armor")
+                                .padding(.horizontal, 8)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 32)
                     }
                     .menuStyle(.borderlessButton)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
+                    .background(backgroundColor)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.primary.opacity(0.2), lineWidth: 0.5)
+                    )
+                    .padding(.horizontal, 16)
                     
                     Button(action: {
                         isAddingNew = false

@@ -1,5 +1,10 @@
 import SwiftUI
 import PhosphorSwift
+#if os(iOS)
+import UIKit
+#else
+import AppKit
+#endif
 
 struct WeaponEditRow: View {
     @Environment(\.dismiss) private var dismiss
@@ -598,27 +603,16 @@ struct WeaponRow: View {
 
 struct FormWeaponsSection: View {
     @Binding var weapons: [Weapon]
-    @State private var editingWeaponId: UUID?
-    @State private var isAddingNew = false {
-        didSet {
-            print("🔄 isAddingNew changed: \(oldValue) -> \(isAddingNew)")
-            if !isAddingNew {
-                print("🧹 Cleaning up weapon states")
-            }
-        }
-    }
-    @State private var selectedWeaponName: String? {
-        didSet {
-            print("🎯 selectedWeaponName changed: \(String(describing: oldValue)) -> \(String(describing: selectedWeaponName))")
-            if selectedWeaponName == nil {
-                print("⚠️ No weapon selected")
-            }
-        }
-    }
-    @State private var editingNewWeapon: Weapon? {
-        didSet {
-            print("⚔️ editingNewWeapon changed: \(String(describing: oldValue?.name)) -> \(String(describing: editingNewWeapon?.name))")
-        }
+    @State private var isAddingNew = false
+    @State private var editingNewWeapon: Weapon? = nil
+    @State private var selectedWeaponName: String? = nil
+    
+    private var backgroundColor: Color {
+        #if os(iOS)
+        return Color(.white)
+        #else
+        return Color(nsColor: .white)
+        #endif
     }
     
     var body: some View {
@@ -626,17 +620,17 @@ struct FormWeaponsSection: View {
             if !weapons.isEmpty {
                 ForEach(weapons) { weapon in
                     Group {
-                        if editingWeaponId == weapon.id {
+                        if editingNewWeapon?.id == weapon.id {
                             WeaponEditRow(
                                 weapon: weapon,
                                 onSave: { updatedWeapon in
                                     if let index = weapons.firstIndex(where: { $0.id == weapon.id }) {
                                         weapons[index] = updatedWeapon
                                     }
-                                    editingWeaponId = nil
+                                    editingNewWeapon = nil
                                 },
                                 onCancel: {
-                                    editingWeaponId = nil
+                                    editingNewWeapon = nil
                                 }
                             )
                             .padding()
@@ -647,7 +641,7 @@ struct FormWeaponsSection: View {
                         } else {
                             WeaponRow(weapon: weapon,
                                 onEdit: {
-                                    editingWeaponId = weapon.id
+                                    editingNewWeapon = weapon
                                 },
                                 onDelete: {
                                     weapons.removeAll(where: { $0.id == weapon.id })
@@ -697,11 +691,17 @@ struct FormWeaponsSection: View {
                             isAddingNew = false
                         }
                     } label: {
-                        Text("Select Weapon")
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 16)
+                        HStack {
+                            Text("Select Weapon")
+                                .padding(.horizontal, 8)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 32)
                     }
                     .menuStyle(.borderlessButton)
+                    .background(backgroundColor)
+                    .cornerRadius(4)
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                    .padding(.horizontal, 16)
                     
                     Button(action: {
                         isAddingNew = false
@@ -710,7 +710,6 @@ struct FormWeaponsSection: View {
                             .foregroundColor(.red)
                     }
                 }
-                .padding(.horizontal, 16)
                 .padding(.top, 12)
             } else {
                 Button {
