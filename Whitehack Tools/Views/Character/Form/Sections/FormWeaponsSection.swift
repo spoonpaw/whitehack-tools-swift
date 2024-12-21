@@ -649,7 +649,7 @@ struct FormWeaponsSection: View {
                         .padding(.bottom, 4)
                     }
                 }
-            } else if !isAddingNew && editingWeapon == nil {
+            } else if !isAddingNew {
                 VStack(spacing: 8) {
                     IconFrame(icon: Ph.prohibit.bold, color: .gray)
                     Text("No Weapons")
@@ -699,9 +699,10 @@ struct FormWeaponsSection: View {
                     }
                 }
                 .padding(.top, 12)
-            } else if !weapons.isEmpty {
+            } else {
                 Button(action: { isAddingNew = true }) {
-                    Label("Add Weapon", systemImage: "plus.circle.fill")
+                    Label(weapons.isEmpty ? "Add Your First Weapon" : "Add Weapon", 
+                          systemImage: "plus.circle.fill")
                         .foregroundColor(.blue)
                 }
                 .padding(.top, 12)
