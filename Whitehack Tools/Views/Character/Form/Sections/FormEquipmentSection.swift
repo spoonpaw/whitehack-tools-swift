@@ -228,6 +228,7 @@ public struct FormEquipmentSection: View {
                     .foregroundColor(.red)
             }
         }
+        .padding(.vertical, 16)
     }
     
     private var addAnotherButton: some View {
