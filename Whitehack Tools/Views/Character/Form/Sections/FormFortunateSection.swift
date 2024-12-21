@@ -217,6 +217,7 @@ struct FormFortunateSection: View {
 struct RetainerHPControl: View {
     @Binding var currentHP: Int
     @Binding var maxHP: Int
+    @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -226,61 +227,85 @@ struct RetainerHPControl: View {
             
             HStack(spacing: 8) {
                 // Current HP
-                HPStepper(value: $currentHP, maxValue: maxHP, isCurrentHP: true)
-                
-                Text("/")
-                    .foregroundColor(.secondary)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Current")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            currentHP = max(-9999, currentHP - 1)
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        NumericTextField(
+                            text: Binding(
+                                get: { String(currentHP) },
+                                set: { currentHP = Int($0) ?? 0 }
+                            ),
+                            field: .currentHP,
+                            minValue: -9999,
+                            maxValue: maxHP,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        Button(action: {
+                            let newValue = currentHP + 1
+                            if newValue <= maxHP {
+                                currentHP = min(9999, newValue)
+                            }
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                    }
+                }
                 
                 // Max HP
-                HPStepper(value: $maxHP, minValue: 1, isCurrentHP: false)
-            }
-        }
-    }
-}
-
-struct HPStepper: View {
-    @Binding var value: Int
-    var maxValue: Int?
-    var minValue: Int?
-    var isCurrentHP: Bool
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Button(action: {
-                if let min = minValue {
-                    value = max(min, value - 1)
-                } else {
-                    value = max(-999, value - 1)
-                }
-            }) {
-                Image(systemName: "minus.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.red)
-            }
-            .buttonStyle(BorderlessButtonStyle())
-            
-            Text("\(value)")
-                .frame(width: 40)
-                .multilineTextAlignment(.center)
-            
-            Button(action: {
-                if let max = maxValue, isCurrentHP {
-                    if value < max {
-                        value += 1
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Maximum")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            maxHP = max(1, maxHP - 1)
+                        }) {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
+                        NumericTextField(
+                            text: Binding(
+                                get: { String(maxHP) },
+                                set: { maxHP = max(1, Int($0) ?? 1) }
+                            ),
+                            field: .maxHP,
+                            minValue: 1,
+                            maxValue: 9999,
+                            focusedField: $focusedField
+                        )
+                        .frame(maxWidth: .infinity)
+                        
+                        Button(action: {
+                            maxHP = min(9999, maxHP + 1)
+                        }) {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.green)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
                     }
-                } else {
-                    value += 1
                 }
-            }) {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.green)
             }
-            .buttonStyle(BorderlessButtonStyle())
         }
-        .padding(8)
-        .background(Color.systemBackground)
-        .cornerRadius(8)
     }
 }
 
