@@ -227,11 +227,14 @@ struct FormArmorSection: View {
                 .padding(.vertical, 12)
             } else {
                 Button(action: { isAddingNew = true }) {
-                    Label(armor.isEmpty ? "Add Your First Armor" : "Add Armor",
-                          systemImage: "plus.circle.fill")
-                        .foregroundColor(.blue)
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add Armor")
+                    }
+                    .foregroundColor(.blue)
                 }
-                .padding(.vertical, 12)
+                .padding(.top, 16)
+                .padding(.bottom, 8)
             }
             
             // Add armor button - only show when not adding new and not editing
