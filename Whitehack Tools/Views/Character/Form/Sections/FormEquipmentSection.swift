@@ -175,9 +175,11 @@ public struct FormEquipmentSection: View {
             } label: {
                 Text("Select Item")
                     .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 16)
             }
             .menuStyle(.borderlessButton)
             .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
             
             Button(action: {
                 isAddingNew = false
