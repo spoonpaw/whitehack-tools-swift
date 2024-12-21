@@ -712,7 +712,7 @@ struct ArmorEditRow: View {
                 }
                 .disabled(name.isEmpty)
             }
-            .padding(.top, 12)
+            .padding(.top, 4)
         }
         .groupCardStyle()
         .padding(.bottom, 4)
