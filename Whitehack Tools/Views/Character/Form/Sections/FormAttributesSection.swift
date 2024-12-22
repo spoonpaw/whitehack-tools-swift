@@ -110,7 +110,7 @@ struct CustomAttributeEditor: View {
         self._textValue = State(initialValue: String(attribute.value))
     }
     
-    private let attributeRange = 3...18
+    private let attributeRange = 1...20
     
     var body: some View {
         VStack(spacing: 16) {
@@ -192,31 +192,35 @@ struct CustomAttributeEditor: View {
                         .foregroundColor(.secondary)
                     HStack {
                         TextField("", text: $textValue)
-                        .onChange(of: textValue) { newValue in
-                            // Only allow numeric characters
-                            let filtered = newValue.filter { $0.isNumber }
-                            if filtered != newValue {
-                                textValue = filtered
+                            .onChange(of: textValue) { newValue in
+                                // Only allow numeric characters
+                                let filtered = newValue.filter { $0.isNumber }
+                                if filtered != newValue {
+                                    textValue = filtered
+                                }
+                                // Update the actual value if we have a valid number
+                                if let value = Int(filtered) {
+                                    let clamped = max(1, min(20, value))
+                                    if clamped != value {
+                                        textValue = String(clamped)
+                                    }
+                                    localAttribute.value = clamped
+                                    onUpdate(localAttribute)
+                                }
                             }
-                            // Update the actual value if we have a valid number
-                            if let value = Int(filtered) {
-                                localAttribute.value = value
-                                onUpdate(localAttribute)
+                            .frame(width: 60)
+                            .multilineTextAlignment(.center)
+                            .font(.title3)
+                            #if os(iOS)
+                            .font(Font.system(.title3).weight(.medium))
+                            #else
+                            .fontWeight(.medium)
+                            #endif
+                            .onChange(of: isFocused) { newValue in
+                                if !newValue {  // Field lost focus
+                                    validateAndFixEmptyInput()
+                                }
                             }
-                        }
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 60)
-                        #if os(iOS)
-                        .keyboardType(.numberPad)
-                        #endif
-                        .multilineTextAlignment(.center)
-                        .font(.title3)
-                        .focused($isFocused)
-                        #if os(iOS)
-                        .font(Font.system(.title3).weight(.medium))
-                        #else
-                        .fontWeight(.medium)
-                        #endif
                         Stepper("", value: Binding(
                             get: { 
                                 print(" [CUSTOM ATTRIBUTE EDITOR] Getting value for attribute: \(attribute.id)")
@@ -253,9 +257,14 @@ struct CustomAttributeEditor: View {
     }
     
     private func validateAndFixEmptyInput() {
-        if localAttribute.value < attributeRange.lowerBound || localAttribute.value > attributeRange.upperBound {
-            localAttribute.value = attributeRange.lowerBound
-            textValue = String(attributeRange.lowerBound)
+        if textValue.isEmpty || Int(textValue) == nil {
+            textValue = String(1)
+            localAttribute.value = 1
+            onUpdate(localAttribute)
+        } else if let current = Int(textValue) {
+            let clamped = max(1, min(20, current))
+            textValue = String(clamped)
+            localAttribute.value = clamped
             onUpdate(localAttribute)
         }
     }

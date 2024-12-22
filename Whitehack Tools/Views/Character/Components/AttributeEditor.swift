@@ -22,6 +22,9 @@ struct AttributeEditor: View {
                             validateAndFixEmptyInput()
                         }
                     }
+                    .onChange(of: value) { _ in
+                        validateAndFixEmptyInput()
+                    }
                     .font(.title2)
                     #if os(iOS)
                     .font(Font.system(.title2).weight(.bold))
