@@ -1,7 +1,20 @@
 import SwiftUI
+#if os(macOS)
+import AppKit
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+}
+#endif
 
 @main
 struct Whitehack_ToolsApp: App {
+    #if os(macOS)
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    #endif
+    
     @StateObject private var characterStore = CharacterStore()
     @StateObject private var importViewModel = CharacterImportViewModel()
     
