@@ -78,10 +78,12 @@ struct MacNumericTextField: NSViewRepresentable {
     let maxValue: Int
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        print(" [MacNumericTextField] makeCoordinator - maxValue: \(maxValue)")
+        return Coordinator(self)
     }
     
     func makeNSView(context: Context) -> NSTextField {
+        print(" [MacNumericTextField] makeNSView - maxValue: \(maxValue)")
         let textField = NSTextField()
         textField.delegate = context.coordinator
         textField.isBordered = true
@@ -93,15 +95,21 @@ struct MacNumericTextField: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: NSTextField, context: Context) {
+        print(" [MacNumericTextField] updateNSView - current: \(nsView.stringValue), new: \(text), maxValue: \(maxValue)")
         if nsView.stringValue != text {
+            print(" [MacNumericTextField] updateNSView - updating to: \(text)")
             nsView.stringValue = text
         }
+        
+        // Update coordinator's parent to get latest maxValue
+        context.coordinator.parent = self
     }
     
     class Coordinator: NSObject, NSTextFieldDelegate {
         var parent: MacNumericTextField
         
         init(_ textField: MacNumericTextField) {
+            print(" [Coordinator] init")
             self.parent = textField
         }
         
@@ -109,14 +117,19 @@ struct MacNumericTextField: NSViewRepresentable {
             guard let textField = obj.object as? NSTextField else { return }
             let string = textField.stringValue
             
+            print("🔴 [controlTextDidChange] START - value: \(string)")
+            print("🔴 [controlTextDidChange] minValue: \(parent.minValue), maxValue: \(parent.maxValue)")
+            
             // Allow empty string
             if string.isEmpty {
+                print("🔴 [controlTextDidChange] Empty string allowed")
                 parent.text = string
                 return
             }
             
             // Allow single minus during typing
             if parent.allowsNegative && string == "-" {
+                print("🔴 [controlTextDidChange] Single minus allowed")
                 parent.text = string
                 return
             }
@@ -129,38 +142,41 @@ struct MacNumericTextField: NSViewRepresentable {
             let filtered = String(string.unicodeScalars.filter { validCharSet.contains($0) })
             
             if filtered != string {
+                print("🔴 [controlTextDidChange] Filtered invalid chars: \(string) -> \(filtered)")
                 textField.stringValue = filtered
                 parent.text = filtered
                 return
             }
             
-            // Validate numeric value
+            // During typing, only validate the numeric format
             if let value = Int(filtered) {
-                if value >= parent.minValue && value <= parent.maxValue {
-                    parent.text = filtered
-                } else {
-                    let clamped = String(max(parent.minValue, min(parent.maxValue, value)))
-                    textField.stringValue = clamped
-                    parent.text = clamped
-                }
+                print("🔴 [controlTextDidChange] Parsed value: \(value)")
+                parent.text = filtered
             } else {
+                print("🔴 [controlTextDidChange] Could not parse value, using filtered: \(filtered)")
                 parent.text = filtered
             }
+            print("🔴 [controlTextDidChange] END - final value: \(parent.text)")
         }
         
         func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+            print(" [doCommandBy] selector: \(commandSelector)")
             return false
         }
         
         func control(_ control: NSControl, textShouldBeginEditing fieldEditor: NSText) -> Bool {
+            print(" [textShouldBeginEditing] current: \(fieldEditor.string)")
             return true
         }
         
         func control(_ control: NSControl, textShouldEndEditing fieldEditor: NSText) -> Bool {
             let string = fieldEditor.string
+            print(" [textShouldEndEditing] START - value: \(string)")
+            print(" [textShouldEndEditing] minValue: \(parent.minValue), maxValue: \(parent.maxValue)")
             
             // Allow empty string during editing
             if string.isEmpty {
+                print(" [textShouldEndEditing] Empty string allowed")
                 return true
             }
             
@@ -170,24 +186,32 @@ struct MacNumericTextField: NSViewRepresentable {
                 CharacterSet.decimalDigits
                 
             guard CharacterSet(charactersIn: string).isSubset(of: validCharSet) else {
+                print(" [textShouldEndEditing] Invalid characters found")
                 return false
             }
             
             // Validate range if it's a number
             if let value = Int(string) {
-                return value >= parent.minValue && value <= parent.maxValue
+                print(" [textShouldEndEditing] Parsed value: \(value)")
+                let isValid = value >= parent.minValue && value <= parent.maxValue
+                print(" [textShouldEndEditing] Value valid? \(isValid)")
+                return isValid
             }
             
             // Allow minus sign during editing
+            print(" [textShouldEndEditing] Allowing minus sign? \(parent.allowsNegative && string == "-")")
             return parent.allowsNegative && string == "-"
         }
         
         func controlTextDidEndEditing(_ obj: Notification) {
             guard let textField = obj.object as? NSTextField else { return }
+            print(" [controlTextDidEndEditing] START - value: \(textField.stringValue)")
+            print(" [controlTextDidEndEditing] minValue: \(parent.minValue), maxValue: \(parent.maxValue)")
             
             // Handle empty field
             if textField.stringValue.isEmpty {
                 let finalText = String(parent.minValue)
+                print(" [controlTextDidEndEditing] Empty field, using min: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
                 return
@@ -196,6 +220,7 @@ struct MacNumericTextField: NSViewRepresentable {
             // Handle minus sign
             if parent.allowsNegative && textField.stringValue == "-" {
                 let finalText = String(parent.minValue)
+                print(" [controlTextDidEndEditing] Single minus, using min: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
                 return
@@ -205,13 +230,16 @@ struct MacNumericTextField: NSViewRepresentable {
             if let value = Int(textField.stringValue) {
                 let clampedValue = max(parent.minValue, min(parent.maxValue, value))
                 let finalText = String(clampedValue)
+                print(" [controlTextDidEndEditing] Clamping value: \(value) -> \(clampedValue)")
                 textField.stringValue = finalText
                 parent.text = finalText
             } else {
                 let finalText = String(parent.minValue)
+                print(" [controlTextDidEndEditing] Invalid value, using min: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
             }
+            print(" [controlTextDidEndEditing] END - final value: \(textField.stringValue)")
         }
     }
 }

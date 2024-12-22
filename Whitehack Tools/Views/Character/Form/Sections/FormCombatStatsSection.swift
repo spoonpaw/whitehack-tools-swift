@@ -14,6 +14,12 @@ struct FormCombatStatsSection: View {
     @Binding var saveColor: String
     @FocusState.Binding var focusedField: CharacterFormView.Field?
     
+    private var currentMaxHP: Int {
+        let value = Int(maxHP) ?? 9999
+        print("⚔️ [currentMaxHP] maxHP string: \(maxHP), parsed: \(value)")
+        return value
+    }
+    
     var body: some View {
         Section {
             VStack(spacing: 16) {
@@ -33,10 +39,14 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: Int(maxHP) ?? 9999, focusedField: $focusedField)
+                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: currentMaxHP, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: currentHP) { newValue in
                                 validateAndCorrectCurrentHP()
+                            }
+                            .onChange(of: maxHP) { newValue in
+                                print("⚔️ [currentHP field] maxHP changed to: \(newValue)")
+                                print("⚔️ [currentHP field] parsed maxHP: \(Int(newValue) ?? 9999)")
                             }
                         
                         Button(action: {
@@ -79,14 +89,19 @@ struct FormCombatStatsSection: View {
                         NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: maxHP) { newValue in
+                                print("⚔️ [maxHP onChange] Old currentHP: \(currentHP)")
                                 // When max HP changes, ensure current HP is not higher
                                 if let maxValue = Int(newValue) {
                                     if let currentValue = Int(currentHP) {
                                         if currentValue > maxValue {
+                                            print("⚔️ [maxHP onChange] Current HP too high, adjusting to max: \(maxValue)")
                                             currentHP = newValue
+                                        } else {
+                                            print("⚔️ [maxHP onChange] Current HP (\(currentValue)) within new max (\(maxValue)), keeping it")
                                         }
                                     }
                                 }
+                                print("⚔️ [maxHP onChange] Final currentHP: \(currentHP)")
                             }
                         
                         Button(action: {
@@ -163,17 +178,23 @@ struct FormCombatStatsSection: View {
     }
     
     private func validateAndCorrectCurrentHP() {
+        print("⚔️ [validateAndCorrectCurrentHP] START - currentHP: \(currentHP), maxHP: \(maxHP)")
+        
         // Handle empty fields
         if currentHP.isEmpty || maxHP.isEmpty {
+            print("⚔️ [validateAndCorrectCurrentHP] Empty fields, skipping")
             return
         }
         
         // Ensure current HP is not higher than max HP
         if let maxValue = Int(maxHP), let currentValue = Int(currentHP) {
+            print("⚔️ [validateAndCorrectCurrentHP] Parsed values - current: \(currentValue), max: \(maxValue)")
             if currentValue > maxValue {
+                print("⚔️ [validateAndCorrectCurrentHP] Current HP too high, setting to max: \(maxHP)")
                 currentHP = maxHP
             }
         }
+        print("⚔️ [validateAndCorrectCurrentHP] END - final currentHP: \(currentHP)")
     }
     
     private func validateAndCorrectMovement() {
