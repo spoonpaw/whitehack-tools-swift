@@ -192,6 +192,17 @@ struct CustomAttributeEditor: View {
                         .foregroundColor(.secondary)
                     HStack {
                         TextField("", text: $textValue)
+                            .focused($isFocused)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 60)
+                            .multilineTextAlignment(.center)
+                            .font(.title3)
+                            #if os(iOS)
+                            .font(Font.system(.title3).weight(.medium))
+                            .keyboardType(.numberPad)
+                            #else
+                            .fontWeight(.medium)
+                            #endif
                             .onChange(of: textValue) { newValue in
                                 // Only allow numeric characters
                                 let filtered = newValue.filter { $0.isNumber }
@@ -208,17 +219,18 @@ struct CustomAttributeEditor: View {
                                     onUpdate(localAttribute)
                                 }
                             }
-                            .frame(width: 60)
-                            .multilineTextAlignment(.center)
-                            .font(.title3)
-                            #if os(iOS)
-                            .font(Font.system(.title3).weight(.medium))
-                            #else
-                            .fontWeight(.medium)
-                            #endif
                             .onChange(of: isFocused) { newValue in
+                                print("Focus changed: \(newValue)")
                                 if !newValue {  // Field lost focus
-                                    validateAndFixEmptyInput()
+                                    print("Field lost focus, textValue: \(textValue)")
+                                    if textValue.isEmpty {
+                                        print("Setting default value")
+                                        textValue = "1"
+                                        localAttribute.value = 1
+                                        onUpdate(localAttribute)
+                                    } else {
+                                        validateAndFixEmptyInput()
+                                    }
                                 }
                             }
                         Stepper("", value: Binding(
@@ -257,13 +269,15 @@ struct CustomAttributeEditor: View {
     }
     
     private func validateAndFixEmptyInput() {
-        if textValue.isEmpty || Int(textValue) == nil {
-            textValue = String(1)
-            localAttribute.value = 1
-            onUpdate(localAttribute)
-        } else if let current = Int(textValue) {
+        if textValue.isEmpty {
+            return
+        }
+        
+        if let current = Int(textValue) {
             let clamped = max(1, min(20, current))
-            textValue = String(clamped)
+            if clamped != current {
+                textValue = String(clamped)
+            }
             localAttribute.value = clamped
             onUpdate(localAttribute)
         }

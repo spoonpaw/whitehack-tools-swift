@@ -19,7 +19,11 @@ struct AttributeEditor: View {
                     .focused($focusedField, equals: field)
                     .onChange(of: focusedField) { newValue in
                         if newValue != field {  // Field lost focus
-                            validateAndFixEmptyInput()
+                            if value.isEmpty {
+                                value = "1"
+                            } else {
+                                validateAndFixEmptyInput()
+                            }
                         }
                     }
                     .onChange(of: value) { _ in
@@ -66,11 +70,15 @@ struct AttributeEditor: View {
     }
     
     private func validateAndFixEmptyInput() {
-        if value.isEmpty || Int(value) == nil {
-            value = String(1)
-        } else if let current = Int(value) {
+        if value.isEmpty {
+            return
+        }
+        
+        if let current = Int(value) {
             let clamped = max(1, min(20, current))
-            value = String(clamped)
+            if clamped != current {
+                value = String(clamped)
+            }
         }
     }
     
