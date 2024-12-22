@@ -219,6 +219,39 @@ struct RetainerHPControl: View {
     @Binding var maxHP: Int
     @FocusState private var focusedField: CharacterFormView.Field?
     
+    // String bindings for text fields
+    @State private var currentHPString: String = ""
+    @State private var maxHPString: String = ""
+    
+    private var currentMaxHP: Int {
+        let value = Int(maxHPString) ?? 9999
+        print("⚔️ [RetainerHPControl.currentMaxHP] maxHP string: \(maxHPString), parsed: \(value)")
+        return value
+    }
+    
+    private func validateAndCorrectCurrentHP() {
+        print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] START - currentHP: \(currentHPString), maxHP: \(maxHPString)")
+        
+        // Handle empty fields
+        if currentHPString.isEmpty || maxHPString.isEmpty {
+            print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Empty fields, skipping")
+            return
+        }
+        
+        // Ensure current HP is not higher than max HP
+        if let maxValue = Int(maxHPString), let currentValue = Int(currentHPString) {
+            print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Parsed values - current: \(currentValue), max: \(maxValue)")
+            if currentValue > maxValue {
+                print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Current HP too high, setting to max: \(maxHPString)")
+                currentHPString = maxHPString
+                currentHP = maxValue
+            } else {
+                currentHP = currentValue
+            }
+        }
+        print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] END - final currentHP: \(currentHPString)")
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Hit Points")
@@ -233,7 +266,9 @@ struct RetainerHPControl: View {
                         .foregroundColor(.secondary)
                     HStack(spacing: 8) {
                         Button(action: {
-                            currentHP = max(-9999, currentHP - 1)
+                            let newValue = max(-9999, currentHP - 1)
+                            currentHP = newValue
+                            currentHPString = String(newValue)
                         }) {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title2)
@@ -242,29 +277,28 @@ struct RetainerHPControl: View {
                         .buttonStyle(BorderlessButtonStyle())
                         
                         NumericTextField(
-                            text: Binding(
-                                get: { String(currentHP) },
-                                set: { 
-                                    let newValue = Int($0) ?? 0
-                                    // Don't allow current HP to exceed max HP
-                                    if newValue > maxHP {
-                                        currentHP = maxHP
-                                    } else {
-                                        currentHP = newValue
-                                    }
-                                }
-                            ),
+                            text: $currentHPString,
                             field: .currentHP,
                             minValue: -9999,
-                            maxValue: maxHP,
+                            maxValue: currentMaxHP,
                             focusedField: $focusedField
                         )
                         .frame(maxWidth: .infinity)
+                        .onChange(of: currentHPString) { _ in
+                            validateAndCorrectCurrentHP()
+                        }
+                        .onChange(of: maxHPString) { newValue in
+                            print("⚔️ [RetainerHPControl.currentHP field] maxHP changed to: \(newValue)")
+                            print("⚔️ [RetainerHPControl.currentHP field] parsed maxHP: \(Int(newValue) ?? 9999)")
+                        }
                         
                         Button(action: {
-                            let newValue = currentHP + 1
-                            if newValue <= maxHP {
-                                currentHP = min(9999, newValue)
+                            if let currentValue = Int(currentHPString), let maxValue = Int(maxHPString) {
+                                let newValue = currentValue + 1
+                                if newValue <= maxValue {
+                                    currentHPString = String(min(9999, newValue))
+                                    currentHP = min(9999, newValue)
+                                }
                             }
                         }) {
                             Image(systemName: "plus.circle.fill")
@@ -277,12 +311,20 @@ struct RetainerHPControl: View {
                 
                 // Max HP
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Maximum")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text("Maximum")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("(min: 1)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                     HStack(spacing: 8) {
                         Button(action: {
-                            maxHP = max(1, maxHP - 1)
+                            if let value = Int(maxHPString) {
+                                maxHPString = String(max(1, value - 1))
+                                maxHP = max(1, value - 1)
+                            }
                         }) {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title2)
@@ -291,26 +333,36 @@ struct RetainerHPControl: View {
                         .buttonStyle(BorderlessButtonStyle())
                         
                         NumericTextField(
-                            text: Binding(
-                                get: { String(maxHP) },
-                                set: { 
-                                    let newValue = max(1, Int($0) ?? 1)
-                                    maxHP = newValue
-                                    // If current HP is higher than new max HP, reduce it
-                                    if currentHP > newValue {
-                                        currentHP = newValue
-                                    }
-                                }
-                            ),
+                            text: $maxHPString,
                             field: .maxHP,
                             minValue: 1,
                             maxValue: 9999,
                             focusedField: $focusedField
                         )
                         .frame(maxWidth: .infinity)
+                        .onChange(of: maxHPString) { newValue in
+                            print("⚔️ [RetainerHPControl.maxHP onChange] Old currentHP: \(currentHPString)")
+                            // When max HP changes, ensure current HP is not higher
+                            if let maxValue = Int(newValue) {
+                                maxHP = maxValue
+                                if let currentValue = Int(currentHPString) {
+                                    if currentValue > maxValue {
+                                        print("⚔️ [RetainerHPControl.maxHP onChange] Current HP too high, adjusting to max: \(maxValue)")
+                                        currentHPString = newValue
+                                        currentHP = maxValue
+                                    } else {
+                                        print("⚔️ [RetainerHPControl.maxHP onChange] Current HP (\(currentValue)) within new max (\(maxValue)), keeping it")
+                                    }
+                                }
+                            }
+                        }
                         
                         Button(action: {
-                            maxHP = min(9999, maxHP + 1)
+                            if let value = Int(maxHPString) {
+                                let newValue = min(9999, value + 1)
+                                maxHPString = String(newValue)
+                                maxHP = newValue
+                            }
                         }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
@@ -320,6 +372,11 @@ struct RetainerHPControl: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            // Initialize string values from Int bindings
+            currentHPString = String(currentHP)
+            maxHPString = String(maxHP)
         }
     }
 }
