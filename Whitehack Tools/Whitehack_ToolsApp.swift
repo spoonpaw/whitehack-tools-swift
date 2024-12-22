@@ -23,6 +23,9 @@ struct Whitehack_ToolsApp: App {
         }
         #if os(macOS)
         .windowResizability(.contentSize)
+        .commands {
+            CommandGroup(replacing: .newItem) { }
+        }
         #endif
     }
 }
