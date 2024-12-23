@@ -696,23 +696,29 @@ struct ArmorEditRow: View {
                     NumericTextField(text: $bonusString, field: .armorBonus, minValue: 0, maxValue: 99, focusedField: $focusedField)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 60)
+                        .focused($focusedField, equals: .armorBonus)
+                        .onChange(of: focusedField) { newValue in
+                            if newValue != .armorBonus && bonusString.isEmpty {  // Field lost focus and is empty
+                                bonusString = "0"
+                                bonus = 0
+                            }
+                        }
                         .onChange(of: bonusString) { newValue in
                             if let value = Int(newValue) {
                                 let absValue = abs(value)
                                 bonus = isBonus ? absValue : -absValue
+                                print("🔥 SET BONUS TO: \(bonus)")
                             }
-                            bonusString = "\(abs(bonus))"
                         }
-                    Spacer()
                     Stepper("", value: Binding(
                         get: { abs(bonus) },
                         set: { newValue in
-                            let value = max(0, min(99, newValue))
-                            bonus = isBonus ? value : -value
-                            bonusString = "\(value)"
+                            print("🔥 STEPPER SETTING TO: \(newValue)")
+                            bonus = isBonus ? newValue : -newValue
+                            bonusString = "\(newValue)"
                         }
                     ), in: 0...99)
-                    .labelsHidden()
+                        .labelsHidden()
                 }
             }
             
