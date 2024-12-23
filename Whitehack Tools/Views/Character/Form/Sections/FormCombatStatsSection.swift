@@ -39,7 +39,7 @@ struct FormCombatStatsSection: View {
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         
-                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: currentMaxHP, focusedField: $focusedField)
+                        NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: currentMaxHP, defaultValue: 0, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: currentHP) { newValue in
                                 print("⚔️ [currentHP onChange] Value changed to: '\(newValue)'")

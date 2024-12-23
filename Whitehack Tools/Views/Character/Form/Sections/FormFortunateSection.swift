@@ -230,32 +230,32 @@ struct RetainerHPControl: View {
     @State private var maxHPString: String = ""
     
     private var currentMaxHP: Int {
-        let value = Int(maxHPString) ?? 9999
-        print("⚔️ [RetainerHPControl.currentMaxHP] maxHP string: \(maxHPString), parsed: \(value)")
-        return value
+        print(" [Fortunate.currentMaxHP] Current maxHP: \(maxHP)")
+        return maxHP
     }
     
     private func validateAndCorrectCurrentHP() {
-        print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] START - currentHP: \(currentHPString), maxHP: \(maxHPString)")
+        print(" [Fortunate.validate] START - currentHPString: '\(currentHPString)', maxHPString: '\(maxHPString)'")
+        print(" [Fortunate.validate] Current Int values - currentHP: \(currentHP), maxHP: \(maxHP)")
         
-        // Handle empty fields
-        if currentHPString.isEmpty || maxHPString.isEmpty {
-            print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Empty fields, skipping")
+        // Allow empty during editing
+        if currentHPString.isEmpty {
+            print(" [Fortunate.validate] Empty currentHPString, allowing during edit")
             return
         }
         
-        // Ensure current HP is not higher than max HP
-        if let maxValue = Int(maxHPString), let currentValue = Int(currentHPString) {
-            print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Parsed values - current: \(currentValue), max: \(maxValue)")
-            if currentValue > maxValue {
-                print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] Current HP too high, setting to max: \(maxHPString)")
-                currentHPString = maxHPString
-                currentHP = maxValue
+        if let currentValue = Int(currentHPString) {
+            print(" [Fortunate.validate] Parsed currentValue: \(currentValue)")
+            if currentValue > maxHP {
+                print(" [Fortunate.validate] Current too high, setting to max: \(maxHP)")
+                currentHPString = String(maxHP)
+                currentHP = maxHP
             } else {
+                print(" [Fortunate.validate] Setting currentHP to: \(currentValue)")
                 currentHP = currentValue
             }
         }
-        print("⚔️ [RetainerHPControl.validateAndCorrectCurrentHP] END - final currentHP: \(currentHPString)")
+        print(" [Fortunate.validate] END - final currentHP: \(currentHP), currentHPString: '\(currentHPString)'")
     }
     
     var body: some View {
@@ -272,9 +272,10 @@ struct RetainerHPControl: View {
                         .foregroundColor(.secondary)
                     HStack(spacing: 8) {
                         Button(action: {
-                            let newValue = max(-9999, currentHP - 1)
-                            currentHP = newValue
-                            currentHPString = String(newValue)
+                            print(" [Fortunate.currentHP.minus] Before - currentHP: \(currentHP)")
+                            currentHP = max(-9999, currentHP - 1)
+                            currentHPString = String(currentHP)
+                            print(" [Fortunate.currentHP.minus] After - currentHP: \(currentHP), string: '\(currentHPString)'")
                         }) {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title2)
@@ -287,25 +288,45 @@ struct RetainerHPControl: View {
                             field: .currentHP,
                             minValue: -9999,
                             maxValue: currentMaxHP,
+                            defaultValue: 0,  // Set default value to 0
                             focusedField: $focusedField
                         )
                         .frame(maxWidth: .infinity)
-                        .onChange(of: currentHPString) { _ in
+                        .onChange(of: currentHPString) { newValue in
+                            print(" [Fortunate.currentHP.onChange] String changed to: '\(newValue)'")
+                            // Allow empty during editing
+                            if newValue.isEmpty {
+                                print(" [Fortunate.currentHP.onChange] Empty value during editing")
+                                return
+                            }
                             validateAndCorrectCurrentHP()
                         }
-                        .onChange(of: maxHPString) { newValue in
-                            print("⚔️ [RetainerHPControl.currentHP field] maxHP changed to: \(newValue)")
-                            print("⚔️ [RetainerHPControl.currentHP field] parsed maxHP: \(Int(newValue) ?? 9999)")
+                        .onChange(of: focusedField) { newValue in
+                            print(" [Fortunate.currentHP.focus] Focus changed to: \(String(describing: newValue))")
+                            print(" [Fortunate.currentHP.focus] Current string: '\(currentHPString)'")
+                            
+                            // Only validate on focus loss
+                            if newValue != .currentHP {
+                                print(" [Fortunate.currentHP.focus] Lost focus")
+                                if currentHPString.isEmpty {
+                                    print(" [Fortunate.currentHP.focus] Empty string, setting to 0")
+                                    currentHPString = "0"
+                                    currentHP = 0
+                                } else {
+                                    validateAndCorrectCurrentHP()
+                                }
+                            }
+                            print(" [Fortunate.currentHP.focus] After focus change - currentHP: \(currentHP), string: '\(currentHPString)'")
                         }
                         
                         Button(action: {
-                            if let currentValue = Int(currentHPString), let maxValue = Int(maxHPString) {
-                                let newValue = currentValue + 1
-                                if newValue <= maxValue {
-                                    currentHPString = String(min(9999, newValue))
-                                    currentHP = min(9999, newValue)
-                                }
+                            print(" [Fortunate.currentHP.plus] Before - currentHP: \(currentHP)")
+                            let newValue = currentHP + 1
+                            if newValue <= maxHP {
+                                currentHP = min(9999, newValue)
+                                currentHPString = String(currentHP)
                             }
+                            print(" [Fortunate.currentHP.plus] After - currentHP: \(currentHP), string: '\(currentHPString)'")
                         }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
@@ -327,10 +348,11 @@ struct RetainerHPControl: View {
                     }
                     HStack(spacing: 8) {
                         Button(action: {
-                            if let value = Int(maxHPString) {
-                                maxHPString = String(max(1, value - 1))
-                                maxHP = max(1, value - 1)
-                            }
+                            print(" [Fortunate.maxHP.minus] Before - maxHP: \(maxHP)")
+                            maxHP = max(1, maxHP - 1)
+                            maxHPString = String(maxHP)
+                            validateAndCorrectCurrentHP()
+                            print(" [Fortunate.maxHP.minus] After - maxHP: \(maxHP), string: '\(maxHPString)'")
                         }) {
                             Image(systemName: "minus.circle.fill")
                                 .font(.title2)
@@ -347,28 +369,29 @@ struct RetainerHPControl: View {
                         )
                         .frame(maxWidth: .infinity)
                         .onChange(of: maxHPString) { newValue in
-                            print("⚔️ [RetainerHPControl.maxHP onChange] Old currentHP: \(currentHPString)")
-                            // When max HP changes, ensure current HP is not higher
+                            print(" [Fortunate.maxHP.onChange] String changed to: '\(newValue)'")
                             if let maxValue = Int(newValue) {
                                 maxHP = maxValue
-                                if let currentValue = Int(currentHPString) {
-                                    if currentValue > maxValue {
-                                        print("⚔️ [RetainerHPControl.maxHP onChange] Current HP too high, adjusting to max: \(maxValue)")
-                                        currentHPString = newValue
-                                        currentHP = maxValue
-                                    } else {
-                                        print("⚔️ [RetainerHPControl.maxHP onChange] Current HP (\(currentValue)) within new max (\(maxValue)), keeping it")
-                                    }
-                                }
+                                validateAndCorrectCurrentHP()
                             }
+                            print(" [Fortunate.maxHP.onChange] After - maxHP: \(maxHP), currentHP: \(currentHP)")
+                        }
+                        .onChange(of: focusedField) { newValue in
+                            print(" [Fortunate.maxHP.focus] Focus changed to: \(String(describing: newValue))")
+                            if newValue != .maxHP && maxHPString.isEmpty {
+                                print(" [Fortunate.maxHP.focus] Empty string, setting to 1")
+                                maxHPString = "1"
+                                maxHP = 1
+                                validateAndCorrectCurrentHP()
+                            }
+                            print(" [Fortunate.maxHP.focus] After focus change - maxHP: \(maxHP), string: '\(maxHPString)'")
                         }
                         
                         Button(action: {
-                            if let value = Int(maxHPString) {
-                                let newValue = min(9999, value + 1)
-                                maxHPString = String(newValue)
-                                maxHP = newValue
-                            }
+                            print(" [Fortunate.maxHP.plus] Before - maxHP: \(maxHP)")
+                            maxHP = min(9999, maxHP + 1)
+                            maxHPString = String(maxHP)
+                            print(" [Fortunate.maxHP.plus] After - maxHP: \(maxHP), string: '\(maxHPString)'")
                         }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
@@ -380,9 +403,10 @@ struct RetainerHPControl: View {
             }
         }
         .onAppear {
-            // Initialize string values from Int bindings
+            print(" [Fortunate.onAppear] Initializing strings - currentHP: \(currentHP), maxHP: \(maxHP)")
             currentHPString = String(currentHP)
             maxHPString = String(maxHP)
+            print(" [Fortunate.onAppear] Initialized - currentHPString: '\(currentHPString)', maxHPString: '\(maxHPString)'")
         }
     }
 }

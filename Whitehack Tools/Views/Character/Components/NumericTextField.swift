@@ -8,7 +8,17 @@ struct NumericTextField: View {
     let field: CharacterFormView.Field
     let minValue: Int
     let maxValue: Int
+    let defaultValue: Int?
     @FocusState.Binding var focusedField: CharacterFormView.Field?
+    
+    init(text: Binding<String>, field: CharacterFormView.Field, minValue: Int, maxValue: Int, defaultValue: Int? = nil, focusedField: FocusState<CharacterFormView.Field?>.Binding) {
+        self._text = text
+        self.field = field
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.defaultValue = defaultValue
+        self._focusedField = focusedField
+    }
     
     private var allowsNegative: Bool {
         minValue < 0
@@ -29,7 +39,8 @@ struct NumericTextField: View {
             text: $text,
             allowsNegative: allowsNegative,
             minValue: minValue,
-            maxValue: maxValue
+            maxValue: maxValue,
+            defaultValue: defaultValue
         )
         .frame(height: 22)
         .focused($focusedField, equals: field)
@@ -76,6 +87,7 @@ struct MacNumericTextField: NSViewRepresentable {
     let allowsNegative: Bool
     let minValue: Int
     let maxValue: Int
+    let defaultValue: Int?
     
     func makeCoordinator() -> Coordinator {
         print(" [MacNumericTextField] makeCoordinator - maxValue: \(maxValue)")
@@ -117,19 +129,19 @@ struct MacNumericTextField: NSViewRepresentable {
             guard let textField = obj.object as? NSTextField else { return }
             let string = textField.stringValue
             
-            print("🔴 [controlTextDidChange] START - value: \(string)")
-            print("🔴 [controlTextDidChange] minValue: \(parent.minValue), maxValue: \(parent.maxValue)")
+            print(" [controlTextDidChange] START - value: \(string)")
+            print(" [controlTextDidChange] minValue: \(parent.minValue), maxValue: \(parent.maxValue)")
             
             // Allow empty string
             if string.isEmpty {
-                print("🔴 [controlTextDidChange] Empty string allowed")
+                print(" [controlTextDidChange] Empty string allowed")
                 parent.text = string
                 return
             }
             
             // Allow single minus during typing
             if parent.allowsNegative && string == "-" {
-                print("🔴 [controlTextDidChange] Single minus allowed")
+                print(" [controlTextDidChange] Single minus allowed")
                 parent.text = string
                 return
             }
@@ -142,7 +154,7 @@ struct MacNumericTextField: NSViewRepresentable {
             let filtered = String(string.unicodeScalars.filter { validCharSet.contains($0) })
             
             if filtered != string {
-                print("🔴 [controlTextDidChange] Filtered invalid chars: \(string) -> \(filtered)")
+                print(" [controlTextDidChange] Filtered invalid chars: \(string) -> \(filtered)")
                 textField.stringValue = filtered
                 parent.text = filtered
                 return
@@ -150,19 +162,19 @@ struct MacNumericTextField: NSViewRepresentable {
             
             // Validate numeric value and range immediately
             if let value = Int(filtered) {
-                print("🔴 [controlTextDidChange] Parsed value: \(value)")
+                print(" [controlTextDidChange] Parsed value: \(value)")
                 let clamped = max(parent.minValue, min(parent.maxValue, value))
                 let clampedString = String(clamped)
                 if clamped != value {
-                    print("🔴 [controlTextDidChange] Clamping value: \(value) -> \(clamped)")
+                    print(" [controlTextDidChange] Clamping value: \(value) -> \(clamped)")
                     textField.stringValue = clampedString
                 }
                 parent.text = clampedString
             } else {
-                print("🔴 [controlTextDidChange] Could not parse value, using filtered: \(filtered)")
+                print(" [controlTextDidChange] Could not parse value, using filtered: \(filtered)")
                 parent.text = filtered
             }
-            print("🔴 [controlTextDidChange] END - final value: \(parent.text)")
+            print(" [controlTextDidChange] END - final value: \(parent.text)")
         }
         
         func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
@@ -216,8 +228,8 @@ struct MacNumericTextField: NSViewRepresentable {
             
             // Handle empty field
             if textField.stringValue.isEmpty {
-                let finalText = String(parent.minValue)
-                print(" [controlTextDidEndEditing] Empty field, using min: \(finalText)")
+                let finalText = String(parent.defaultValue ?? parent.minValue)
+                print(" [controlTextDidEndEditing] Empty field, using default: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
                 return
@@ -225,8 +237,8 @@ struct MacNumericTextField: NSViewRepresentable {
             
             // Handle minus sign
             if parent.allowsNegative && textField.stringValue == "-" {
-                let finalText = String(parent.minValue)
-                print(" [controlTextDidEndEditing] Single minus, using min: \(finalText)")
+                let finalText = String(parent.defaultValue ?? parent.minValue)
+                print(" [controlTextDidEndEditing] Single minus, using default: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
                 return
@@ -240,8 +252,8 @@ struct MacNumericTextField: NSViewRepresentable {
                 textField.stringValue = finalText
                 parent.text = finalText
             } else {
-                let finalText = String(parent.minValue)
-                print(" [controlTextDidEndEditing] Invalid value, using min: \(finalText)")
+                let finalText = String(parent.defaultValue ?? parent.minValue)
+                print(" [controlTextDidEndEditing] Invalid value, using default: \(finalText)")
                 textField.stringValue = finalText
                 parent.text = finalText
             }
