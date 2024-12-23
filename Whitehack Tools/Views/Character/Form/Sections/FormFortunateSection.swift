@@ -42,21 +42,27 @@ struct FormFortunateStandingCard: View {
             
             // Fortune Usage
             VStack(alignment: .leading, spacing: 12) {
-                Toggle(isOn: $hasUsedFortune) {
+                HStack(alignment: .top, spacing: 16) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Good Fortune")
+                            .font(.title3)
                             .fontWeight(.medium)
                         Text("Daily power to reroll any roll")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $hasUsedFortune)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                 }
-                .tint(.blue)
                 
                 HStack {
                     Image(systemName: hasUsedFortune ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
                     Text(hasUsedFortune ? "Power has been used today" : "Power is available to use")
-                        .font(.caption)
+                        .font(.subheadline)
                 }
                 .foregroundColor(hasUsedFortune ? .red : .green)
             }
