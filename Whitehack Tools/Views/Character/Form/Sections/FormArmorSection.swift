@@ -514,11 +514,12 @@ struct ArmorEditRow: View {
                         NumericTextField(text: $quantityString, field: .armorQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
-                            .onChange(of: quantityString) { newValue in
-                                if let value = Int(newValue) {
-                                    quantity = max(1, min(99, value))
+                            .focused($focusedField, equals: .armorQuantity)
+                            .onChange(of: focusedField) { newValue in
+                                if newValue != .armorQuantity && quantityString.isEmpty {  // Field lost focus and is empty
+                                    quantityString = "1"
+                                    quantity = 1
                                 }
-                                quantityString = "\(quantity)"
                             }
                         Stepper("", value: $quantity, in: 1...99)
                             .labelsHidden()
