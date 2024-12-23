@@ -573,16 +573,12 @@ struct ArmorEditRow: View {
                         NumericTextField(text: $weightString, field: .armorQuantity, minValue: 0, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
-                            .onChange(of: weightString) { newValue in
-                                print("[WEIGHT] Weight string changed to: '\(newValue)'")
-                                if let value = Int(newValue) {
-                                    weight = max(0, min(99, value))
-                                }
-                                weightString = "\(weight)"
-                            }
                             .focused($focusedField, equals: .armorQuantity)
                             .onChange(of: focusedField) { newValue in
-                                print("[WEIGHT] Focus changed to: \(String(describing: newValue))")
+                                if newValue != .armorQuantity && weightString.isEmpty {  // Field lost focus and is empty
+                                    weightString = "0"
+                                    weight = 0
+                                }
                             }
                         Stepper("", value: $weight, in: 0...99)
                             .labelsHidden()
