@@ -34,53 +34,57 @@ private struct CleverMasterCard: View {
     let availableSlots: Int
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 24) {
             // Daily Power Section
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 8) {
                     Image(systemName: "sparkles")
                         .foregroundColor(.red)
+                        .imageScale(.large)
                     Text("Daily Power")
-                        .font(.headline)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .foregroundColor(.red)
                 }
                 
                 Toggle(isOn: $cleverKnackOptions.hasUsedUnorthodoxBonus) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Unorthodox Solution")
+                            .font(.title3)
                             .fontWeight(.medium)
                         Text(cleverKnackOptions.hasUsedUnorthodoxBonus ? 
                             "Already used today - must rest to regain" :
                             "Available to use: +6 bonus for non-combat problem solving")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(cleverKnackOptions.hasUsedUnorthodoxBonus ? .red : .green)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .buttonStyle(BorderlessButtonStyle())
+                .toggleStyle(.switch)
                 
                 if cleverKnackOptions.hasUsedUnorthodoxBonus {
-                    HStack(alignment: .top, spacing: 4) {
+                    HStack(alignment: .center, spacing: 6) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundColor(.red)
                         Text("Power has been used today")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.red)
                     }
                 }
             }
-            .padding(.bottom, 8)
             
             Divider()
                 .padding(.vertical, 8)
             
             // Knacks Section
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
+                HStack(spacing: 8) {
                     Image(systemName: "lightbulb")
                         .foregroundColor(.orange)
+                        .imageScale(.large)
                     Text("Knacks")
-                        .font(.headline)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .foregroundColor(.orange)
                 }
                 
@@ -92,18 +96,10 @@ private struct CleverMasterCard: View {
                 }
             }
         }
-        .padding(16)
-        .background(backgroundStyle)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(radius: 2)
-    }
-    
-    private var backgroundStyle: some View {
-        #if os(iOS)
-        Color(uiColor: .systemBackground)
-        #else
-        Color(nsColor: .windowBackgroundColor)
-        #endif
+        .padding(20)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -117,44 +113,30 @@ private struct KnackSlotRow: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Knack Selection Menu
-            Menu {
-                Button("None") {
-                    cleverKnackOptions.setKnack(nil, at: slotIndex)
-                }
-                
+        VStack(alignment: .leading, spacing: 12) {
+            Picker("Slot \(slotIndex + 1)", selection: Binding(
+                get: { cleverKnackOptions.getKnack(at: slotIndex) },
+                set: { cleverKnackOptions.setKnack($0, at: slotIndex) }
+            )) {
+                Text("Select Knack").tag(Optional<CleverKnack>.none)
                 ForEach(CleverKnack.allCases) { knack in
                     if !isKnackActive(knack) || cleverKnackOptions.getKnack(at: slotIndex) == knack {
-                        Button(knack.name) {
-                            cleverKnackOptions.setKnack(knack, at: slotIndex)
-                        }
+                        Text(knack.name).tag(Optional(knack))
                     }
                 }
-            } label: {
-                HStack {
-                    Text("Slot \(slotIndex + 1):")
-                        .foregroundColor(.secondary)
-                    Text(cleverKnackOptions.getKnack(at: slotIndex)?.name ?? "Select Knack")
-                        .foregroundColor(cleverKnackOptions.getKnack(at: slotIndex) == nil ? .secondary : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(backgroundStyle)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(borderColor, lineWidth: 1)
-                )
             }
+            .pickerStyle(.menu)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(Color(nsColor: .controlBackgroundColor))
+            .cornerRadius(12)
             
             if let knack = cleverKnackOptions.getKnack(at: slotIndex) {
                 Text(knack.description)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 if knack == .combatExploiter {
                     Toggle(isOn: Binding(
@@ -163,35 +145,20 @@ private struct KnackSlotRow: View {
                     )) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Battle Usage")
+                                .font(.title3)
                                 .fontWeight(.medium)
                             Text(cleverKnackOptions.isKnackUsed(at: slotIndex) ?
                                 "Already used this battle - resets after battle" :
                                 "Available to use this battle")
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundColor(cleverKnackOptions.isKnackUsed(at: slotIndex) ? .red : .green)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     }
-                    .buttonStyle(BorderlessButtonStyle())
-                    .padding(.top, 4)
+                    .toggleStyle(.switch)
+                    .padding(.top, 8)
                 }
             }
         }
-    }
-    
-    private var backgroundStyle: some View {
-        #if os(iOS)
-        Color(uiColor: .systemBackground)
-        #else
-        Color(nsColor: .windowBackgroundColor)
-        #endif
-    }
-    
-    private var borderColor: Color {
-        #if os(iOS)
-        Color(uiColor: .systemGray4)
-        #else
-        Color(nsColor: .separatorColor)
-        #endif
     }
 }
