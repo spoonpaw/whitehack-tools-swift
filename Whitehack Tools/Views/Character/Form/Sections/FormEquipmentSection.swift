@@ -547,30 +547,29 @@ struct GearEditRow: View {
             Text("Weight")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            Menu {
-                Button("No size (100/slot)") {
-                    weight = "No size"
-                }
-                Button("Minor (2/slot)") {
-                    weight = "Minor"
-                }
-                Button("Regular (1 slot)") {
-                    weight = "Regular"
-                }
-                Button("Heavy (2 slots)") {
-                    weight = "Heavy"
-                }
-            } label: {
-                Label {
+            Label {
+                Menu {
+                    Button("No size (100/slot)") {
+                        weight = "No size"
+                    }
+                    Button("Minor (2/slot)") {
+                        weight = "Minor"
+                    }
+                    Button("Regular (1 slot)") {
+                        weight = "Regular"
+                    }
+                    Button("Heavy (2 slots)") {
+                        weight = "Heavy"
+                    }
+                } label: {
                     Text(FormEquipmentSection.getWeightDisplayText(weight))
                         .frame(maxWidth: .infinity, alignment: .leading)
-                } icon: {
-                    IconFrame(icon: Ph.scales.bold, color: .blue)
                 }
-                .foregroundColor(.primary)
+                .menuStyle(.borderlessButton)
+                .frame(maxWidth: .infinity)
+            } icon: {
+                IconFrame(icon: Ph.scales.bold, color: .blue)
             }
-            .menuStyle(.borderlessButton)
-            .frame(maxWidth: .infinity)
         }
     }
 }
