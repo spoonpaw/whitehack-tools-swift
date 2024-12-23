@@ -1285,6 +1285,11 @@ class PlayerCharacter: Identifiable, Codable {
         // Combat Stats
         currentHP = try container.decodeIfPresent(Int.self, forKey: .currentHP) ?? 1
         maxHP = try container.decodeIfPresent(Int.self, forKey: .maxHP) ?? 1
+        
+        // Ensure maxHP is at least 1 and currentHP is valid
+        maxHP = max(1, maxHP)
+        currentHP = min(max(0, currentHP), maxHP)
+        
         _attackValue = try container.decodeIfPresent(Int.self, forKey: ._attackValue) ?? 10
         
         // Initialize movement with clamped value
@@ -1386,8 +1391,10 @@ class PlayerCharacter: Identifiable, Codable {
         self.intelligence = intelligence
         self.willpower = willpower
         self.charisma = charisma
-        self.currentHP = currentHP
-        self.maxHP = maxHP
+        // Ensure maxHP is at least 1
+        self.maxHP = max(1, maxHP)
+        // Ensure currentHP is between 0 and maxHP
+        self.currentHP = min(max(0, currentHP), self.maxHP)
         self._attackValue = _attackValue
         self.movement = min(999, max(0, movement))  // Clamp between 0 and 999
         self._saveValue = _saveValue

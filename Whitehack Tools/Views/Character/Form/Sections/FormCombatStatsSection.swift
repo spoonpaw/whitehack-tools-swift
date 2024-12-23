@@ -42,11 +42,38 @@ struct FormCombatStatsSection: View {
                         NumericTextField(text: $currentHP, field: .currentHP, minValue: -9999, maxValue: currentMaxHP, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: currentHP) { newValue in
-                                validateAndCorrectCurrentHP()
+                                print("⚔️ [currentHP onChange] Value changed to: '\(newValue)'")
+                                
+                                // Allow empty during editing
+                                if newValue.isEmpty {
+                                    print("⚔️ [currentHP onChange] Empty value during editing")
+                                    return
+                                }
+                                
+                                // If we have a valid number, ensure it doesn't exceed maxHP
+                                if !maxHP.isEmpty,
+                                   let currentValue = Int(newValue),
+                                   let maxValue = Int(maxHP) {
+                                    print("⚔️ [currentHP onChange] Checking value: \(currentValue) against max: \(maxValue)")
+                                    if currentValue > maxValue {
+                                        print("⚔️ [currentHP onChange] Value too high, setting to max")
+                                        currentHP = maxHP
+                                    }
+                                }
                             }
-                            .onChange(of: maxHP) { newValue in
-                                print("⚔️ [currentHP field] maxHP changed to: \(newValue)")
-                                print("⚔️ [currentHP field] parsed maxHP: \(Int(newValue) ?? 9999)")
+                            .onChange(of: focusedField) { newValue in
+                                print("⚔️ [currentHP focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
+                                print("⚔️ [currentHP focus] Current value: '\(currentHP)', isEmpty: \(currentHP.isEmpty)")
+                                
+                                // Clean up on focus loss
+                                if newValue != .currentHP {
+                                    print("⚔️ [currentHP focus] Field lost focus")
+                                    if currentHP.isEmpty {
+                                        print("⚔️ [currentHP focus] Setting empty field to default: 0")
+                                        currentHP = "0"
+                                    }
+                                    validateAndCorrectCurrentHP()
+                                }
                             }
                         
                         Button(action: {
@@ -89,19 +116,55 @@ struct FormCombatStatsSection: View {
                         NumericTextField(text: $maxHP, field: .maxHP, minValue: 1, maxValue: 9999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
                             .onChange(of: maxHP) { newValue in
-                                print("⚔️ [maxHP onChange] Old currentHP: \(currentHP)")
-                                // When max HP changes, ensure current HP is not higher
-                                if let maxValue = Int(newValue) {
-                                    if let currentValue = Int(currentHP) {
-                                        if currentValue > maxValue {
-                                            print("⚔️ [maxHP onChange] Current HP too high, adjusting to max: \(maxValue)")
-                                            currentHP = newValue
-                                        } else {
-                                            print("⚔️ [maxHP onChange] Current HP (\(currentValue)) within new max (\(maxValue)), keeping it")
-                                        }
+                                print("\n⚔️ [maxHP onChange] ==================")
+                                print("⚔️ [maxHP onChange] Value changed to: '\(newValue)'")
+                                print("⚔️ [maxHP onChange] Current HP is: '\(currentHP)'")
+                                print("⚔️ [maxHP onChange] Focus is on: \(String(describing: focusedField))")
+                                
+                                // Allow empty during editing
+                                if newValue.isEmpty {
+                                    print("⚔️ [maxHP onChange] Empty value during editing, allowing it")
+                                    return
+                                }
+                                
+                                // If we have a valid number, ensure currentHP doesn't exceed it
+                                if !currentHP.isEmpty,
+                                   let maxValue = Int(newValue),
+                                   let currentValue = Int(currentHP) {
+                                    print("⚔️ [maxHP onChange] Checking currentHP: \(currentValue) against new max: \(maxValue)")
+                                    if currentValue > maxValue {
+                                        print("⚔️ [maxHP onChange] Current HP too high, adjusting to new max")
+                                        currentHP = newValue
                                     }
                                 }
-                                print("⚔️ [maxHP onChange] Final currentHP: \(currentHP)")
+                            }
+                            .onChange(of: focusedField) { newValue in
+                                print("\n⚔️ [maxHP focus] ==================")
+                                print("⚔️ [maxHP focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
+                                print("⚔️ [maxHP focus] Current maxHP: '\(maxHP)', isEmpty: \(maxHP.isEmpty)")
+                                print("⚔️ [maxHP focus] Current HP is: '\(currentHP)'")
+                                
+                                // Clean up on focus loss
+                                if newValue != .maxHP {
+                                    print("⚔️ [maxHP focus] Field lost focus")
+                                    if maxHP.isEmpty {
+                                        print("⚔️ [maxHP focus] Setting empty field to default: 1")
+                                        maxHP = "1"
+                                    }
+                                    
+                                    // Ensure currentHP is valid against new maxHP
+                                    if let maxValue = Int(maxHP),
+                                       let currentValue = Int(currentHP) {
+                                        print("⚔️ [maxHP focus] Parsed maxHP: \(maxValue), currentHP: \(currentValue)")
+                                        if currentValue > maxValue {
+                                            print("⚔️ [maxHP focus] Current HP too high, adjusting to match max")
+                                            currentHP = maxHP
+                                        }
+                                    } else {
+                                        print("⚔️ [maxHP focus] Failed to parse either maxHP or currentHP")
+                                    }
+                                }
+                                print("⚔️ [maxHP focus] Final values - maxHP: '\(maxHP)', currentHP: '\(currentHP)'")
                             }
                         
                         Button(action: {
@@ -140,8 +203,17 @@ struct FormCombatStatsSection: View {
                         
                         NumericTextField(text: $movement, field: .movement, minValue: 0, maxValue: 999, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
-                            .onChange(of: movement) { newValue in
-                                validateAndCorrectMovement()
+                            .onChange(of: focusedField) { newValue in
+                                print("⚔️ [movement focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
+                                print("⚔️ [movement focus] Current value: '\(movement)', isEmpty: \(movement.isEmpty)")
+                                if newValue != .movement {  // Field lost focus
+                                    if movement.isEmpty {
+                                        print("⚔️ [movement focus] Setting empty field to default: 30")
+                                        movement = "30"
+                                    } else {
+                                        validateAndCorrectMovement()
+                                    }
+                                }
                             }
                         
                         Button(action: {
@@ -178,23 +250,53 @@ struct FormCombatStatsSection: View {
     }
     
     private func validateAndCorrectCurrentHP() {
-        print("⚔️ [validateAndCorrectCurrentHP] START - currentHP: \(currentHP), maxHP: \(maxHP)")
+        print("⚔️ [validateAndCorrectCurrentHP] START - currentHP: '\(currentHP)', maxHP: '\(maxHP)'")
         
         // Handle empty fields
-        if currentHP.isEmpty || maxHP.isEmpty {
-            print("⚔️ [validateAndCorrectCurrentHP] Empty fields, skipping")
+        if currentHP.isEmpty {
+            print("⚔️ [validateAndCorrectCurrentHP] Current HP empty, setting to 0")
+            currentHP = "0"
             return
         }
         
-        // Ensure current HP is not higher than max HP
-        if let maxValue = Int(maxHP), let currentValue = Int(currentHP) {
-            print("⚔️ [validateAndCorrectCurrentHP] Parsed values - current: \(currentValue), max: \(maxValue)")
-            if currentValue > maxValue {
-                print("⚔️ [validateAndCorrectCurrentHP] Current HP too high, setting to max: \(maxHP)")
-                currentHP = maxHP
-            }
+        if maxHP.isEmpty {
+            print("⚔️ [validateAndCorrectCurrentHP] Max HP empty, using default max of 1")
+            maxHP = "1"
         }
-        print("⚔️ [validateAndCorrectCurrentHP] END - final currentHP: \(currentHP)")
+        
+        // Parse and validate the values
+        if let currentValue = Int(currentHP) {
+            print("⚔️ [validateAndCorrectCurrentHP] Parsed current value: \(currentValue)")
+            
+            // First ensure within global bounds
+            let boundedValue = max(-9999, min(9999, currentValue))
+            if boundedValue != currentValue {
+                print("⚔️ [validateAndCorrectCurrentHP] Adjusting to global bounds: \(boundedValue)")
+                currentHP = String(boundedValue)
+                return
+            }
+            
+            // Remove leading zeros if present
+            if currentHP.hasPrefix("0") && currentHP != "0" {
+                print("⚔️ [validateAndCorrectCurrentHP] Removing leading zeros from: '\(currentHP)'")
+                currentHP = String(currentValue)
+                return
+            }
+            
+            // Then check against max HP
+            if let maxValue = Int(maxHP) {
+                print("⚔️ [validateAndCorrectCurrentHP] Checking against max HP: \(maxValue)")
+                if currentValue > maxValue {
+                    print("⚔️ [validateAndCorrectCurrentHP] Current HP too high, setting to max: \(maxValue)")
+                    currentHP = String(maxValue)
+                }
+            }
+        } else {
+            print("⚔️ [validateAndCorrectCurrentHP] Failed to parse current HP, setting to 0")
+            currentHP = "0"
+        }
+        
+        print("⚔️ [validateAndCorrectCurrentHP] END - final currentHP: '\(currentHP)'")
     }
     
     private func validateAndCorrectMovement() {
