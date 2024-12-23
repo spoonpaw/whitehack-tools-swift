@@ -132,12 +132,6 @@ struct WeaponEditRow: View {
                         NumericTextField(text: $quantityString, field: .weaponQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
-                            .onChange(of: quantityString) { newValue in
-                                if let value = Int(newValue) {
-                                    quantity = max(1, min(99, value))
-                                }
-                                quantityString = "\(quantity)"
-                            }
                         Stepper("", value: $quantity, in: 1...99)
                             .labelsHidden()
                             .onChange(of: quantity) { newValue in
