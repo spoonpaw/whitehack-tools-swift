@@ -69,6 +69,16 @@ struct FormBasicInfoSection: View {
                         Spacer()
                         NumericTextField(text: $level, field: .level, minValue: 1, maxValue: 10, focusedField: $focusedField)
                             .frame(maxWidth: .infinity)
+                            .onChange(of: focusedField) { newValue in
+                                print(" [level focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
+                                print(" [level focus] Current value: '\(level)', isEmpty: \(level.isEmpty)")
+                                
+                                // Clean up on focus loss
+                                if newValue != .level && level.isEmpty {
+                                    print(" [level focus] Setting empty field to default: 1")
+                                    level = "1"
+                                }
+                            }
                         Spacer()
                     }
                     .frame(maxWidth: 300)
