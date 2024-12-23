@@ -91,6 +91,7 @@ struct QuirkSlotView: View {
 struct ComebackDiceView: View {
     @Binding var comebackDice: Int
     @State private var diceText: String = ""
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -117,6 +118,7 @@ struct ComebackDiceView: View {
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 50)
                         .multilineTextAlignment(.center)
+                        .focused($isFocused)
                         .onAppear {
                             diceText = String(comebackDice)
                         }
@@ -127,7 +129,16 @@ struct ComebackDiceView: View {
                             }
                             if let value = Int(filtered) {
                                 comebackDice = value
-                            } else if filtered.isEmpty {
+                            }
+                        }
+                        .onChange(of: isFocused) { newValue in
+                            print("🎲 [comeback dice focus] Focus changed to: \(newValue)")
+                            print("🎲 [comeback dice focus] Current text: '\(diceText)', isEmpty: \(diceText.isEmpty)")
+                            
+                            // Clean up on focus loss
+                            if !newValue && diceText.isEmpty {
+                                print("🎲 [comeback dice focus] Setting empty field to default: 0")
+                                diceText = "0"
                                 comebackDice = 0
                             }
                         }
