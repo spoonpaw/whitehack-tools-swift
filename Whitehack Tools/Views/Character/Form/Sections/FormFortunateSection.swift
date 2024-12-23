@@ -259,17 +259,19 @@ struct RetainerHPControl: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 16) {
             Text("Hit Points")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity)
             
-            HStack(spacing: 8) {
+            VStack(spacing: 12) {
                 // Current HP
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(spacing: 5) {
                     Text("Current")
                         .font(.caption)
                         .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity)
                     HStack(spacing: 8) {
                         Button(action: {
                             print(" [Fortunate.currentHP.minus] Before - currentHP: \(currentHP)")
@@ -337,7 +339,7 @@ struct RetainerHPControl: View {
                 }
                 
                 // Max HP
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(spacing: 5) {
                     HStack {
                         Text("Maximum")
                             .font(.caption)
@@ -346,6 +348,7 @@ struct RetainerHPControl: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
+                    .frame(maxWidth: .infinity)
                     HStack(spacing: 8) {
                         Button(action: {
                             print(" [Fortunate.maxHP.minus] Before - maxHP: \(maxHP)")
@@ -415,12 +418,39 @@ struct RetainerBasicInfo: View {
     @Binding var retainer: Retainer
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             FormFortunateSectionHeader(title: "Basic Information", icon: Image(systemName: "person.text.rectangle.fill"))
             
             HStack(spacing: 12) {
-                FormFortunateCustomTextField(title: "Name", text: $retainer.name, icon: "person.fill")
-                FormFortunateCustomTextField(title: "Type", text: $retainer.type, icon: "tag.fill")
+                VStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.fill")
+                            .imageScale(.small)
+                            .foregroundColor(.purple)
+                        Text("Name")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    TextField("", text: $retainer.name)
+                        .textFieldStyle(.roundedBorder)
+                }
+                
+                VStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "tag.fill")
+                            .imageScale(.small)
+                            .foregroundColor(.purple)
+                        Text("Type")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    TextField("", text: $retainer.type)
+                        .textFieldStyle(.roundedBorder)
+                }
             }
         }
     }
@@ -430,12 +460,12 @@ struct RetainerCombatStats: View {
     @Binding var retainer: Retainer
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             FormFortunateSectionHeader(title: "Combat Stats", icon: Image(systemName: "shield.lefthalf.filled"))
             
             RetainerHPControl(currentHP: $retainer.currentHP, maxHP: $retainer.maxHP)
             
-            HStack(spacing: 16) {
+            VStack(spacing: 12) {
                 FormFortunateStatField(label: "HD", value: $retainer.hitDice, systemImage: "heart.fill", color: .red)
                 FormFortunateStatField(label: "DF", value: $retainer.defenseFactor, systemImage: "shield.fill", color: .blue)
                 FormFortunateStatField(label: "MV", value: $retainer.movement, systemImage: "figure.walk", color: .green)
@@ -450,7 +480,7 @@ struct RetainerKeywords: View {
     @Binding var newKeywordText: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             HStack {
                 FormFortunateSectionHeader(title: "Keywords", icon: Image(systemName: "tag.fill"))
                 Spacer()
@@ -505,7 +535,7 @@ struct RetainerNotes: View {
     @Binding var notes: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             FormFortunateSectionHeader(title: "Notes", icon: Image(systemName: "note.text"))
             
             TextEditor(text: $notes)
@@ -590,6 +620,7 @@ struct FormFortunateCustomTextField: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            .frame(maxWidth: .infinity)
             TextField("", text: $text)
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .rounded))
@@ -606,7 +637,7 @@ struct FormFortunateStatField: View {
     @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(spacing: 4) {
             HStack(spacing: 4) {
                 Image(systemName: systemImage)
                     .imageScale(.small)
@@ -615,6 +646,7 @@ struct FormFortunateStatField: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            .frame(maxWidth: .infinity)
             
             NumericTextField(
                 text: Binding(
@@ -642,7 +674,7 @@ struct FormFortunateStatField: View {
                 }(),
                 focusedField: $focusedField
             )
-            .frame(width: 60)
+            .frame(maxWidth: .infinity)
         }
         .onAppear {
             textValue = String(value)
