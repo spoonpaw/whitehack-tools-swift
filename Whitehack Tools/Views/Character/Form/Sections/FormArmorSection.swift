@@ -542,11 +542,15 @@ struct ArmorEditRow: View {
                         NumericTextField(text: $dfString, field: .armorDefense, minValue: 0, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
-                            .onChange(of: dfString) { newValue in
-                                if let value = Int(newValue) {
-                                    df = max(0, min(99, value))
+                            .focused($focusedField, equals: .armorDefense)
+                            .onChange(of: focusedField) { newValue in
+                                print("[DEFENSE] Focus changed to: \(String(describing: newValue))")
+                                print("[DEFENSE] Current defense string: '\(dfString)'")
+                                if newValue != .armorDefense && dfString.isEmpty {  // Field lost focus and is empty
+                                    print("[DEFENSE] Setting empty defense to 0")
+                                    dfString = "0"
+                                    df = 0
                                 }
-                                dfString = "\(df)"
                             }
                         Stepper("", value: $df, in: 0...99)
                             .labelsHidden()
@@ -566,14 +570,19 @@ struct ArmorEditRow: View {
                     .foregroundColor(.secondary)
                 Label {
                     HStack {
-                        NumericTextField(text: $weightString, field: .armorDefense, minValue: 0, maxValue: 99, focusedField: $focusedField)
+                        NumericTextField(text: $weightString, field: .armorQuantity, minValue: 0, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
                             .onChange(of: weightString) { newValue in
+                                print("[WEIGHT] Weight string changed to: '\(newValue)'")
                                 if let value = Int(newValue) {
                                     weight = max(0, min(99, value))
                                 }
                                 weightString = "\(weight)"
+                            }
+                            .focused($focusedField, equals: .armorQuantity)
+                            .onChange(of: focusedField) { newValue in
+                                print("[WEIGHT] Focus changed to: \(String(describing: newValue))")
                             }
                         Stepper("", value: $weight, in: 0...99)
                             .labelsHidden()
