@@ -134,16 +134,30 @@ struct WeaponEditRow: View {
                             .frame(width: 60)
                             .focused($focusedField, equals: .weaponQuantity)
                             .onChange(of: focusedField) { newValue in
+                                print("🔥 FOCUS CHANGED - current quantity: \(quantity), string: '\(quantityString)'")
                                 if newValue != .weaponQuantity && quantityString.isEmpty {  // Field lost focus and is empty
+                                    print("🔥 SETTING EMPTY TO 1")
                                     quantityString = "1"
                                     quantity = 1
                                 }
                             }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
+                            .onChange(of: quantityString) { newValue in
+                                print("🔥 STRING CHANGED TO: '\(newValue)'")
+                                if let value = Int(newValue) {
+                                    print("🔥 PARSED INT: \(value)")
+                                    quantity = max(1, min(99, value))
+                                    print("🔥 SET QUANTITY TO: \(quantity)")
+                                }
+                            }
+                        Stepper("", value: Binding(
+                            get: { quantity },
+                            set: { newValue in
+                                print("🔥 STEPPER SETTING TO: \(newValue)")
+                                quantity = newValue
                                 quantityString = "\(newValue)"
                             }
+                        ), in: 1...99)
+                            .labelsHidden()
                     }
                 } icon: {
                     IconFrame(icon: Ph.stack.bold, color: .green)
@@ -349,12 +363,22 @@ struct WeaponEditRow: View {
                                 bonus = isBonus ? 0 : 0
                             }
                         }
+                        .onChange(of: bonusString) { newValue in
+                            print("🔥 BONUS STRING CHANGED TO: '\(newValue)'")
+                            if let value = Int(newValue) {
+                                print("🔥 PARSED BONUS: \(value)")
+                                bonus = isBonus ? value : -value
+                                print("🔥 SET BONUS TO: \(bonus)")
+                            }
+                        }
                     Spacer()
                     Stepper("", value: Binding(
                         get: { abs(bonus) },
                         set: { newValue in
+                            print("🔥 BONUS STEPPER SETTING TO: \(newValue)")
                             let value = max(0, min(99, newValue))  // Prevent negative values and cap at 99
                             bonus = isBonus ? value : -value
+                            bonusString = "\(value)"
                         }
                     ), in: 0...99)  // Add range constraint
                     .labelsHidden()
