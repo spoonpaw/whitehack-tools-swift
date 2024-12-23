@@ -123,7 +123,7 @@ struct ComebackDiceView: View {
                     
                     Button(action: { 
                         if let value = Int(comebackDice) {
-                            comebackDice = String(value + 1)
+                            comebackDice = String(min(999, value + 1))
                         }
                     }) {
                         Image(systemName: "plus.circle.fill")
