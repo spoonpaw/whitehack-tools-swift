@@ -132,6 +132,13 @@ struct WeaponEditRow: View {
                         NumericTextField(text: $quantityString, field: .weaponQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
+                            .focused($focusedField, equals: .weaponQuantity)
+                            .onChange(of: focusedField) { newValue in
+                                if newValue != .weaponQuantity && quantityString.isEmpty {  // Field lost focus and is empty
+                                    quantityString = "1"
+                                    quantity = 1
+                                }
+                            }
                         Stepper("", value: $quantity, in: 1...99)
                             .labelsHidden()
                             .onChange(of: quantity) { newValue in
@@ -335,12 +342,12 @@ struct WeaponEditRow: View {
                     NumericTextField(text: $bonusString, field: .weaponBonus, minValue: 0, maxValue: 99, focusedField: $focusedField)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 60)
-                        .onChange(of: bonusString) { newValue in
-                            if let value = Int(newValue) {
-                                let absValue = abs(value)
-                                bonus = isBonus ? absValue : -absValue
+                        .focused($focusedField, equals: .weaponBonus)
+                        .onChange(of: focusedField) { newValue in
+                            if newValue != .weaponBonus && bonusString.isEmpty {  // Field lost focus and is empty
+                                bonusString = "0"
+                                bonus = isBonus ? 0 : 0
                             }
-                            bonusString = "\(abs(bonus))"
                         }
                     Spacer()
                     Stepper("", value: Binding(
