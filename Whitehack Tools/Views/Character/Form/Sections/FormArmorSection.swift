@@ -516,16 +516,30 @@ struct ArmorEditRow: View {
                             .frame(width: 60)
                             .focused($focusedField, equals: .armorQuantity)
                             .onChange(of: focusedField) { newValue in
+                                print("🔥 FOCUS CHANGED - current quantity: \(quantity), string: '\(quantityString)'")
                                 if newValue != .armorQuantity && quantityString.isEmpty {  // Field lost focus and is empty
+                                    print("🔥 SETTING EMPTY TO 1")
                                     quantityString = "1"
                                     quantity = 1
                                 }
                             }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
+                            .onChange(of: quantityString) { newValue in
+                                print("🔥 STRING CHANGED TO: '\(newValue)'")
+                                if let value = Int(newValue) {
+                                    print("🔥 PARSED INT: \(value)")
+                                    quantity = max(1, min(99, value))
+                                    print("🔥 SET QUANTITY TO: \(quantity)")
+                                }
+                            }
+                        Stepper("", value: Binding(
+                            get: { quantity },
+                            set: { newValue in
+                                print("🔥 STEPPER SETTING TO: \(newValue)")
+                                quantity = newValue
                                 quantityString = "\(newValue)"
                             }
+                        ), in: 1...99)
+                            .labelsHidden()
                     }
                 } icon: {
                     IconFrame(icon: Ph.stack.bold, color: .green)
