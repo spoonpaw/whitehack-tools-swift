@@ -47,7 +47,7 @@ private struct CleverMasterCard: View {
                         .foregroundColor(.red)
                 }
                 
-                Toggle(isOn: $cleverKnackOptions.hasUsedUnorthodoxBonus) {
+                HStack(alignment: .top, spacing: 16) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Unorthodox Solution")
                             .font(.title3)
@@ -59,8 +59,13 @@ private struct CleverMasterCard: View {
                             .foregroundColor(cleverKnackOptions.hasUsedUnorthodoxBonus ? .red : .green)
                             .fixedSize(horizontal: false, vertical: true)
                     }
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $cleverKnackOptions.hasUsedUnorthodoxBonus)
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                 }
-                .toggleStyle(.switch)
                 
                 if cleverKnackOptions.hasUsedUnorthodoxBonus {
                     HStack(alignment: .center, spacing: 6) {
@@ -139,10 +144,7 @@ private struct KnackSlotRow: View {
                     .fixedSize(horizontal: false, vertical: true)
                 
                 if knack == .combatExploiter {
-                    Toggle(isOn: Binding(
-                        get: { cleverKnackOptions.isKnackUsed(at: slotIndex) },
-                        set: { cleverKnackOptions.setKnackUsed(at: slotIndex, to: $0) }
-                    )) {
+                    HStack(alignment: .top, spacing: 16) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Battle Usage")
                                 .font(.title3)
@@ -154,8 +156,16 @@ private struct KnackSlotRow: View {
                                 .foregroundColor(cleverKnackOptions.isKnackUsed(at: slotIndex) ? .red : .green)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
+                        
+                        Spacer()
+                        
+                        Toggle("", isOn: Binding(
+                            get: { cleverKnackOptions.isKnackUsed(at: slotIndex) },
+                            set: { cleverKnackOptions.setKnackUsed(at: slotIndex, to: $0) }
+                        ))
+                        .toggleStyle(.switch)
+                        .labelsHidden()
                     }
-                    .toggleStyle(.switch)
                     .padding(.top, 8)
                 }
             }
