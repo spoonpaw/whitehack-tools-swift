@@ -11,7 +11,7 @@ struct DetailHeaderSection: View {
     ]
     
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 8) {
             // Character and Player Names
             VStack(spacing: 8) {
                 if !character.name.isEmpty {

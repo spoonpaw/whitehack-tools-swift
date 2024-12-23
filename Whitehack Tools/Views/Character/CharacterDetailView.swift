@@ -242,7 +242,7 @@ private struct InfoTabView: View {
     
     var body: some View {
         VStack(spacing: 32) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
                 SectionHeader(title: "Basic Info", icon: Ph.userCircle.bold)
                     .padding(.horizontal, 16)
                 DetailHeaderSection(character: character)
