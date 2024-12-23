@@ -602,6 +602,7 @@ struct FormFortunateStatField: View {
     @Binding var value: Int
     let systemImage: String
     let color: Color
+    @State private var textValue: String = ""
     @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
@@ -614,29 +615,37 @@ struct FormFortunateStatField: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
+            
             NumericTextField(
                 text: Binding(
                     get: { String(value) },
-                    set: { value = Int($0) ?? (label == "HD" ? 1 : 0) }  // Default to 1 for HD, 0 for others
+                    set: { newValue in
+                        // Allow empty during editing
+                        if newValue.isEmpty {
+                            return
+                        }
+                        // Set value with appropriate defaults
+                        if let intValue = Int(newValue) {
+                            value = intValue
+                        }
+                    }
                 ),
                 field: .currentHP,
-                minValue: {
+                minValue: label == "HD" ? 1 : 0,  // HD starts at 1
+                maxValue: label == "MV" ? 999 : 99,  // MV up to 999, others 99
+                defaultValue: {
                     switch label {
-                    case "HD": return 1   // HD starts at 1
-                    case "DF", "MV": return 0  // DF and MV start at 0
+                    case "HD": return 1
+                    case "MV": return 30
                     default: return 0
-                    }
-                }(),
-                maxValue: {
-                    switch label {
-                    case "HD", "DF": return 99   // HD and DF max at 99
-                    case "MV": return 999        // MV max at 999
-                    default: return 9999         // Others higher
                     }
                 }(),
                 focusedField: $focusedField
             )
             .frame(width: 60)
+        }
+        .onAppear {
+            textValue = String(value)
         }
     }
 }
