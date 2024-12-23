@@ -148,10 +148,16 @@ struct MacNumericTextField: NSViewRepresentable {
                 return
             }
             
-            // During typing, only validate the numeric format
+            // Validate numeric value and range immediately
             if let value = Int(filtered) {
                 print("🔴 [controlTextDidChange] Parsed value: \(value)")
-                parent.text = filtered
+                let clamped = max(parent.minValue, min(parent.maxValue, value))
+                let clampedString = String(clamped)
+                if clamped != value {
+                    print("🔴 [controlTextDidChange] Clamping value: \(value) -> \(clamped)")
+                    textField.stringValue = clampedString
+                }
+                parent.text = clampedString
             } else {
                 print("🔴 [controlTextDidChange] Could not parse value, using filtered: \(filtered)")
                 parent.text = filtered
