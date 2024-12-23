@@ -605,11 +605,21 @@ struct ArmorEditRow: View {
                                     weight = 0
                                 }
                             }
-                        Stepper("", value: $weight, in: 0...99)
-                            .labelsHidden()
-                            .onChange(of: weight) { newValue in
+                            .onChange(of: weightString) { newValue in
+                                if let value = Int(newValue) {
+                                    weight = max(0, min(99, value))
+                                    print("🔥 SET WEIGHT TO: \(weight)")
+                                }
+                            }
+                        Stepper("", value: Binding(
+                            get: { weight },
+                            set: { newValue in
+                                print("🔥 STEPPER SETTING TO: \(newValue)")
+                                weight = newValue
                                 weightString = "\(newValue)"
                             }
+                        ), in: 0...99)
+                            .labelsHidden()
                     }
                 } icon: {
                     IconFrame(icon: Ph.scales.bold, color: .blue)
