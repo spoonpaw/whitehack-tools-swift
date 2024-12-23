@@ -456,17 +456,32 @@ struct GearEditRow: View {
                         NumericTextField(text: $quantityString, field: .equipmentQuantity, minValue: 1, maxValue: 99, focusedField: $focusedField)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 60)
-                            .onChange(of: quantityString) { newValue in
-                                if let value = Int(newValue) {
-                                    quantity = max(1, min(99, value))
+                            .focused($focusedField, equals: .equipmentQuantity)
+                            .onChange(of: focusedField) { newValue in
+                                print("🔥 FOCUS CHANGED - current quantity: \(quantity), string: '\(quantityString)'")
+                                if newValue != .equipmentQuantity && quantityString.isEmpty {  // Field lost focus and is empty
+                                    print("🔥 SETTING EMPTY TO 1")
+                                    quantityString = "1"
+                                    quantity = 1
                                 }
-                                quantityString = "\(quantity)"
                             }
-                        Stepper("", value: $quantity, in: 1...99)
-                            .labelsHidden()
-                            .onChange(of: quantity) { newValue in
+                            .onChange(of: quantityString) { newValue in
+                                print("🔥 STRING CHANGED TO: '\(newValue)'")
+                                if let value = Int(newValue) {
+                                    print("🔥 PARSED INT: \(value)")
+                                    quantity = max(1, min(99, value))
+                                    print("🔥 SET QUANTITY TO: \(quantity)")
+                                }
+                            }
+                        Stepper("", value: Binding(
+                            get: { quantity },
+                            set: { newValue in
+                                print("🔥 STEPPER SETTING TO: \(newValue)")
+                                quantity = newValue
                                 quantityString = "\(newValue)"
                             }
+                        ), in: 1...99)
+                            .labelsHidden()
                     }
                 } icon: {
                     IconFrame(icon: Ph.stack.bold, color: .green)
