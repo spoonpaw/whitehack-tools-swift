@@ -89,9 +89,8 @@ struct QuirkSlotView: View {
 }
 
 struct ComebackDiceView: View {
-    @Binding var comebackDice: Int
-    @State private var diceText: String = ""
-    @FocusState private var isFocused: Bool
+    @Binding var comebackDice: String
+    @FocusState private var focusedField: CharacterFormView.Field?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -104,9 +103,8 @@ struct ComebackDiceView: View {
                 Spacer()
                 HStack(spacing: 4) {
                     Button(action: { 
-                        if comebackDice > 0 {
-                            comebackDice -= 1 
-                            diceText = String(comebackDice)
+                        if let value = Int(comebackDice), value > 0 {
+                            comebackDice = String(value - 1)
                         }
                     }) {
                         Image(systemName: "minus.circle.fill")
@@ -114,38 +112,19 @@ struct ComebackDiceView: View {
                     }
                     .buttonStyle(.plain)
                     
-                    TextField("", text: $diceText)
-                        .textFieldStyle(.roundedBorder)
+                    NumericTextField(text: $comebackDice, field: .comebackDice, minValue: 0, maxValue: 999, focusedField: $focusedField)
                         .frame(width: 50)
                         .multilineTextAlignment(.center)
-                        .focused($isFocused)
-                        .onAppear {
-                            diceText = String(comebackDice)
-                        }
-                        .onChange(of: diceText) { newValue in
-                            let filtered = newValue.filter { $0.isNumber }
-                            if filtered != newValue {
-                                diceText = filtered
-                            }
-                            if let value = Int(filtered) {
-                                comebackDice = value
-                            }
-                        }
-                        .onChange(of: isFocused) { newValue in
-                            print("🎲 [comeback dice focus] Focus changed to: \(newValue)")
-                            print("🎲 [comeback dice focus] Current text: '\(diceText)', isEmpty: \(diceText.isEmpty)")
-                            
-                            // Clean up on focus loss
-                            if !newValue && diceText.isEmpty {
-                                print("🎲 [comeback dice focus] Setting empty field to default: 0")
-                                diceText = "0"
-                                comebackDice = 0
+                        .onChange(of: focusedField) { newValue in
+                            if newValue != .comebackDice && comebackDice.isEmpty {
+                                comebackDice = "0"
                             }
                         }
                     
                     Button(action: { 
-                        comebackDice += 1 
-                        diceText = String(comebackDice)
+                        if let value = Int(comebackDice) {
+                            comebackDice = String(value + 1)
+                        }
                     }) {
                         Image(systemName: "plus.circle.fill")
                             .foregroundColor(.green)
@@ -221,10 +200,10 @@ struct SayNoPowerView: View {
 struct FormBraveQuirksSection: View {
     @Binding var braveQuirkOptions: BraveQuirkOptions
     @Binding var hasUsedSayNo: Bool
-    @Binding var comebackDice: Int
+    @Binding var comebackDice: String
     let level: Int
     
-    init(braveQuirkOptions: Binding<BraveQuirkOptions>, hasUsedSayNo: Binding<Bool>, comebackDice: Binding<Int>, level: Int) {
+    init(braveQuirkOptions: Binding<BraveQuirkOptions>, hasUsedSayNo: Binding<Bool>, comebackDice: Binding<String>, level: Int) {
         print("Creating FormBraveQuirksSection with level: \(level)")
         self._braveQuirkOptions = braveQuirkOptions
         self._hasUsedSayNo = hasUsedSayNo

@@ -61,6 +61,7 @@ struct CharacterFormView: View {
         case goldOnHand
         case goldStashed
         case customAttributeValue
+        case comebackDice
     }
     
     @ObservedObject var characterStore: CharacterStore
@@ -375,7 +376,7 @@ struct CharacterFormView: View {
             braveQuirkOptions: formData.braveQuirkOptions,
             cleverKnackOptions: formData.cleverKnackOptions,
             fortunateOptions: formData.fortunateOptions,
-            comebackDice: formData.comebackDice,
+            comebackDice: Int(formData.comebackDice) ?? 0,
             hasUsedSayNo: formData.hasUsedSayNo,
             languages: formData.languages,
             notes: formData.notes,
@@ -444,7 +445,7 @@ private class FormData: ObservableObject {
     // Brave
     @Published var braveQuirkOptions: BraveQuirkOptions = BraveQuirkOptions()
     @Published var hasUsedSayNo: Bool = false
-    @Published var comebackDice: Int = 0
+    @Published var comebackDice: String = "0"
     
     // Clever
     @Published var cleverKnackOptions: CleverKnackOptions = CleverKnackOptions()
@@ -522,7 +523,7 @@ private class FormData: ObservableObject {
         // Brave
         self.braveQuirkOptions = character?.braveQuirkOptions ?? BraveQuirkOptions()
         self.hasUsedSayNo = character?.hasUsedSayNo ?? false
-        self.comebackDice = character?.comebackDice ?? 0
+        self.comebackDice = "\(character?.comebackDice ?? 0)"
         
         // Clever
         self.cleverKnackOptions = character?.cleverKnackOptions ?? CleverKnackOptions()
