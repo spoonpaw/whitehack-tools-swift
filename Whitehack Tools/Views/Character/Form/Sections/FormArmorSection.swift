@@ -558,19 +558,30 @@ struct ArmorEditRow: View {
                             .frame(width: 60)
                             .focused($focusedField, equals: .armorDefense)
                             .onChange(of: focusedField) { newValue in
-                                print("[DEFENSE] Focus changed to: \(String(describing: newValue))")
-                                print("[DEFENSE] Current defense string: '\(dfString)'")
+                                print("🔥 FOCUS CHANGED - current defense: \(df), string: '\(dfString)'")
                                 if newValue != .armorDefense && dfString.isEmpty {  // Field lost focus and is empty
-                                    print("[DEFENSE] Setting empty defense to 0")
+                                    print("🔥 SETTING EMPTY TO 0")
                                     dfString = "0"
                                     df = 0
                                 }
                             }
-                        Stepper("", value: $df, in: 0...99)
-                            .labelsHidden()
-                            .onChange(of: df) { newValue in
+                            .onChange(of: dfString) { newValue in
+                                print("🔥 STRING CHANGED TO: '\(newValue)'")
+                                if let value = Int(newValue) {
+                                    print("🔥 PARSED INT: \(value)")
+                                    df = max(0, min(99, value))
+                                    print("🔥 SET DEFENSE TO: \(df)")
+                                }
+                            }
+                        Stepper("", value: Binding(
+                            get: { df },
+                            set: { newValue in
+                                print("🔥 STEPPER SETTING TO: \(newValue)")
+                                df = newValue
                                 dfString = "\(newValue)"
                             }
+                        ), in: 0...99)
+                            .labelsHidden()
                     }
                 } icon: {
                     IconFrame(icon: Ph.shield.bold, color: .blue)
