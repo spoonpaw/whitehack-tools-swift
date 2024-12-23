@@ -33,55 +33,37 @@ struct FormBasicInfoSection: View {
                     Text("Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    HStack {
-                        Spacer()
-                        TextField("", text: $name)
-                            .focused($focusedField, equals: .name)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                        Spacer()
-                    }
-                    .frame(maxWidth: 300)
+                    TextField("", text: $name)
+                        .focused($focusedField, equals: .name)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
                     Text("Player Name")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    HStack {
-                        Spacer()
-                        TextField("", text: $playerName)
-                            .focused($focusedField, equals: .playerName)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: .infinity)
-                        Spacer()
-                    }
-                    .frame(maxWidth: 300)
+                    TextField("", text: $playerName)
+                        .focused($focusedField, equals: .playerName)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
                     Text("Level")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    HStack {
-                        Spacer()
-                        NumericTextField(text: $level, field: .level, minValue: 1, maxValue: 10, focusedField: $focusedField)
-                            .frame(maxWidth: .infinity)
-                            .onChange(of: focusedField) { newValue in
-                                print(" [level focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
-                                print(" [level focus] Current value: '\(level)', isEmpty: \(level.isEmpty)")
-                                
-                                // Clean up on focus loss
-                                if newValue != .level && level.isEmpty {
-                                    print(" [level focus] Setting empty field to default: 1")
-                                    level = "1"
-                                }
+                    NumericTextField(text: $level, field: .level, minValue: 1, maxValue: 10, focusedField: $focusedField)
+                        .onChange(of: focusedField) { newValue in
+                            print(" [level focus] Focus changed from \(String(describing: focusedField)) to \(String(describing: newValue))")
+                            print(" [level focus] Current value: '\(level)', isEmpty: \(level.isEmpty)")
+                            
+                            // Clean up on focus loss
+                            if newValue != .level && level.isEmpty {
+                                print(" [level focus] Setting empty field to default: 1")
+                                level = "1"
                             }
-                        Spacer()
-                    }
-                    .frame(maxWidth: 300)
+                        }
                 }
                 
                 VStack(alignment: .center, spacing: 5) {
@@ -89,25 +71,19 @@ struct FormBasicInfoSection: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     #if os(iOS)
-                    HStack {
-                        Spacer()
-                        Menu {
-                            ForEach(CharacterClass.allCases, id: \.self) { characterClass in
-                                Button(characterClass.rawValue) {
-                                    selectedClass = characterClass
-                                }
+                    Menu {
+                        ForEach(CharacterClass.allCases, id: \.self) { characterClass in
+                            Button(characterClass.rawValue) {
+                                selectedClass = characterClass
                             }
-                        } label: {
-                            TextField("", text: .constant(selectedClass.rawValue))
-                                .multilineTextAlignment(.center)
-                                .textFieldStyle(.roundedBorder)
-                                .disabled(true)
-                                .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.plain)
-                        Spacer()
+                    } label: {
+                        TextField("", text: .constant(selectedClass.rawValue))
+                            .multilineTextAlignment(.center)
+                            .textFieldStyle(.roundedBorder)
+                            .disabled(true)
                     }
-                    .frame(maxWidth: 300)
+                    .buttonStyle(.plain)
                     #else
                     Picker("", selection: $selectedClass) {
                         ForEach(CharacterClass.allCases, id: \.self) { characterClass in
@@ -116,7 +92,6 @@ struct FormBasicInfoSection: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .frame(maxWidth: 300)
                     #endif
                 }
             }
