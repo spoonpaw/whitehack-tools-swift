@@ -693,6 +693,8 @@ struct ArmorEditRow: View {
                 
                 // Value Control
                 HStack {
+                    IconFrame(icon: isBonus ? Ph.plus.bold : Ph.minus.bold,
+                            color: isBonus ? .green : .red)
                     NumericTextField(text: $bonusString, field: .armorBonus, minValue: 0, maxValue: 99, focusedField: $focusedField)
                         .textFieldStyle(.roundedBorder)
                         .frame(width: 60)
