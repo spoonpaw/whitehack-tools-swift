@@ -55,9 +55,9 @@ struct DetailGroupsSection: View {
                 HStack(spacing: 16) {
                     GroupRow(
                         title: "Species",
-                        value: character.speciesGroup ?? "Not Chosen",
+                        value: character.speciesGroup?.isEmpty == false ? character.speciesGroup! : "No Species Selected",
                         icon: Ph.dna.bold,
-                        isPlaceholder: character.speciesGroup == nil
+                        isPlaceholder: character.speciesGroup?.isEmpty != false
                     )
                     .padding()
                     .groupCardStyle()
@@ -65,9 +65,9 @@ struct DetailGroupsSection: View {
                     
                     GroupRow(
                         title: "Vocation",
-                        value: character.vocationGroup ?? "Not Chosen",
+                        value: character.vocationGroup?.isEmpty == false ? character.vocationGroup! : "No Vocation Selected",
                         icon: Ph.briefcase.bold,
-                        isPlaceholder: character.vocationGroup == nil
+                        isPlaceholder: character.vocationGroup?.isEmpty != false
                     )
                     .padding()
                     .groupCardStyle()
