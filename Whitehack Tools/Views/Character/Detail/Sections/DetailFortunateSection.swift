@@ -299,77 +299,68 @@ private struct RetainerDetailView: View {
     let retainer: Retainer
     
     var body: some View {
-        if retainer.name.isEmpty {
-            Text("Empty Retainer Slot")
+        VStack(alignment: .center, spacing: 12) {
+            Text(retainer.name.isEmpty ? "Unnamed Retainer" : retainer.name)
                 .font(.headline)
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.blue.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-        } else {
-            VStack(alignment: .center, spacing: 12) {
-                Text(retainer.name)
-                    .font(.headline)
-                
-                if !retainer.type.isEmpty {
-                    Text(retainer.type)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                .foregroundStyle(retainer.name.isEmpty ? .secondary : .primary)
+            
+            if !retainer.type.isEmpty {
+                Text(retainer.type)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-                HStack(spacing: 12) {
-                    StatBadge(
-                        icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16)),
-                        value: "\(retainer.defenseFactor)",
-                        label: "DF"
-                    )
-                    StatBadge(
-                        icon: AnyView(Ph.arrowsOutCardinal.bold.frame(width: 16, height: 16)),
-                        value: "\(retainer.movement)",
-                        label: "MV"
-                    )
-                    StatBadge(
-                        icon: AnyView(Ph.heartbeat.bold.frame(width: 16, height: 16)),
-                        value: "\(retainer.currentHP)/\(retainer.maxHP)",
-                        label: "HP"
-                    )
-                }
-                
-                if !retainer.keywords.isEmpty {
-                    VStack(spacing: 8) {
-                        HStack(spacing: 4) {
-                            Ph.tag.bold
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(.purple)
-                            Text("Keywords")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        FlowLayout(spacing: 8) {
-                            ForEach(retainer.keywords, id: \.self) { keyword in
-                                KeywordBadge(text: keyword)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal)
-                }
-                
-                if !retainer.notes.isEmpty {
-                    HStack {
-                        Ph.note.bold
+            HStack(spacing: 12) {
+                StatBadge(
+                    icon: AnyView(Ph.shield.bold.frame(width: 16, height: 16)),
+                    value: "\(retainer.defenseFactor)",
+                    label: "DF"
+                )
+                StatBadge(
+                    icon: AnyView(Ph.arrowsOutCardinal.bold.frame(width: 16, height: 16)),
+                    value: "\(retainer.movement)",
+                    label: "MV"
+                )
+                StatBadge(
+                    icon: AnyView(Ph.heartbeat.bold.frame(width: 16, height: 16)),
+                    value: "\(retainer.currentHP)/\(retainer.maxHP)",
+                    label: "HP"
+                )
+            }
+            
+            if !retainer.keywords.isEmpty {
+                VStack(spacing: 8) {
+                    HStack(spacing: 4) {
+                        Ph.tag.bold
                             .frame(width: 16, height: 16)
-                        Text(retainer.notes)
+                            .foregroundColor(.purple)
+                        Text("Keywords")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
+                    
+                    FlowLayout(spacing: 8) {
+                        ForEach(retainer.keywords, id: \.self) { keyword in
+                            KeywordBadge(text: keyword)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal)
+            }
+            
+            if !retainer.notes.isEmpty {
+                HStack {
+                    Ph.note.bold
+                        .frame(width: 16, height: 16)
+                    Text(retainer.notes)
                 }
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.blue.opacity(0.05))
-            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.blue.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
