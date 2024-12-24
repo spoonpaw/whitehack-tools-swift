@@ -289,7 +289,7 @@ private struct CharacterRowView: View {
                 
                 // Character Info
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(character.name)
+                    Text(character.name.isEmpty ? "Unnamed Character" : character.name)
                         .font(.headline)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                     
@@ -322,7 +322,7 @@ private struct CharacterRowView: View {
                             Ph.dna.bold
                                 .frame(width: 12, height: 12)
                                 .foregroundColor(.secondary)
-                            Text(species)
+                            Text(species.isEmpty ? "No Species Selected" : species)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
@@ -333,7 +333,7 @@ private struct CharacterRowView: View {
                             Ph.briefcase.bold
                                 .frame(width: 12, height: 12)
                                 .foregroundColor(.secondary)
-                            Text(vocation)
+                            Text(vocation.isEmpty ? "No Vocation Selected" : vocation)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
