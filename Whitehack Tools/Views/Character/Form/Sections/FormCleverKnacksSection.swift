@@ -134,7 +134,11 @@ private struct KnackSlotRow: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
+            #if os(iOS)
+            .background(Color(uiColor: .secondarySystemBackground))
+            #else
             .background(Color(nsColor: .controlBackgroundColor))
+            #endif
             .cornerRadius(12)
             
             if let knack = cleverKnackOptions.getKnack(at: slotIndex) {
