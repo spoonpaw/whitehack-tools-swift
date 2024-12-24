@@ -193,7 +193,7 @@ private struct QuirksCard: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Text("Slot \(slotIndex + 1)")
-                        .font(.caption2)
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
                 Spacer()
@@ -202,7 +202,7 @@ private struct QuirksCard: View {
             }
             
             Text("Select a quirk to fill this slot")
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(.top, 4)
         }
@@ -220,7 +220,7 @@ private struct QuirksCard: View {
                 #if os(iOS)
                 Color(uiColor: .systemGray4).opacity(0.3)
                 #else
-                Color(nsColor: .shadowColor).opacity(0.3)
+                return Color(nsColor: .shadowColor).opacity(0.3)
                 #endif
             }(),
             radius: 6,
@@ -316,55 +316,46 @@ private struct ComebackDiceCard: View {
 
 private struct SayNoPowerCard: View {
     let hasUsedSayNo: Bool
-    @Environment(\.colorScheme) var colorScheme
-    
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "hand.raised.fill")
                     .foregroundColor(.red)
                 Text("Say No Power")
-                    .fontWeight(.medium)
-                
+                    .font(.headline)
+                    .foregroundColor(.primary)
                 Spacer()
-                
-                if hasUsedSayNo {
-                    HStack(spacing: 4) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.red)
-                        Text("Power Used")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                    .padding(.horizontal, 8)
+                Text(hasUsedSayNo ? "Used" : "Available")
+                    .font(.subheadline)
+                    .foregroundColor(hasUsedSayNo ? .secondary : .green)
+                    .padding(.horizontal, 12)
                     .padding(.vertical, 4)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(6)
-                }
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("Deny Effects")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
                 Text("Once per session, deny an enemy's successful attack, miraculous effect, or fear effect.")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
-            }
-            
-            VStack(alignment: .leading, spacing: 4) {
+                
                 Text("Explain Action")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .padding(.top, 4)
                 Text("Must explain how your character plausibly avoids or resists the effect.")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.red.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(colorScheme == .dark ? Color(white: 0.2) : Color(red: 1.0, green: 0.95, blue: 0.95))
-        .cornerRadius(8)
     }
 }
 
@@ -376,17 +367,17 @@ private struct BraveFeatureRow: View {
     let description: String
     
     var body: some View {
-        return HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .foregroundColor(color)
-                .font(.system(size: 18))
+                .frame(width: 16)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -408,7 +399,7 @@ private struct QuirkCard: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                     Text("Slot \(slotIndex + 1)")
-                        .font(.caption2)
+                        .font(.body)
                         .foregroundColor(.secondary)
                 }
                 Spacer()
@@ -417,17 +408,17 @@ private struct QuirkCard: View {
             }
             
             Text(quirk.description)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(.top, 4)
                 .fixedSize(horizontal: false, vertical: true)
             
-            if quirk == .protectAlly && !protectedAlly.isEmpty {
+            if quirk == .protectAlly {
                 HStack {
                     Image(systemName: "shield.fill")
                         .foregroundColor(.blue)
-                    Text("Protected Ally: \(protectedAlly)")
-                        .font(.caption)
+                    Text("Protected Ally: \(protectedAlly.isEmpty ? "No Ally Selected" : protectedAlly)")
+                        .font(.body)
                         .foregroundColor(.blue)
                 }
                 .padding(.top, 4)
