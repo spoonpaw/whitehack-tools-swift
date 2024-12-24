@@ -356,7 +356,9 @@ private struct RetainerDetailView: View {
                             .foregroundColor(.secondary)
                     }
                     
-                    FlowLayout(spacing: 8) {
+                    LazyVGrid(columns: [
+                        GridItem(.adaptive(minimum: 60, maximum: .infinity), spacing: 8)
+                    ], spacing: 8) {
                         ForEach(retainer.keywords, id: \.self) { keyword in
                             KeywordBadge(text: keyword)
                         }
@@ -396,90 +398,6 @@ private struct KeywordBadge: View {
                 Capsule()
                     .stroke(Color.purple.opacity(0.3), lineWidth: 1)
             )
-    }
-}
-
-private struct FlowLayout: Layout {
-    let spacing: CGFloat
-    let alignment: HorizontalAlignment
-    
-    init(spacing: CGFloat = 8, alignment: HorizontalAlignment = .center) {
-        self.spacing = spacing
-        self.alignment = alignment
-    }
-    
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let rows = arrangeSubviews(proposal: proposal, subviews: subviews)
-        let height = rows.map { $0.height }.reduce(0, +) + spacing * CGFloat(rows.count - 1)
-        return CGSize(width: proposal.width ?? 0, height: height)
-    }
-    
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let rows = arrangeSubviews(proposal: proposal, subviews: subviews)
-        var y = bounds.minY
-        
-        for row in rows {
-            // Calculate x offset for centering
-            let rowWidth = row.items.map { $0.size.width }.reduce(0, +) + 
-                spacing * CGFloat(max(0, row.items.count - 1))
-            var x = bounds.minX
-            
-            switch alignment {
-            case .center:
-                x += (bounds.width - rowWidth) / 2
-            case .trailing:
-                x += bounds.width - rowWidth
-            default:
-                break
-            }
-            
-            for item in row.items {
-                item.subview.place(
-                    at: CGPoint(x: x, y: y),
-                    proposal: ProposedViewSize(width: item.size.width, height: item.size.height)
-                )
-                x += item.size.width + spacing
-            }
-            y += row.height + spacing
-        }
-    }
-    
-    private func arrangeSubviews(proposal: ProposedViewSize, subviews: Subviews) -> [Row] {
-        var rows: [Row] = []
-        var currentRow = Row()
-        var x: CGFloat = 0
-        
-        for subview in subviews {
-            let size = subview.sizeThatFits(proposal)
-            
-            if x + size.width > (proposal.width ?? 0), !currentRow.items.isEmpty {
-                rows.append(currentRow)
-                currentRow = Row()
-                x = 0
-            }
-            
-            currentRow.items.append(RowItem(subview: subview, size: size))
-            x += size.width + spacing
-        }
-        
-        if !currentRow.items.isEmpty {
-            rows.append(currentRow)
-        }
-        
-        return rows
-    }
-    
-    private struct Row {
-        var items: [RowItem] = []
-        
-        var height: CGFloat {
-            items.map { $0.size.height }.max() ?? 0
-        }
-    }
-    
-    private struct RowItem {
-        let subview: LayoutSubview
-        let size: CGSize
     }
 }
 
