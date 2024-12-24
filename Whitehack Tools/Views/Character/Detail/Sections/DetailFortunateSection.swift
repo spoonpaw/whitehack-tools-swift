@@ -253,7 +253,7 @@ private struct RetainersCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Ph.users.bold
                     .frame(width: 24, height: 24)
@@ -270,10 +270,27 @@ private struct RetainersCard: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             
             ForEach(0..<maxRetainers, id: \.self) { index in
-                if index < character.fortunateOptions.retainers.count {
-                    RetainerDetailView(retainer: character.fortunateOptions.retainers[index])
-                } else {
-                    EmptyRetainerSlot()
+                VStack(spacing: 4) {
+                    HStack {
+                        Ph.user.bold
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(.purple)
+                        Text("Retainer #\(index + 1)")
+                            .font(.subheadline)
+                            .foregroundColor(.purple)
+                        Spacer()
+                    }
+                    
+                    if index < character.fortunateOptions.retainers.count {
+                        RetainerDetailView(retainer: character.fortunateOptions.retainers[index])
+                    } else {
+                        RetainerDetailView(retainer: Retainer())
+                    }
+                }
+                
+                if index < maxRetainers - 1 {
+                    Divider()
+                        .padding(.vertical, 8)
                 }
             }
         }
