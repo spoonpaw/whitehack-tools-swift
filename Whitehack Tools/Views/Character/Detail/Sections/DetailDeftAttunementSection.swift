@@ -66,7 +66,7 @@ private struct ClassInfoCard: View {
             }
             
             Text("Masters of technique and skill who rely on superior training and expertise. Whether as thieves, wandering monks, spies, marksmen, rangers, or assassins, they excel through precision and finesse.")
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -183,7 +183,7 @@ private struct AttunementSlotsCard: View {
                 
                 if availableSlots == 0 {
                     Text("No attunement slots available at level \(character.level)")
-                        .font(.subheadline)
+                        .font(.body)
                         .foregroundColor(.secondary)
                         .padding(.leading, 4)
                 }
@@ -192,7 +192,7 @@ private struct AttunementSlotsCard: View {
             // Attunement Rules
             VStack(alignment: .leading, spacing: 8) {
                 Text("Attunement Rules")
-                    .font(.subheadline.bold())
+                    .font(.body)
                     .foregroundColor(.purple)
                     .padding(.bottom, 4)
                 
@@ -221,7 +221,7 @@ private struct AttunementSlotsCard: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(type)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.secondary)
                 Spacer()
                 Text(isActive ? "ACTIVE" : "INACTIVE")
@@ -250,7 +250,7 @@ private struct AttunementSlotsCard: View {
             }
             
             Label(attunement.type.rawValue.capitalized, systemImage: typeIcon(for: attunement.type))
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
@@ -272,7 +272,7 @@ private struct AttunementSlotsCard: View {
     private func slotView(for slot: AttunementSlot, index: Int) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Slot \(index + 1)")
-                .font(.headline)
+                .font(.body)
                 .foregroundColor(.blue)
             
             attunementView(for: slot.primaryAttunement, type: "Primary", isActive: slot.primaryAttunement.isActive)
@@ -288,12 +288,12 @@ private struct AttunementSlotsCard: View {
             
             if slot.hasUsedDailyPower {
                 Text("Daily Power: Used")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.orange)
                     .italic()
             } else {
                 Text("Daily Power: Available")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.green)
                     .italic()
             }
@@ -311,11 +311,11 @@ private struct EmptySlotView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Slot \(slotNumber)")
-                .font(.headline)
+                .font(.body)
                 .foregroundColor(.blue)
             
             Text("Empty")
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.secondary)
         }
         .padding()
@@ -351,14 +351,14 @@ private struct AttunementItemView: View {
                     .foregroundColor(typeIcon.color)
                 
                 Text(attunement.name)
-                    .font(.subheadline.bold())
+                    .font(.body.bold())
                     .foregroundColor(typeIcon.color)
                 
                 Spacer()
                 
                 if isActive {
                     Text("Active")
-                        .font(.caption.bold())
+                        .font(.body.bold())
                         .foregroundColor(.green)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -368,7 +368,7 @@ private struct AttunementItemView: View {
                 
                 if attunement.isLost {
                     Text("Lost")
-                        .font(.caption.bold())
+                        .font(.body.bold())
                         .foregroundColor(.red)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -378,7 +378,7 @@ private struct AttunementItemView: View {
             }
             
             Text(attunement.type.rawValue.capitalized)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(.leading, 24)
         }
@@ -403,10 +403,10 @@ private struct DeftAttunementFeatureRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.primary)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -428,7 +428,7 @@ private struct RuleRow: View {
                 .frame(width: 20)
             
             Text(text)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
