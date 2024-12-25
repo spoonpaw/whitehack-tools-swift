@@ -8,21 +8,29 @@ struct DetailStrongCombatSection: View {
     
     var body: some View {
         if character.characterClass == .strong {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(spacing: 12) {
                 StrongSectionHeader()
-                    .padding(.bottom, 4)
-                VStack(alignment: .leading, spacing: 8) {
-                    ClassInfoCard()
-                        .frame(maxWidth: .infinity)
-                    ClassFeaturesCard()
-                        .frame(maxWidth: .infinity)
-                    SpecialAbilitiesCard(character: character)
-                        .frame(maxWidth: .infinity)
-                    ConflictLootingCard(character: character)
-                        .frame(maxWidth: .infinity)
-                    FlowAttacksCard(character: character)
-                        .frame(maxWidth: .infinity)
+                
+                GroupBox {
+                    VStack(alignment: .leading, spacing: 16) {
+                        ClassInfoCard()
+                            .frame(maxWidth: .infinity)
+                        Divider()
+                        ClassFeaturesCard()
+                            .frame(maxWidth: .infinity)
+                        Divider()
+                        SpecialAbilitiesCard(character: character)
+                            .frame(maxWidth: .infinity)
+                        Divider()
+                        ConflictLootingCard(character: character)
+                            .frame(maxWidth: .infinity)
+                        Divider()
+                        FlowAttacksCard(character: character)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .padding()
                 }
+                .padding(.horizontal, 16)
             }
         } else {
             EmptyView()
