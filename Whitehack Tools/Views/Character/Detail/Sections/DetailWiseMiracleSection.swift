@@ -144,14 +144,14 @@ struct DetailWiseMiracleSection: View {
                                 )
                             }
                         }
-                        .padding()
+                        .padding(8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .background(Color.yellow.opacity(0.1))
                         .groupCardStyle()
                     }
-                    .padding()
+                    .padding(8)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 8)
             }
         } else {
             EmptyView()
@@ -181,7 +181,7 @@ private struct ClassInfoCard: View {
                 .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
@@ -254,7 +254,7 @@ private struct ClassFeaturesCard: View {
                 description: "+2 HP costs when using shields or armor heavier than leather (before doubling)."
             )
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
@@ -305,7 +305,7 @@ private struct MiracleGuidelinesCard: View {
                 )
             }
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
@@ -389,7 +389,7 @@ private struct CostModifiersCard: View {
                 }
             }
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
@@ -422,7 +422,7 @@ private struct HPCostReferenceCard: View {
                 }
             }
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yellow.opacity(0.1))
         .groupCardStyle()
@@ -478,7 +478,7 @@ private struct MiracleSlotCard: View {
                 }
             }
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(iOS)
         .background(Color(uiColor: .systemBackground))
@@ -540,7 +540,7 @@ private struct MiracleSlotCard: View {
             
             Spacer()
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -568,7 +568,7 @@ private struct MiracleSlotCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding()
+        .padding(8)
         .background(Color.yellow.opacity(0.05))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -588,7 +588,7 @@ private struct MiracleSlotCard: View {
             
             Spacer()
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -616,7 +616,7 @@ private struct MiracleSlotCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -693,7 +693,7 @@ private struct MiracleRuleCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(color.opacity(0.1))
         .groupCardStyle()
@@ -754,7 +754,7 @@ struct MagnitudeCard: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding()
+        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
         #if os(iOS)
         .background(Color(uiColor: .systemGray6))
