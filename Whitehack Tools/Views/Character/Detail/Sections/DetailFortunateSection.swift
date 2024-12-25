@@ -57,7 +57,7 @@ private struct ClassOverviewCard: View {
 
                 The Fortunate may use any weapon or armor without penalty. They have +4 to charisma when checking retainer morale, +2 in reaction rolls, and +6 in any reputation roll. They also get a single signature object with plot immunity.
                 """)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -113,7 +113,7 @@ private struct FortunePowerCard: View {
 
                 Note: The Fortunate may not use their fortune power to purchase experience or fund XP for others.
                 """)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,6 +126,7 @@ private struct FortunePowerCard: View {
                     .frame(width: 16, height: 16)
                     .foregroundColor(hasUsedFortune ? .red : .green)
                 Text(hasUsedFortune ? "Fortune power has been used this session" : "Fortune power is available")
+                    .font(.body)
                     .foregroundColor(hasUsedFortune ? .red : .green)
                 Spacer()
             }
@@ -165,7 +166,7 @@ private struct StandingCard: View {
                     .frame(maxWidth: .infinity)
 
                 Text("When the referee thinks that the standing is relevant:")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .padding(.top, 8)
 
@@ -225,7 +226,7 @@ private struct SignatureObjectCard: View {
                     .frame(maxWidth: .infinity)
 
                 Text("This object has plot immunity and cannot be lost, destroyed, or made irretrievable by the referee unless you wish it to happen.")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
             } else {
@@ -262,7 +263,7 @@ private struct RetainersCard: View {
             }
             
             Text("Retainers can grow in strength and serve as valuable allies. They have their own stats, attitudes, and can be played as alternate characters.")
-                .font(.subheadline)
+                .font(.body)
                 .foregroundStyle(.secondary)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -276,7 +277,7 @@ private struct RetainersCard: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(.purple)
                         Text("Retainer #\(index + 1)")
-                            .font(.subheadline)
+                            .font(.body)
                             .foregroundColor(.purple)
                         Spacer()
                     }
@@ -303,7 +304,7 @@ private struct RetainersCard: View {
 private struct EmptyRetainerSlot: View {
     var body: some View {
         Text("Empty Retainer Slot")
-            .font(.headline)
+            .font(.body)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity)
             .padding()
@@ -323,7 +324,7 @@ private struct RetainerDetailView: View {
             
             if !retainer.type.isEmpty {
                 Text(retainer.type)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundStyle(.secondary)
             }
 
@@ -352,7 +353,7 @@ private struct RetainerDetailView: View {
                             .frame(width: 16, height: 16)
                             .foregroundColor(.purple)
                         Text("Keywords")
-                            .font(.caption)
+                            .font(.body)
                             .foregroundColor(.secondary)
                     }
                     
@@ -373,6 +374,7 @@ private struct RetainerDetailView: View {
                     Ph.note.bold
                         .frame(width: 16, height: 16)
                     Text(retainer.notes)
+                        .font(.body)
                 }
             }
         }
@@ -388,7 +390,7 @@ private struct KeywordBadge: View {
     
     var body: some View {
         Text(text)
-            .font(.caption)
+            .font(.body)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(Color.purple.opacity(0.15))
@@ -412,10 +414,10 @@ private struct StatBadge: View {
                 .foregroundColor(.blue)
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
-                    .font(.subheadline)
+                    .font(.body)
                     .fontWeight(.medium)
                 Text(label)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
         }
@@ -437,7 +439,7 @@ private struct FeatureRow: View {
                 .foregroundColor(color)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.subheadline)
+                    .font(.body)
                     .fontWeight(.medium)
                 Text(description)
                     .font(.body)
@@ -462,7 +464,7 @@ private struct BenefitRow: View {
                 .foregroundColor(.purple)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.subheadline)
+                    .font(.body)
                     .fontWeight(.medium)
                 Text(description)
                     .font(.body)
