@@ -34,6 +34,11 @@ struct NumericTextField: View {
             .onChange(of: text) { newValue in
                 handleTextChange(newValue)
             }
+            .onChange(of: focusedField) { newValue in
+                if newValue != field {  // Field lost focus
+                    removeLeadingZeroes()
+                }
+            }
         #else
         MacNumericTextField(
             text: $text,
@@ -78,6 +83,25 @@ struct NumericTextField: View {
                 text = String(max(minValue, min(maxValue, value)))
             }
         }
+    }
+    
+    private func removeLeadingZeroes() {
+        // Skip if empty or just a minus sign
+        if text.isEmpty || text == "-" {
+            return
+        }
+        
+        // Handle negative numbers
+        let isNegative = text.hasPrefix("-")
+        var numberText = isNegative ? String(text.dropFirst()) : text
+        
+        // Remove leading zeroes but keep at least one digit
+        while numberText.hasPrefix("0") && numberText.count > 1 {
+            numberText = String(numberText.dropFirst())
+        }
+        
+        // Reconstruct the number with the sign if needed
+        text = isNegative ? "-\(numberText)" : numberText
     }
 }
 
@@ -228,36 +252,40 @@ struct MacNumericTextField: NSViewRepresentable {
             
             // Handle empty field
             if textField.stringValue.isEmpty {
-                let finalText = String(parent.defaultValue ?? parent.minValue)
-                print(" [controlTextDidEndEditing] Empty field, using default: \(finalText)")
-                textField.stringValue = finalText
-                parent.text = finalText
+                if let defaultValue = parent.defaultValue {
+                    textField.stringValue = "\(defaultValue)"
+                    parent.text = "\(defaultValue)"
+                } else {
+                    textField.stringValue = "\(parent.minValue)"
+                    parent.text = "\(parent.minValue)"
+                }
                 return
             }
             
-            // Handle minus sign
-            if parent.allowsNegative && textField.stringValue == "-" {
-                let finalText = String(parent.defaultValue ?? parent.minValue)
-                print(" [controlTextDidEndEditing] Single minus, using default: \(finalText)")
-                textField.stringValue = finalText
-                parent.text = finalText
-                return
+            // Remove leading zeroes
+            let isNegative = textField.stringValue.hasPrefix("-")
+            var numberText = isNegative ? String(textField.stringValue.dropFirst()) : textField.stringValue
+            
+            while numberText.hasPrefix("0") && numberText.count > 1 {
+                numberText = String(numberText.dropFirst())
             }
             
-            // Validate and clamp value
-            if let value = Int(textField.stringValue) {
-                let clampedValue = max(parent.minValue, min(parent.maxValue, value))
-                let finalText = String(clampedValue)
-                print(" [controlTextDidEndEditing] Clamping value: \(value) -> \(clampedValue)")
-                textField.stringValue = finalText
-                parent.text = finalText
-            } else {
-                let finalText = String(parent.defaultValue ?? parent.minValue)
-                print(" [controlTextDidEndEditing] Invalid value, using default: \(finalText)")
-                textField.stringValue = finalText
-                parent.text = finalText
+            let finalText = isNegative ? "-\(numberText)" : numberText
+            textField.stringValue = finalText
+            parent.text = finalText
+            
+            // Validate final value
+            if let value = Int(finalText) {
+                if value < parent.minValue {
+                    textField.stringValue = "\(parent.minValue)"
+                    parent.text = "\(parent.minValue)"
+                } else if value > parent.maxValue {
+                    textField.stringValue = "\(parent.maxValue)"
+                    parent.text = "\(parent.maxValue)"
+                }
             }
-            print(" [controlTextDidEndEditing] END - final value: \(textField.stringValue)")
+            
+            print(" [controlTextDidEndEditing] END - value: \(textField.stringValue)")
         }
     }
 }
