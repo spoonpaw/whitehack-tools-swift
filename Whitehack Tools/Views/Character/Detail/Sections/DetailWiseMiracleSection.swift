@@ -113,39 +113,43 @@ struct DetailWiseMiracleSection: View {
             VStack(spacing: 12) {
                 SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
                 
-                VStack(alignment: .leading, spacing: 16) {
-                    ClassInfoCard()
-                    ClassFeaturesCard()
-                    MiracleGuidelinesCard()
-                    CostModifiersCard()
-                    HPCostReferenceCard()
-                    
+                GroupBox {
                     VStack(alignment: .leading, spacing: 16) {
-                        HStack {
-                            IconFrame(icon: Ph.magicWand.bold, color: .yellow)
-                            Text("Miracles")
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                        }
+                        ClassInfoCard()
+                        Divider()
+                        ClassFeaturesCard()
+                        Divider()
+                        MiracleGuidelinesCard()
+                        Divider()
+                        CostModifiersCard()
+                        Divider()
+                        HPCostReferenceCard()
+                        Divider()
                         
-                        let _ = initializeSlots() // Force initialization before ForEach
-                        ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
-                            MiracleSlotCard(
-                                index: index,
-                                slot: slot,
-                                extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
-                                colorScheme: colorScheme
-                            )
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack {
+                                IconFrame(icon: Ph.magicWand.bold, color: .yellow)
+                                Text("Miracles")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            let _ = initializeSlots() // Force initialization before ForEach
+                            ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
+                                MiracleSlotCard(
+                                    index: index,
+                                    slot: slot,
+                                    extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
+                                    colorScheme: colorScheme
+                                )
+                            }
                         }
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.yellow.opacity(0.1))
+                        .groupCardStyle()
                     }
                     .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.yellow.opacity(0.1))
-                    .groupCardStyle()
-                    .onAppear {
-                        initializeSlots()
-                        logMiracleStructure()
-                    }
                 }
                 .padding(.horizontal, 16)
             }
