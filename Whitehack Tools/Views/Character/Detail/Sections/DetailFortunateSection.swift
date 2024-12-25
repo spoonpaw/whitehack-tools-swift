@@ -354,7 +354,7 @@ private struct RetainerDetailView: View {
                             .foregroundColor(.purple)
                         Text("Keywords")
                             .font(.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.purple)
                     }
                     
                     LazyVGrid(columns: [
@@ -362,6 +362,7 @@ private struct RetainerDetailView: View {
                     ], spacing: 8) {
                         ForEach(retainer.keywords, id: \.self) { keyword in
                             KeywordBadge(text: keyword)
+                                .font(.body)
                         }
                     }
                 }
@@ -375,6 +376,7 @@ private struct RetainerDetailView: View {
                         .frame(width: 16, height: 16)
                     Text(retainer.notes)
                         .font(.body)
+                        .foregroundColor(.secondary)
                 }
             }
         }
