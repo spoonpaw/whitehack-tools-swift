@@ -174,7 +174,7 @@ private struct ClassInfoCard: View {
             }
             
             Text("Masters of miracles who negotiate with supernatural forces. Whether as cultists, chemists, meta-mathematicians, exorcists, druids, bards, or wizards, they channel powers beyond normal comprehension.")
-                .font(.subheadline)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding()
@@ -268,7 +268,7 @@ private struct MiracleGuidelinesCard: View {
             }
             
             Text("Miracles are governed by the following rules:")
-                .font(.subheadline)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
@@ -319,7 +319,7 @@ private struct CostModifiersCard: View {
             }
             
             Text("The following factors can modify the cost of a miracle:")
-                .font(.subheadline)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
@@ -403,7 +403,7 @@ private struct HPCostReferenceCard: View {
             }
             
             Text("The following HP cost magnitudes are used for miracles:")
-                .font(.subheadline)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
             
             VStack(alignment: .leading, spacing: 12) {
@@ -556,7 +556,7 @@ private struct MiracleSlotCard: View {
     private func magickItemInfoView() -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Magick Item Option")
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.yellow)
             
             Text("The level 3 slot may hold a magick item—a blackstaff, a talking sword, etc.—instead of miracles. This extends the character's hp by an amount equal to her level. When chosen, any previous wordings tied to the slot are ruined. The slot can only hold a new item if the previous one breaks, which lowers both maximum and current hp.")
