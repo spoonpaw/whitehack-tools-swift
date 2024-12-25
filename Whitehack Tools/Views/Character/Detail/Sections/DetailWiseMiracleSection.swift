@@ -437,7 +437,7 @@ private struct HPCostRow: View {
                 .frame(width: 24)
             
             Text(text)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundColor(.secondary)
         }
     }
@@ -493,7 +493,7 @@ private struct MiracleSlotCard: View {
             if index == 0 {
                 if extraInactiveMiracles > 0 {
                     Text("(+\(extraInactiveMiracles) from Willpower)")
-                        .font(.caption)
+                        .font(.body)
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -503,7 +503,7 @@ private struct MiracleSlotCard: View {
                 
                 if slot.additionalMiracleCount > 0 {
                     Text("(+\(slot.additionalMiracleCount) Additional)")
-                        .font(.caption)
+                        .font(.body)
                         .foregroundColor(.green)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
@@ -528,7 +528,7 @@ private struct MiracleSlotCard: View {
                 Text(slot.magicItemName.isEmpty ? "Unnamed Magick Item" : slot.magicItemName)
                     .foregroundColor(.primary)
                 Text("Special equipment that extends HP by character level")
-                    .font(.caption2)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -560,7 +560,7 @@ private struct MiracleSlotCard: View {
                 .foregroundColor(.yellow)
             
             Text("The level 3 slot may hold a magick item—a blackstaff, a talking sword, etc.—instead of miracles. This extends the character's hp by an amount equal to her level. When chosen, any previous wordings tied to the slot are ruined. The slot can only hold a new item if the previous one breaks, which lowers both maximum and current hp.")
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -578,7 +578,7 @@ private struct MiracleSlotCard: View {
                 Text(miracle.name.isEmpty ? "Empty Miracle" : miracle.name)
                     .foregroundColor(miracle.isActive ? .primary : .secondary)
                 Text(miracle.isActive ? "Active" : "Inactive")
-                    .font(.caption2)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
             
@@ -608,7 +608,7 @@ private struct MiracleSlotCard: View {
             Text("Empty Miracle")
                 .foregroundColor(.secondary)
             Text("No miracle assigned")
-                .font(.caption2)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -643,7 +643,7 @@ struct WiseMiracleFeatureRow: View {
                     .font(.subheadline)
                     .foregroundColor(.primary)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -685,7 +685,7 @@ private struct MiracleRuleCard: View {
             }
             
             Text(text)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -716,7 +716,7 @@ struct CostModifierRow: View {
             IconFrame(icon: Ph.circle.bold, color: color.opacity(0.5))
                 .font(.system(size: 4))
             Text(text)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -745,7 +745,7 @@ struct MagnitudeCard: View {
                     .font(.subheadline)
                     .foregroundColor(.primary)
                 Text(examples)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
