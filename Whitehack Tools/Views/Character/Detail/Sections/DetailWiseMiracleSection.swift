@@ -113,45 +113,45 @@ struct DetailWiseMiracleSection: View {
             VStack(spacing: 12) {
                 SectionHeader(title: "The Wise", icon: Ph.sparkle.bold)
                 
-                GroupBox {
+                VStack(alignment: .leading, spacing: 16) {
+                    ClassInfoCard()
+                    Divider()
+                    ClassFeaturesCard()
+                    Divider()
+                    MiracleGuidelinesCard()
+                    Divider()
+                    CostModifiersCard()
+                    Divider()
+                    HPCostReferenceCard()
+                    Divider()
+                    
                     VStack(alignment: .leading, spacing: 16) {
-                        ClassInfoCard()
-                        Divider()
-                        ClassFeaturesCard()
-                        Divider()
-                        MiracleGuidelinesCard()
-                        Divider()
-                        CostModifiersCard()
-                        Divider()
-                        HPCostReferenceCard()
-                        Divider()
-                        
-                        VStack(alignment: .leading, spacing: 16) {
-                            HStack {
-                                IconFrame(icon: Ph.magicWand.bold, color: .yellow)
-                                Text("Miracles")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                            }
-                            
-                            let _ = initializeSlots() // Force initialization before ForEach
-                            ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
-                                MiracleSlotCard(
-                                    index: index,
-                                    slot: slot,
-                                    extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
-                                    colorScheme: colorScheme
-                                )
-                            }
+                        HStack {
+                            IconFrame(icon: Ph.magicWand.bold, color: .yellow)
+                            Text("Miracles")
+                                .font(.headline)
+                                .foregroundColor(.primary)
                         }
-                        .padding(8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.yellow.opacity(0.1))
-                        .groupCardStyle()
+                        
+                        let _ = initializeSlots() // Force initialization before ForEach
+                        ForEach(Array(character.wiseMiracleSlots.prefix(availableSlots).enumerated()), id: \.offset) { index, slot in
+                            MiracleSlotCard(
+                                index: index,
+                                slot: slot,
+                                extraInactiveMiracles: index == 0 ? extraInactiveMiracles : 0,
+                                colorScheme: colorScheme
+                            )
+                        }
                     }
                     .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.yellow.opacity(0.1))
+                    .groupCardStyle()
                 }
-                .padding(.horizontal, 8)
+                .padding(8)
+                .background(.background)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
             }
         } else {
             EmptyView()
@@ -443,6 +443,7 @@ private struct HPCostRow: View {
             Text(text)
                 .font(.body)
                 .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -774,6 +775,6 @@ private extension View {
             .background(Color(nsColor: .windowBackgroundColor))
             #endif
             .cornerRadius(12)
-            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 }
