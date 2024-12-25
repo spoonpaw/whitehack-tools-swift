@@ -50,7 +50,7 @@ private struct ClassInfoCard: View {
             }
             
             Text("Strong characters rely on combat skills and physique. They can for example be warriors, guards, brigands, knights, bounty hunters or barbarians.")
-                .font(.subheadline)
+                .font(.body)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(12)
@@ -114,10 +114,10 @@ private struct StrongCombatFeatureRow: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.primary)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -145,7 +145,7 @@ private struct SpecialAbilitiesCard: View {
             
             if character.strongCombatOptions.activeOptions.isEmpty {
                 Text("No abilities selected")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .padding(12)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -165,12 +165,12 @@ private struct SpecialAbilitiesCard: View {
                                     .imageScale(.large)
                                 
                                 Text("Slot \(index + 1): \(option.name)")
-                                    .font(.subheadline.bold())
+                                    .font(.body)
                                     .foregroundColor(specialAbilities[option.rawValue].color)
                             }
                             
                             Text(option.description)
-                                .font(.subheadline)
+                                .font(.body)
                                 .foregroundColor(.secondary)
                                 .padding(.leading, 32)
                         }
@@ -203,20 +203,20 @@ private struct SpecialAbilitiesCard: View {
                             .imageScale(.large)
                         
                         Text(currentLoot.type.rawValue.capitalized)
-                            .font(.subheadline.bold())
+                            .font(.body)
                             .foregroundColor(currentLoot.type == .substance ? .green :
                                            currentLoot.type == .special ? .orange : .purple)
                     }
                     
                     if !currentLoot.keyword.isEmpty {
                         Text("Keyword: \(currentLoot.keyword)")
-                            .font(.subheadline)
+                            .font(.body)
                             .foregroundColor(.secondary)
                             .padding(.leading, 32)
                     }
                     
                     Text("\(currentLoot.usesRemaining) use\(currentLoot.usesRemaining != 1 ? "s" : "") remaining")
-                        .font(.subheadline)
+                        .font(.body)
                         .foregroundColor(currentLoot.usesRemaining > 0 ? .blue : .red)
                         .padding(.leading, 32)
                 }
@@ -258,12 +258,12 @@ private struct ConflictLootingCard: View {
                             Image(systemName: option.icon)
                                 .foregroundColor(option.color)
                             Text(option.title)
-                                .font(.subheadline.bold())
+                                .font(.body)
                                 .foregroundColor(.primary)
                         }
                         
                         Text(option.text)
-                            .font(.subheadline)
+                            .font(.body)
                             .foregroundColor(.secondary)
                             .padding(.leading, 32)
                     }
@@ -309,11 +309,11 @@ private struct FlowAttacksCard: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 Text("Maximum Flow Attacks per Round: \(maxFlowAttacks)")
-                    .font(.subheadline.bold())
+                    .font(.body)
                     .foregroundColor(.primary)
                 
                 Text("When you reduce an enemy to 0 HP, you can make an additional attack against an adjacent enemy (melee) or an enemy adjacent to the prior target (ranged).")
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
             .padding(12)
@@ -396,7 +396,7 @@ private struct AttributeBonusRow: View {
                 Text(attribute)
                     .font(.headline)
                 Text(bonus)
-                    .font(.subheadline)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
         }
