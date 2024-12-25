@@ -33,10 +33,15 @@ struct FormGoldSection: View {
                         .focused($focusedField, equals: .goldOnHand)
                         .onChange(of: focusedField) { newValue in
                             print("🔥 FOCUS CHANGED - current coins: \(coinsOnHand), string: '\(coinsOnHandString)'")
-                            if newValue != .goldOnHand && coinsOnHandString.isEmpty {  // Field lost focus and is empty
-                                print("🔥 SETTING EMPTY TO 0")
-                                coinsOnHandString = "0"
-                                coinsOnHand = 0
+                            if newValue != .goldOnHand {  // Field lost focus
+                                if coinsOnHandString.isEmpty {
+                                    print("🔥 SETTING EMPTY TO 0")
+                                    coinsOnHandString = "0"
+                                    coinsOnHand = 0
+                                } else if let value = Int(coinsOnHandString) {
+                                    // Remove leading zeroes when losing focus
+                                    coinsOnHandString = String(value)
+                                }
                             }
                         }
                         .onChange(of: coinsOnHandString) { newValue in
@@ -72,10 +77,15 @@ struct FormGoldSection: View {
                         .focused($focusedField, equals: .goldStashed)
                         .onChange(of: focusedField) { newValue in
                             print("🔥 FOCUS CHANGED - current stashed: \(stashedCoins), string: '\(stashedCoinsString)'")
-                            if newValue != .goldStashed && stashedCoinsString.isEmpty {  // Field lost focus and is empty
-                                print("🔥 SETTING EMPTY TO 0")
-                                stashedCoinsString = "0"
-                                stashedCoins = 0
+                            if newValue != .goldStashed {  // Field lost focus
+                                if stashedCoinsString.isEmpty {
+                                    print("🔥 SETTING EMPTY TO 0")
+                                    stashedCoinsString = "0"
+                                    stashedCoins = 0
+                                } else if let value = Int(stashedCoinsString) {
+                                    // Remove leading zeroes when losing focus
+                                    stashedCoinsString = String(value)
+                                }
                             }
                         }
                         .onChange(of: stashedCoinsString) { newValue in
