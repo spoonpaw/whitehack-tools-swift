@@ -440,7 +440,7 @@ private struct FeatureRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
         }
@@ -465,7 +465,7 @@ private struct BenefitRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
         }
