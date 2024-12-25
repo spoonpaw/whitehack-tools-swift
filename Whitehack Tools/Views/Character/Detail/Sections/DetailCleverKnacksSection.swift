@@ -110,7 +110,7 @@ private struct DetailCleverFeatureRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Text(description)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -174,7 +174,7 @@ private struct UnorthodoxSolutionCard: View {
                 Image(systemName: hasUsedUnorthodoxBonus ? "hourglass.circle.fill" : "checkmark.circle.fill")
                     .foregroundColor(hasUsedUnorthodoxBonus ? .red : .green)
                 Text(hasUsedUnorthodoxBonus ? "Daily power has been used" : "Daily power is available")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(hasUsedUnorthodoxBonus ? .red : .green)
             }
         }
@@ -440,12 +440,12 @@ private struct EmptyKnackCard: View {
                     .italic()
                 Spacer()
                 Text("Slot \(slotIndex + 1)")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
             
             Text("No knack selected for this slot")
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 4)
@@ -454,7 +454,7 @@ private struct EmptyKnackCard: View {
                 Image(systemName: "circle")
                     .foregroundColor(.secondary)
                 Text("Available")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
         }
@@ -477,18 +477,24 @@ private struct KnackCard: View {
                     .fontWeight(.medium)
                 Spacer()
                 Text("Slot \(slotIndex + 1)")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.secondary)
             }
             
             Text(knack.description)
-                .font(.caption)
+                .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 4)
             
             if knack == .combatExploiter {
-                CombatDieStatus(hasUsedCombatDie: hasUsedCombatDie)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Combat Die Status")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    CombatDieStatus(hasUsedCombatDie: hasUsedCombatDie)
+                }
             }
         }
         .padding(12)
@@ -503,13 +509,10 @@ private struct CombatDieStatus: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Combat Die Status")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
                 Text(hasUsedCombatDie ?
                      "⚠️ D10 damage die has been used this battle" :
                      "✓ D10 damage die is available this battle")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(hasUsedCombatDie ? .red : .green)
                     .fixedSize(horizontal: false, vertical: true)
             }
