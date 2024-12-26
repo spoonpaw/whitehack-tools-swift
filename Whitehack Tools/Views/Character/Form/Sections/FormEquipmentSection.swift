@@ -442,8 +442,12 @@ struct GearEditRow: View {
                 Text("Item Name")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Item Name", text: $name)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    TextField("Item Name", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                } icon: {
+                    IconFrame(icon: Ph.bagSimple.bold, color: .purple)
+                }
             }
             
             // Quantity Section
