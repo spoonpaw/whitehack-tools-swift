@@ -757,7 +757,7 @@ struct FormWeaponsSection: View {
                 .padding(.vertical, 12)  // Add equal padding to top and bottom
             } else {
                 Button(action: { isAddingNew = true }) {
-                    Label(weapons.isEmpty ? "Add Your First Weapon" : "Add Weapon", 
+                    Label(weapons.isEmpty ? "Add Your First Weapon" : "Add Another Weapon", 
                           systemImage: "plus.circle.fill")
                         .foregroundColor(.blue)
                 }

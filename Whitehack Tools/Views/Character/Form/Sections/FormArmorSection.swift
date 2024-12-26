@@ -243,7 +243,7 @@ struct FormArmorSection: View {
                 Button(action: { isAddingNew = true }) {
                     HStack {
                         Image(systemName: "plus.circle.fill")
-                        Text(armor.isEmpty ? "Add Your First Armor" : "Add Armor")
+                        Text(armor.isEmpty ? "Add Your First Armor" : "Add Another Armor")
                     }
                     .foregroundColor(.blue)
                 }

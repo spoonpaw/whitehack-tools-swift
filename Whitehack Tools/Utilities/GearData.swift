@@ -19,7 +19,7 @@ struct GearData {
         GearItem(name: "Cart", weight: "Heavy", special: "", isContainer: false),
         GearItem(name: "Carpeting tool", weight: "Minor", special: "", isContainer: false),
         GearItem(name: "Case (map or scroll)", weight: "Minor", special: "", isContainer: false),
-        GearItem(name: "Checker (game)", weight: "No size", special: "", isContainer: false),
+        GearItem(name: "Checkers (game)", weight: "No size", special: "", isContainer: false),
         GearItem(name: "Climbing gear", weight: "Regular", special: "", isContainer: false),
         GearItem(name: "Cloth (fine)", weight: "Minor", special: "", isContainer: false),
         GearItem(name: "Cloth (standard)", weight: "Minor", special: "", isContainer: false),
