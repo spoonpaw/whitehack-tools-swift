@@ -46,6 +46,7 @@ struct FormCharacterGroupsSection: View {
     var body: some View {
         VStack(spacing: 0) {
             SectionHeader(title: "Character Groups", icon: Ph.usersThree.bold)
+                .padding(.bottom, 12)
             
             VStack(spacing: 16) {
                 // Species Group
