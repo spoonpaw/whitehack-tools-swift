@@ -154,6 +154,7 @@ public struct FormEquipmentSection: View {
                     }
                 }
             }
+            .padding(.bottom, 16)
         }
     }
     
