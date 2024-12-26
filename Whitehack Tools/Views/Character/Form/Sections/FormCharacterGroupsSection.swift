@@ -29,7 +29,9 @@ struct FormCharacterGroupsSection: View {
     
     private var availableAttributes: [String] {
         if useCustomAttributes {
-            return customAttributes.map { $0.name }
+            return customAttributes
+                .map { $0.name }
+                .filter { !$0.isEmpty }
         } else {
             return defaultAttributes
         }

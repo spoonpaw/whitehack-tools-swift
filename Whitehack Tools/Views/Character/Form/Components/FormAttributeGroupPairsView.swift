@@ -77,14 +77,11 @@ struct FormAttributeGroupPairsView: View {
                             }())
                             .cornerRadius(8)
                         }
+                        .id(attributes.joined())
                         .onChange(of: attributes) { newAttributes in
-                            // Update tempAttribute if the selected attribute was renamed
+                            // Clear the selected attribute if it's no longer available
                             if !tempAttribute.isEmpty && !newAttributes.contains(tempAttribute) {
-                                // Try to find the new name by comparing with old attributes
-                                if let oldAttributeIndex = attributes.firstIndex(of: tempAttribute),
-                                   oldAttributeIndex < newAttributes.count {
-                                    tempAttribute = newAttributes[oldAttributeIndex]
-                                }
+                                tempAttribute = ""
                             }
                         }
                         
@@ -187,9 +184,8 @@ struct FormAttributeGroupPairsView: View {
                                     Button(action: {
                                         var updatedPair = pair
                                         updatedPair.attribute = attribute
-                                        if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
-                                            attributeGroupPairs[index] = updatedPair
-                                        }
+                                        let index = attributeGroupPairs.firstIndex { $0.id == pair.id }!
+                                        attributeGroupPairs[index] = updatedPair
                                     }) {
                                         Text(attribute)
                                     }
@@ -215,18 +211,11 @@ struct FormAttributeGroupPairsView: View {
                                 }())
                                 .cornerRadius(8)
                             }
+                            .id(attributes.joined())
                             .onChange(of: attributes) { newAttributes in
-                                // Update pair's attribute if it was renamed
+                                // Remove the pair if its attribute is no longer available
                                 if !pair.attribute.isEmpty && !newAttributes.contains(pair.attribute) {
-                                    // Try to find the new name by comparing with old attributes
-                                    if let oldAttributeIndex = attributes.firstIndex(of: pair.attribute),
-                                       oldAttributeIndex < newAttributes.count {
-                                        var updatedPair = pair
-                                        updatedPair.attribute = newAttributes[oldAttributeIndex]
-                                        if let index = attributeGroupPairs.firstIndex(where: { $0.id == pair.id }) {
-                                            attributeGroupPairs[index] = updatedPair
-                                        }
-                                    }
+                                    attributeGroupPairs.removeAll { $0.id == pair.id }
                                 }
                             }
                             
