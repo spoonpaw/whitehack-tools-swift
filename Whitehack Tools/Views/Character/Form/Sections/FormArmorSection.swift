@@ -504,8 +504,12 @@ struct ArmorEditRow: View {
                 Text("Armor Name")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Armor Name", text: $name)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    TextField("Armor Name", text: $name)
+                        .textFieldStyle(.roundedBorder)
+                } icon: {
+                    IconFrame(icon: Ph.shield.bold, color: .blue)
+                }
             }
             
             // Quantity Section
