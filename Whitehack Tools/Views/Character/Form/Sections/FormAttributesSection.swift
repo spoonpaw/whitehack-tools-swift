@@ -344,17 +344,19 @@ struct FormAttributesSection: View {
                 if useCustomAttributes {
                     VStack(spacing: 16) {
                         LazyVGrid(columns: [GridItem(.flexible())], spacing: 16) {
-                            ForEach(customAttributes.indices, id: \.self) { index in
+                            ForEach(customAttributes) { attribute in
                                 CustomAttributeEditor(
-                                    attribute: customAttributes[index],
+                                    attribute: attribute,
                                     onDelete: {
-                                        print(" [FORM ATTRIBUTES SECTION] Deleting attribute at index \(index)")
-                                        customAttributes.remove(at: index)
+                                        print(" [FORM ATTRIBUTES SECTION] Deleting attribute with id \(attribute.id)")
+                                        customAttributes.removeAll { $0.id == attribute.id }
                                     },
                                     onUpdate: { updatedAttribute in
-                                        print(" [FORM ATTRIBUTES SECTION] Updating attribute at index \(index)")
-                                        customAttributes[index] = updatedAttribute
-                                        print(" [FORM ATTRIBUTES SECTION] Attribute updated successfully")
+                                        print(" [FORM ATTRIBUTES SECTION] Updating attribute with id \(attribute.id)")
+                                        if let index = customAttributes.firstIndex(where: { $0.id == attribute.id }) {
+                                            customAttributes[index] = updatedAttribute
+                                            print(" [FORM ATTRIBUTES SECTION] Attribute updated successfully")
+                                        }
                                     },
                                     attributeGroupPairs: $attributeGroupPairs
                                 )
