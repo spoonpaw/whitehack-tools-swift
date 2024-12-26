@@ -343,28 +343,17 @@ struct ArmorRow: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     HStack(spacing: 12) {
-                        if armor.isEquipped {
-                            Label {
-                                Text("Equipped")
-                            } icon: {
-                                IconFrame(icon: Ph.bagSimple.bold, color: .green)
-                            }
+                        Label {
+                            Text(armor.isEquipped ? "Equipped" : "Unequipped")
+                        } icon: {
+                            IconFrame(icon: Ph.bagSimple.bold, color: armor.isEquipped ? .green : .gray)
                         }
                         
-                        if armor.isStashed {
-                            Label {
-                                Text("Stashed")
-                            } icon: {
-                                IconFrame(icon: Ph.warehouse.bold, color: .orange)
-                            }
-                        }
-                        
-                        if armor.isShield {
-                            Label {
-                                Text("Shield")
-                            } icon: {
-                                IconFrame(icon: Ph.shield.bold, color: .blue)
-                            }
+                        Label {
+                            Text(armor.isStashed ? "Stashed" : "On Person")
+                        } icon: {
+                            IconFrame(icon: armor.isStashed ? Ph.warehouse.bold : Ph.user.bold,
+                                    color: armor.isStashed ? .orange : .gray)
                         }
                     }
                 }
