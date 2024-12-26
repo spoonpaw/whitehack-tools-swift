@@ -500,8 +500,12 @@ struct GearEditRow: View {
                 Text("Special Properties")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                TextField("Special Properties", text: $special)
-                    .textFieldStyle(.roundedBorder)
+                Label {
+                    TextField("Special Properties", text: $special)
+                        .textFieldStyle(.roundedBorder)
+                } icon: {
+                    IconFrame(icon: Ph.star.bold, color: .yellow)
+                }
             }
             
             // Status Section
