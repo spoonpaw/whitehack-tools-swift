@@ -59,6 +59,7 @@ private struct AttunementSlotView: View {
         }
         .padding(16)
         .background(Color.primary.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.purple.opacity(0.2), lineWidth: 1)
