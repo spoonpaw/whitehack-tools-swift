@@ -150,12 +150,11 @@ public struct FormEquipmentSection: View {
                                 gear.removeAll(where: { $0.id == gearItem.id })
                             }
                         )
-                        .padding(.bottom, 4)
                     }
                 }
             }
-            .padding(.bottom, 16)
         }
+        .padding(.bottom, 20)
     }
     
     private var emptyStateView: some View {
