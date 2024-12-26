@@ -30,6 +30,11 @@ struct FormAttributeGroupPairsView: View {
                             .symbolRenderingMode(.hierarchical)
                             .foregroundColor(.blue)
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(.background)
+                    .cornerRadius(10)
+                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
                 .buttonStyle(BorderlessButtonStyle())
             }
