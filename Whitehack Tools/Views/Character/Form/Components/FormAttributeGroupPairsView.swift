@@ -117,14 +117,11 @@ struct FormAttributeGroupPairsView: View {
                             }())
                             .cornerRadius(8)
                         }
+                        .id(availableGroups.joined())
                         .onChange(of: availableGroups) { newGroups in
-                            // Update tempGroup if the selected group was renamed
+                            // If the selected group is no longer available, clear it
                             if !tempGroup.isEmpty && !newGroups.contains(tempGroup) {
-                                // Try to find the new name by comparing with old groups
-                                if let oldGroupIndex = availableGroups.firstIndex(of: tempGroup),
-                                   oldGroupIndex < newGroups.count {
-                                    tempGroup = newGroups[oldGroupIndex]
-                                }
+                                tempGroup = ""
                             }
                         }
                     }
@@ -266,6 +263,7 @@ struct FormAttributeGroupPairsView: View {
                                 }())
                                 .cornerRadius(8)
                             }
+                            .id(availableGroups.joined())
                             .onChange(of: availableGroups) { newGroups in
                                 // Update pair's group if it was renamed
                                 if !pair.group.isEmpty && !newGroups.contains(pair.group) {
