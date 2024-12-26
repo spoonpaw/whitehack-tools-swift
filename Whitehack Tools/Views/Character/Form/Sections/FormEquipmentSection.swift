@@ -446,7 +446,8 @@ struct GearEditRow: View {
                     TextField("Item Name", text: $name)
                         .textFieldStyle(.roundedBorder)
                 } icon: {
-                    IconFrame(icon: Ph.bagSimple.bold, color: .purple)
+                    IconFrame(icon: isContainer ? Ph.package.bold : Ph.bagSimple.bold,
+                            color: isContainer ? .orange : .purple)
                 }
             }
             

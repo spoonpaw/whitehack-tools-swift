@@ -73,7 +73,8 @@ private struct GearDetailRow: View {
                     Text(gear.name)
                         .font(.headline)
                 } icon: {
-                    IconFrame(icon: Ph.package.bold, color: .blue)
+                    IconFrame(icon: gear.isContainer ? Ph.package.bold : Ph.bagSimple.bold,
+                            color: gear.isContainer ? .orange : .purple)
                 }
                 
                 Spacer()
