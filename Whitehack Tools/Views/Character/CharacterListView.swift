@@ -5,12 +5,16 @@ import Foundation
 struct CharacterListView: View {
     @EnvironmentObject private var characterStore: CharacterStore
     @EnvironmentObject private var importViewModel: CharacterImportViewModel
-    @State private var showingImportSheet = false
+    @Binding var showingImportSheet: Bool
     @State private var showingExportSheet = false
     @State private var showingDeleteConfirmation = false
     @State private var characterToDelete: IndexSet?
     @State private var currentView: CurrentView = .list
     @Environment(\.colorScheme) private var colorScheme
+    
+    init(showingImportSheet: Binding<Bool>) {
+        _showingImportSheet = showingImportSheet
+    }
     
     enum CurrentView {
         case list
@@ -132,7 +136,7 @@ private struct CharacterListContent: View {
         }
         #endif
         .sheet(isPresented: $showingImportSheet) {
-            CharacterImportView(characterStore: characterStore)
+            CharacterImportView(characterStore: characterStore, viewModel: importViewModel)
                 .environmentObject(importViewModel)
         }
         .sheet(isPresented: $showingExportSheet) {

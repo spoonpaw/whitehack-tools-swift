@@ -6,6 +6,16 @@ import UIKit
 import AppKit
 #endif
 
+extension Color {
+    static var systemBackground: Color {
+        #if os(iOS)
+        return Color(UIColor.systemBackground)
+        #else
+        return Color(NSColor.windowBackgroundColor)
+        #endif
+    }
+}
+
 class CharacterImportViewModel: ObservableObject {
     @Published var importText = ""
     @Published var showingAlert = false
@@ -17,62 +27,9 @@ class CharacterImportViewModel: ObservableObject {
     @Published var showingPreview = false
     
     func setImportText(_ text: String) {
+        print("📝 Setting import text, length: \(text.count)")
         importText = text
         previewCharacters()
-    }
-    
-    #if os(macOS)
-    func showFilePicker() {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
-        panel.canCreateDirectories = false
-        panel.allowedContentTypes = [.json]
-        
-        panel.begin { [weak self] result in
-            if result == .OK, let url = panel.url {
-                do {
-                    let data = try String(contentsOf: url)
-                    DispatchQueue.main.async {
-                        self?.setImportText(data)
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        self?.showAlert(title: "Error", message: "Could not read file contents")
-                    }
-                }
-            }
-        }
-    }
-    #endif
-    
-    func previewCharacters() {
-        guard !importText.isEmpty else { return }
-        
-        do {
-            if let data = importText.data(using: .utf8) {
-                do {
-                    // Try to decode as array first
-                    decodedCharacters = try JSONDecoder().decode([PlayerCharacter].self, from: data)
-                    showingPreview = true
-                    return
-                } catch {
-                    // If array decode fails, try single character
-                    do {
-                        let character = try JSONDecoder().decode(PlayerCharacter.self, from: data)
-                        decodedCharacters = [character]
-                        showingPreview = true
-                        return
-                    } catch {
-                        showAlert(title: "Error", message: "Invalid character data format")
-                    }
-                }
-            }
-            
-            throw NSError(domain: "", code: -1)
-        } catch {
-            showAlert(title: "Error", message: "Invalid character data format")
-        }
     }
     
     func reset() {
@@ -100,17 +57,100 @@ class CharacterImportViewModel: ObservableObject {
         return decodedCharacters.filter { selectedCharacters.contains($0.id) }
     }
     
-    func dismissAlert() {
-        showingAlert = false
-    }
-    
-    func addCharacter(_ character: PlayerCharacter) {
-        decodedCharacters.append(character)
-    }
-    
     func removeCharacter(_ character: PlayerCharacter) {
         decodedCharacters.removeAll(where: { $0.id == character.id })
     }
+    
+    func handleIncomingFile(url: URL) {
+        print("📂 Attempting to handle incoming file: \(url)")
+        print("📂 URL path components: \(url.pathComponents)")
+        
+        do {
+            let data = try String(contentsOf: url)
+            print("📄 Successfully read file contents, length: \(data.count)")
+            print("📄 First 100 chars of content: \(String(data.prefix(100)))")
+            setImportText(data)
+            print("📝 Set import text and attempting preview")
+            
+            // Force the view to show preview mode
+            DispatchQueue.main.async {
+                print("🔄 Setting showingPreview to true")
+                self.showingPreview = true
+                print("✅ Current state - showingPreview: \(self.showingPreview), characters: \(self.decodedCharacters.count)")
+            }
+        } catch {
+            print("❌ Failed to read file contents: \(error)")
+            showAlert(title: "Error", message: "Could not read file contents: \(error.localizedDescription)")
+        }
+    }
+    
+    func previewCharacters() {
+        print("🔍 Starting preview characters")
+        guard !importText.isEmpty else {
+            print("⚠️ Import text is empty")
+            return
+        }
+        
+        do {
+            if let data = importText.data(using: .utf8) {
+                print("✅ Successfully converted text to data")
+                do {
+                    // Try to decode as array first
+                    decodedCharacters = try JSONDecoder().decode([PlayerCharacter].self, from: data)
+                    print("✅ Successfully decoded array of characters: \(decodedCharacters.count)")
+                    showingPreview = true
+                    print("✅ Set showingPreview to true")
+                    return
+                } catch {
+                    print("⚠️ Failed to decode as array, trying single character: \(error)")
+                    // If array decode fails, try single character
+                    do {
+                        let character = try JSONDecoder().decode(PlayerCharacter.self, from: data)
+                        print("✅ Successfully decoded single character")
+                        decodedCharacters = [character]
+                        showingPreview = true
+                        print("✅ Set showingPreview to true")
+                        return
+                    } catch {
+                        print("❌ Failed to decode as single character: \(error)")
+                        showAlert(title: "Error", message: "Invalid character data format")
+                    }
+                }
+            } else {
+                print("❌ Failed to convert text to data")
+            }
+            
+            throw NSError(domain: "", code: -1)
+        } catch {
+            print("❌ Preview characters failed: \(error)")
+            showAlert(title: "Error", message: "Invalid character data format")
+        }
+    }
+    
+    #if os(macOS)
+    func showFilePicker() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canCreateDirectories = false
+        panel.allowedContentTypes = [.json]
+        
+        panel.begin { [weak self] result in
+            if result == .OK, let url = panel.url {
+                do {
+                    let data = try String(contentsOf: url)
+                    DispatchQueue.main.async {
+                        self?.setImportText(data)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self?.showAlert(title: "Error", message: "Could not read file contents")
+                    }
+                }
+            }
+        }
+    }
+    #endif
 }
 
 #if os(iOS)
@@ -136,59 +176,6 @@ extension CharacterImportViewModel {
     }
 }
 #endif
-
-extension Color {
-    static var systemBackground: Color {
-        #if os(iOS)
-        return Color(UIColor.systemBackground)
-        #else
-        return Color(NSColor.windowBackgroundColor)
-        #endif
-    }
-}
-
-struct SelectionHeaderView: View {
-    let selectedCount: Int
-    let totalCount: Int
-    let onSelectAll: () -> Void
-    let onDeselectAll: () -> Void
-    
-    var body: some View {
-        HStack {
-            HStack(spacing: 16) {
-                Button(action: onSelectAll) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 22))
-                            .foregroundColor(selectedCount == totalCount ? .secondary : .accentColor)
-                        Text("Select All")
-                            .foregroundColor(selectedCount == totalCount ? .secondary : .primary)
-                    }
-                    .font(.system(.body, design: .rounded).weight(.medium))
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(selectedCount == totalCount)
-                
-                Button(action: onDeselectAll) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "circle")
-                            .font(.system(size: 22))
-                            .foregroundColor(selectedCount == 0 ? .secondary : .accentColor)
-                        Text("Deselect All")
-                            .foregroundColor(selectedCount == 0 ? .secondary : .primary)
-                    }
-                    .font(.system(.body, design: .rounded).weight(.medium))
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(selectedCount == 0)
-            }
-            Spacer()
-        }
-        .padding(.bottom, 4)
-    }
-}
 
 struct ImportOptionsView: View {
     @Environment(\.dismiss) private var dismiss
@@ -283,10 +270,53 @@ struct ImportOptionsView: View {
     }
 }
 
+struct SelectionHeaderView: View {
+    let selectedCount: Int
+    let totalCount: Int
+    let onSelectAll: () -> Void
+    let onDeselectAll: () -> Void
+    
+    var body: some View {
+        HStack {
+            HStack(spacing: 16) {
+                Button(action: onSelectAll) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 22))
+                            .foregroundColor(selectedCount == totalCount ? .secondary : .accentColor)
+                        Text("Select All")
+                            .foregroundColor(selectedCount == totalCount ? .secondary : .primary)
+                    }
+                    .font(.system(.body, design: .rounded).weight(.medium))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(selectedCount == totalCount)
+                
+                Button(action: onDeselectAll) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "circle")
+                            .font(.system(size: 22))
+                            .foregroundColor(selectedCount == 0 ? .secondary : .accentColor)
+                        Text("Deselect All")
+                            .foregroundColor(selectedCount == 0 ? .secondary : .primary)
+                    }
+                    .font(.system(.body, design: .rounded).weight(.medium))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(selectedCount == 0)
+            }
+            Spacer()
+        }
+        .padding(.bottom, 4)
+    }
+}
+
 struct CharacterImportView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var characterStore: CharacterStore
-    @StateObject private var viewModel = CharacterImportViewModel()
+    @ObservedObject var viewModel: CharacterImportViewModel
     
     func pasteFromClipboard() {
         #if os(iOS)
@@ -409,6 +439,7 @@ struct CharacterImportView: View {
                         }
                     }
                     .disabled(viewModel.importText.isEmpty || (viewModel.showingPreview && viewModel.selectedCharacters.isEmpty))
+                    .keyboardShortcut(.return)
                 }
                 #else
                 ToolbarItem(placement: .cancellationAction) {
@@ -437,84 +468,34 @@ struct CharacterImportView: View {
                         }
                     }
                     .disabled(viewModel.importText.isEmpty || (viewModel.showingPreview && viewModel.selectedCharacters.isEmpty))
+                    .keyboardShortcut(.return)
                 }
                 #endif
             }
             .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
-                Button("OK", role: .cancel) { }
+                Button("OK") {}
             } message: {
                 Text(viewModel.alertMessage)
             }
-            .sheet(isPresented: $viewModel.showingFilePicker) {
-                DocumentPickerView(viewModel: viewModel)
-            }
         }
         .onAppear {
+            print("🔄 CharacterImportView appeared - showingPreview: \(viewModel.showingPreview), characters: \(viewModel.decodedCharacters.count)")
             if !viewModel.importText.isEmpty {
+                print("📝 Found existing import text, previewing characters")
                 viewModel.previewCharacters()
             }
-        }
-        .onDisappear {
-            viewModel.reset()
         }
         #else
         VStack {
             if viewModel.showingPreview {
-                VStack(spacing: 20) {
-                    SelectionHeaderView(
-                        selectedCount: viewModel.selectedCharacters.count,
-                        totalCount: viewModel.decodedCharacters.count,
-                        onSelectAll: { withAnimation { viewModel.selectAll() } },
-                        onDeselectAll: { withAnimation { viewModel.selectedCharacters.removeAll() } }
-                    )
-                    
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(viewModel.decodedCharacters) { character in
-                                CharacterImportRow(
-                                    character: character,
-                                    isSelected: viewModel.selectedCharacters.contains(character.id)
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    withAnimation {
-                                        if viewModel.selectedCharacters.contains(character.id) {
-                                            viewModel.selectedCharacters.remove(character.id)
-                                        } else {
-                                            viewModel.selectedCharacters.insert(character.id)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
-                    
-                    HStack {
-                        Button("Cancel") {
-                            viewModel.reset()
-                            dismiss()
-                        }
-                        .keyboardShortcut(.escape)
-                        
-                        Spacer()
-                        
-                        Button("Import") {
-                            importSelectedCharacters()
-                        }
-                        .keyboardShortcut(.return)
-                        .disabled(viewModel.selectedCharacters.isEmpty)
-                    }
-                    .padding(.top)
-                }
-                .padding()
-                .frame(width: 400, height: 500)
+                MacImportView(viewModel: viewModel, onImport: importSelectedCharacters)
             } else {
                 ImportOptionsView(viewModel: viewModel)
             }
         }
+        .frame(width: 600, height: 400)
         .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
-            Button("OK", role: .cancel) { }
+            Button("OK") {}
         } message: {
             Text(viewModel.alertMessage)
         }
@@ -534,18 +515,20 @@ struct CharacterImportRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(character.name)
-                    .font(.system(.body, design: .rounded))
-                    .fontWeight(.medium)
+                    .font(.headline)
+                
                 Text("Level \(character.level) \(vocation)")
-                    .font(.system(.subheadline, design: .rounded))
+                    .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
             Spacer()
             
-            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 22))
-                .foregroundColor(isSelected ? .accentColor : .secondary)
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 24))
+            }
         }
         .padding()
         .background(Color.systemBackground)
@@ -553,38 +536,59 @@ struct CharacterImportRow: View {
     }
 }
 
-#if os(iOS)
-struct DocumentPickerView: UIViewControllerRepresentable {
-    let viewModel: CharacterImportViewModel
+#if os(macOS)
+struct MacImportView: View {
+    @ObservedObject var viewModel: CharacterImportViewModel
+    let onImport: () -> Void
     
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json])
-        picker.delegate = context.coordinator
-        picker.allowsMultipleSelection = false
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(viewModel: viewModel)
-    }
-    
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
-        let viewModel: CharacterImportViewModel
-        
-        init(viewModel: CharacterImportViewModel) {
-            self.viewModel = viewModel
+    var body: some View {
+        VStack(spacing: 20) {
+            SelectionHeaderView(
+                selectedCount: viewModel.selectedCharacters.count,
+                totalCount: viewModel.decodedCharacters.count,
+                onSelectAll: { withAnimation { viewModel.selectAll() } },
+                onDeselectAll: { withAnimation { viewModel.selectedCharacters.removeAll() } }
+            )
+            
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    ForEach(viewModel.decodedCharacters) { character in
+                        CharacterImportRow(
+                            character: character,
+                            isSelected: viewModel.selectedCharacters.contains(character.id)
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation {
+                                if viewModel.selectedCharacters.contains(character.id) {
+                                    viewModel.selectedCharacters.remove(character.id)
+                                } else {
+                                    viewModel.selectedCharacters.insert(character.id)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+            }
+            
+            HStack {
+                Button("Cancel") {
+                    viewModel.reset()
+                }
+                .keyboardShortcut(.escape)
+                
+                Spacer()
+                
+                Button("Import") {
+                    onImport()
+                }
+                .keyboardShortcut(.return)
+                .disabled(viewModel.selectedCharacters.isEmpty)
+            }
+            .padding(.top)
         }
-        
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            guard let url = urls.first else { return }
-            viewModel.handleDocumentPicker(result: .success(url))
-        }
-        
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-            viewModel.showingFilePicker = false
-        }
+        .padding()
     }
 }
 #endif

@@ -22,9 +22,8 @@
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.whitehacktools.character</string>
+				<string>public.json</string>
 			</array>
-			<key>NSDocumentClass</key>
-			<string>public.json</string>
 		</dict>
 	</array>
 	<key>UTExportedTypeDeclarations</key>
@@ -79,6 +78,17 @@
 					<string>application/json</string>
 				</array>
 			</dict>
+		</dict>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>whitehacktools</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.whitehacktools</string>
 		</dict>
 	</array>
 </dict>
