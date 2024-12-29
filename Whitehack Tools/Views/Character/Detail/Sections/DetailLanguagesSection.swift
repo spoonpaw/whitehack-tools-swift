@@ -14,26 +14,45 @@ struct DetailLanguagesSection: View {
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.secondary.opacity(0.1))
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    )
                     .padding(.horizontal)
             } else {
-                HStack(spacing: 12) {
-                    Spacer(minLength: 0)
+                VStack(spacing: 8) {
                     ForEach(character.languages, id: \.self) { language in
-                        Text(language)
-                            .font(.subheadline)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.green.opacity(0.1))
-                            .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                        LanguageCard(language: language)
                     }
-                    Spacer(minLength: 0)
                 }
+                .padding(16)
+                .background(Color(uiColor: .systemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
                 .padding(.horizontal)
             }
         }
+    }
+}
+
+struct LanguageCard: View {
+    let language: String
+    
+    var body: some View {
+        Text(language)
+            .font(.system(.subheadline, design: .rounded))
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white)
+                    .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
+                    .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
+            )
     }
 }
