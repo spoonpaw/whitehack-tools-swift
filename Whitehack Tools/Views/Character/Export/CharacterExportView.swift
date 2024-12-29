@@ -32,31 +32,189 @@ struct CharacterExportView: View {
     @State private var isShowingShareSheet = false
     @State private var temporaryFileURL: URL?
     
-    private var characterData: Data? {
+    private var characterData: String {
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let selectedChars = characters.filter { selectedCharacters.contains($0.id) }
-            return try encoder.encode(selectedChars)
+            let data = try encoder.encode(selectedChars)
+            return String(data: data, encoding: .utf8) ?? ""
         } catch {
-            return nil
+            return "Error encoding character data"
         }
     }
     
-    private func createTemporaryFile() -> URL? {
-        guard let data = characterData else { return nil }
-        
-        let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-        let fileName = "characters_\(Date().timeIntervalSince1970).json"
-        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
-        
-        do {
-            try data.write(to: fileURL)
-            return fileURL
-        } catch {
-            print("Error creating temporary file: \(error)")
-            return nil
+    var body: some View {
+        #if os(iOS)
+        NavigationView {
+            VStack(spacing: 20) {
+                if characters.isEmpty {
+                    Text("No Characters Available")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                } else {
+                    SelectionHeaderView(
+                        selectedCount: selectedCharacters.count,
+                        totalCount: characters.count,
+                        onSelectAll: selectAll,
+                        onDeselectAll: deselectAll
+                    )
+                    
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(characters) { character in
+                                CharacterExportRow(
+                                    character: character,
+                                    isSelected: selectedCharacters.contains(character.id)
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation {
+                                        if selectedCharacters.contains(character.id) {
+                                            selectedCharacters.remove(character.id)
+                                        } else {
+                                            selectedCharacters.insert(character.id)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+            }
+            .navigationTitle("Export Characters")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    if !characters.isEmpty {
+                        Menu {
+                            Button(action: copyToClipboard) {
+                                Label("Copy to Clipboard", systemImage: "doc.on.clipboard")
+                            }
+                            Button(action: shareCharacters) {
+                                Label("Share...", systemImage: "square.and.arrow.up")
+                            }
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        .disabled(selectedCharacters.isEmpty)
+                    }
+                }
+            }
+            .alert(alertTitle, isPresented: $showingAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
+            }
+            .sheet(isPresented: $isShowingShareSheet, onDismiss: {
+                if let fileURL = temporaryFileURL {
+                    try? FileManager.default.removeItem(at: fileURL)
+                    temporaryFileURL = nil
+                }
+            }) {
+                if let fileURL = temporaryFileURL {
+                    ShareSheet(items: [fileURL])
+                }
+            }
         }
+        #else
+        VStack(spacing: 20) {
+            Text("Export Characters")
+                .font(.system(.title2, design: .rounded).weight(.medium))
+            
+            Spacer()
+            
+            if characters.isEmpty {
+                VStack(spacing: 16) {
+                    Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    
+                    Text("No Characters Available")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Create some characters first before exporting")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            } else {
+                VStack(spacing: 16) {
+                    SelectionHeaderView(
+                        selectedCount: selectedCharacters.count,
+                        totalCount: characters.count,
+                        onSelectAll: selectAll,
+                        onDeselectAll: deselectAll
+                    )
+                    
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(characters) { character in
+                                CharacterExportRow(
+                                    character: character,
+                                    isSelected: selectedCharacters.contains(character.id)
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation {
+                                        if selectedCharacters.contains(character.id) {
+                                            selectedCharacters.remove(character.id)
+                                        } else {
+                                            selectedCharacters.insert(character.id)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    if !selectedCharacters.isEmpty {
+                        HStack(spacing: 12) {
+                            HStack {
+                                Spacer()
+                                Button("Copy to Clipboard") {
+                                    copyToClipboard()
+                                }
+                                .keyboardShortcut("c", modifiers: [.command])
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity)
+                            
+                            HStack {
+                                Spacer()
+                                Button("Save As...") {
+                                    shareCharacters()
+                                }
+                                .keyboardShortcut("s", modifiers: [.command])
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+            }
+            
+            Button("Close") {
+                dismiss()
+            }
+            .keyboardShortcut(.escape)
+        }
+        .padding(20)
+        .frame(width: 400, height: 500)
+        .alert(alertTitle, isPresented: $showingAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(alertMessage)
+        }
+        #endif
     }
     
     private func selectAll() {
@@ -72,15 +230,11 @@ struct CharacterExportView: View {
     }
     
     private func copyToClipboard() {
-        copyToClipboard(String(data: characterData ?? Data(), encoding: .utf8) ?? "")
-    }
-    
-    private func copyToClipboard(_ text: String) {
         #if os(iOS)
-        UIPasteboard.general.string = text
+        UIPasteboard.general.string = characterData
         #else
         NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
+        NSPasteboard.general.setString(characterData, forType: .string)
         #endif
         
         alertTitle = "Success"
@@ -99,143 +253,37 @@ struct CharacterExportView: View {
         temporaryFileURL = fileURL
         isShowingShareSheet = true
         #else
-        // On macOS, we'll just copy to clipboard since sharing isn't as standardized
-        copyToClipboard(String(data: characterData ?? Data(), encoding: .utf8) ?? "")
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = "characters.json"
+        
+        panel.begin { result in
+            if result == .OK, let url = panel.url {
+                do {
+                    try characterData.write(to: url, atomically: true, encoding: .utf8)
+                    alertTitle = "Success"
+                    alertMessage = "Characters saved successfully"
+                } catch {
+                    alertTitle = "Error"
+                    alertMessage = "Failed to save characters: \(error.localizedDescription)"
+                }
+                showingAlert = true
+            }
+        }
         #endif
     }
     
-    private func showAlert(title: String, message: String) {
-        alertTitle = title
-        alertMessage = message
-        showingAlert = true
-    }
-    
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Selection Header
-                HStack {
-                    HStack(spacing: 16) {
-                        Button(action: selectAll) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 22))
-                                    .foregroundColor(selectedCharacters.count == characters.count ? .secondary : .accentColor)
-                                Text("Select All")
-                                    .foregroundColor(selectedCharacters.count == characters.count ? .secondary : .primary)
-                            }
-                            .font(.system(.body, design: .rounded).weight(.medium))
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(selectedCharacters.count == characters.count)
-                        
-                        Button(action: deselectAll) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "circle")
-                                    .font(.system(size: 22))
-                                    .foregroundColor(selectedCharacters.isEmpty ? .secondary : .accentColor)
-                                Text("Deselect All")
-                                    .foregroundColor(selectedCharacters.isEmpty ? .secondary : .primary)
-                            }
-                            .font(.system(.body, design: .rounded).weight(.medium))
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(selectedCharacters.isEmpty)
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
-                    
-                    Spacer()
-                    
-                    if !selectedCharacters.isEmpty {
-                        Text("\(selectedCharacters.count) selected")
-                            .foregroundColor(.secondary)
-                            .font(.subheadline.weight(.medium))
-                            .padding(.trailing)
-                    }
-                }
-                .background(.thinMaterial)
-                
-                List {
-                    ForEach(characters) { character in
-                        CharacterExportRow(character: character, isSelected: selectedCharacters.contains(character.id))
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation {
-                                    if selectedCharacters.contains(character.id) {
-                                        selectedCharacters.remove(character.id)
-                                    } else {
-                                        selectedCharacters.insert(character.id)
-                                    }
-                                }
-                            }
-                    }
-                }
-                .listStyle(.plain)
-                
-                // Action Bar
-                if !selectedCharacters.isEmpty {
-                    HStack(spacing: 20) {
-                        Button(action: copyToClipboard) {
-                            Label("Copy", systemImage: "doc.on.doc")
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Button(action: shareCharacters) {
-                            Label("Share", systemImage: "square.and.arrow.up")
-                        }
-                        .buttonStyle(.plain)
-                    }
-                    .font(.system(.body, design: .rounded).weight(.medium))
-                    .foregroundColor(.accentColor)
-                    .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity)
-                    .background(.thinMaterial)
-                }
-            }
-            .navigationTitle("Export Characters")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            .toolbar {
-                #if os(iOS)
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                #else
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                #endif
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(alertMessage)
-            }
-            #if os(iOS)
-            .sheet(isPresented: $isShowingShareSheet) {
-                if let fileURL = temporaryFileURL {
-                    try? FileManager.default.removeItem(at: fileURL)
-                    temporaryFileURL = nil
-                }
-            } content: {
-                if let fileURL = temporaryFileURL {
-                    ShareSheet(items: [fileURL])
-                }
-            }
-            #endif
-        }
-        .alert(alertTitle, isPresented: $showingAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(alertMessage)
+    private func createTemporaryFile() -> URL? {
+        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let fileName = "characters.json"
+        let fileURL = temporaryDirectory.appendingPathComponent(fileName)
+        
+        do {
+            try characterData.write(to: fileURL, atomically: true, encoding: .utf8)
+            return fileURL
+        } catch {
+            print("Error creating temporary file: \(error.localizedDescription)")
+            return nil
         }
     }
 }
@@ -249,6 +297,7 @@ struct CharacterExportRow: View {
             Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 22))
                 .foregroundColor(isSelected ? .accentColor : .secondary)
+                .frame(width: 24)
             
             CharacterClassIcon(characterClass: character.characterClass)
                 .frame(width: 50, height: 50)
@@ -261,8 +310,11 @@ struct CharacterExportRow: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            
+            Spacer()
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, 12)
         .contentShape(Rectangle())
     }
 }

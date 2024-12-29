@@ -167,13 +167,15 @@ struct SelectionHeaderView: View {
 }
 
 struct ImportOptionsView: View {
-    let onFilePickerTap: () -> Void
-    let onPasteTap: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var viewModel: CharacterImportViewModel
     
     var body: some View {
         #if os(iOS)
         HStack(spacing: 16) {
-            Button(action: onFilePickerTap) {
+            Button {
+                viewModel.showingFilePicker = true
+            } label: {
                 VStack(spacing: 8) {
                     Image(systemName: "doc")
                         .font(.system(size: 24))
@@ -187,7 +189,9 @@ struct ImportOptionsView: View {
             }
             .buttonStyle(.plain)
             
-            Button(action: onPasteTap) {
+            Button {
+                viewModel.setImportText(UIPasteboard.general.string ?? "")
+            } label: {
                 VStack(spacing: 8) {
                     Image(systemName: "doc.on.clipboard")
                         .font(.system(size: 24))
@@ -201,43 +205,56 @@ struct ImportOptionsView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding()
+        .padding(.horizontal)
         #else
         VStack(spacing: 20) {
             Text("Import Characters")
                 .font(.system(.title2, design: .rounded).weight(.medium))
             
-            Text("Choose a file or paste character data from your clipboard")
-                .font(.system(.body, design: .rounded))
+            Text("Choose a file or paste character data\nfrom your clipboard")
+                .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             
+            Spacer()
+            
             VStack(spacing: 12) {
-                Button(action: onFilePickerTap) {
-                    HStack(spacing: 12) {
+                Button {
+                    viewModel.showFilePicker()
+                } label: {
+                    HStack {
                         Image(systemName: "doc")
-                            .font(.system(size: 16))
                         Text("Choose File...")
-                            .font(.system(.body, design: .rounded))
                     }
-                    .frame(width: 200)
-                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
                 
-                Button(action: onPasteTap) {
-                    HStack(spacing: 12) {
+                Button {
+                    viewModel.setImportText(NSPasteboard.general.string(forType: .string) ?? "")
+                } label: {
+                    HStack {
                         Image(systemName: "doc.on.clipboard")
-                            .font(.system(size: 16))
                         Text("Paste from Clipboard")
-                            .font(.system(.body, design: .rounded))
                     }
-                    .frame(width: 200)
-                    .padding(.vertical, 8)
+                    .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
             }
+            .padding(.horizontal, 32)
+            
+            Spacer()
+            
+            Button("Cancel") {
+                viewModel.reset()
+                dismiss()
+            }
+            .keyboardShortcut(.escape)
         }
-        .padding(40)
-        .frame(width: 320)
+        .padding(24)
+        .frame(width: 400, height: 500)
         #endif
     }
 }
@@ -245,8 +262,8 @@ struct ImportOptionsView: View {
 struct CharacterImportView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var characterStore: CharacterStore
-    @EnvironmentObject private var viewModel: CharacterImportViewModel
-
+    @StateObject private var viewModel = CharacterImportViewModel()
+    
     func pasteFromClipboard() {
         #if os(iOS)
         guard let string = UIPasteboard.general.string else {
@@ -321,10 +338,7 @@ struct CharacterImportView: View {
                         .padding(.horizontal)
                     }
                 } else {
-                    ImportOptionsView(
-                        onFilePickerTap: { viewModel.showingFilePicker = true },
-                        onPasteTap: pasteFromClipboard
-                    )
+                    ImportOptionsView(viewModel: viewModel)
                     
                     TextEditor(text: $viewModel.importText)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -486,10 +500,7 @@ struct CharacterImportView: View {
                 .padding()
                 .frame(width: 400, height: 500)
             } else {
-                ImportOptionsView(
-                    onFilePickerTap: viewModel.showFilePicker,
-                    onPasteTap: pasteFromClipboard
-                )
+                ImportOptionsView(viewModel: viewModel)
             }
         }
         .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
