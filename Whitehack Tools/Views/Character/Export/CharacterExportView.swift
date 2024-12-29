@@ -8,6 +8,20 @@ import UIKit
 import AppKit
 #endif
 
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(
+            activityItems: items,
+            applicationActivities: nil
+        )
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
 struct CharacterExportView: View {
     @Environment(\.dismiss) private var dismiss
     let characters: [PlayerCharacter]
@@ -15,17 +29,85 @@ struct CharacterExportView: View {
     @State private var showingAlert = false
     @State private var alertTitle = ""
     @State private var alertMessage = ""
+    @State private var isShowingShareSheet = false
+    @State private var temporaryFileURL: URL?
     
-    private var characterData: String {
+    private var characterData: Data? {
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let selectedChars = characters.filter { selectedCharacters.contains($0.id) }
-            let data = try encoder.encode(selectedChars)
-            return String(data: data, encoding: .utf8) ?? ""
+            return try encoder.encode(selectedChars)
         } catch {
-            return "Error encoding character data"
+            return nil
         }
+    }
+    
+    private func createTemporaryFile() -> URL? {
+        guard let data = characterData else { return nil }
+        
+        let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+        let fileName = "characters_\(Date().timeIntervalSince1970).json"
+        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+        
+        do {
+            try data.write(to: fileURL)
+            return fileURL
+        } catch {
+            print("Error creating temporary file: \(error)")
+            return nil
+        }
+    }
+    
+    private func selectAll() {
+        withAnimation {
+            selectedCharacters = Set(characters.map { $0.id })
+        }
+    }
+    
+    private func deselectAll() {
+        withAnimation {
+            selectedCharacters = []
+        }
+    }
+    
+    private func copyToClipboard() {
+        copyToClipboard(String(data: characterData ?? Data(), encoding: .utf8) ?? "")
+    }
+    
+    private func copyToClipboard(_ text: String) {
+        #if os(iOS)
+        UIPasteboard.general.string = text
+        #else
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        #endif
+        
+        alertTitle = "Success"
+        alertMessage = "Character data copied to clipboard"
+        showingAlert = true
+    }
+    
+    private func shareCharacters() {
+        #if os(iOS)
+        guard let fileURL = createTemporaryFile() else {
+            alertTitle = "Error"
+            alertMessage = "Failed to create export file"
+            showingAlert = true
+            return
+        }
+        temporaryFileURL = fileURL
+        isShowingShareSheet = true
+        #else
+        // On macOS, we'll just copy to clipboard since sharing isn't as standardized
+        copyToClipboard(String(data: characterData ?? Data(), encoding: .utf8) ?? "")
+        #endif
+    }
+    
+    private func showAlert(title: String, message: String) {
+        alertTitle = title
+        alertMessage = message
+        showingAlert = true
     }
     
     var body: some View {
@@ -132,73 +214,29 @@ struct CharacterExportView: View {
                 }
                 #endif
             }
+            .alert(alertTitle, isPresented: $showingAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
+            }
+            #if os(iOS)
+            .sheet(isPresented: $isShowingShareSheet) {
+                if let fileURL = temporaryFileURL {
+                    try? FileManager.default.removeItem(at: fileURL)
+                    temporaryFileURL = nil
+                }
+            } content: {
+                if let fileURL = temporaryFileURL {
+                    ShareSheet(items: [fileURL])
+                }
+            }
+            #endif
         }
         .alert(alertTitle, isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(alertMessage)
         }
-    }
-    
-    private func selectAll() {
-        withAnimation {
-            selectedCharacters = Set(characters.map { $0.id })
-        }
-    }
-    
-    private func deselectAll() {
-        withAnimation {
-            selectedCharacters = []
-        }
-    }
-    
-    private func copyToClipboard() {
-        copyToClipboard(characterData)
-    }
-    
-    private func copyToClipboard(_ text: String) {
-        #if os(iOS)
-        UIPasteboard.general.string = text
-        #else
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
-        #endif
-        
-        alertTitle = "Success"
-        alertMessage = "Character data copied to clipboard"
-        showingAlert = true
-    }
-    
-    private func shareCharacters() {
-        #if os(iOS)
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = window.rootViewController else {
-            return
-        }
-        
-        let activityViewController = UIActivityViewController(
-            activityItems: [characterData],
-            applicationActivities: nil
-        )
-        
-        if let popoverController = activityViewController.popoverPresentationController {
-            popoverController.sourceView = window
-            popoverController.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
-            popoverController.permittedArrowDirections = []
-        }
-        
-        rootViewController.present(activityViewController, animated: true)
-        #else
-        // On macOS, we'll just copy to clipboard since sharing isn't as standardized
-        copyToClipboard(characterData)
-        #endif
-    }
-    
-    private func showAlert(title: String, message: String) {
-        alertTitle = title
-        alertMessage = message
-        showingAlert = true
     }
 }
 
