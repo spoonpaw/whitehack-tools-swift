@@ -59,6 +59,7 @@ struct CharacterExportView: View {
                         onSelectAll: selectAll,
                         onDeselectAll: deselectAll
                     )
+                    .padding(.horizontal)
                     
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -153,6 +154,7 @@ struct CharacterExportView: View {
                         onSelectAll: selectAll,
                         onDeselectAll: deselectAll
                     )
+                    .padding(.horizontal)
                     
                     ScrollView {
                         LazyVStack(spacing: 12) {
