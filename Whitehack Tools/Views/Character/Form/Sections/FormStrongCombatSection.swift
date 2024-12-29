@@ -102,7 +102,7 @@ struct FormStrongCombatSection: View {
     }
     
     private var combatOptionsSection: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 12) {
             Label {
                 Text("Combat Options")
                     .font(.headline)
@@ -165,14 +165,13 @@ struct FormStrongCombatSection: View {
                         Label("Remove Loot", systemImage: "trash")
                     }
                 }
-                .padding(.vertical, 8)
                 .padding(.horizontal, 16)
             }
         }
     }
     
     private var conflictLootSection: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 12) {
             Label {
                 HStack {
                     Text("Current Conflict Loot")
@@ -191,7 +190,7 @@ struct FormStrongCombatSection: View {
             .padding(.horizontal, 16)
             .padding(.top, 8)
             
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
                 lootHeaderView
                 lootEditorView
             }
