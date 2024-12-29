@@ -126,90 +126,89 @@ struct CharacterExportView: View {
             }
         }
         #else
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             Text("Export Characters")
-                .font(.system(.title2, design: .rounded).weight(.medium))
-            
-            Spacer()
+                .font(.title2)
+                .fontWeight(.semibold)
             
             if characters.isEmpty {
-                VStack(spacing: 16) {
-                    Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
-                        .font(.system(size: 48))
-                        .foregroundColor(.secondary)
-                    
-                    Text("No Characters Available")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Text("Create some characters first before exporting")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                Spacer()
+                
+                Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
+                    .font(.system(size: 36))
+                    .foregroundColor(.secondary)
+                
+                Text("No Characters Available")
+                    .font(.headline)
+                    .padding(.top, 8)
+                
+                Text("Create some characters first before exporting")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Button("Close") {
+                    dismiss()
                 }
+                .keyboardShortcut(.escape)
             } else {
-                VStack(spacing: 16) {
-                    SelectionHeaderView(
-                        selectedCount: selectedCharacters.count,
-                        totalCount: characters.count,
-                        onSelectAll: selectAll,
-                        onDeselectAll: deselectAll
-                    )
-                    .padding(.horizontal)
-                    
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(characters) { character in
-                                CharacterExportRow(
-                                    character: character,
-                                    isSelected: selectedCharacters.contains(character.id)
-                                )
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    withAnimation {
-                                        if selectedCharacters.contains(character.id) {
-                                            selectedCharacters.remove(character.id)
-                                        } else {
-                                            selectedCharacters.insert(character.id)
-                                        }
+                SelectionHeaderView(
+                    selectedCount: selectedCharacters.count,
+                    totalCount: characters.count,
+                    onSelectAll: selectAll,
+                    onDeselectAll: deselectAll
+                )
+                .padding(.horizontal)
+                
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(characters) { character in
+                            CharacterExportRow(
+                                character: character,
+                                isSelected: selectedCharacters.contains(character.id)
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                withAnimation {
+                                    if selectedCharacters.contains(character.id) {
+                                        selectedCharacters.remove(character.id)
+                                    } else {
+                                        selectedCharacters.insert(character.id)
                                     }
                                 }
                             }
                         }
-                        .padding(.horizontal)
                     }
-                    
-                    if !selectedCharacters.isEmpty {
-                        HStack(spacing: 12) {
-                            HStack {
-                                Spacer()
-                                Button("Copy to Clipboard") {
-                                    copyToClipboard()
-                                }
-                                .keyboardShortcut("c", modifiers: [.command])
-                                Spacer()
+                    .padding(.horizontal)
+                }
+                
+                if !selectedCharacters.isEmpty {
+                    HStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+                            Button("Copy to Clipboard") {
+                                copyToClipboard()
                             }
-                            .frame(maxWidth: .infinity)
-                            
-                            HStack {
-                                Spacer()
-                                Button("Save As...") {
-                                    shareCharacters()
-                                }
-                                .keyboardShortcut("s", modifiers: [.command])
-                                Spacer()
-                            }
-                            .frame(maxWidth: .infinity)
+                            .keyboardShortcut("c", modifiers: [.command])
+                            Spacer()
                         }
+                        .frame(maxWidth: .infinity)
+                        
+                        HStack {
+                            Spacer()
+                            Button("Save As...") {
+                                shareCharacters()
+                            }
+                            .keyboardShortcut("s", modifiers: [.command])
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
             }
-            
-            Button("Close") {
-                dismiss()
-            }
-            .keyboardShortcut(.escape)
         }
-        .padding(20)
+        .padding(24)
         .frame(width: 400, height: 500)
         .alert(alertTitle, isPresented: $showingAlert) {
             Button("OK", role: .cancel) { }
