@@ -28,7 +28,11 @@ struct DetailLanguagesSection: View {
                     }
                 }
                 .padding(16)
-                .background(Color(uiColor: .systemBackground))
+                #if os(iOS)
+                .background(Color(UIColor.systemBackground))
+                #else
+                .background(Color(NSColor.windowBackgroundColor))
+                #endif
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                 .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)

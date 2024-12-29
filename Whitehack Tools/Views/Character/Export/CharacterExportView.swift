@@ -4,9 +4,6 @@ import PhosphorSwift
 
 #if os(iOS)
 import UIKit
-#else
-import AppKit
-#endif
 
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
@@ -21,6 +18,9 @@ struct ShareSheet: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+#else
+import AppKit
+#endif
 
 struct CharacterExportView: View {
     @Environment(\.dismiss) private var dismiss

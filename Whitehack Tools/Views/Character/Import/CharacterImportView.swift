@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 #if os(iOS)
 import UIKit
 #else
@@ -19,6 +20,31 @@ class CharacterImportViewModel: ObservableObject {
         importText = text
         previewCharacters()
     }
+    
+    #if os(macOS)
+    func showFilePicker() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canCreateDirectories = false
+        panel.allowedContentTypes = [.json]
+        
+        panel.begin { [weak self] result in
+            if result == .OK, let url = panel.url {
+                do {
+                    let data = try String(contentsOf: url)
+                    DispatchQueue.main.async {
+                        self?.setImportText(data)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self?.showAlert(title: "Error", message: "Could not read file contents")
+                    }
+                }
+            }
+        }
+    }
+    #endif
     
     func previewCharacters() {
         guard !importText.isEmpty else { return }
@@ -51,10 +77,13 @@ class CharacterImportViewModel: ObservableObject {
     
     func reset() {
         importText = ""
-        decodedCharacters = []
-        selectedCharacters.removeAll()
-        showingPreview = false
         showingAlert = false
+        alertTitle = ""
+        alertMessage = ""
+        showingFilePicker = false
+        decodedCharacters = []
+        selectedCharacters = []
+        showingPreview = false
     }
     
     func showAlert(title: String, message: String) {
@@ -67,12 +96,20 @@ class CharacterImportViewModel: ObservableObject {
         selectedCharacters = Set(decodedCharacters.map { $0.id })
     }
     
-    func importSelectedCharacters() {
-        let selectedChars = decodedCharacters.filter { selectedCharacters.contains($0.id) }
-        selectedChars.forEach { character in
-            let newCharacter = character.copyWithNewIDs()
-            // Add character to character store
-        }
+    func importSelectedCharacters() -> [PlayerCharacter] {
+        return decodedCharacters.filter { selectedCharacters.contains($0.id) }
+    }
+    
+    func dismissAlert() {
+        showingAlert = false
+    }
+    
+    func addCharacter(_ character: PlayerCharacter) {
+        decodedCharacters.append(character)
+    }
+    
+    func removeCharacter(_ character: PlayerCharacter) {
+        decodedCharacters.removeAll(where: { $0.id == character.id })
     }
 }
 
@@ -134,34 +171,74 @@ struct ImportOptionsView: View {
     let onPasteTap: () -> Void
     
     var body: some View {
+        #if os(iOS)
         HStack(spacing: 16) {
             Button(action: onFilePickerTap) {
                 VStack(spacing: 8) {
                     Image(systemName: "doc")
                         .font(.system(size: 24))
                     Text("Choose File")
-                        .font(.caption)
+                        .font(.system(.body, design: .rounded))
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.systemBackground)
-                .cornerRadius(8)
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
             }
+            .buttonStyle(.plain)
             
             Button(action: onPasteTap) {
                 VStack(spacing: 8) {
                     Image(systemName: "doc.on.clipboard")
                         .font(.system(size: 24))
                     Text("Paste")
-                        .font(.caption)
+                        .font(.system(.body, design: .rounded))
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.systemBackground)
-                .cornerRadius(8)
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding()
+        #else
+        VStack(spacing: 20) {
+            Text("Import Characters")
+                .font(.system(.title2, design: .rounded).weight(.medium))
+            
+            Text("Choose a file or paste character data from your clipboard")
+                .font(.system(.body, design: .rounded))
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            VStack(spacing: 12) {
+                Button(action: onFilePickerTap) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "doc")
+                            .font(.system(size: 16))
+                        Text("Choose File...")
+                            .font(.system(.body, design: .rounded))
+                    }
+                    .frame(width: 200)
+                    .padding(.vertical, 8)
+                }
+                
+                Button(action: onPasteTap) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "doc.on.clipboard")
+                            .font(.system(size: 16))
+                        Text("Paste from Clipboard")
+                            .font(.system(.body, design: .rounded))
+                    }
+                    .frame(width: 200)
+                    .padding(.vertical, 8)
+                }
             }
         }
-        .padding(.bottom)
+        .padding(40)
+        .frame(width: 320)
+        #endif
     }
 }
 
@@ -172,29 +249,46 @@ struct CharacterImportView: View {
 
     func pasteFromClipboard() {
         #if os(iOS)
-        if let string = UIPasteboard.general.string {
-            viewModel.setImportText(string)
+        guard let string = UIPasteboard.general.string else {
+            viewModel.showAlert(title: "Error", message: "No text found in clipboard")
+            return
         }
         #else
-        if let string = NSPasteboard.general.string(forType: .string) {
-            viewModel.setImportText(string)
+        guard let string = NSPasteboard.general.string(forType: .string) else {
+            viewModel.showAlert(title: "Error", message: "No text found in clipboard")
+            return
         }
         #endif
+        
+        // Try to validate it's JSON first
+        guard let data = string.data(using: .utf8),
+              let _ = try? JSONSerialization.jsonObject(with: data) else {
+            viewModel.showAlert(title: "Error", message: "Clipboard content is not valid JSON")
+            return
+        }
+        
+        viewModel.setImportText(string)
     }
     
     func importSelectedCharacters() {
-        viewModel.importSelectedCharacters()
-        showSuccess(count: viewModel.selectedCharacters.count)
+        let selectedChars = viewModel.importSelectedCharacters()
+        selectedChars.forEach { character in
+            let newCharacter = character.copyWithNewIDs()
+            characterStore.addCharacter(newCharacter)
+        }
+        showSuccess(count: selectedChars.count)
     }
     
     private func showSuccess(count: Int) {
         viewModel.showAlert(title: "Success", message: "Imported \(count) character\(count == 1 ? "" : "s")")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            viewModel.reset()
             dismiss()
         }
     }
     
     var body: some View {
+        #if os(iOS)
         NavigationView {
             VStack(spacing: 20) {
                 if viewModel.showingPreview {
@@ -257,6 +351,7 @@ struct CharacterImportView: View {
                         }
                     } else {
                         Button("Cancel") {
+                            viewModel.reset()
                             dismiss()
                         }
                     }
@@ -284,6 +379,7 @@ struct CharacterImportView: View {
                         }
                     } else {
                         Button("Cancel") {
+                            viewModel.reset()
                             dismiss()
                         }
                     }
@@ -337,6 +433,71 @@ struct CharacterImportView: View {
         .onDisappear {
             viewModel.reset()
         }
+        #else
+        VStack {
+            if viewModel.showingPreview {
+                VStack(spacing: 20) {
+                    SelectionHeaderView(
+                        selectedCount: viewModel.selectedCharacters.count,
+                        totalCount: viewModel.decodedCharacters.count,
+                        onSelectAll: { withAnimation { viewModel.selectAll() } },
+                        onDeselectAll: { withAnimation { viewModel.selectedCharacters.removeAll() } }
+                    )
+                    
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(viewModel.decodedCharacters) { character in
+                                CharacterImportRow(
+                                    character: character,
+                                    isSelected: viewModel.selectedCharacters.contains(character.id)
+                                )
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    withAnimation {
+                                        if viewModel.selectedCharacters.contains(character.id) {
+                                            viewModel.selectedCharacters.remove(character.id)
+                                        } else {
+                                            viewModel.selectedCharacters.insert(character.id)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    HStack {
+                        Button("Cancel") {
+                            viewModel.reset()
+                            dismiss()
+                        }
+                        .keyboardShortcut(.escape)
+                        
+                        Spacer()
+                        
+                        Button("Import") {
+                            importSelectedCharacters()
+                        }
+                        .keyboardShortcut(.return)
+                        .disabled(viewModel.selectedCharacters.isEmpty)
+                    }
+                    .padding(.top)
+                }
+                .padding()
+                .frame(width: 400, height: 500)
+            } else {
+                ImportOptionsView(
+                    onFilePickerTap: viewModel.showFilePicker,
+                    onPasteTap: pasteFromClipboard
+                )
+            }
+        }
+        .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(viewModel.alertMessage)
+        }
+        #endif
     }
 }
 
