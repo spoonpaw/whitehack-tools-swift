@@ -490,10 +490,56 @@ struct CharacterImportView: View {
             if viewModel.showingPreview {
                 MacImportView(viewModel: viewModel, onImport: importSelectedCharacters)
             } else {
-                ImportOptionsView(viewModel: viewModel)
+                VStack(spacing: 20) {
+                    Text("Import Characters")
+                        .font(.system(.title2, design: .rounded).weight(.medium))
+                    
+                    Text("Choose a file or paste character data\nfrom your clipboard")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    Spacer()
+                    
+                    VStack(spacing: 12) {
+                        Button {
+                            viewModel.showFilePicker()
+                        } label: {
+                            HStack {
+                                Image(systemName: "doc")
+                                Text("Choose File...")
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        
+                        Button {
+                            viewModel.setImportText(NSPasteboard.general.string(forType: .string) ?? "")
+                        } label: {
+                            HStack {
+                                Image(systemName: "doc.on.clipboard")
+                                Text("Paste from Clipboard")
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.large)
+                    }
+                    .padding(.horizontal, 32)
+                    
+                    Spacer()
+                    
+                    Button("Cancel") {
+                        viewModel.reset()
+                        dismiss()
+                    }
+                    .keyboardShortcut(.escape)
+                }
+                .padding(24)
+                .frame(width: 400, height: 500)
             }
         }
-        .frame(width: 600, height: 400)
         .alert(viewModel.alertTitle, isPresented: $viewModel.showingAlert) {
             Button("OK") {}
         } message: {
