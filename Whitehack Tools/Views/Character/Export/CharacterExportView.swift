@@ -206,6 +206,12 @@ struct CharacterExportView: View {
                         .frame(maxWidth: .infinity)
                     }
                 }
+                
+                Button("Cancel") {
+                    dismiss()
+                }
+                .keyboardShortcut(.escape)
+                .padding(.top, 8)
             }
         }
         .padding(24)
