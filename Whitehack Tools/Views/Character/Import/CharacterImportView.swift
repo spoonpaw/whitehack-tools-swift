@@ -342,9 +342,12 @@ struct CharacterImportView: View {
                     
                     TextEditor(text: $viewModel.importText)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(8)
-                        .background(Color.systemBackground)
-                        .cornerRadius(8)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                        )
+                        .padding(.horizontal)
                 }
             }
             .padding()
