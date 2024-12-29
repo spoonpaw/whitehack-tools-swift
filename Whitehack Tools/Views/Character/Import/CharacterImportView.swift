@@ -113,6 +113,30 @@ class CharacterImportViewModel: ObservableObject {
     }
 }
 
+#if os(iOS)
+extension CharacterImportViewModel {
+    func handleDocumentPicker(result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            guard url.startAccessingSecurityScopedResource() else {
+                showAlert(title: "Error", message: "Could not access the file")
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+            
+            do {
+                let data = try String(contentsOf: url)
+                setImportText(data)
+            } catch {
+                showAlert(title: "Error", message: "Could not read file contents")
+            }
+        case .failure(let error):
+            showAlert(title: "Error", message: error.localizedDescription)
+        }
+    }
+}
+#endif
+
 extension Color {
     static var systemBackground: Color {
         #if os(iOS)
@@ -421,25 +445,8 @@ struct CharacterImportView: View {
             } message: {
                 Text(viewModel.alertMessage)
             }
-            .fileImporter(
-                isPresented: $viewModel.showingFilePicker,
-                allowedContentTypes: [.json, .text],
-                allowsMultipleSelection: false
-            ) { result in
-                switch result {
-                case .success(let urls):
-                    guard let url = urls.first else { return }
-                    
-                    do {
-                        viewModel.setImportText(try String(contentsOf: url))
-                    } catch {
-                        print("File picker error: \(error.localizedDescription)")
-                        viewModel.showAlert(title: "Error", message: "Could not import file: \(error.localizedDescription)")
-                    }
-                case .failure(let error):
-                    print("File picker error: \(error.localizedDescription)")
-                    viewModel.showAlert(title: "Error", message: "Could not import file: \(error.localizedDescription)")
-                }
+            .sheet(isPresented: $viewModel.showingFilePicker) {
+                DocumentPickerView(viewModel: viewModel)
             }
         }
         .onAppear {
@@ -545,3 +552,39 @@ struct CharacterImportRow: View {
         .cornerRadius(8)
     }
 }
+
+#if os(iOS)
+struct DocumentPickerView: UIViewControllerRepresentable {
+    let viewModel: CharacterImportViewModel
+    
+    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.json])
+        picker.delegate = context.coordinator
+        picker.allowsMultipleSelection = false
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(viewModel: viewModel)
+    }
+    
+    class Coordinator: NSObject, UIDocumentPickerDelegate {
+        let viewModel: CharacterImportViewModel
+        
+        init(viewModel: CharacterImportViewModel) {
+            self.viewModel = viewModel
+        }
+        
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            guard let url = urls.first else { return }
+            viewModel.handleDocumentPicker(result: .success(url))
+        }
+        
+        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            viewModel.showingFilePicker = false
+        }
+    }
+}
+#endif
