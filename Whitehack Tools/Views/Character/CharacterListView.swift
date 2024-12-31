@@ -36,34 +36,40 @@ struct CharacterListView: View {
     }
     
     var body: some View {
-        switch currentView {
-        case .list:
-            CharacterListContent(
-                showingImportSheet: $showingImportSheet,
-                showingExportSheet: $showingExportSheet,
-                showingDeleteConfirmation: $showingDeleteConfirmation,
-                characterToDelete: $characterToDelete,
-                currentView: $currentView
-            )
-            .environmentObject(characterStore)
-            .environmentObject(importViewModel)
-            
-        case .form(let characterId, let selectedTab):
-            CharacterFormView(
-                characterStore: characterStore,
-                characterId: characterId,
-                onComplete: { savedId, selectedTab in
-                    if let id = savedId ?? characterId {
-                        currentView = .detail(id, selectedTab: DetailTab(rawValue: selectedTab.rawValue) ?? .info)
-                    } else {
-                        currentView = .list
-                    }
-                },
-                initialTab: selectedTab
-            )
-            
-        case .detail(let characterId, let selectedTab):
-            CharacterDetailView(characterId: characterId, characterStore: characterStore, selectedTab: selectedTab, currentView: $currentView)
+        Group {
+            switch currentView {
+            case .list:
+                CharacterListContent(
+                    showingImportSheet: $showingImportSheet,
+                    showingExportSheet: $showingExportSheet,
+                    showingDeleteConfirmation: $showingDeleteConfirmation,
+                    characterToDelete: $characterToDelete,
+                    currentView: $currentView
+                )
+                .environmentObject(characterStore)
+                .environmentObject(importViewModel)
+                
+            case .form(let characterId, let selectedTab):
+                CharacterFormView(
+                    characterStore: characterStore,
+                    characterId: characterId,
+                    onComplete: { savedId, selectedTab in
+                        if let id = savedId ?? characterId {
+                            currentView = .detail(id, selectedTab: DetailTab(rawValue: selectedTab.rawValue) ?? .info)
+                        } else {
+                            currentView = .list
+                        }
+                    },
+                    initialTab: selectedTab
+                )
+                
+            case .detail(let characterId, let selectedTab):
+                CharacterDetailView(characterId: characterId, characterStore: characterStore, selectedTab: selectedTab, currentView: $currentView)
+            }
+        }
+        .sheet(isPresented: $showingImportSheet) {
+            CharacterImportView(characterStore: characterStore, viewModel: importViewModel)
+                .environmentObject(importViewModel)
         }
     }
 }
@@ -135,10 +141,6 @@ private struct CharacterListContent: View {
             ToolbarItem(placement: .navigationBarTrailing) { EmptyView() }
         }
         #endif
-        .sheet(isPresented: $showingImportSheet) {
-            CharacterImportView(characterStore: characterStore, viewModel: importViewModel)
-                .environmentObject(importViewModel)
-        }
         .sheet(isPresented: $showingExportSheet) {
             CharacterExportView(characters: characterStore.characters)
         }

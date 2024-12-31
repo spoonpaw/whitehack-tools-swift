@@ -48,6 +48,14 @@ struct Whitehack_ToolsApp: App {
                 .frame(minWidth: 375, idealWidth: 500, maxWidth: .infinity, minHeight: 600)
                 .environmentObject(characterStore)
                 .environmentObject(importViewModel)
+                .onOpenURL { url in
+                    print(" onOpenURL called with URL: \(url)")
+                    print(" URL scheme: \(url.scheme ?? "none")")
+                    print(" URL path: \(url.path)")
+                    openURL = url
+                    importViewModel.handleIncomingFile(url: url)
+                    showingImportSheet = true
+                }
             #else
             NavigationView {
                 CharacterListView(showingImportSheet: $showingImportSheet)
