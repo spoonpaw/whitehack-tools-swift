@@ -71,7 +71,7 @@ struct FormWiseMiracleSection: View {
         VStack(alignment: .leading, spacing: 12) {
             slotHeader(index: index)
             
-            if index == 2 {
+            if index == 1 {
                 magicItemSection(index: index, slot: slot)
             }
             

@@ -458,7 +458,7 @@ private struct MiracleSlotCard: View {
         VStack(alignment: .leading, spacing: 12) {
             slotHeader(index: index, slot: slot, extraInactiveMiracles: extraInactiveMiracles)
             
-            if index == 2 && slot.isMagicItem {
+            if index == 1 && slot.isMagicItem {
                 magickItemView()
                 magickItemInfoView()
             } else {
@@ -518,7 +518,7 @@ private struct MiracleSlotCard: View {
             }
             
             Spacer()
-            if index == 2 {
+            if index == 1 {
                 IconFrame(icon: Ph.sparkle.bold, color: .purple)
             }
         }
@@ -564,7 +564,7 @@ private struct MiracleSlotCard: View {
                 .font(.body)
                 .foregroundColor(.yellow)
             
-            Text("The level 3 slot may hold a magick item—a blackstaff, a talking sword, etc.—instead of miracles. This extends the character's hp by an amount equal to her level. When chosen, any previous wordings tied to the slot are ruined. The slot can only hold a new item if the previous one breaks, which lowers both maximum and current hp.")
+            Text("The level 2 slot may hold a magick item—a blackstaff, a talking sword, etc.—instead of miracles. This extends the character's hp by an amount equal to her level. When chosen, any previous wordings tied to the slot are ruined. The slot can only hold a new item if the previous one breaks, which lowers both maximum and current hp.")
                 .font(.body)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
