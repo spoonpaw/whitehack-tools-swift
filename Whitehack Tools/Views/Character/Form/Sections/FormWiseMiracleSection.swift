@@ -32,8 +32,9 @@ struct FormWiseMiracleSection: View {
     }
     
     private var slotIndices: [(Int, WiseMiracleSlot)] {
+        let availableSlots = AdvancementTables.shared.stats(for: .wise, at: level).slots
         let zipped = zip(miracleSlots.indices, miracleSlots)
-        return Array(zipped.prefix(level))
+        return Array(zipped.prefix(availableSlots))
     }
     
     private var backgroundFillColor: Color {
