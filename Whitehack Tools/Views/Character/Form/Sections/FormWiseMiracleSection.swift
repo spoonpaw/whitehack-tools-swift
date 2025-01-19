@@ -32,8 +32,9 @@ struct FormWiseMiracleSection: View {
     }
     
     private var slotIndices: [(Int, WiseMiracleSlot)] {
+        let availableSlots = AdvancementTables.shared.stats(for: .wise, at: level).slots
         let zipped = zip(miracleSlots.indices, miracleSlots)
-        return Array(zipped.prefix(level))
+        return Array(zipped.prefix(availableSlots))
     }
     
     private var backgroundFillColor: Color {
@@ -71,7 +72,7 @@ struct FormWiseMiracleSection: View {
         VStack(alignment: .leading, spacing: 12) {
             slotHeader(index: index)
             
-            if index == 2 {
+            if index == 1 {
                 magicItemSection(index: index, slot: slot)
             }
             
