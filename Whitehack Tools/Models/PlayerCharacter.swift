@@ -759,7 +759,11 @@ class PlayerCharacter: Identifiable, Codable {
     // Computed combat values
     var attackValue: Int {
         let stats = AdvancementTables.shared.stats(for: characterClass, at: level)
-        return stats.attackValue
+        var av = stats.attackValue
+        if characterClass == .strong && strength >= 13 {
+            av += 1
+        }
+        return av
     }
     
     var saveValue: Int {
