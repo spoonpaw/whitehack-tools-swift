@@ -315,12 +315,23 @@ private struct CharacterRowView: View {
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             #if os(iOS)
-                            .background(Color(uiColor: .systemGray6))
+                            .background(Color(UIColor.tertiarySystemBackground))
                             #else
-                            .background(Color(nsColor: .windowBackgroundColor))
+                            .background(Color(NSColor.controlBackgroundColor))
                             #endif
-                            .foregroundColor(.gray)
+                            .foregroundColor(.primary)
                             .clipShape(Capsule())
+                            #if os(iOS)
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color(UIColor.separator).opacity(0.25), lineWidth: 1)
+                            )
+                            #else
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color(NSColor.separatorColor).opacity(0.25), lineWidth: 1)
+                            )
+                            #endif
                     }
                     
                     if let species = character.speciesGroup {

@@ -150,8 +150,12 @@ private struct AttributeRow: View {
                             .foregroundColor(color)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(color.opacity(0.1))
+                            .background(color.opacity(0.2))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(color.opacity(0.3), lineWidth: 1)
+                            )
                     }
                 }
             }
@@ -166,11 +170,22 @@ private extension View {
     func groupCardStyle() -> some View {
         self
             #if os(iOS)
-            .background(Color(uiColor: .systemBackground))
+            .background(Color(UIColor.tertiarySystemGroupedBackground))
             #else
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background(Color(NSColor.controlBackgroundColor))
             #endif
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            #if os(iOS)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color(UIColor.separator).opacity(0.25), lineWidth: 1)
+            )
+            #else
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color(NSColor.separatorColor).opacity(0.25), lineWidth: 1)
+            )
+            #endif
             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
