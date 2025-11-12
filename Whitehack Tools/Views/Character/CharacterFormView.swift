@@ -345,7 +345,7 @@ struct CharacterFormView: View {
         focusedField = nil
         
         // Create basic info
-        var character = PlayerCharacter(
+        let character = PlayerCharacter(
             id: characterId ?? UUID(),
             name: formData.name,
             playerName: formData.playerName,
