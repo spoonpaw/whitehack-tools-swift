@@ -69,7 +69,11 @@ struct FormFortunateStandingCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -118,7 +122,11 @@ struct FormFortunateSignatureObjectCard: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
         }
-        .background(.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -541,7 +549,11 @@ struct RetainerNotes: View {
             TextEditor(text: $notes)
                 .frame(height: 60)
                 .padding(8)
-                .background(Color.systemBackground)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
         }
     }
@@ -581,7 +593,11 @@ struct RetainerView: View {
                 )
             }
             .padding()
-            .background(Color.systemBackground)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -711,7 +727,11 @@ struct FormFortunateKeywordInputField: View {
             .disabled(text.trimmingCharacters(in: .whitespaces).isEmpty)
         }
         .padding(8)
-        .background(Color.systemBackground)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -738,7 +758,11 @@ struct KeywordTag: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(Color.systemBackground)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)

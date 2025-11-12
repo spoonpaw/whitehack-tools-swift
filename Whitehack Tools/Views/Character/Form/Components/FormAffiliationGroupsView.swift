@@ -155,7 +155,11 @@ struct AffiliationItemView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.background)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
@@ -192,7 +196,11 @@ struct FormAffiliationGroupsView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .background(.background)
+                    #if os(iOS)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    #else
+                    .background(Color(NSColor.controlBackgroundColor))
+                    #endif
                     .cornerRadius(10)
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
@@ -324,7 +332,11 @@ struct FormAffiliationGroupsView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(.background)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(10)
                 .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }

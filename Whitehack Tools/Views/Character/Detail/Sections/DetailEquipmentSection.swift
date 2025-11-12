@@ -174,7 +174,7 @@ private struct GearDetailRow: View {
         }
         .padding()
         #if os(iOS)
-        .background(Color(.systemBackground))
+        .background(Color(UIColor.secondarySystemBackground))
         #else
         .background(Color(nsColor: .controlBackgroundColor))
         #endif

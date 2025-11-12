@@ -30,7 +30,11 @@ struct DetailWeaponsSection: View {
                 } else {
                     ForEach(weapons) { weapon in
                         WeaponDetailRow(weapon: weapon)
-                            .background(Color.white)
+                            #if os(iOS)
+                            .background(Color(UIColor.secondarySystemBackground))
+                            #else
+                            .background(Color(NSColor.controlBackgroundColor))
+                            #endif
                             .cornerRadius(8)
                             .shadow(radius: 2)
                     }

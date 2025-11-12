@@ -39,7 +39,11 @@ struct DetailArmorSection: View {
                     ForEach(armor) { armor in
                         ArmorDetailRow(armor: armor)
                             .padding()
-                            .background(Color.white)
+                            #if os(iOS)
+                            .background(Color(UIColor.secondarySystemBackground))
+                            #else
+                            .background(Color(NSColor.controlBackgroundColor))
+                            #endif
                             .cornerRadius(8)
                             .shadow(radius: 2)
                     }

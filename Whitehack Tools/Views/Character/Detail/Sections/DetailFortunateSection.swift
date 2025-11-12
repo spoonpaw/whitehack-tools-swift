@@ -81,7 +81,11 @@ private struct ClassOverviewCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding()
-        .background(Color.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -135,7 +139,11 @@ private struct FortunePowerCard: View {
             .cornerRadius(8)
         }
         .padding()
-        .background(Color.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -196,7 +204,11 @@ private struct StandingCard: View {
             }
         }
         .padding()
-        .background(Color.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -237,7 +249,11 @@ private struct SignatureObjectCard: View {
             }
         }
         .padding()
-        .background(Color.white)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -296,7 +312,11 @@ private struct RetainersCard: View {
             }
         }
         .padding()
-        .background(.background)
+        #if os(iOS)
+        .background(Color(UIColor.secondarySystemBackground))
+        #else
+        .background(Color(NSColor.controlBackgroundColor))
+        #endif
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

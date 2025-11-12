@@ -16,7 +16,11 @@ struct DetailLanguagesSection: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.white)
+                            #if os(iOS)
+                            .fill(Color(UIColor.secondarySystemBackground))
+                            #else
+                            .fill(Color(NSColor.controlBackgroundColor))
+                            #endif
                             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
                             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
                     )
@@ -54,7 +58,11 @@ struct LanguageCard: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white)
+                    #if os(iOS)
+                    .fill(Color(UIColor.secondarySystemBackground))
+                    #else
+                    .fill(Color(NSColor.controlBackgroundColor))
+                    #endif
                     .shadow(color: .black.opacity(0.06), radius: 2, x: 0, y: 1)
                     .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
             )

@@ -208,7 +208,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding()
-                .background(.white)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
                 
                 // Current Burden Status
@@ -233,7 +237,11 @@ struct DetailEncumbranceSection: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
-                .background(.white)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
                 
                 // Movement Rates
@@ -287,7 +295,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding()
-                .background(.white)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
                 
                 // Movement Options
@@ -352,7 +364,11 @@ struct DetailEncumbranceSection: View {
                     }
                 }
                 .padding()
-                .background(.white)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
                 
                 // Burden Status
@@ -394,7 +410,11 @@ struct DetailEncumbranceSection: View {
                         }
                     }
                     .padding()
-                    .background(.white)
+                    #if os(iOS)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    #else
+                    .background(Color(NSColor.controlBackgroundColor))
+                    #endif
                     .cornerRadius(8)
                 }
             }

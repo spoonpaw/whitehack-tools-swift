@@ -192,9 +192,7 @@ struct CharacterDetailView: View {
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
-            #if os(macOS)
-            .background(.white)
-            #endif
+            .background(mainBackgroundColor)
             .navigationTitle("Character Details")
             .frame(maxWidth: .infinity)
             .toolbar {

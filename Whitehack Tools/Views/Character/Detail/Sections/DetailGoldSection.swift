@@ -35,7 +35,11 @@ struct DetailGoldSection: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(.white)
+                    #if os(iOS)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    #else
+                    .background(Color(NSColor.controlBackgroundColor))
+                    #endif
                     .cornerRadius(8)
                     
                     // Stashed
@@ -54,7 +58,11 @@ struct DetailGoldSection: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(.white)
+                    #if os(iOS)
+                    .background(Color(UIColor.secondarySystemBackground))
+                    #else
+                    .background(Color(NSColor.controlBackgroundColor))
+                    #endif
                     .cornerRadius(8)
                 }
                 
@@ -74,7 +82,11 @@ struct DetailGoldSection: View {
                         .fontWeight(.medium)
                 }
                 .padding()
-                .background(.white)
+                #if os(iOS)
+                .background(Color(UIColor.secondarySystemBackground))
+                #else
+                .background(Color(NSColor.controlBackgroundColor))
+                #endif
                 .cornerRadius(8)
             }
             .padding()

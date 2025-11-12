@@ -115,11 +115,22 @@ private extension View {
     func groupCardStyle() -> some View {
         self
             #if os(iOS)
-            .background(Color(uiColor: .systemBackground))
+            .background(Color(UIColor.tertiarySystemGroupedBackground))
             #else
-            .background(Color(nsColor: .windowBackgroundColor))
+            .background(Color(NSColor.controlBackgroundColor))
             #endif
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            #if os(iOS)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color(UIColor.separator).opacity(0.25), lineWidth: 1)
+            )
+            #else
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(Color(NSColor.separatorColor).opacity(0.25), lineWidth: 1)
+            )
+            #endif
             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
     }
