@@ -70,6 +70,7 @@
 		A9F072BB2CE75AFC005033F2 /* CharacterFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */; };
 		A9F072BD2CE76DEA005033F2 /* AttributeGroupPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */; };
 		BEA6C48E2D15521A000768BE /* NumericTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA6C48D2D15521A000768BE /* NumericTextField.swift */; };
+		BEA6C4902D4E8A1F000768BE /* CrossPlatformConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEA6C48F2D4E8A1F000768BE /* CrossPlatformConverter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -136,6 +137,7 @@
 		A9F072BA2CE75AFC005033F2 /* CharacterFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterFormView.swift; sourceTree = "<group>"; };
 		A9F072BC2CE76DEA005033F2 /* AttributeGroupPair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributeGroupPair.swift; sourceTree = "<group>"; };
 		BEA6C48D2D15521A000768BE /* NumericTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumericTextField.swift; sourceTree = "<group>"; };
+		BEA6C48F2D4E8A1F000768BE /* CrossPlatformConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossPlatformConverter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -246,6 +248,7 @@
 				A9B446782CF5CBDC00FD50E5 /* WeaponData.swift */,
 				A9F072B62CE75ABE005033F2 /* WhitehackTypes.swift */,
 				A98488E32CF14F6700A7CD7B /* AdvancementTables.swift */,
+				BEA6C48F2D4E8A1F000768BE /* CrossPlatformConverter.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -460,6 +463,7 @@
 				A98489132CF1671F00A7CD7B /* FormCharacterGroupsSection.swift in Sources */,
 				A99CAAB82CE85A7B004163DA /* AttributeEditor.swift in Sources */,
 				A98488E42CF14F6700A7CD7B /* AdvancementTables.swift in Sources */,
+				BEA6C4902D4E8A1F000768BE /* CrossPlatformConverter.swift in Sources */,
 				BEA6C48E2D15521A000768BE /* NumericTextField.swift in Sources */,
 				A98489122CF1671F00A7CD7B /* FormLanguagesSection.swift in Sources */,
 				A9F072902CE75166005033F2 /* Whitehack_ToolsApp.swift in Sources */,
@@ -612,7 +616,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Whitehack Tools/Whitehack_Tools.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.5;
+				CURRENT_PROJECT_VERSION = 1.1.6;
 				DEVELOPMENT_ASSET_PATHS = "\"Whitehack Tools/Preview Content\"";
 				DEVELOPMENT_TEAM = Y4ZK5B3854;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -635,7 +639,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.7;
-				MARKETING_VERSION = 1.1.5;
+				MARKETING_VERSION = 1.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.netartisancollective.whitehacktools;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -653,7 +657,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Whitehack Tools/Whitehack_Tools.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1.5;
+				CURRENT_PROJECT_VERSION = 1.1.6;
 				DEVELOPMENT_ASSET_PATHS = "\"Whitehack Tools/Preview Content\"";
 				DEVELOPMENT_TEAM = Y4ZK5B3854;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -676,7 +680,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.7;
-				MARKETING_VERSION = 1.1.5;
+				MARKETING_VERSION = 1.1.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.netartisancollective.whitehacktools;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;

@@ -307,7 +307,8 @@ struct FormWiseMiracleSection: View {
         
         if miracleSlots.isEmpty {
             print("[WISEFORM] Creating initial 3 miracle slots")
-            miracleSlots = Array(repeating: WiseMiracleSlot(), count: 3)
+            // Use map to create unique instances - Array(repeating:) creates copies of the SAME instance!
+            miracleSlots = (0..<3).map { _ in WiseMiracleSlot() }
         }
         
         while miracleSlots.count < 3 {

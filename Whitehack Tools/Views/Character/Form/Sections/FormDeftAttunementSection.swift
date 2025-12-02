@@ -33,7 +33,8 @@ struct FormDeftAttunementSection: View {
     
     private func initializeSlotsIfNeeded() {
         if attunementSlots.isEmpty {
-            attunementSlots = Array(repeating: AttunementSlot(), count: level)
+            // Use map to create unique instances - Array(repeating:) creates copies of the SAME instance!
+            attunementSlots = (0..<level).map { _ in AttunementSlot() }
         }
         
         while attunementSlots.count < level {

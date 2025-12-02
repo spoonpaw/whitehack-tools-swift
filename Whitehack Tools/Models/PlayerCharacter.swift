@@ -262,7 +262,8 @@ struct BraveQuirkOptions: Codable {
     private var slots: [BraveQuirkSlot]
     
     init() {
-        self.slots = Array(repeating: BraveQuirkSlot(), count: 10) // Max level is 10
+        // Use map to create unique instances - Array(repeating:) creates copies of the SAME instance!
+        self.slots = (0..<10).map { _ in BraveQuirkSlot() } // Max level is 10
     }
     
     mutating func setQuirk(_ quirk: BraveQuirk?, at slot: Int) {

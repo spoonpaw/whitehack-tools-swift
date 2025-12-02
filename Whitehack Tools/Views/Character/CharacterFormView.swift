@@ -430,7 +430,8 @@ private class FormData: ObservableObject {
                     return slot
                 }
             } else if selectedClass == .deft && attunementSlots.isEmpty {
-                attunementSlots = Array(repeating: AttunementSlot(), count: 3)
+                // Use map to create unique instances - Array(repeating:) creates copies of the SAME instance!
+                attunementSlots = (0..<3).map { _ in AttunementSlot() }
             }
         }
     }

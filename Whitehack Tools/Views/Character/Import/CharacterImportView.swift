@@ -92,32 +92,49 @@ class CharacterImportViewModel: ObservableObject {
         }
         
         do {
-            if let data = importText.data(using: .utf8) {
-                print("✅ Successfully converted text to data")
+            guard let rawData = importText.data(using: .utf8) else {
+                print("❌ Failed to convert text to data")
+                throw NSError(domain: "", code: -1)
+            }
+            
+            print("✅ Successfully converted text to data")
+            
+            // Parse raw JSON to detect format
+            let rawJson = try JSONSerialization.jsonObject(with: rawData)
+            
+            // Check if this is Kotlin format and convert if needed
+            let finalData: Data
+            if CrossPlatformConverter.isKotlinFormat(rawJson) {
+                print("🔄 Detected Kotlin format - converting to Swift format...")
+                let converted = CrossPlatformConverter.convertFromKotlin(rawJson)
+                finalData = try CrossPlatformConverter.convertToData(converted)
+                print("✅ Conversion complete")
+            } else {
+                print("✅ Detected native Swift format - no conversion needed")
+                finalData = rawData
+            }
+            
+            // Try to decode as array first
+            do {
+                decodedCharacters = try JSONDecoder().decode([PlayerCharacter].self, from: finalData)
+                print("✅ Successfully decoded array of characters: \(decodedCharacters.count)")
+                showingPreview = true
+                print("✅ Set showingPreview to true")
+                return
+            } catch {
+                print("⚠️ Failed to decode as array, trying single character: \(error)")
+                // If array decode fails, try single character
                 do {
-                    // Try to decode as array first
-                    decodedCharacters = try JSONDecoder().decode([PlayerCharacter].self, from: data)
-                    print("✅ Successfully decoded array of characters: \(decodedCharacters.count)")
+                    let character = try JSONDecoder().decode(PlayerCharacter.self, from: finalData)
+                    print("✅ Successfully decoded single character")
+                    decodedCharacters = [character]
                     showingPreview = true
                     print("✅ Set showingPreview to true")
                     return
                 } catch {
-                    print("⚠️ Failed to decode as array, trying single character: \(error)")
-                    // If array decode fails, try single character
-                    do {
-                        let character = try JSONDecoder().decode(PlayerCharacter.self, from: data)
-                        print("✅ Successfully decoded single character")
-                        decodedCharacters = [character]
-                        showingPreview = true
-                        print("✅ Set showingPreview to true")
-                        return
-                    } catch {
-                        print("❌ Failed to decode as single character: \(error)")
-                        showAlert(title: "Error", message: "Invalid character data format")
-                    }
+                    print("❌ Failed to decode as single character: \(error)")
+                    showAlert(title: "Error", message: "Invalid character data format")
                 }
-            } else {
-                print("❌ Failed to convert text to data")
             }
             
             throw NSError(domain: "", code: -1)
